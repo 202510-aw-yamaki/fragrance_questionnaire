@@ -1,0 +1,667 @@
+﻿<!doctype html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fragrance Workshop Reservation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/reservation.css">
+</head>
+
+<body class="page-canvas">
+  <header class="site-header">
+    <div class="header-inner page-header-inner site-container">
+      <a class="brand" href="index.html" aria-label="トップへ戻る">
+        <picture>
+          <source media="(max-width: 47.9375em)" srcset="img/TOP/吟ロゴ.png">
+          <img src="img/TOP/roherarogo.png" alt="FRAGRANCE WORKSHOP">
+        </picture>
+      </a>
+      <button class="action-btn primary header-cta" id="confirm-btn" type="button" disabled>予約を確定する</button>
+    </div>
+  </header>
+
+  <div class="page-shell page-body site-container">
+    <main class="reservation-shell page-main glass-panel">
+      <aside class="panel summary-panel page-panel glass-panel">
+        <div class="section-label">Current Tendency</div>
+        <article class="lead-card">
+          <small>あなたの今の傾向</small>
+          <h1 id="summary-headline">やわらかな華やかさと軽さのバランス</h1>
+          <p id="summary-body">フローラルを軸にしつつ、重くしすぎずに整えた方向です。当日はこの土台から香りを試し始められます。</p>
+        </article>
+
+        <article class="axis-card">
+          <h2>現在の香りバランス</h2>
+          <div class="axis-list" id="axis-list"></div>
+        </article>
+      </aside>
+
+      <section class="panel booking-panel page-panel glass-panel" aria-live="polite">
+        <div class="section-label">Reservation</div>
+        <div class="status-line status-pill" id="selected-status">未選択: 来店日時を選んでください</div>
+        <div class="booking-intro">
+          <h2>予約を確定する</h2>
+          <p>ここで決めるのは、来店日時と共有メモだけです。当日の香りは店頭でスタッフと一緒に微調整できます。</p>
+        </div>
+
+        <div class="booking-grid">
+          <article class="slot-card">
+            <h3>予約枠選択</h3>
+            <p class="booking-note">都合のよい日時をひとつ選んでください。</p>
+            <div class="slot-list" id="slot-list"></div>
+          </article>
+
+          <div class="select-group">
+            <article class="slot-card">
+              <h3>来店情報選択</h3>
+              <div class="field-row">
+                <div class="field">
+                  <label class="field-label-note" for="visit-type">来店内容</label>
+                  <select id="visit-type">
+                    <option value="初回ワークショップ">初回ワークショップ</option>
+                    <option value="再来店の調整相談">再来店の調整相談</option>
+                    <option value="ギフト相談あり">ギフト相談あり</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label class="field-label-note" for="guest-count">人数</label>
+                  <select id="guest-count">
+                    <option value="" selected>選択してください</option>
+                    <option value="1名">1名</option>
+                    <option value="2名">2名</option>
+                    <option value="3名">3名</option>
+                    <option value="4名以上">4名以上</option>
+                  </select>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel side-panel page-panel glass-panel">
+        <div class="visual-card">
+          <strong>提案カウンターの空気感</strong>
+          <p>当日は、ここまでの傾向をもとにベース候補を絞った状態から始めます。静かな器具や無地ボトルのある落ち着いた空気感を想定しています。</p>
+        </div>
+
+        <article class="note-card">
+          <strong>予約前メモ</strong>
+          <p>時間帯や人数だけ先に決めておけば十分です。細かな好みは店頭で実際に香りを試しながら詰めていけます。</p>
+        </article>
+
+        <article class="policy-card">
+          <strong>安心事項</strong>
+          <ul class="policy-list">
+            <li>予約後も当日の香りは変更できます</li>
+            <li>任意メモがなくても予約可能です</li>
+            <li>このページは来店前の準備として使います</li>
+          </ul>
+        </article>
+      </aside>
+
+      <section class="memo-panel">
+        <article class="memo-card">
+          <div class="section-label">Message for Staff</div>
+          <h3>スタッフに伝えたいこと（任意）</h3>
+          <p class="memo-help">例: 甘さは控えめにしたい / 仕事用で使いたい / 最初は軽い方向から試したい / 4名以上の場合は人数を記入してください</p>
+          <textarea id="staff-memo" placeholder="当日スタッフに伝えておきたいことがあれば入力してください。"></textarea>
+        </article>
+      </section>
+
+    </main>
+  </div>
+
+  <div class="slot-modal" id="slot-modal" aria-hidden="true">
+    <div class="slot-modal-card" id="slot-modal-card" role="dialog" aria-modal="true" aria-labelledby="slot-modal-title" aria-describedby="slot-modal-copy" tabindex="-1">
+      <div class="slot-modal-head">
+        <div>
+          <h3 id="slot-modal-title">時間帯を選択</h3>
+          <p id="slot-modal-copy">日付を選ぶと、ここに時間帯が表示されます。</p>
+        </div>
+        <button class="slot-close" id="slot-close" type="button" aria-label="時間選択を閉じる">×</button>
+      </div>
+      <div class="slot-panels slot-modal-panels" id="slot-modal-panels"></div>
+    </div>
+  </div>
+
+    <script>
+    const AXIS_META = [
+      { id: "floral", label: "フローラル" },
+      { id: "fresh", label: "フレッシュ" },
+      { id: "woody", label: "ウッディ" },
+      { id: "spicy", label: "スパイシー" },
+      { id: "sweet", label: "スウィート" }
+    ];
+
+    const DEFAULT_AXES = {
+      floral: 68,
+      fresh: 58,
+      woody: 48,
+      spicy: 34,
+      sweet: 50
+    };
+
+    const RESERVATION_SLOT_API = "/api/reservation-slots";
+    const RESERVATION_API = "/api/reservations";
+
+    const siteHeader = document.querySelector(".site-header");
+    const pageShell = document.querySelector(".page-shell");
+    const summaryHeadline = document.getElementById("summary-headline");
+    const summaryBody = document.getElementById("summary-body");
+    const axisList = document.getElementById("axis-list");
+    const slotList = document.getElementById("slot-list");
+    const selectedStatus = document.getElementById("selected-status");
+    const confirmBtn = document.getElementById("confirm-btn");
+    const visitType = document.getElementById("visit-type");
+    const guestCount = document.getElementById("guest-count");
+    const staffMemo = document.getElementById("staff-memo");
+    const slotModal = document.getElementById("slot-modal");
+    const slotModalCard = document.getElementById("slot-modal-card");
+    const slotModalPanels = document.getElementById("slot-modal-panels");
+    const slotModalTitle = document.getElementById("slot-modal-title");
+    const slotModalCopy = document.getElementById("slot-modal-copy");
+    const slotClose = document.getElementById("slot-close");
+
+    let selectedSlot = null;
+    let activeWeekKey = "";
+    let lastModalTrigger = null;
+    let weekData = [];
+    let isDemoMode = false;
+
+function getFocusableElements(container) {
+      return [...container.querySelectorAll(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )].filter((element) => !element.hidden && element.offsetParent !== null);
+    }
+
+    function setBackgroundInert(isInert) {
+      [siteHeader, pageShell].forEach((element) => {
+        if (!element) return;
+        if (isInert) {
+          element.setAttribute("inert", "");
+          element.setAttribute("aria-hidden", "true");
+        } else {
+          element.removeAttribute("inert");
+          element.removeAttribute("aria-hidden");
+        }
+      });
+    }
+
+    function loadAxes() {
+      try {
+        const raw = window.sessionStorage.getItem("fragranceReservationDraft");
+        if (!raw) return { ...DEFAULT_AXES };
+        const parsed = JSON.parse(raw);
+        return { ...DEFAULT_AXES, ...(parsed.axes || {}) };
+      } catch (error) {
+        return { ...DEFAULT_AXES };
+      }
+    }
+
+    function buildSummary(axes) {
+      const sorted = [...AXIS_META]
+        .map((axis) => ({ ...axis, value: axes[axis.id] }))
+        .sort((a, b) => b.value - a.value);
+
+      const first = sorted[0];
+      const second = sorted[1];
+      const pair = [first.label, second.label];
+
+      let headline = pair.join(" × ") + " を軸にした今の方向";
+      let body = "当日はこのバランスを起点にして、強さや余韻をその場で整えていきます。";
+
+      if (first.id === "floral" && second.id === "fresh") {
+        headline = "やわらかな華やかさと軽さのバランス";
+        body = "フローラルを軸にしつつ、みずみずしい抜け感が残る方向です。最初は軽めに試し、必要なら甘さや深みをあとから足せます。";
+      } else if (first.id === "fresh" && second.id === "floral") {
+        headline = "透明感を主軸に、花のやわらかさを添える方向";
+        body = "清潔感のある軽さをベースにしながら、無機質になりすぎないよう花のやわらかさを添えるイメージです。";
+      } else if (first.id === "woody" || first.id === "spicy") {
+        headline = "落ち着きと余韻を持たせる方向";
+        body = "深みを感じる軸が強めなので、当日は重さを見ながら透明感や甘さを少しずつ重ねる進め方が合います。";
+      }
+
+      return { headline, body, sorted };
+    }
+
+    function renderAxes(axes) {
+      axisList.innerHTML = "";
+
+      AXIS_META.forEach((axis) => {
+        const row = document.createElement("div");
+        row.className = "axis-row";
+        row.innerHTML = `
+          <strong>${axis.label}</strong>
+          <div class="axis-track"><span class="axis-bar" style="width:${axes[axis.id]}%"></span></div>
+          <span>${axes[axis.id]}</span>
+        `;
+        axisList.appendChild(row);
+      });
+    }
+
+    function formatDate(date) {
+      const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      return `${month}/${day}（${weekdays[date.getDay()]}）`;
+    }
+
+    function formatApiDateLabel(dateText) {
+      const date = new Date(`${dateText}T00:00:00`);
+      return formatDate(date);
+    }
+
+    function buildWeekData(slotResponses) {
+      const today = new Date();
+      const weeks = [];
+
+      for (let weekIndex = 0; weekIndex < 2; weekIndex += 1) {
+        const days = [];
+        for (let dayIndex = 0; dayIndex < 7; dayIndex += 1) {
+          const date = new Date(today);
+          date.setDate(today.getDate() + (weekIndex * 7) + dayIndex + 1);
+          const dateKey = date.toISOString().slice(0, 10);
+          const daySlots = slotResponses
+            .filter((slot) => slot.date === dateKey)
+            .map((slot) => ({
+              slotId: slot.slotId,
+              slotLabel: slot.label,
+              time: slot.time,
+              instructor: slot.instructorName,
+              status: slot.status
+            }));
+          days.push({
+            label: formatDate(date),
+            dateKey,
+            slots: daySlots
+          });
+        }
+        weeks.push({
+          key: `week-${weekIndex + 1}`,
+          title: weekIndex === 0 ? "今週" : "来週",
+          range: `${days[0].label} - ${days[6].label}`,
+          days
+        });
+      }
+
+      return weeks;
+    }
+
+    function buildDemoReservationSlots() {
+      const today = new Date();
+      const demoSlots = [];
+      const demoPatterns = [
+        [
+          { time: "10:30", status: "recommended", instructorName: "原口" },
+          { time: "13:00", status: "open", instructorName: "清水" },
+          { time: "15:30", status: "open", instructorName: "大塚" }
+        ],
+        [
+          { time: "11:00", status: "open", instructorName: "清水" },
+          { time: "14:30", status: "recommended", instructorName: "原口" }
+        ],
+        [
+          { time: "12:00", status: "open", instructorName: "大塚" },
+          { time: "16:00", status: "open", instructorName: "清水" }
+        ]
+      ];
+
+      for (let dayOffset = 1; dayOffset <= 14; dayOffset += 1) {
+        const date = new Date(today);
+        date.setDate(today.getDate() + dayOffset);
+        const dateText = date.toISOString().slice(0, 10);
+        const pattern = demoPatterns[(dayOffset - 1) % demoPatterns.length];
+
+        pattern.forEach((slot) => {
+          demoSlots.push({
+            slotId: `${dateText}_${slot.time.replace(":", "")}`,
+            date: dateText,
+            time: slot.time,
+            label: `${formatApiDateLabel(dateText)} ${slot.time}`,
+            status: slot.status,
+            instructorName: slot.instructorName
+          });
+        });
+      }
+
+      return demoSlots;
+    }
+    function renderSlots() {
+      slotList.innerHTML = "";
+      activeWeekKey = "";
+
+      const tabs = document.createElement("div");
+      tabs.className = "slot-tabs";
+      slotModalPanels.innerHTML = "";
+
+      weekData.forEach((week) => {
+        const tab = document.createElement("button");
+        tab.type = "button";
+        tab.className = "slot-tab";
+        tab.dataset.weekKey = week.key;
+        tab.setAttribute("aria-haspopup", "dialog");
+        tab.setAttribute("aria-controls", "slot-modal");
+        tab.setAttribute("aria-expanded", "false");
+        tab.innerHTML = `<strong>${week.title}</strong><span>${week.range}</span>`;
+        tab.addEventListener("click", () => selectWeek(week.key, tab));
+        tabs.appendChild(tab);
+
+        const panel = document.createElement("section");
+        panel.className = "slot-panel";
+        panel.dataset.weekKey = week.key;
+        panel.innerHTML = `
+          <div class="slot-meta">
+            <strong>${week.title} の予約枠</strong>
+            <span>${week.range}</span>
+          </div>
+        `;
+
+        week.days.forEach((day) => {
+          const dayBlock = document.createElement("section");
+          dayBlock.className = "slot-day-block";
+          dayBlock.innerHTML = `
+            <div class="slot-day-head">
+              <strong>${day.label}</strong>
+            </div>
+            <div class="time-grid"></div>
+          `;
+
+          const grid = dayBlock.querySelector(".time-grid");
+          if (day.slots.length === 0) {
+            const empty = document.createElement("p");
+            empty.className = "booking-note";
+            empty.textContent = "この日は現在予約枠がありません。";
+            grid.appendChild(empty);
+          }
+
+          day.slots.forEach((slot) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "time-slot";
+            button.setAttribute("aria-pressed", "false");
+            const chipLabel = slot.status === "recommended" ? "おすすめ" : "空きあり";
+            button.innerHTML = `
+              <span class="time-slot-time">${slot.time}</span>
+              <span class="slot-chip${slot.status === "recommended" ? " is-recommended" : ""}">${chipLabel}</span>
+              <span class="slot-chip is-instructor">${slot.instructor}</span>
+            `;
+            button.dataset.slotId = slot.slotId;
+            button.dataset.slotLabel = slot.slotLabel || `${day.label} ${slot.time}`;
+            button.addEventListener("click", () => {
+              selectSlot({
+                slotId: button.dataset.slotId,
+                slotLabel: button.dataset.slotLabel
+              });
+              closeSlotModal();
+            });
+            grid.appendChild(button);
+          });
+
+          panel.appendChild(dayBlock);
+        });
+
+        slotModalPanels.appendChild(panel);
+      });
+
+      slotList.appendChild(tabs);
+    }
+
+    async function loadReservationSlots() {
+      selectedStatus.textContent = "予約枠を読み込み中です...";
+      confirmBtn.disabled = true;
+
+      try {
+        const today = new Date();
+        const requests = [];
+        for (let dayOffset = 1; dayOffset <= 14; dayOffset += 1) {
+          const date = new Date(today);
+          date.setDate(today.getDate() + dayOffset);
+          const dateText = date.toISOString().slice(0, 10);
+          requests.push(fetch(`${RESERVATION_SLOT_API}?date=${dateText}`));
+        }
+
+        const responses = await Promise.all(requests);
+        const payloads = await Promise.all(responses.map(async (response) => {
+          if (!response.ok) {
+            throw new Error("failed to load reservation slots");
+          }
+          return response.json();
+        }));
+
+        const flattened = payloads.flat().map((slot) => ({
+          ...slot,
+          label: slot.label || `${formatApiDateLabel(slot.date)} ${slot.time}`
+        }));
+
+        isDemoMode = false;
+        weekData = buildWeekData(flattened);
+        renderSlots();
+        selectedStatus.textContent = "未選択: 来店日時を選んでください";
+        updateSelectionState();
+      } catch (error) {
+        isDemoMode = true;
+        const demoSlots = buildDemoReservationSlots();
+        weekData = buildWeekData(demoSlots);
+        renderSlots();
+        selectedStatus.textContent = "デモ表示中: 仮の予約枠を表示しています";
+        updateSelectionState();
+      }
+    }
+
+    function selectWeek(weekKey, triggerButton = null) {
+      activeWeekKey = weekKey;
+      document.querySelectorAll(".slot-tab").forEach((button) => {
+        button.classList.toggle("active", button.dataset.weekKey === weekKey);
+        button.setAttribute("aria-expanded", button.dataset.weekKey === weekKey ? "true" : "false");
+      });
+      document.querySelectorAll(".slot-panel").forEach((panel) => {
+        panel.classList.toggle("active", panel.dataset.weekKey === weekKey);
+      });
+      const activeTab = document.querySelector(`.slot-tab[data-week-key="${weekKey}"]`);
+      if (triggerButton) {
+        lastModalTrigger = triggerButton;
+      }
+      if (activeTab) {
+        slotModalTitle.textContent = `${activeTab.querySelector("strong").textContent} の予約枠`;
+        slotModalCopy.textContent = "この週の7日分を表示しています。ご希望の日時をひとつ選んでください。";
+      }
+      openSlotModal();
+    }
+
+    function openSlotModal() {
+      updateSlotModalDensity();
+      setBackgroundInert(true);
+      slotModal.classList.add("open");
+      slotModal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      window.requestAnimationFrame(() => {
+        const activePanel = slotModalPanels.querySelector(`.slot-panel[data-week-key="${activeWeekKey}"]`);
+        const selectedButton = activePanel?.querySelector('.time-slot.selected');
+        const firstButton = activePanel?.querySelector(".time-slot");
+        const focusTarget = selectedButton || firstButton || slotClose || slotModalCard;
+        focusTarget.focus();
+      });
+    }
+
+    function closeSlotModal({ restoreFocus = true } = {}) {
+      slotModal.classList.remove("open");
+      slotModal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      setBackgroundInert(false);
+      document.querySelectorAll(".slot-tab").forEach((button) => {
+        button.setAttribute("aria-expanded", "false");
+      });
+      if (restoreFocus && lastModalTrigger) {
+        lastModalTrigger.focus();
+      }
+    }
+
+    function updateSlotModalDensity() {
+      const height = window.innerHeight;
+      let density = "default";
+      if (height <= 760) density = "condensed";
+      else if (height <= 900) density = "compact";
+      slotModal.dataset.density = density;
+    }
+
+    function selectSlot(slot) {
+      selectedSlot = slot;
+      document.querySelectorAll(".time-slot").forEach((button) => {
+        const isSelected = button.dataset.slotId === slot.slotId;
+        button.classList.toggle("selected", isSelected);
+        button.setAttribute("aria-pressed", isSelected ? "true" : "false");
+      });
+      updateSelectionState();
+    }
+
+    function updateSelectionState() {
+      const hasSelectedSlot = !!selectedSlot;
+      const hasGuestCount = guestCount.value !== "";
+
+      if (hasSelectedSlot && hasGuestCount) {
+        selectedStatus.textContent = `選択中: ${selectedSlot.slotLabel} / ${guestCount.value}`;
+        confirmBtn.disabled = false;
+        return;
+      }
+
+      if (hasSelectedSlot) {
+        selectedStatus.textContent = `選択中: ${selectedSlot.slotLabel} / 人数を選択してください`;
+        confirmBtn.disabled = true;
+        return;
+      }
+
+      selectedStatus.textContent = "未選択: 来店日時を選んでください";
+      confirmBtn.disabled = true;
+    }
+
+    function maybeScrollToMemo() {
+      const isMobile = window.matchMedia("(max-width: 47.9375em)").matches;
+      if (!isMobile || guestCount.value === "") return;
+      staffMemo.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function buildDemoReservationPayload(requestPayload) {
+      const reservationCode = `DEMO-${Date.now().toString().slice(-6)}`;
+      return {
+        reservationCode,
+        slot: requestPayload.slotLabel,
+        visitType: requestPayload.visitType,
+        guestCount: requestPayload.guestCount,
+        memo: requestPayload.staffMemo || "",
+        demoMode: true
+      };
+    }
+
+    async function handleReservationComplete() {
+      if (!selectedSlot) return;
+
+      confirmBtn.disabled = true;
+      selectedStatus.textContent = "予約を登録中です...";
+
+      const requestPayload = {
+        slotId: selectedSlot.slotId,
+        slotLabel: selectedSlot.slotLabel,
+        visitType: visitType.value,
+        guestCount: guestCount.value,
+        staffMemo: staffMemo.value.trim(),
+        summaryHeadline: summaryHeadline.textContent
+      };
+
+      if (isDemoMode) {
+        const demoReservation = buildDemoReservationPayload(requestPayload);
+        window.sessionStorage.setItem("fragranceReservationConfirmation", JSON.stringify(demoReservation));
+        window.location.href = `reservation-complete.html?reservationCode=${encodeURIComponent(demoReservation.reservationCode)}&demo=1`;
+        return;
+      }
+
+      try {
+        const response = await fetch(RESERVATION_API, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(requestPayload)
+        });
+
+        if (!response.ok) {
+          throw new Error("failed to create reservation");
+        }
+
+        const reservation = await response.json();
+        const payload = {
+          reservationCode: reservation.reservationCode,
+          slot: reservation.slotLabel,
+          visitType: reservation.visitType,
+          guestCount: reservation.guestCount,
+          memo: reservation.staffMemo || ""
+        };
+        window.sessionStorage.setItem("fragranceReservationConfirmation", JSON.stringify(payload));
+        window.location.href = `reservation-complete.html?reservationCode=${encodeURIComponent(reservation.reservationCode)}`;
+      } catch (error) {
+        selectedStatus.textContent = "予約登録に失敗しました。内容を確認して再度お試しください。";
+        updateSelectionState();
+      }
+    }
+
+    guestCount.addEventListener("change", () => {
+      updateSelectionState();
+      maybeScrollToMemo();
+    });
+    staffMemo.addEventListener("keydown", (event) => {
+      if (event.key === "Tab" && !event.shiftKey) {
+        event.preventDefault();
+        confirmBtn.focus();
+      }
+    });
+    confirmBtn.addEventListener("click", handleReservationComplete);
+    slotClose.addEventListener("click", closeSlotModal);
+    slotModal.addEventListener("click", (event) => {
+      if (event.target === slotModal) closeSlotModal();
+    });
+    slotModal.addEventListener("keydown", (event) => {
+      if (!slotModal.classList.contains("open")) return;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeSlotModal();
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const focusableElements = getFocusableElements(slotModalCard);
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        slotModalCard.focus();
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    });
+    window.addEventListener("resize", updateSlotModalDensity);
+
+    const axes = loadAxes();
+    const summary = buildSummary(axes);
+    summaryHeadline.textContent = summary.headline;
+    summaryBody.textContent = summary.body;
+    renderAxes(axes);
+    loadReservationSlots();
+    updateSlotModalDensity();
+  </script>
+</body>
+
+</html>
+

@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fragrance Workshop STEP2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/questionnaire-common.css">
+  <link rel="stylesheet" href="css/questionnaire-step2.css">
+</head>
+
+<body class="page-canvas">
+  <header class="site-header">
+    <div class="header-inner page-header-inner site-container">
+      <a class="brand" id="brand-link" href="index.html" aria-label="トップへ戻る">
+        <picture>
+          <source media="(max-width: 47.9375em)" srcset="img/TOP/吟ロゴ.png">
+          <img src="img/TOP/roherarogo.png" alt="FRAGRANCE WORKSHOP">
+        </picture>
+      </a>
+      <nav class="main-nav" aria-label="ページメニュー">
+        <ul>
+          <li><button id="header-prev-btn" type="button" aria-label="前の質問"><span class="nav-text">前の質問</span><span class="nav-icon" aria-hidden="true">arrow_back</span></button></li>
+          <li><button id="header-next-btn" type="button" aria-label="次の質問"><span class="nav-text">次の質問</span><span class="nav-icon" aria-hidden="true">arrow_forward</span></button></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <div class="page-shell page-body site-container">
+    <section class="step-strip" aria-label="進行状況">
+      <div class="step-group">
+        <div class="step-badge next">STEP1 固定5問</div>
+        <div class="step-badge current">STEP2 追加3問</div>
+      </div>
+      <div class="step-copy">
+        <strong>Fragrance Workshop</strong>
+        <span>ここまでの回答をもとに、あと3問だけ深掘りして仕上がりを整えます。</span>
+      </div>
+    </section>
+    <main class="question-shell page-main">
+      <aside class="panel nav-panel page-panel" aria-label="質問ナビ">
+        <h2 class="nav-title">Question Navigation</h2>
+        <div class="nav-list" id="nav-list"></div>
+        <div class="nav-note">STEP2 は深掘りの3問です。ここまでの回答を前提に、香りの印象と残り方をもう少しだけ整えていきます。</div>
+      </aside>
+      <section class="panel main-panel page-panel" aria-live="polite">
+        <div class="question-meta">
+          <div class="question-index" id="question-index">Q6 / STEP2</div>
+          <div class="helper-text" id="helper-text"></div>
+        </div>
+        <div class="progress-row">
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-bar" id="progress-bar"></div>
+          </div>
+          <div class="progress-label" id="progress-label">1 / 3</div>
+        </div>
+        <div>
+          <h1 class="question-title" id="question-title"></h1>
+          <p class="question-caption" id="question-caption"></p>
+        </div>
+        <div class="option-list" id="option-list"></div>
+        <div class="sub-options" id="sub-options"></div>
+      </section>
+      <aside class="panel side-panel page-panel">
+        <div class="store-visual">
+          <strong>提案の空気感</strong>
+          <span>STEP2 では、工房の奥にある提案カウンターに少し近づくイメージです。静かな器具や無地ボトルが見える、落ち着いた空気感を添えています。</span>
+        </div>
+        <div class="side-card">
+          <strong id="note-title"></strong>
+          <p id="note-body"></p>
+        </div>
+        <div class="return-card">
+          <p>STEP2 の途中で戻ると、ここまでの深掘り回答は保存されません。</p>
+          <button class="action-btn" id="return-top-btn" type="button">トップへ戻る</button>
+        </div>
+      </aside>
+    </main>
+    <section class="mobile-return-panel" aria-label="トップへ戻る">
+      <div class="mobile-return-card">
+        <button class="action-btn" id="return-top-btn-mobile" type="button">トップへ戻る</button>
+        <p>STEP2 の途中で戻ると、ここまでの深掘り回答は保存されません。</p>
+      </div>
+    </section>
+  </div>
+  <script>
+    const branchLabels = { floral: "Bloom", fresh: "Air", woody: "Deep" };
+    const step1BranchMap = {
+      Q1: {
+        "花がふわっと香る": "floral",
+        "みずみずしく爽やか": "fresh",
+        "木や森の落ち着き": "woody"
+      },
+      Q2: {
+        "やさしいピンク・ベージュ": "floral",
+        "白・水色・透明感": "fresh",
+        "ブラウン・深いグリーン": "woody"
+      },
+      Q3: {
+        "やさしく癒やされたい": "floral",
+        "すっきり切り替えたい": "fresh",
+        "自分らしさを出したい": "woody"
+      },
+      Q4: {
+        "休日に気分を上げたい": "floral",
+        "仕事や外出で心地よく整えたい": "fresh",
+        "夜や特別な時間を深く楽しみたい": "woody"
+      },
+      Q5: {
+        "心にしみるストリングス": "floral",
+        "明るいポップ": "fresh",
+        "自然に耳に残るクラシック": "woody"
+      }
+    };
+    const tieBreakOrder = ["Q4", "Q1", "Q3", "Q2", "Q5"];
+    const commonQ8 = { id: "Q8", nav: "今日の仕上がり", title: "今日の仕上がりでいちばん近いのは？", caption: "最後に、今日まといたい印象をひとつだけ選んで仕上げます。", helper: "今日の気分にいちばん近いものを選んでください", noteTitle: "豆知識＜ラストノート＞", noteBody: "最後に長く残る香りは、その日全体の印象を静かに決める余韻の役割を持ちます。", footer: "最後の一問で、当日の提案方向を確定します。", options: [{ key: "A", title: "軽やかにまとめたい", desc: "白と淡いブルー、抜ける光。さらりと軽いまとまり。", visual: "linear-gradient(135deg, #dce7f2, #f8fcff 56%, #cfdeec)" }, { key: "B", title: "やわらかく心地よくしたい", desc: "ベージュと白花、やさしい昼光。肩の力が抜ける安心感。", visual: "linear-gradient(135deg, #ead9d0, #fcf4ef 56%, #e0c9be)" }, { key: "C", title: "少し印象を残したい", desc: "深すぎないブラウンと整った影。静かな存在感を残す方向。", visual: "linear-gradient(135deg, #ddd4cc, #f6f1ec 56%, #cfc2b6)" }], subOptions: ["全部好き", "この中にはない"] };
+    const questionBanks = {
+      floral: [
+        { id: "Q6", nav: "身につけた時の印象", title: "身につけた時の印象は？", caption: "ここまでの回答をもとに、花のやわらかさをどんな方向でまといたいかを整えます。", helper: "いちばん近い印象を選んでください", noteTitle: "豆知識＜フローラル系＞", noteBody: "花の印象は“甘さ”だけではなく、“抜け感”や“透明感”の調整でも大きく変わる。", footer: "STEP2 では、華やかさと甘さの見え方を整える段階です。", options: [{ key: "A", title: "やわらかく華やか", desc: "淡い花とやわらかな光。華やかだけれど派手すぎない印象。", visual: "url('img/questionnaire2/やわらかく華やか.png')", color: "#F7EEE8", cardClass: "option-card-image-right" }, { key: "B", title: "親しみやすく甘い", desc: "丸みのある花器と温かなベージュ。やさしく甘い空気感。", visual: "url('img/questionnaire2/親しみやすく甘い.png')", color: "#F4E8E1", cardClass: "option-card-image-right" }, { key: "C", title: "上品で落ち着いた印象", desc: "花材を少し抑えた整った静物。静かな大人っぽさがある方向。", visual: "url('img/questionnaire2/上品で落ち着いた印象.png')", color: "#F1ECE8", cardClass: "option-card-image-right" }], subOptions: ["全部好き", "この中にはない"] },
+        { id: "Q7", nav: "甘さの出方", title: "甘さの出方はどれが近いですか？", caption: "甘さの立ち上がり方で、同じ floral でも印象はかなり変わります。", helper: "甘さの出方に近いものを選んでください", noteTitle: "豆知識＜ミドルノート＞", noteBody: "フローラルの印象は、最初の華やかさよりも中盤の甘さの出方で“似合う感じ”が変わりやすい。", footer: "ここでは、時間とともにどう香ってほしいかを見ています。", options: [{ key: "A", title: "最初にふわっと感じたい", desc: "明るい花と軽い光。第一印象がやさしく広がるイメージ。", visual: "url('img/questionnaire2/最初にふわっと感じたい.png')", color: "#F7EEE8", cardClass: "option-card-image-right" }, { key: "B", title: "時間とともにやさしく出てほしい", desc: "層のある布と淡い花。じんわり広がるやわらかな甘さ。", visual: "url('img/questionnaire2/時間とともにやさしく出てほしい.png')", color: "#F4ECE5", cardClass: "option-card-image-right" }, { key: "C", title: "甘さは控えめがいい", desc: "白花と余白を残した構図。軽やかで静かな上品さ。", visual: "url('img/questionnaire2/甘さは控えめがいい.png')", color: "#F1EFEC", cardClass: "option-card-image-right" }], subOptions: ["全部好き", "この中にはない"] },
+        commonQ8
+      ],
+      fresh: [
+        { id: "Q6", nav: "抜け感の方向", title: "どんな抜け感が好きですか？", caption: "ここまでの回答をもとに、透明感の質をもう少しだけ整えます。", helper: "いちばん近い抜け感を選んでください", noteTitle: "豆知識＜シトラス・フレッシュ系＞", noteBody: "軽く感じる香りほど、香り方の“出方”や“残り方”で印象差が大きく出る。", footer: "STEP2 では、軽さと清潔感のバランスを整える段階です。", options: [{ key: "A", title: "みずみずしく軽い", desc: "透明なガラス、水滴、淡い葉。軽やかで空気が動くようなみずみずしさ。", visual: "url('img/questionnaire2/みずみずしく軽い.png')", color: "#F2FBFD", cardClass: "option-card-image-right" }, { key: "B", title: "清潔感がある", desc: "白い布、整ったテーブル、無地ボトル。きれいに整う清潔感。", visual: "url('img/questionnaire2/清潔感がある.png')", color: "#F4F8F6", cardClass: "option-card-image-right" }, { key: "C", title: "少しだけシャープ", desc: "ガラスと直線的な影、白とグレー。ややシャープだが冷たすぎない印象。", visual: "url('img/questionnaire2/少しだけシャープ.png')", color: "#EEF3F6", cardClass: "option-card-image-right" }], subOptions: ["全部好き", "この中にはない"] },
+        { id: "Q7", nav: "香りの印象", title: "香りの印象はどれが近いですか？", caption: "香りの残り方で、同じ fresh でも軽さの見え方は大きく変わります。", helper: "香りの印象に近いものを選んでください", noteTitle: "豆知識＜抜け感の残り方＞", noteBody: "フレッシュ系は、強さよりも“どう抜けるか”で清潔感と心地よさの印象が分かれやすい。", footer: "ここでは、フレッシュさがどう続いてほしいかを見ています。", options: [{ key: "A", title: "朝の空気みたいにすっきり", desc: "白い窓、澄んだ光、透明な器。朝の空気のようにすっきりした印象。", visual: "url('img/questionnaire2/朝の空気みたいにすっきり.png')", color: "#F1FBFE", cardClass: "option-card-image-right" }, { key: "B", title: "雨上がりのようにやわらかい", desc: "水滴の残る葉、淡いグレーと白。雨上がりの静かな清涼感。", visual: "url('img/questionnaire2/雨上がりのようにやわらかい.png')", color: "#F2F7F8", cardClass: "option-card-image-right" }, { key: "C", title: "静かに長く心地よい", desc: "強く主張しない整った光。やわらかく続く余韻を感じる静かな演出。", visual: "url('img/questionnaire2/静かに長く心地よい.png')", color: "#F4F5F3", cardClass: "option-card-image-right" }], subOptions: ["全部好き", "この中にはない"] },
+        commonQ8
+      ],
+      woody: [
+        { id: "Q6", nav: "深みの方向", title: "深みの方向はどれが好きですか？", caption: "ここまでの回答をもとに、落ち着きの質感をもう少しだけ整えます。", helper: "深みの方向に近いものを選んでください", noteTitle: "豆知識＜ウッディ系＞", noteBody: "深い香りは“重い”だけでなく、光や余白の入れ方で軽さも同居できる。", footer: "STEP2 では、深さの見せ方を整える段階です。", options: [{ key: "A", title: "木のぬくもり", desc: "温かみのある木と柔らかな影。ぬくもりのある深さ。", visual: "url('img/questionnaire2/木のぬくもり.png')", color: "#F2ECE4", cardClass: "option-card-image-right" }, { key: "B", title: "静かな落ち着き", desc: "深いグリーン、余白のある静かな構図。整った落ち着きと静けさ。", visual: "url('img/questionnaire2/静かな落ち着き.png')", color: "#EEF1EB", cardClass: "option-card-image-right" }, { key: "C", title: "個性のある刺激", desc: "スパイスを連想させる素材、少し強い影。強すぎず小さな刺激がある上質な空気感。", visual: "url('img/questionnaire2/個性のある刺激.png')", color: "#F0EAE5", cardClass: "option-card-image-right" }], subOptions: ["全部好き", "この中にはない"] },
+        { id: "Q7", nav: "余韻の残り方", title: "余韻はどう残ってほしいですか？", caption: "余韻の残り方で、同じ woody でも落ち着きの印象は大きく変わります。", helper: "残り方に近いものを選んでください", noteTitle: "豆知識＜ラストノート＞", noteBody: "ウッディ系は、最後にどう残るかで“重い”にも“上品”にも感じ方が変わる。", footer: "ここでは、深みがどんな余韻で続いてほしいかを見ています。", options: [{ key: "A", title: "すっと消えて軽やか", desc: "深みはあるが抜け感もある木と光。後味が軽い静かな構図。", visual: "url('img/questionnaire2/すっと消えて軽やか.png')", color: "#F1EEE8", cardClass: "option-card-image-right" }, { key: "B", title: "じんわり変化してほしい", desc: "木の質感とやわらかな陰影。少しずつ表情が変わる落ち着いた余韻。", visual: "url('img/questionnaire2/じんわり変化してほしい.png')", color: "#EEE9E1", cardClass: "option-card-image-right" }, { key: "C", title: "最後に深く残ってほしい", desc: "深いブラウンと整った影。最後に静かな深さが残る方向。", visual: "url('img/questionnaire2/最後に深く残ってほしい.png')", color: "#ECE5DD", cardClass: "option-card-image-right" }], subOptions: ["全部好き", "この中にはない"] },
+        commonQ8
+      ]
+    };
+    const answers = {};
+    let currentIndex = 0;
+    let activeBranchKey = "floral";
+    const navList = document.getElementById("nav-list");
+    const optionList = document.getElementById("option-list");
+    const subOptions = document.getElementById("sub-options");
+    const questionIndex = document.getElementById("question-index");
+    const helperText = document.getElementById("helper-text");
+    const progressBar = document.getElementById("progress-bar");
+    const progressLabel = document.getElementById("progress-label");
+    const questionTitle = document.getElementById("question-title");
+    const questionCaption = document.getElementById("question-caption");
+    const noteTitle = document.getElementById("note-title");
+    const noteBody = document.getElementById("note-body");
+    const brandLink = document.getElementById("brand-link");
+    const returnTopBtn = document.getElementById("return-top-btn");
+    const returnTopBtnMobile = document.getElementById("return-top-btn-mobile");
+    const headerPrevBtn = document.getElementById("header-prev-btn");
+    const headerNextBtn = document.getElementById("header-next-btn");
+    const headerPrevText = headerPrevBtn.querySelector(".nav-text");
+    const headerNextText = headerNextBtn.querySelector(".nav-text");
+    function getStep2Questions() {
+      return questionBanks[activeBranchKey] || questionBanks.floral;
+    }
+    function getActiveBranchKey() {
+      let raw = "{}";
+      try {
+        raw = sessionStorage.getItem("fragranceStep1Answers") || "{}";
+      } catch (error) {
+        return "floral";
+      }
+      let step1Answers;
+      try {
+        step1Answers = JSON.parse(raw);
+      } catch (error) {
+        return "floral";
+      }
+      const scores = { floral: 0, fresh: 0, woody: 0 };
+      Object.entries(step1BranchMap).forEach(([questionId, mapping]) => {
+        const answer = step1Answers[questionId];
+        const branchKey = mapping[answer];
+        if (branchKey) scores[branchKey] += 1;
+      });
+      const topScore = Math.max(scores.floral, scores.fresh, scores.woody);
+      const tiedBranches = Object.entries(scores)
+        .filter(([, score]) => score === topScore)
+        .map(([branchKey]) => branchKey);
+      if (topScore <= 0) return "floral";
+      if (tiedBranches.length === 1) return tiedBranches[0];
+      for (const questionId of tieBreakOrder) {
+        const answer = step1Answers[questionId];
+        const branchKey = step1BranchMap[questionId]?.[answer];
+        if (branchKey && tiedBranches.includes(branchKey)) return branchKey;
+      }
+      return tiedBranches[0];
+    }
+    function hasAnyAnswer() { return Object.keys(answers).length > 0; }
+    function confirmReturnToTop() {
+      if (!hasAnyAnswer()) return true;
+      return window.confirm("トップページへ戻ると、ここまでの回答は保存されません。戻りますか？");
+    }
+    function confirmReturnToStep1() {
+      return window.confirm("STEP1に戻ると、STEP2で選んだ内容は保存されません。戻りますか？");
+    }
+    function returnToTop() {
+      if (!confirmReturnToTop()) return;
+      window.location.href = "index.html";
+    }
+    function returnToStep1() {
+      if (!confirmReturnToStep1()) return;
+      window.location.href = "questionnaire.html";
+    }
+    function showCompletion() { window.location.href = "fragrance-graph.html"; }
+    function moveNext() {
+      const questions = getStep2Questions();
+      if (currentIndex < questions.length - 1) {
+        currentIndex += 1;
+        render();
+        return;
+      }
+      showCompletion();
+    }
+    function movePrev() { if (currentIndex > 0) { currentIndex -= 1; render(); } }
+    function selectAnswer(value) {
+      const question = getStep2Questions()[currentIndex];
+      answers[question.id] = value;
+      render();
+      window.setTimeout(() => { moveNext(); }, 140);
+    }
+    function renderNav() {
+      navList.innerHTML = "";
+      const questions = getStep2Questions();
+      questions.forEach((question, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "nav-item";
+        if (index === currentIndex) button.classList.add("active");
+        else if (answers[question.id]) button.classList.add("done");
+        button.innerHTML = `<span class="no">${question.id}</span><span class="label">${question.nav}</span>`;
+        button.addEventListener("click", () => { currentIndex = index; render(); });
+        navList.appendChild(button);
+      });
+    }
+    function renderOptions(question) {
+      optionList.innerHTML = "";
+      question.options.forEach((option) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "option-card";
+        if (option.cardClass) button.classList.add(option.cardClass);
+        if (answers[question.id] === option.title) button.classList.add("selected");
+        button.style.backgroundImage = option.visual;
+        button.style.backgroundColor = option.color || "#fffdfa";
+        button.innerHTML = `<div class="option-copy"><span class="option-label">${option.key}</span><span class="option-title">${option.title}</span><span class="option-desc">${option.desc}</span></div>`;
+        button.addEventListener("click", () => selectAnswer(option.title));
+        optionList.appendChild(button);
+      });
+    }
+    function renderSubOptions(question) {
+      subOptions.innerHTML = "";
+      question.subOptions.forEach((label) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "sub-option";
+        if (answers[question.id] === label) button.classList.add("selected");
+        button.textContent = label;
+        button.addEventListener("click", () => selectAnswer(label));
+        subOptions.appendChild(button);
+      });
+    }
+    function updateButtons() {
+      const onFirstQuestion = currentIndex === 0;
+      const onLastQuestion = currentIndex === getStep2Questions().length - 1;
+      headerPrevBtn.disabled = false;
+      headerPrevText.textContent = onFirstQuestion ? "STEP1に戻る" : "前の質問";
+      headerPrevBtn.setAttribute("aria-label", onFirstQuestion ? "STEP1に戻る" : "前の質問");
+      headerNextText.textContent = onLastQuestion ? "仕上がりを見る" : "次の質問";
+      headerNextBtn.setAttribute("aria-label", onLastQuestion ? "仕上がりを見る" : "次の質問");
+    }
+    function render() {
+      const questions = getStep2Questions();
+      const question = questions[currentIndex];
+      const progress = ((currentIndex + 1) / questions.length) * 100;
+      renderNav();
+      renderOptions(question);
+      renderSubOptions(question);
+      questionIndex.textContent = `${question.id} / STEP2`;
+      helperText.textContent = question.helper;
+      progressBar.style.width = `${progress}%`;
+      progressLabel.textContent = `${currentIndex + 1} / ${questions.length}`;
+      questionTitle.textContent = question.title;
+      questionCaption.textContent = question.caption;
+      noteTitle.textContent = question.noteTitle;
+      noteBody.textContent = question.noteBody;
+      updateButtons();
+    }
+    brandLink.addEventListener("click", (event) => {
+      event.preventDefault();
+      returnToTop();
+    });
+    returnTopBtn.addEventListener("click", returnToTop);
+    returnTopBtnMobile.addEventListener("click", returnToTop);
+    headerPrevBtn.addEventListener("click", () => {
+      if (currentIndex === 0) {
+        returnToStep1();
+        return;
+      }
+      movePrev();
+    });
+    headerNextBtn.addEventListener("click", moveNext);
+    activeBranchKey = getActiveBranchKey();
+    render();
+  </script>
+</body>
+
+</html>

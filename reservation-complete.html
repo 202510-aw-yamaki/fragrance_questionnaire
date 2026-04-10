@@ -1,0 +1,258 @@
+﻿<!doctype html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>予約完了 | Fragrance Workshop</title>
+  <meta name="description" content="Fragrance Workshop の予約完了ページです。予約日時や来店情報を確認できます。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/reservation-complete.css">
+</head>
+
+<body class="page-canvas">
+  <header class="site-header">
+    <div class="header-inner page-header-inner site-container">
+      <a class="brand" href="index.html" aria-label="トップへ戻る">
+        <picture>
+          <source media="(max-width: 47.9375em)" srcset="img/TOP/吟ロゴ.png">
+          <img src="img/TOP/roherarogo.png" alt="FRAGRANCE WORKSHOP">
+        </picture>
+      </a>
+    </div>
+  </header>
+
+  <main class="complete-shell page-main site-container">
+    <div class="complete-layout">
+      <article class="hero-card glass-panel" aria-labelledby="complete-title">
+        <div class="hero-layout">
+          <div class="hero-copy">
+            <div class="eyebrow">Reservation Complete</div>
+            <h1 id="complete-title">予約が完了しました。<br>当日は店舗へ直接ご来店ください。</h1>
+            <p>ご予約内容を受け付けました。当日はこの内容をもとにスタッフがご案内します。香りの細かな調整は店頭で一緒に進められます。</p>
+          </div>
+          <aside class="hero-map-card" aria-label="店舗地図への導線">
+            <p class="hero-map-label">開催場所</p>
+            <p class="hero-map-address">東京都台東区東上野3-15-5 曽我ビル3F</p>
+            <div class="hero-map-actions">
+              <figure class="hero-map-qr-wrap">
+                <img class="hero-map-qr" src="img/TOP/グーグルマップ地図上野教室.png" alt="店舗地図を開くQRコード">
+                <figcaption>PCではスマホで読み取り、地図を開けます。</figcaption>
+              </figure>
+              <div class="hero-map-links">
+                <a class="btn btn-primary hero-map-link" href="index.html#information-map">トップページの地図へ</a>
+                <a class="btn btn-secondary hero-map-link" id="hero-map-link" href="https://www.google.com/maps?q=%E6%9D%B1%E4%BA%AC%E9%83%BD%E5%8F%B0%E6%9D%B1%E5%8C%BA%E6%9D%B1%E4%B8%8A%E9%87%8E3-15-5%20%E6%9B%BD%E6%88%91%E3%83%93%E3%83%AB3F" target="_blank" rel="noopener">Googleマップを開く</a>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </article>
+
+
+      <article class="note-card glass-panel" id="demo-notice" hidden>
+        <h2>デモ表示について</h2>
+        <p>これはデモでの予約確定画面です。実際の予約登録はまだ完了していません。</p>
+      </article>
+      <section class="detail-row" aria-label="予約情報と次の導線">
+        <article class="detail-card glass-panel" aria-labelledby="detail-heading">
+          <h2 class="visually-hidden" id="detail-heading">予約情報</h2>
+          <div class="detail-summary">
+            <div class="status-strip status-pill" id="detail-status-label">現在の予約内容</div>
+            <button class="detail-toggle" id="detail-toggle" type="button" aria-expanded="true"
+              aria-controls="detail-body" aria-label="予約内容を開閉する">開く</button>
+          </div>
+          <div class="detail-body" id="detail-body">
+            <div class="detail-grid">
+              <section class="detail-item">
+                <div class="detail-label-row">
+                  <span class="detail-label">日時</span>
+                  <span class="detail-meta" id="reservation-slot">予約内容を確認中</span>
+                </div>
+              </section>
+              <section class="detail-item">
+                <div class="detail-label-row">
+                  <span class="detail-label">内容</span>
+                  <span class="detail-meta" id="reservation-visit-type">予約内容を確認中</span>
+                </div>
+              </section>
+              <section class="detail-item">
+                <div class="detail-label-row">
+                  <span class="detail-label">人数</span>
+                  <span class="detail-meta" id="reservation-guests">予約内容を確認中</span>
+                </div>
+              </section>
+            </div>
+            <div class="detail-grid memo-grid">
+              <section class="detail-item full" id="memo-item" hidden>
+                <span class="detail-label">スタッフへのメモ</span>
+                <div class="detail-value" id="reservation-memo"></div>
+              </section>
+            </div>
+          </div>
+        </article>
+
+        <article class="action-card glass-panel" aria-labelledby="action-heading">
+          <h2 class="visually-hidden" id="action-heading">次の導線</h2>
+          <p class="countdown"><span id="countdown-seconds">30</span>秒後にトップへ自動で戻ります。</p>
+          <p>必要に応じて、下のボタンから移動してください。</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="index.html">トップへ戻る</a>
+            <button class="btn btn-secondary" id="stay-here-btn" type="button">ページにとどまる</button>
+          </div>
+        </article>
+      </section>
+
+      <section class="note-row" aria-label="補足情報">
+        <article class="note-card glass-panel">
+          <h2>来店前メモ</h2>
+          <p>時間や人数の変更が必要になった場合は、再度予約ページで内容を確認できます。メモが未入力でも当日の案内には支障ありません。</p>
+        </article>
+
+        <article class="note-card glass-panel">
+          <h2>当日の流れ</h2>
+          <ul class="info-list">
+            <li>予約内容を起点にスタッフが候補を絞って案内します</li>
+            <li>店頭で香りの強さや余韻を微調整できます</li>
+            <li>メモ欄の内容は当日の会話の参考として扱います</li>
+          </ul>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "fragranceReservationConfirmation";
+    const TOP_PAGE_URL = "index.html";
+    const countdownEl = document.getElementById("countdown-seconds");
+    const slotEl = document.getElementById("reservation-slot");
+    const guestsEl = document.getElementById("reservation-guests");
+    const visitTypeEl = document.getElementById("reservation-visit-type");
+    const memoEl = document.getElementById("reservation-memo");
+    const memoItem = document.getElementById("memo-item");
+    const stayHereBtn = document.getElementById("stay-here-btn");
+    const detailCard = document.querySelector(".detail-card");
+    const detailStatusLabel = document.getElementById("detail-status-label");
+    const detailToggle = document.getElementById("detail-toggle");
+    const demoNotice = document.getElementById("demo-notice");
+
+    let reservation = null;
+    let timerId = null;
+    let secondsLeft = 30;
+    const searchParams = new URLSearchParams(window.location.search);
+    const reservationCode = searchParams.get("reservationCode");
+    const isDemoReservation = searchParams.get("demo") === "1";
+
+    function syncDetailAccordion() {
+      const isMobile = window.matchMedia("(max-width: 47.9375em)").matches;
+      if (!isMobile) {
+        detailCard.classList.remove("is-collapsed");
+        detailStatusLabel.textContent = "現在の予約内容";
+        detailToggle.setAttribute("aria-expanded", "true");
+        detailToggle.textContent = "閉じる";
+        return;
+      }
+
+      detailStatusLabel.textContent = "予約内容を確認する";
+      if (!detailCard.dataset.mobileInitialized) {
+        detailCard.classList.add("is-collapsed");
+        detailToggle.setAttribute("aria-expanded", "false");
+        detailToggle.textContent = "開く";
+        detailCard.dataset.mobileInitialized = "true";
+        return;
+      }
+
+      const isExpanded = !detailCard.classList.contains("is-collapsed");
+      detailToggle.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+      detailToggle.textContent = isExpanded ? "閉じる" : "開く";
+    }
+
+    function toggleDetailAccordion() {
+      if (!window.matchMedia("(max-width: 47.9375em)").matches) return;
+      detailCard.classList.toggle("is-collapsed");
+      const isExpanded = !detailCard.classList.contains("is-collapsed");
+      detailToggle.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+      detailToggle.textContent = isExpanded ? "閉じる" : "開く";
+    }
+
+    function stopCountdown() {
+      if (timerId !== null) {
+        window.clearInterval(timerId);
+        timerId = null;
+      }
+      countdownEl.textContent = "停止";
+      countdownEl.parentElement.innerHTML = "自動遷移を<br>停止しました";
+    }
+
+    function renderReservationDetail() {
+      if (reservation.demoMode || isDemoReservation) {
+        demoNotice.hidden = false;
+      }
+
+      slotEl.textContent = reservation.slot;
+      guestsEl.textContent = reservation.guestCount;
+      visitTypeEl.textContent = reservation.visitType || "ご相談内容未設定";
+
+      if (reservation.memo) {
+        memoEl.textContent = reservation.memo;
+        memoItem.hidden = false;
+      }
+
+      stayHereBtn.addEventListener("click", stopCountdown);
+      detailToggle.addEventListener("click", toggleDetailAccordion);
+      window.addEventListener("resize", syncDetailAccordion);
+      syncDetailAccordion();
+
+      timerId = window.setInterval(() => {
+        secondsLeft -= 1;
+        countdownEl.textContent = String(secondsLeft);
+
+        if (secondsLeft <= 0) {
+          window.clearInterval(timerId);
+          timerId = null;
+          window.location.replace(TOP_PAGE_URL);
+        }
+      }, 1000);
+    }
+
+    async function loadReservation() {
+      try {
+        reservation = JSON.parse(window.sessionStorage.getItem(STORAGE_KEY) || "null");
+      } catch (error) {
+        reservation = null;
+      }
+
+      if ((!reservation || !reservation.slot || !reservation.guestCount) && reservationCode) {
+        try {
+          const response = await fetch(`/api/reservations/${encodeURIComponent(reservationCode)}`);
+          if (response.ok) {
+            const apiReservation = await response.json();
+            reservation = {
+              reservationCode: apiReservation.reservationCode,
+              slot: apiReservation.slotLabel,
+              visitType: apiReservation.visitType,
+              guestCount: apiReservation.guestCount,
+              memo: apiReservation.staffMemo || ""
+            };
+            window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(reservation));
+          }
+        } catch (error) {
+          reservation = null;
+        }
+      }
+
+      if (!reservation || !reservation.slot || !reservation.guestCount) {
+        window.location.replace(TOP_PAGE_URL);
+        return;
+      }
+
+      renderReservationDetail();
+    }
+
+    loadReservation();
+  </script>
+</body>
+
+</html>
