@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ja">
 
 <head>
@@ -136,7 +136,66 @@
         commonQ8
       ]
     };
+    // 配点変更の主編集箇所は questionnaire.html の MASTER_SCORING_CONFIG です。
+    // README.md の「配点調整ポイント」も参照してください。
+    // このファイルでは score state を読み、STEP2 の反映と最終確定のみ行います。
+    // fallback 用です。通常の配点編集は questionnaire.html の MASTER_SCORING_CONFIG を編集してください。
+    // README.md の「配点調整ポイント」も参照してください。
+    const SCORING_CONFIG_KEY = "fragranceScoringConfig";
+    const SCORE_STATE_KEY = "fragranceScoreState";
+    const FALLBACK_SCORING_CONFIG = {
+      initialAxisScore: 50,
+      axisOrder: ["floral", "fresh", "woody", "spicy", "sweet"],
+      questionWeights: { step1: 1, step2: 2, finish: 3 },
+      branchTemplates: {
+        floral: { floral: 62, fresh: 54, woody: 42, spicy: 34, sweet: 58 },
+        fresh: { floral: 46, fresh: 64, woody: 44, spicy: 36, sweet: 40 },
+        woody: { floral: 44, fresh: 42, woody: 64, spicy: 52, sweet: 44 }
+      },
+      branchDistanceWeights: { floral: 1.3, fresh: 1.3, woody: 1.3, spicy: 0.7, sweet: 0.7 },
+      step2PrimaryAxes: {
+        floral: { Q6: ["floral", "sweet", "fresh"], Q7: ["floral", "sweet", "woody"] },
+        fresh: { Q6: ["fresh", "floral", "spicy"], Q7: ["fresh", "woody", "floral"] },
+        woody: { Q6: ["woody", "spicy", "sweet"], Q7: ["woody", "spicy", "fresh"] }
+      },
+      step2ScoreMap: {
+        floral: {
+          Q6: { A: { floral: 3, fresh: 1, woody: 0, spicy: -1, sweet: 1 }, B: { floral: 2, fresh: 0, woody: -1, spicy: -2, sweet: 3 }, C: { floral: 1, fresh: 0, woody: 2, spicy: 0, sweet: -1 } },
+          Q7: { A: { floral: 2, fresh: 1, woody: -1, spicy: -1, sweet: 2 }, B: { floral: 1, fresh: 0, woody: 1, spicy: -1, sweet: 3 }, C: { floral: 1, fresh: 1, woody: 2, spicy: 0, sweet: -3 } }
+        },
+        fresh: {
+          Q6: { A: { floral: 0, fresh: 3, woody: -1, spicy: -2, sweet: -1 }, B: { floral: 0, fresh: 3, woody: 0, spicy: -1, sweet: -1 }, C: { floral: -1, fresh: 2, woody: 0, spicy: 2, sweet: -2 } },
+          Q7: { A: { floral: -1, fresh: 3, woody: 0, spicy: 0, sweet: -2 }, B: { floral: 1, fresh: 2, woody: 1, spicy: -1, sweet: 0 }, C: { floral: 0, fresh: 1, woody: 2, spicy: 0, sweet: 1 } }
+        },
+        woody: {
+          Q6: { A: { floral: 0, fresh: -1, woody: 3, spicy: 1, sweet: 1 }, B: { floral: -1, fresh: 0, woody: 3, spicy: 0, sweet: -1 }, C: { floral: -1, fresh: 0, woody: 1, spicy: 3, sweet: -1 } },
+          Q7: { A: { floral: 0, fresh: 2, woody: 1, spicy: -1, sweet: -1 }, B: { floral: 0, fresh: 0, woody: 2, spicy: 1, sweet: 0 }, C: { floral: -1, fresh: -2, woody: 2, spicy: 2, sweet: 1 } }
+        }
+      },
+      q8PrimaryAxes: ["fresh", "floral", "woody"],
+      q8ScoreMap: {
+        A: { floral: 0, fresh: 3, woody: -2, spicy: -2, sweet: -1 },
+        B: { floral: 2, fresh: 1, woody: 0, spicy: -2, sweet: 2 },
+        C: { floral: 1, fresh: -2, woody: 2, spicy: 3, sweet: 1 }
+      },
+      finishKeyByAnswer: { A: "light", B: "balanced", C: "strong", ALL: "balanced", NONE: "balanced" },
+      finishTemplates: {
+        light: { floral: 62, fresh: 72, woody: 34, spicy: 22, sweet: 38 },
+        balanced: { floral: 68, fresh: 58, woody: 48, spicy: 34, sweet: 50 },
+        strong: { floral: 70, fresh: 42, woody: 58, spicy: 52, sweet: 57 }
+      },
+      finishBlendRatio: 0.25,
+      summaryProfiles: {
+        balanced_comfort: {
+          axes: { floral: 68, fresh: 58, woody: 48, spicy: 34, sweet: 50 },
+          headline: "やわらかさと心地よさのバランス方向",
+          body: "どれか一つを尖らせるよりも、全体を自然につなげるバランス型です。"
+        }
+      }
+    };
+
     const answers = {};
+    const answerKeys = {};
     let currentIndex = 0;
     let activeBranchKey = "floral";
     const navList = document.getElementById("nav-list");
@@ -157,71 +216,127 @@
     const headerNextBtn = document.getElementById("header-next-btn");
     const headerPrevText = headerPrevBtn.querySelector(".nav-text");
     const headerNextText = headerNextBtn.querySelector(".nav-text");
-    function getStep2Questions() {
-      return questionBanks[activeBranchKey] || questionBanks.floral;
+
+    function cloneValue(value) { return JSON.parse(JSON.stringify(value)); }
+    function clampValue(value, min = 0, max = 100) { return Math.min(max, Math.max(min, Math.round(value))); }
+    function clampAxes(axes, config) {
+      const nextAxes = {};
+      config.axisOrder.forEach((axis) => { nextAxes[axis] = clampValue(axes[axis] ?? config.initialAxisScore); });
+      return nextAxes;
     }
-    function getActiveBranchKey() {
-      let raw = "{}";
-      try {
-        raw = sessionStorage.getItem("fragranceStep1Answers") || "{}";
-      } catch (error) {
-        return "floral";
-      }
-      let step1Answers;
-      try {
-        step1Answers = JSON.parse(raw);
-      } catch (error) {
-        return "floral";
-      }
-      const scores = { floral: 0, fresh: 0, woody: 0 };
-      Object.entries(step1BranchMap).forEach(([questionId, mapping]) => {
-        const answer = step1Answers[questionId];
-        const branchKey = mapping[answer];
-        if (branchKey) scores[branchKey] += 1;
+    function createInitialAxes(config) { return Object.fromEntries(config.axisOrder.map((axis) => [axis, config.initialAxisScore])); }
+    function applyDelta(axes, delta, weight, config) {
+      const nextAxes = { ...axes };
+      Object.entries(delta || {}).forEach(([axis, value]) => { nextAxes[axis] = (nextAxes[axis] ?? config.initialAxisScore) + (value * weight); });
+      return clampAxes(nextAxes, config);
+    }
+    function applySubOptionAdjustment(axes, primaryAxes, answerKey, weight, config) {
+      if (answerKey !== "ALL" && answerKey !== "NONE") return clampAxes(axes, config);
+      const nextAxes = { ...axes };
+      config.axisOrder.forEach((axis) => {
+        const isPrimary = primaryAxes.includes(axis);
+        if (answerKey === "ALL" && isPrimary) nextAxes[axis] += 1 * weight;
+        if (answerKey === "NONE") nextAxes[axis] += (isPrimary ? -1 : 1) * weight;
       });
-      const topScore = Math.max(scores.floral, scores.fresh, scores.woody);
-      const tiedBranches = Object.entries(scores)
-        .filter(([, score]) => score === topScore)
-        .map(([branchKey]) => branchKey);
-      if (topScore <= 0) return "floral";
-      if (tiedBranches.length === 1) return tiedBranches[0];
-      for (const questionId of tieBreakOrder) {
-        const answer = step1Answers[questionId];
-        const branchKey = step1BranchMap[questionId]?.[answer];
-        if (branchKey && tiedBranches.includes(branchKey)) return branchKey;
+      return clampAxes(nextAxes, config);
+    }
+    function scoreQuestionAnswer(axes, answerKey, deltaMap, primaryAxes, weight, config) {
+      if (answerKey === "ALL" || answerKey === "NONE") return applySubOptionAdjustment(axes, primaryAxes, answerKey, weight, config);
+      return applyDelta(axes, deltaMap?.[answerKey], weight, config);
+    }
+    function blendAxes(baseAxes, targetAxes, ratio, config) {
+      const nextAxes = {};
+      config.axisOrder.forEach((axis) => {
+        nextAxes[axis] = clampValue((baseAxes[axis] * (1 - ratio)) + (targetAxes[axis] * ratio));
+      });
+      return clampAxes(nextAxes, config);
+    }
+    function calculateWeightedDistance(a, b, weights, config) {
+      return config.axisOrder.reduce((total, axis) => total + (Math.abs((a[axis] ?? 0) - (b[axis] ?? 0)) * (weights?.[axis] ?? 1)), 0);
+    }
+    function calculateBranchKey(axes, config) {
+      const branchOrder = ["floral", "fresh", "woody"];
+      let winner = "floral";
+      let bestDistance = Number.POSITIVE_INFINITY;
+      branchOrder.forEach((branchKey) => {
+        const distance = calculateWeightedDistance(axes, config.branchTemplates[branchKey], config.branchDistanceWeights, config);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          winner = branchKey;
+        }
+      });
+      return winner;
+    }
+    function getScoringConfig() {
+      try {
+        return { ...cloneValue(FALLBACK_SCORING_CONFIG), ...JSON.parse(sessionStorage.getItem(SCORING_CONFIG_KEY) || "null") } || cloneValue(FALLBACK_SCORING_CONFIG);
+      } catch (error) {
+        return cloneValue(FALLBACK_SCORING_CONFIG);
       }
-      return tiedBranches[0];
+    }
+    function getScoreState() {
+      try { return JSON.parse(sessionStorage.getItem(SCORE_STATE_KEY) || "{}") || {}; } catch (error) { return {}; }
+    }
+    function persistScoreState(payload) {
+      const nextState = { ...getScoreState(), ...payload, updatedAt: new Date().toISOString() };
+      sessionStorage.setItem(SCORE_STATE_KEY, JSON.stringify(nextState));
+      return nextState;
+    }
+    function getStep2Questions() { return questionBanks[activeBranchKey] || questionBanks.floral; }
+    function getActiveBranchKey() {
+      const config = getScoringConfig();
+      const state = getScoreState();
+      if (state.branchKey && questionBanks[state.branchKey]) return state.branchKey;
+      if (state.axesAfterStep1) return calculateBranchKey(state.axesAfterStep1, config);
+      return "floral";
     }
     function hasAnyAnswer() { return Object.keys(answers).length > 0; }
-    function confirmReturnToTop() {
-      if (!hasAnyAnswer()) return true;
-      return window.confirm("トップページへ戻ると、ここまでの回答は保存されません。戻りますか？");
+    function confirmReturnToTop() { return !hasAnyAnswer() || window.confirm("トップページへ戻ると、ここまでの回答は破棄されます。戻りますか？"); }
+    function confirmReturnToStep1() { return window.confirm("STEP1 に戻ると、STEP2 の回答は破棄されます。戻りますか？"); }
+    function returnToTop() { if (confirmReturnToTop()) window.location.href = "index.html"; }
+    function returnToStep1() { if (confirmReturnToStep1()) window.location.href = "questionnaire.html"; }
+    function resolveSubOptionKey(index) { if (index === 0) return "ALL"; if (index === 1) return "NONE"; return null; }
+    function applyFinishAdjustment(baseAxes, q8AnswerKey, config) {
+      const deltaApplied = scoreQuestionAnswer(baseAxes, q8AnswerKey, config.q8ScoreMap, config.q8PrimaryAxes || [], config.questionWeights.finish, config);
+      const selectedFinish = config.finishKeyByAnswer[q8AnswerKey] || "balanced";
+      const finalAxes = blendAxes(deltaApplied, config.finishTemplates[selectedFinish], config.finishBlendRatio, config);
+      return { selectedFinish, finalAxes };
     }
-    function confirmReturnToStep1() {
-      return window.confirm("STEP1に戻ると、STEP2で選んだ内容は保存されません。戻りますか？");
+    function scoreStep2Answers(baseAxes, branchKey, step2AnswerKeys, config) {
+      let axes = clampAxes(baseAxes, config);
+      ["Q6", "Q7"].forEach((questionId) => {
+        const answerKey = step2AnswerKeys[questionId];
+        if (!answerKey) return;
+        axes = scoreQuestionAnswer(axes, answerKey, config.step2ScoreMap[branchKey]?.[questionId], config.step2PrimaryAxes[branchKey]?.[questionId] || [], config.questionWeights.step2, config);
+      });
+      return clampAxes(axes, config);
     }
-    function returnToTop() {
-      if (!confirmReturnToTop()) return;
-      window.location.href = "index.html";
+    function showCompletion() {
+      const config = getScoringConfig();
+      const scoreState = getScoreState();
+      const baseAxes = scoreState.axesAfterStep1 || createInitialAxes(config);
+      const axesAfterStep2 = scoreStep2Answers(baseAxes, activeBranchKey, answerKeys, config);
+      const finishResult = applyFinishAdjustment(axesAfterStep2, answerKeys.Q8 || "B", config);
+      persistScoreState({
+        step2Answers: { ...answers },
+        step2AnswerKeys: { ...answerKeys },
+        branchKey: activeBranchKey,
+        axesAfterStep2,
+        finalAxes: finishResult.finalAxes,
+        resetAxes: finishResult.finalAxes,
+        selectedFinish: finishResult.selectedFinish
+      });
+      window.location.href = "fragrance-graph.html";
     }
-    function returnToStep1() {
-      if (!confirmReturnToStep1()) return;
-      window.location.href = "questionnaire.html";
-    }
-    function showCompletion() { window.location.href = "fragrance-graph.html"; }
     function moveNext() {
       const questions = getStep2Questions();
-      if (currentIndex < questions.length - 1) {
-        currentIndex += 1;
-        render();
-        return;
-      }
+      if (currentIndex < questions.length - 1) { currentIndex += 1; render(); return; }
       showCompletion();
     }
     function movePrev() { if (currentIndex > 0) { currentIndex -= 1; render(); } }
-    function selectAnswer(value) {
-      const question = getStep2Questions()[currentIndex];
+    function selectAnswer(question, value, scoreKey) {
       answers[question.id] = value;
+      answerKeys[question.id] = scoreKey;
       render();
       window.setTimeout(() => { moveNext(); }, 140);
     }
@@ -246,23 +361,24 @@
         button.type = "button";
         button.className = "option-card";
         if (option.cardClass) button.classList.add(option.cardClass);
-        if (answers[question.id] === option.title) button.classList.add("selected");
+        if (answerKeys[question.id] === option.key) button.classList.add("selected");
         button.style.backgroundImage = option.visual;
         button.style.backgroundColor = option.color || "#fffdfa";
         button.innerHTML = `<div class="option-copy"><span class="option-label">${option.key}</span><span class="option-title">${option.title}</span><span class="option-desc">${option.desc}</span></div>`;
-        button.addEventListener("click", () => selectAnswer(option.title));
+        button.addEventListener("click", () => selectAnswer(question, option.title, option.key));
         optionList.appendChild(button);
       });
     }
     function renderSubOptions(question) {
       subOptions.innerHTML = "";
-      question.subOptions.forEach((label) => {
+      question.subOptions.forEach((label, index) => {
+        const scoreKey = resolveSubOptionKey(index);
         const button = document.createElement("button");
         button.type = "button";
         button.className = "sub-option";
-        if (answers[question.id] === label) button.classList.add("selected");
+        if (answerKeys[question.id] === scoreKey) button.classList.add("selected");
         button.textContent = label;
-        button.addEventListener("click", () => selectAnswer(label));
+        button.addEventListener("click", () => selectAnswer(question, label, scoreKey));
         subOptions.appendChild(button);
       });
     }
@@ -270,8 +386,8 @@
       const onFirstQuestion = currentIndex === 0;
       const onLastQuestion = currentIndex === getStep2Questions().length - 1;
       headerPrevBtn.disabled = false;
-      headerPrevText.textContent = onFirstQuestion ? "STEP1に戻る" : "前の質問";
-      headerPrevBtn.setAttribute("aria-label", onFirstQuestion ? "STEP1に戻る" : "前の質問");
+      headerPrevText.textContent = onFirstQuestion ? "STEP1 に戻る" : "前の質問";
+      headerPrevBtn.setAttribute("aria-label", onFirstQuestion ? "STEP1 に戻る" : "前の質問");
       headerNextText.textContent = onLastQuestion ? "仕上がりを見る" : "次の質問";
       headerNextBtn.setAttribute("aria-label", onLastQuestion ? "仕上がりを見る" : "次の質問");
     }
@@ -292,19 +408,10 @@
       noteBody.textContent = question.noteBody;
       updateButtons();
     }
-    brandLink.addEventListener("click", (event) => {
-      event.preventDefault();
-      returnToTop();
-    });
+    brandLink.addEventListener("click", (event) => { event.preventDefault(); returnToTop(); });
     returnTopBtn.addEventListener("click", returnToTop);
     returnTopBtnMobile.addEventListener("click", returnToTop);
-    headerPrevBtn.addEventListener("click", () => {
-      if (currentIndex === 0) {
-        returnToStep1();
-        return;
-      }
-      movePrev();
-    });
+    headerPrevBtn.addEventListener("click", () => { if (currentIndex === 0) { returnToStep1(); return; } movePrev(); });
     headerNextBtn.addEventListener("click", moveNext);
     activeBranchKey = getActiveBranchKey();
     render();
@@ -312,3 +419,5 @@
 </body>
 
 </html>
+
+

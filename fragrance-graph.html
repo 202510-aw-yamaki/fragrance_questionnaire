@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ja">
 
 <head>
@@ -105,21 +105,27 @@
   </footer>
 
   <script>
-    const axes = [
-      { id: "floral", label: "フローラル", description: "花びらのような華やかさ", value: 74 },
-      { id: "fresh", label: "フレッシュ", description: "みずみずしく軽やか", value: 58 },
-      { id: "woody", label: "ウッディ", description: "木や森の落ち着き", value: 43 },
-      { id: "spicy", label: "スパイシー", description: "刺激や個性、温かみ", value: 31 },
-      { id: "sweet", label: "スウィート", description: "やわらかく甘い余韻", value: 49 }
+    // ここで編集するのは graph 側の見せ方・preset 補助です。
+    // アンケート配点の主編集箇所は questionnaire.html の MASTER_SCORING_CONFIG です。
+    // README.md の「配点調整ポイント」も参照してください。
+    // fallback 用です。通常の配点編集は questionnaire.html の MASTER_SCORING_CONFIG を編集してください。
+    // README.md の「配点調整ポイント」も参照してください。
+    const SCORING_CONFIG_KEY = "fragranceScoringConfig";
+    const SCORE_STATE_KEY = "fragranceScoreState";
+    const DRAFT_KEY = "fragranceReservationDraft";
+    const AXIS_META = [
+      { id: "floral", label: "フローラル", description: "花のやわらかさや親しみやすさ" },
+      { id: "fresh", label: "フレッシュ", description: "透明感や軽さ、みずみずしさ" },
+      { id: "woody", label: "ウッディ", description: "木の落ち着きや深み" },
+      { id: "spicy", label: "スパイシー", description: "刺激や輪郭、アクセント" },
+      { id: "sweet", label: "スウィート", description: "甘さややわらかな余韻" }
     ];
-
-    const presets = {
+    const FALLBACK_AXES = { floral: 74, fresh: 58, woody: 43, spicy: 31, sweet: 49 };
+    const FALLBACK_PRESETS = {
       light: { floral: 62, fresh: 72, woody: 34, spicy: 22, sweet: 38 },
       balanced: { floral: 68, fresh: 58, woody: 48, spicy: 34, sweet: 50 },
       strong: { floral: 70, fresh: 42, woody: 58, spicy: 52, sweet: 57 }
     };
-
-    const graph = document.getElementById("radar-graph");
     const gridPolygons = document.getElementById("grid-polygons");
     const axisLines = document.getElementById("axis-lines");
     const axisLabels = document.getElementById("axis-labels");
@@ -131,169 +137,109 @@
     const brandLink = document.getElementById("brand-link");
     const reserveLink = document.getElementById("reserve-link");
     const presetButtons = document.querySelectorAll("[data-preset]");
-    const defaults = Object.fromEntries(axes.map((axis) => [axis.id, axis.value]));
-
+    function clampValue(value, min = 0, max = 100) { return Math.min(max, Math.max(min, Math.round(value))); }
+    function getScoreState() { try { return JSON.parse(sessionStorage.getItem(SCORE_STATE_KEY) || "{}") || {}; } catch (error) { return {}; } }
+    function getConfig() { try { return JSON.parse(sessionStorage.getItem(SCORING_CONFIG_KEY) || "null") || {}; } catch (error) { return {}; } }
+    function getDraft() { try { return JSON.parse(sessionStorage.getItem(DRAFT_KEY) || "null"); } catch (error) { return null; } }
+    function getPresets() { return getConfig().graphPresets || FALLBACK_PRESETS; }
+    function getCurrentAxes() {
+      const draft = getDraft();
+      const scoreState = getScoreState();
+      return draft?.axes || scoreState.finalAxes || FALLBACK_AXES;
+    }
+    function getResetAxes() {
+      const scoreState = getScoreState();
+      return scoreState.resetAxes || scoreState.finalAxes || FALLBACK_AXES;
+    }
+    function calculateNearestProfile(axes, profiles) {
+      let winnerKey = null; let winnerProfile = null; let bestDistance = Number.POSITIVE_INFINITY;
+      Object.entries(profiles || {}).forEach(([profileKey, profile]) => {
+        const distance = AXIS_META.reduce((sum, axis) => sum + Math.abs((axes[axis.id] || 0) - (profile.axes?.[axis.id] || 0)), 0);
+        if (distance < bestDistance) { bestDistance = distance; winnerKey = profileKey; winnerProfile = profile; }
+      });
+      return { profileKey: winnerKey, profile: winnerProfile };
+    }
+    const initialAxes = getCurrentAxes();
+    const axes = AXIS_META.map((axis) => ({ ...axis, value: clampValue(initialAxes[axis.id] ?? FALLBACK_AXES[axis.id]) }));
     function persistReservationDraft() {
-      const payload = {
-        axes: Object.fromEntries(axes.map((axis) => [axis.id, axis.value])),
+      const axisPayload = Object.fromEntries(axes.map((axis) => [axis.id, clampValue(axis.value)]));
+      const config = getConfig();
+      const scoreState = getScoreState();
+      const nearestProfile = calculateNearestProfile(axisPayload, config.summaryProfiles);
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify({
+        axes: axisPayload,
+        selectedFinish: scoreState.selectedFinish || null,
+        profileKey: nearestProfile.profileKey,
+        summaryHeadline: nearestProfile.profile?.headline || null,
+        summaryBody: nearestProfile.profile?.body || null,
         updatedAt: new Date().toISOString()
-      };
-      window.sessionStorage.setItem("fragranceReservationDraft", JSON.stringify(payload));
+      }));
     }
-
     function returnToTop() {
-      const confirmed = window.confirm("トップページへ戻ると、現在の調整は保存されません。戻りますか？");
-      if (!confirmed) return;
-      window.sessionStorage.removeItem("fragranceReservationDraft");
-      window.location.href = "index.html";
+      if (!window.confirm("トップページへ戻ると、ここまでの調整内容は破棄されます。戻りますか？")) return;
+      sessionStorage.removeItem(DRAFT_KEY); window.location.href = "index.html";
     }
-
-    function polarToCartesian(centerX, centerY, radius, angle) {
-      return {
-        x: centerX + radius * Math.cos(angle),
-        y: centerY + radius * Math.sin(angle)
-      };
-    }
-
+    function polarToCartesian(centerX, centerY, radius, angle) { return { x: centerX + radius * Math.cos(angle), y: centerY + radius * Math.sin(angle) }; }
     function createRadarPoints(scale = 1) {
-      const center = 180;
-      const maxRadius = 108;
+      const center = 180; const maxRadius = 108;
       return axes.map((axis, index) => {
         const angle = (-Math.PI / 2) + (index * Math.PI * 2 / axes.length);
-        const radius = maxRadius * scale * (axis.value / 100);
-        return polarToCartesian(center, center, radius, angle);
+        return polarToCartesian(center, center, maxRadius * scale * (clampValue(axis.value) / 100), angle);
       });
     }
-
     function renderGrid() {
-      const center = 180;
-      const maxRadius = 108;
-      gridPolygons.innerHTML = "";
-      axisLines.innerHTML = "";
-      axisLabels.innerHTML = "";
-
+      const center = 180; const maxRadius = 108; gridPolygons.innerHTML = ""; axisLines.innerHTML = ""; axisLabels.innerHTML = "";
       [0.25, 0.5, 0.75, 1].forEach((scale) => {
         const points = axes.map((axis, index) => {
           const angle = (-Math.PI / 2) + (index * Math.PI * 2 / axes.length);
           const point = polarToCartesian(center, center, maxRadius * scale, angle);
           return `${point.x},${point.y}`;
         }).join(" ");
-        const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-        polygon.setAttribute("points", points);
-        gridPolygons.appendChild(polygon);
+        const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon"); polygon.setAttribute("points", points); gridPolygons.appendChild(polygon);
       });
-
       axes.forEach((axis, index) => {
         const angle = (-Math.PI / 2) + (index * Math.PI * 2 / axes.length);
         const point = polarToCartesian(center, center, maxRadius, angle);
         const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        line.setAttribute("x1", center);
-        line.setAttribute("y1", center);
-        line.setAttribute("x2", point.x);
-        line.setAttribute("y2", point.y);
-        axisLines.appendChild(line);
-
+        line.setAttribute("x1", center); line.setAttribute("y1", center); line.setAttribute("x2", point.x); line.setAttribute("y2", point.y); axisLines.appendChild(line);
         const labelPoint = polarToCartesian(center, center, maxRadius + 20, angle);
-        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        text.setAttribute("x", labelPoint.x);
-        text.setAttribute("y", labelPoint.y);
-        text.textContent = axis.label;
-        axisLabels.appendChild(text);
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text"); text.setAttribute("x", labelPoint.x); text.setAttribute("y", labelPoint.y); text.textContent = axis.label; axisLabels.appendChild(text);
       });
     }
-
     function renderShape() {
-      const points = createRadarPoints();
-      radarShape.setAttribute("points", points.map((point) => `${point.x},${point.y}`).join(" "));
-      vertexDots.innerHTML = "";
-
-      points.forEach((point) => {
-        const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        dot.setAttribute("cx", point.x);
-        dot.setAttribute("cy", point.y);
-        dot.setAttribute("r", 5);
-        vertexDots.appendChild(dot);
-      });
+      const points = createRadarPoints(); radarShape.setAttribute("points", points.map((point) => `${point.x},${point.y}`).join(" ")); vertexDots.innerHTML = "";
+      points.forEach((point) => { const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle"); dot.setAttribute("cx", point.x); dot.setAttribute("cy", point.y); dot.setAttribute("r", 5); vertexDots.appendChild(dot); });
     }
-
     function renderSummary() {
+      if (!summaryList) return;
       summaryList.innerHTML = "";
-      axes.forEach((axis) => {
-        const item = document.createElement("li");
-        item.innerHTML = `<span>${axis.label}</span><strong>${axis.value}</strong>`;
-        summaryList.appendChild(item);
-      });
+      axes.forEach((axis) => { const item = document.createElement("li"); item.innerHTML = `<span>${axis.label}</span><strong>${clampValue(axis.value)}</strong>`; summaryList.appendChild(item); });
     }
-
+    function syncAxisValue(axisId, nextValue) {
+      const target = axes.find((axis) => axis.id === axisId); if (!target) return; target.value = clampValue(nextValue);
+      const input = document.getElementById(axisId); const output = document.getElementById(`${axisId}-value`); if (input) input.value = target.value; if (output) output.value = target.value;
+    }
     function renderSliders() {
       sliderList.innerHTML = "";
       axes.forEach((axis) => {
-        const row = document.createElement("div");
-        row.className = "slider-row";
-        row.innerHTML = `
-          <div class="slider-head">
-            <div class="slider-title">
-              <label for="${axis.id}">${axis.label}</label>
-              <p class="slider-detail">${axis.description}</p>
-            </div>
-            <output id="${axis.id}-value" for="${axis.id}">${axis.value}</output>
-          </div>
-          <input id="${axis.id}" name="${axis.id}" type="range" min="0" max="100" value="${axis.value}">
-        `;
+        const row = document.createElement("div"); row.className = "slider-row";
+        row.innerHTML = `<div class="slider-head"><div class="slider-title"><label for="${axis.id}">${axis.label}</label><p class="slider-detail">${axis.description}</p></div><output id="${axis.id}-value" for="${axis.id}">${axis.value}</output></div><input id="${axis.id}" name="${axis.id}" type="range" min="0" max="100" value="${axis.value}">`;
         sliderList.appendChild(row);
       });
-
-      axes.forEach((axis) => {
-        const input = document.getElementById(axis.id);
-        input.addEventListener("input", (event) => {
-          axis.value = Number(event.target.value);
-          document.getElementById(`${axis.id}-value`).value = axis.value;
-          renderShape();
-          renderSummary();
-          persistReservationDraft();
-        });
-      });
+      axes.forEach((axis) => { document.getElementById(axis.id).addEventListener("input", (event) => { syncAxisValue(axis.id, Number(event.target.value)); renderShape(); renderSummary(); persistReservationDraft(); }); });
     }
-
     function setPreset(name) {
-      const preset = presets[name];
-      axes.forEach((axis) => {
-        axis.value = preset[axis.id];
-        document.getElementById(axis.id).value = axis.value;
-        document.getElementById(`${axis.id}-value`).value = axis.value;
-      });
-      renderShape();
-      renderSummary();
-      persistReservationDraft();
+      const preset = getPresets()[name] || FALLBACK_PRESETS[name];
+      AXIS_META.forEach((axis) => syncAxisValue(axis.id, preset?.[axis.id] ?? FALLBACK_AXES[axis.id]));
+      renderShape(); renderSummary(); persistReservationDraft();
     }
-
-    resetBtn.addEventListener("click", () => {
-      axes.forEach((axis) => {
-        axis.value = defaults[axis.id];
-        document.getElementById(axis.id).value = axis.value;
-        document.getElementById(`${axis.id}-value`).value = axis.value;
-      });
-      renderShape();
-      renderSummary();
-      persistReservationDraft();
-    });
-
-    presetButtons.forEach((button) => {
-      button.addEventListener("click", () => setPreset(button.dataset.preset));
-    });
-
-    brandLink.addEventListener("click", (event) => {
-      event.preventDefault();
-      returnToTop();
-    });
+    resetBtn.addEventListener("click", () => { const resetAxes = getResetAxes(); AXIS_META.forEach((axis) => syncAxisValue(axis.id, resetAxes[axis.id] ?? FALLBACK_AXES[axis.id])); renderShape(); renderSummary(); persistReservationDraft(); });
+    presetButtons.forEach((button) => { button.addEventListener("click", () => setPreset(button.dataset.preset)); });
+    brandLink.addEventListener("click", (event) => { event.preventDefault(); returnToTop(); });
     reserveLink.addEventListener("click", persistReservationDraft);
-
-    renderGrid();
-    renderSliders();
-    renderShape();
-    renderSummary();
-    persistReservationDraft();
+    renderGrid(); renderSliders(); renderShape(); renderSummary(); persistReservationDraft();
   </script>
 </body>
 
 </html>
+

@@ -147,6 +147,14 @@
       sweet: 50
     };
 
+    // summary 文言の主編集箇所は questionnaire.html の MASTER_SCORING_CONFIG.summaryProfiles です。
+    // 配点本体の主編集箇所も questionnaire.html の MASTER_SCORING_CONFIG です。
+    // README.md の「配点調整ポイント」も参照してください。
+    // fallback 用です。通常の配点編集は questionnaire.html の MASTER_SCORING_CONFIG を編集してください。
+    // README.md の「配点調整ポイント」も参照してください。
+    const SCORING_CONFIG_KEY = "fragranceScoringConfig";
+    const SCORE_STATE_KEY = "fragranceScoreState";
+
     const siteHeader = document.querySelector(".site-header");
     const pageShell = document.querySelector(".page-shell");
     const summaryHeadline = document.getElementById("summary-headline");
@@ -169,6 +177,43 @@
     let activeWeekKey = "";
     let lastModalTrigger = null;
     let weekData = [];
+    let selectedProfileKey = null;
+
+    function getScoreState() {
+      try {
+        return JSON.parse(window.sessionStorage.getItem(SCORE_STATE_KEY) || "{}") || {};
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function getScoringConfig() {
+      try {
+        return JSON.parse(window.sessionStorage.getItem(SCORING_CONFIG_KEY) || "null") || {};
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function calculateNearestProfile(axes, profiles) {
+      let winnerKey = null;
+      let winnerProfile = null;
+      let bestDistance = Number.POSITIVE_INFINITY;
+
+      Object.entries(profiles || {}).forEach(([profileKey, profile]) => {
+        const distance = AXIS_META.reduce((sum, axis) => {
+          return sum + Math.abs((axes[axis.id] || 0) - (profile.axes?.[axis.id] || 0));
+        }, 0);
+
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          winnerKey = profileKey;
+          winnerProfile = profile;
+        }
+      });
+
+      return { profileKey: winnerKey, profile: winnerProfile };
+    }
 
     function getFocusableElements(container) {
       return [...container.querySelectorAll(
@@ -190,40 +235,36 @@
     }
 
     function loadAxes() {
+      const scoreState = getScoreState();
+
       try {
         const raw = window.sessionStorage.getItem("fragranceReservationDraft");
-        if (!raw) return { ...DEFAULT_AXES };
+        if (!raw) {
+          return scoreState.finalAxes ? { ...DEFAULT_AXES, ...scoreState.finalAxes } : { ...DEFAULT_AXES };
+        }
         const parsed = JSON.parse(raw);
-        return { ...DEFAULT_AXES, ...(parsed.axes || {}) };
+        if (parsed?.axes) return { ...DEFAULT_AXES, ...parsed.axes };
+        return scoreState.finalAxes ? { ...DEFAULT_AXES, ...scoreState.finalAxes } : { ...DEFAULT_AXES };
       } catch (error) {
-        return { ...DEFAULT_AXES };
+        return scoreState.finalAxes ? { ...DEFAULT_AXES, ...scoreState.finalAxes } : { ...DEFAULT_AXES };
       }
     }
 
     function buildSummary(axes) {
-      const sorted = [...AXIS_META]
-        .map((axis) => ({ ...axis, value: axes[axis.id] }))
-        .sort((a, b) => b.value - a.value);
-
-      const first = sorted[0];
-      const second = sorted[1];
-      const pair = [first.label, second.label];
-
-      let headline = pair.join(" × ") + " を軸にした今の方向";
-      let body = "当日はこのバランスを起点にして、強さや余韻をその場で整えていきます。";
-
-      if (first.id === "floral" && second.id === "fresh") {
-        headline = "やわらかな華やかさと軽さのバランス";
-        body = "フローラルを軸にしつつ、みずみずしい抜け感が残る方向です。最初は軽めに試し、必要なら甘さや深みをあとから足せます。";
-      } else if (first.id === "fresh" && second.id === "floral") {
-        headline = "透明感を主軸に、花のやわらかさを添える方向";
-        body = "清潔感のある軽さをベースにしながら、無機質になりすぎないよう花のやわらかさを添えるイメージです。";
-      } else if (first.id === "woody" || first.id === "spicy") {
-        headline = "落ち着きと余韻を持たせる方向";
-        body = "深みを感じる軸が強めなので、当日は重さを見ながら透明感や甘さを少しずつ重ねる進め方が合います。";
+      const nearestProfile = calculateNearestProfile(axes, getScoringConfig().summaryProfiles);
+      selectedProfileKey = nearestProfile.profileKey;
+      if (nearestProfile.profile) {
+        return {
+          headline: nearestProfile.profile.headline,
+          body: nearestProfile.profile.body,
+          profileKey: nearestProfile.profileKey
+        };
       }
-
-      return { headline, body, sorted };
+      return {
+        headline: "やわらかさと心地よさのバランス方向",
+        body: "当日はこのバランスを起点にして、強さや余韻をその場で整えていきます。",
+        profileKey: null
+      };
     }
 
     function renderAxes(axes) {
@@ -515,7 +556,11 @@
         slot: requestPayload.slotLabel,
         visitType: requestPayload.visitType,
         guestCount: requestPayload.guestCount,
-        memo: requestPayload.staffMemo || ""
+        memo: requestPayload.staffMemo || "",
+        axes: requestPayload.axes,
+        profileKey: requestPayload.profileKey,
+        summaryHeadline: requestPayload.summaryHeadline,
+        summaryBody: requestPayload.summaryBody
       };
     }
 
@@ -531,7 +576,10 @@
         visitType: visitType.value,
         guestCount: guestCount.value,
         staffMemo: staffMemo.value.trim(),
-        summaryHeadline: summaryHeadline.textContent
+        summaryHeadline: summaryHeadline.textContent,
+        summaryBody: summaryBody.textContent,
+        profileKey: selectedProfileKey,
+        axes: axes
       };
       const reservation = buildReservationPayload(requestPayload);
       window.sessionStorage.setItem("fragranceReservationConfirmation", JSON.stringify(reservation));

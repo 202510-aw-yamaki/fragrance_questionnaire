@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ja">
 
 <head>
@@ -89,6 +89,191 @@
     </section>
   </div>
   <script>
+    // === FRAGRANCE SCORING EDIT POINT: MASTER CONFIG START ===
+    // 配点・分岐・Q8・graph preset・reservation summary profile の主編集箇所です。
+    // 将来ポイント配分を変えたい場合は、README.md の「配点調整ポイント」を参照し、
+    // MASTER_SCORING_CONFIG の中身を編集してください。
+    // questionnaire_step2.html / fragrance-graph.html / reservation.html は
+    // この設定を sessionStorage から読む想定です。
+    const MASTER_SCORING_CONFIG = {
+      initialAxisScore: 50,
+      axisOrder: ["floral", "fresh", "woody", "spicy", "sweet"],
+      questionWeights: {
+        step1: 1,
+        step2: 2,
+        finish: 3
+      },
+      subOptionKeyMap: {
+        "全部好き": "ALL",
+        "この中にはない": "NONE"
+      },
+      step1PrimaryAxes: {
+        Q1: ["floral", "fresh", "woody"],
+        Q2: ["floral", "fresh", "woody"],
+        Q3: ["floral", "fresh", "woody"],
+        Q4: ["floral", "fresh", "woody"],
+        Q5: ["floral", "fresh", "woody"]
+      },
+      step1ScoreMap: {
+        Q1: {
+          A: { floral: 3, fresh: 1, woody: -1, spicy: -2, sweet: 1 },
+          B: { floral: 0, fresh: 3, woody: 0, spicy: -1, sweet: -2 },
+          C: { floral: -1, fresh: -1, woody: 3, spicy: 1, sweet: -1 }
+        },
+        Q2: {
+          A: { floral: 2, fresh: 0, woody: -1, spicy: -2, sweet: 2 },
+          B: { floral: 0, fresh: 3, woody: -1, spicy: -1, sweet: -1 },
+          C: { floral: -1, fresh: -1, woody: 3, spicy: 1, sweet: 0 }
+        },
+        Q3: {
+          A: { floral: 2, fresh: 0, woody: 0, spicy: -2, sweet: 2 },
+          B: { floral: -1, fresh: 3, woody: 0, spicy: 0, sweet: -2 },
+          C: { floral: 0, fresh: -1, woody: 2, spicy: 2, sweet: -1 }
+        },
+        Q4: {
+          A: { floral: 2, fresh: 1, woody: -1, spicy: -1, sweet: 1 },
+          B: { floral: 0, fresh: 3, woody: 0, spicy: -1, sweet: -1 },
+          C: { floral: 0, fresh: -2, woody: 2, spicy: 2, sweet: 1 }
+        },
+        Q5: {
+          A: { floral: 1, fresh: 3, woody: -1, spicy: -1, sweet: 0 },
+          B: { floral: 2, fresh: 0, woody: 1, spicy: -1, sweet: 2 },
+          C: { floral: 0, fresh: -1, woody: 3, spicy: 1, sweet: -1 }
+        }
+      },
+      branchTemplates: {
+        floral: { floral: 62, fresh: 54, woody: 42, spicy: 34, sweet: 58 },
+        fresh: { floral: 46, fresh: 64, woody: 44, spicy: 36, sweet: 40 },
+        woody: { floral: 44, fresh: 42, woody: 64, spicy: 52, sweet: 44 }
+      },
+      branchDistanceWeights: {
+        floral: 1.3,
+        fresh: 1.3,
+        woody: 1.3,
+        spicy: 0.7,
+        sweet: 0.7
+      },
+      step2PrimaryAxes: {
+        floral: {
+          Q6: ["floral", "sweet", "fresh"],
+          Q7: ["floral", "sweet", "woody"]
+        },
+        fresh: {
+          Q6: ["fresh", "floral", "spicy"],
+          Q7: ["fresh", "woody", "floral"]
+        },
+        woody: {
+          Q6: ["woody", "spicy", "sweet"],
+          Q7: ["woody", "spicy", "fresh"]
+        }
+      },
+      step2ScoreMap: {
+        floral: {
+          Q6: {
+            A: { floral: 3, fresh: 1, woody: 0, spicy: -1, sweet: 1 },
+            B: { floral: 2, fresh: 0, woody: -1, spicy: -2, sweet: 3 },
+            C: { floral: 1, fresh: 0, woody: 2, spicy: 0, sweet: -1 }
+          },
+          Q7: {
+            A: { floral: 2, fresh: 1, woody: -1, spicy: -1, sweet: 2 },
+            B: { floral: 1, fresh: 0, woody: 1, spicy: -1, sweet: 3 },
+            C: { floral: 1, fresh: 1, woody: 2, spicy: 0, sweet: -3 }
+          }
+        },
+        fresh: {
+          Q6: {
+            A: { floral: 0, fresh: 3, woody: -1, spicy: -2, sweet: -1 },
+            B: { floral: 0, fresh: 3, woody: 0, spicy: -1, sweet: -1 },
+            C: { floral: -1, fresh: 2, woody: 0, spicy: 2, sweet: -2 }
+          },
+          Q7: {
+            A: { floral: -1, fresh: 3, woody: 0, spicy: 0, sweet: -2 },
+            B: { floral: 1, fresh: 2, woody: 1, spicy: -1, sweet: 0 },
+            C: { floral: 0, fresh: 1, woody: 2, spicy: 0, sweet: 1 }
+          }
+        },
+        woody: {
+          Q6: {
+            A: { floral: 0, fresh: -1, woody: 3, spicy: 1, sweet: 1 },
+            B: { floral: -1, fresh: 0, woody: 3, spicy: 0, sweet: -1 },
+            C: { floral: -1, fresh: 0, woody: 1, spicy: 3, sweet: -1 }
+          },
+          Q7: {
+            A: { floral: 0, fresh: 2, woody: 1, spicy: -1, sweet: -1 },
+            B: { floral: 0, fresh: 0, woody: 2, spicy: 1, sweet: 0 },
+            C: { floral: -1, fresh: -2, woody: 2, spicy: 2, sweet: 1 }
+          }
+        }
+      },
+      q8PrimaryAxes: ["fresh", "floral", "woody"],
+      q8ScoreMap: {
+        A: { floral: 0, fresh: 3, woody: -2, spicy: -2, sweet: -1 },
+        B: { floral: 2, fresh: 1, woody: 0, spicy: -2, sweet: 2 },
+        C: { floral: 1, fresh: -2, woody: 2, spicy: 3, sweet: 1 }
+      },
+      finishKeyByAnswer: {
+        A: "light",
+        B: "balanced",
+        C: "strong",
+        ALL: "balanced",
+        NONE: "balanced"
+      },
+      finishTemplates: {
+        light: { floral: 62, fresh: 72, woody: 34, spicy: 22, sweet: 38 },
+        balanced: { floral: 68, fresh: 58, woody: 48, spicy: 34, sweet: 50 },
+        strong: { floral: 70, fresh: 42, woody: 58, spicy: 52, sweet: 57 }
+      },
+      finishBlendRatio: 0.25,
+      graphPresets: {
+        light: { floral: 62, fresh: 72, woody: 34, spicy: 22, sweet: 38 },
+        balanced: { floral: 68, fresh: 58, woody: 48, spicy: 34, sweet: 50 },
+        strong: { floral: 70, fresh: 42, woody: 58, spicy: 52, sweet: 57 }
+      },
+      summaryProfiles: {
+        floral_soft: {
+          axes: { floral: 74, fresh: 54, woody: 42, spicy: 26, sweet: 62 },
+          headline: "やわらかな華やかさが主役の方向",
+          body: "花のやわらかさを中心に、甘さと親しみやすさが自然に残るバランスです。当日は軽さを見ながら、華やかさを少しずつ整えていく進め方が合います。"
+        },
+        fresh_clear: {
+          axes: { floral: 50, fresh: 76, woody: 38, spicy: 24, sweet: 36 },
+          headline: "透明感と清潔感を主軸にした方向",
+          body: "みずみずしい抜け感と清潔感が中心です。重くしすぎず、必要に応じて花や木のニュアンスをあとから足していくとまとまりやすいです。"
+        },
+        woody_deep: {
+          axes: { floral: 44, fresh: 40, woody: 72, spicy: 54, sweet: 42 },
+          headline: "落ち着きと深みを静かに残す方向",
+          body: "木の落ち着きや余韻の深さが主役です。当日は重たくなりすぎないよう、透明感ややわらかさを会話しながら重ねていく進め方が向いています。"
+        },
+        light_airy: {
+          axes: { floral: 62, fresh: 72, woody: 34, spicy: 22, sweet: 38 },
+          headline: "軽やかさを優先してまとめる方向",
+          body: "抜け感と軽さを優先し、主張しすぎないまとまりを作る方向です。最初は軽めに試し、必要であれば後から深みを足す流れが自然です。"
+        },
+        balanced_comfort: {
+          axes: { floral: 68, fresh: 58, woody: 48, spicy: 34, sweet: 50 },
+          headline: "やわらかさと心地よさのバランス方向",
+          body: "どれか一つを尖らせるよりも、全体を自然につなげるバランス型です。当日はこの土台から、香りの強さや残り方を少しずつ微調整しやすい状態です。"
+        },
+        strong_presence: {
+          axes: { floral: 70, fresh: 42, woody: 58, spicy: 52, sweet: 57 },
+          headline: "少し印象を残す存在感のある方向",
+          body: "やわらかさを残しつつ、余韻や存在感をしっかり感じる方向です。当日は強さを見ながら、残し方の品の良さを整える進め方が合います。"
+        },
+        floral_fresh: {
+          axes: { floral: 72, fresh: 66, woody: 40, spicy: 24, sweet: 48 },
+          headline: "花のやわらかさに透明感を重ねる方向",
+          body: "フローラルを軸にしながら、重くしすぎず透明感を保つタイプです。親しみやすさと清潔感の両立がしやすいバランスです。"
+        },
+        woody_soft: {
+          axes: { floral: 54, fresh: 46, woody: 62, spicy: 42, sweet: 52 },
+          headline: "深みの中にやわらかさを残す方向",
+          body: "木や落ち着きの軸がありつつ、やわらかさや甘さで角を整えるタイプです。深さを活かしながら重さを抑えたいときの起点になります。"
+        }
+      }
+    };
+    // === FRAGRANCE SCORING EDIT POINT: MASTER CONFIG END ===
+
     const questions = [
       { id: "Q1", nav: "惹かれる香り", title: "今いちばん惹かれる香りは？", caption: "花・透明感・森の落ち着きのうち、空気感として近いものを選んでください。", helper: "直感でひとつ選んでください", noteTitle: "豆知識＜香りの第一印象＞", noteBody: "最初に好きだと感じる香りは、その後の全体印象にも強く影響しやすいです。", footer: "最初の一問は、好みの入口をつかむための軽い質問です。", options: [{ key: "A", title: "花がふわっと香る", desc: "淡い花びらとやわらかな朝の光。甘すぎず、軽く上品な華やかさ。", visual: "url('img/questionnaire/花香る.png')", color: "#f7eee8", cardClass: "option-card-image-right" }, { key: "B", title: "みずみずしく爽やか", desc: "透明なガラス、水滴、白い窓辺。朝の空気みたいな清潔感。", visual: "url('img/questionnaire/みずみずしい.png')", color: "#f5fbff", cardClass: "option-card-image-right" }, { key: "C", title: "木や森の落ち着き", desc: "木の天板と深いグリーン。静けさと安心感のある穏やかな方向。", visual: "url('img/questionnaire/木や森の落ち着き.png')", color: "#f3f5ef", cardClass: "option-card-image-right" }], subOptions: ["全部好き", "この中にはない"] },
       { id: "Q2", nav: "好きな色", title: "好きな色は何ですか？", caption: "色の印象から、香りの温度感や落ち着き方の好みを見ていきます。", helper: "色の印象にいちばん近いものを選んでください", noteTitle: "豆知識＜色と香り＞", noteBody: "色の好みは、香りの軽さ・温度感・落ち着きの好みとつながることが多いです。", footer: "色の選び方は、香りの見えない印象を言葉にしやすくします。", options: [{ key: "A", title: "やさしいピンク・ベージュ", desc: "温かく上品で、やさしさと親しみを感じるトーン。", visual: "url('img/questionnaire/優しいピンク.png')", color: "#f7eeea", cardClass: "option-card-image-right" }, { key: "B", title: "白・水色・透明感", desc: "軽やかで清潔。澄んだガラスや光を感じる方向。", visual: "url('img/questionnaire/水色透明感.png')", color: "#f4fbff", cardClass: "option-card-image-right" }, { key: "C", title: "ブラウン・深いグリーン", desc: "自然素材の落ち着き。安心感と静けさを感じる色合い。", visual: "url('img/questionnaire/深いグリーン.png')", color: "#eff4ee", cardClass: "option-card-image-right" }], subOptions: ["全部好き", "この中にはない"] },
@@ -96,7 +281,11 @@
       { id: "Q4", nav: "使いたい時", title: "どんな時に使いたいですか？", caption: "使う場面を先に決めると、強さや余韻のちょうどよさが見えやすくなります。", helper: "香りを使う場面に近いものを選んでください", noteTitle: "豆知識＜香りのシーン設計＞", noteBody: "同じ香りでも、使う時間帯や場面によって『ちょうどよい強さ』は変わります。", footer: "休日、仕事、夜時間では、似合う香りの抜け方も少しずつ変わります。", options: [{ key: "A", title: "休日に気分を上げたい", desc: "明るい昼の室内と軽い花材。少し気分が上がる軽快さ。", visual: "url('img/questionnaire/うきうきおはっな.png')", color: "#f9f0ea", cardClass: "option-card-image-right" }, { key: "B", title: "仕事や外出で心地よく整えたい", desc: "白とグレージュの整い。毎日使いやすい清潔感のある方向。", visual: "url('img/questionnaire/きったくごーん.png')", color: "#f3f6f1", cardClass: "option-card-image-right" }, { key: "C", title: "夜や特別な時間を深く楽しみたい", desc: "少し影のある花材と静かなテーブル。余韻を楽しむ落ち着き。", visual: "url('img/questionnaire/特別な夜.png')", color: "#f3eeeb", cardClass: "option-card-image-right" }], subOptions: ["全部好き", "この中にはない"] },
       { id: "Q5", nav: "好きな音楽", title: "好きな音楽は何ですか？", caption: "テンポや余韻の好みから、香りの立ち上がり方や残り方を見ていきます。", helper: "音の雰囲気にいちばん近いものを選んでください", noteTitle: "豆知識＜香りとリズム＞", noteBody: "音楽の好みは、香りの『立ち上がりの軽さ』や『余韻の長さ』の好みに重なることがあります。", footer: "5問目まで来ると、次の深掘り質問に進む準備がほぼ整います。", options: [{ key: "A", title: "明るいポップ", desc: "軽快で明るい空気感。ぱっと抜けるような軽やかさ。", visual: "url('img/questionnaire/虹色ポップスカイ.png')", color: "#f1f6fd", cardClass: "option-card-image-right" }, { key: "B", title: "心にしみるストリングス", desc: "やわらかな布と花。繊細で感情に寄り添うやさしい温度。", visual: "url('img/questionnaire/弦と薔薇と.png')", color: "#f6efea", cardClass: "option-card-image-right" }, { key: "C", title: "自然に耳に残るクラシック", desc: "木の質感と静かな影。上品で洗練された余韻。", visual: "url('img/questionnaire/バーリチュース.png')", color: "#f1eee7", cardClass: "option-card-image-right" }], subOptions: ["全部好き", "この中にはない"] }
     ];
+    const SCORING_CONFIG_KEY = "fragranceScoringConfig";
+    const SCORE_STATE_KEY = "fragranceScoreState";
+    const STEP1_ANSWERS_KEY = "fragranceStep1Answers";
     const answers = {};
+    const answerKeys = {};
     let currentIndex = 0;
     const navList = document.getElementById("nav-list");
     const optionList = document.getElementById("option-list");
@@ -115,31 +304,205 @@
     const headerPrevBtn = document.getElementById("header-prev-btn");
     const headerNextBtn = document.getElementById("header-next-btn");
     const headerNextText = headerNextBtn.querySelector(".nav-text");
-    function persistStep1Answers() {
-      sessionStorage.setItem("fragranceStep1Answers", JSON.stringify(answers));
+
+    function cloneConfig(config) {
+      return JSON.parse(JSON.stringify(config));
     }
-    function hasAnyAnswer() { return Object.keys(answers).length > 0; }
+
+    function createInitialAxes(config) {
+      return Object.fromEntries(config.axisOrder.map((axis) => [axis, config.initialAxisScore]));
+    }
+
+    function cloneAxes(axes) {
+      return { ...axes };
+    }
+
+    function clampValue(value, min = 0, max = 100) {
+      return Math.min(max, Math.max(min, Math.round(value)));
+    }
+
+    function clampAxes(axes) {
+      const nextAxes = {};
+      MASTER_SCORING_CONFIG.axisOrder.forEach((axis) => {
+        nextAxes[axis] = clampValue(axes[axis] ?? MASTER_SCORING_CONFIG.initialAxisScore);
+      });
+      return nextAxes;
+    }
+
+    function applyDelta(axes, delta, weight = 1) {
+      if (!delta) return clampAxes(axes);
+      const nextAxes = cloneAxes(axes);
+      Object.entries(delta).forEach(([axis, value]) => {
+        nextAxes[axis] = (nextAxes[axis] ?? MASTER_SCORING_CONFIG.initialAxisScore) + (value * weight);
+      });
+      return clampAxes(nextAxes);
+    }
+
+    function applySubOptionAdjustment(axes, primaryAxes, answerKey, weight = 1) {
+      if (answerKey !== "ALL" && answerKey !== "NONE") return clampAxes(axes);
+      const nextAxes = cloneAxes(axes);
+      MASTER_SCORING_CONFIG.axisOrder.forEach((axis) => {
+        const isPrimary = primaryAxes.includes(axis);
+        if (answerKey === "ALL" && isPrimary) nextAxes[axis] += 1 * weight;
+        if (answerKey === "NONE") nextAxes[axis] += (isPrimary ? -1 : 1) * weight;
+      });
+      return clampAxes(nextAxes);
+    }
+
+    function scoreQuestionAnswer(axes, answerKey, deltaMap, primaryAxes, weight = 1) {
+      if (answerKey === "ALL" || answerKey === "NONE") {
+        return applySubOptionAdjustment(axes, primaryAxes, answerKey, weight);
+      }
+      return applyDelta(axes, deltaMap?.[answerKey], weight);
+    }
+
+    function calculateWeightedDistance(a, b, weights) {
+      return MASTER_SCORING_CONFIG.axisOrder.reduce((total, axis) => {
+        const weight = weights?.[axis] ?? 1;
+        return total + (Math.abs((a[axis] ?? 0) - (b[axis] ?? 0)) * weight);
+      }, 0);
+    }
+
+    function calculateBranchKey(axes, config) {
+      const branchOrder = ["floral", "fresh", "woody"];
+      let winner = "floral";
+      let bestDistance = Number.POSITIVE_INFINITY;
+      branchOrder.forEach((branchKey) => {
+        const distance = calculateWeightedDistance(axes, config.branchTemplates[branchKey], config.branchDistanceWeights);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          winner = branchKey;
+        }
+      });
+      return winner;
+    }
+
+    function calculateNearestProfile(axes, profiles) {
+      let winnerKey = null;
+      let winnerProfile = null;
+      let bestDistance = Number.POSITIVE_INFINITY;
+      Object.entries(profiles).forEach(([profileKey, profile]) => {
+        const distance = calculateWeightedDistance(axes, profile.axes, null);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          winnerKey = profileKey;
+          winnerProfile = profile;
+        }
+      });
+      return { profileKey: winnerKey, profile: winnerProfile };
+    }
+
+    function scoreStep1Answers(step1AnswerKeys, config) {
+      let axes = createInitialAxes(config);
+      questions.forEach((question) => {
+        const answerKey = step1AnswerKeys[question.id];
+        if (!answerKey) return;
+        axes = scoreQuestionAnswer(
+          axes,
+          answerKey,
+          config.step1ScoreMap[question.id],
+          config.step1PrimaryAxes[question.id] || [],
+          config.questionWeights.step1
+        );
+      });
+      return clampAxes(axes);
+    }
+
+    function persistScoringConfig(config) {
+      sessionStorage.setItem(SCORING_CONFIG_KEY, JSON.stringify(config));
+    }
+
+    function persistScoreState(payload) {
+      let currentState = {};
+      try {
+        currentState = JSON.parse(sessionStorage.getItem(SCORE_STATE_KEY) || "{}") || {};
+      } catch (error) {
+        currentState = {};
+      }
+      const nextState = {
+        ...currentState,
+        ...payload,
+        updatedAt: new Date().toISOString()
+      };
+      sessionStorage.setItem(SCORE_STATE_KEY, JSON.stringify(nextState));
+      return nextState;
+    }
+
+    function saveStep1ScoreState() {
+      const config = cloneConfig(MASTER_SCORING_CONFIG);
+      const axesAfterStep1 = scoreStep1Answers(answerKeys, config);
+      const branchKey = calculateBranchKey(axesAfterStep1, config);
+      const nearestProfile = calculateNearestProfile(axesAfterStep1, config.summaryProfiles);
+      persistScoringConfig(config);
+      persistScoreState({
+        step1Answers: { ...answers },
+        step1AnswerKeys: { ...answerKeys },
+        step2Answers: {},
+        step2AnswerKeys: {},
+        branchKey,
+        axesAfterStep1,
+        axesAfterStep2: null,
+        finalAxes: axesAfterStep1,
+        resetAxes: axesAfterStep1,
+        selectedFinish: null,
+        profileKey: nearestProfile.profileKey
+      });
+    }
+
+    function persistStep1Answers() {
+      sessionStorage.setItem(STEP1_ANSWERS_KEY, JSON.stringify(answers));
+    }
+
+    function hasAnyAnswer() {
+      return Object.keys(answers).length > 0;
+    }
+
     function confirmReturnToTop() {
       if (!hasAnyAnswer()) return true;
-      return window.confirm("トップページへ戻ると、ここまでの回答は保存されません。戻りますか？");
+      return window.confirm("トップページへ戻ると、ここまでの回答は破棄されます。戻りますか？");
     }
+
     function returnToTop() {
       if (!confirmReturnToTop()) return;
       window.location.href = "index.html";
     }
+
     function goToStep2() {
       persistStep1Answers();
+      saveStep1ScoreState();
       window.location.href = "questionnaire_step2.html";
     }
-    function moveNext() { if (currentIndex < questions.length - 1) { currentIndex += 1; render(); return; } goToStep2(); }
-    function movePrev() { if (currentIndex > 0) { currentIndex -= 1; render(); } }
-    function selectAnswer(value) {
-      const question = questions[currentIndex];
+
+    function moveNext() {
+      if (currentIndex < questions.length - 1) {
+        currentIndex += 1;
+        render();
+        return;
+      }
+      goToStep2();
+    }
+
+    function movePrev() {
+      if (currentIndex > 0) {
+        currentIndex -= 1;
+        render();
+      }
+    }
+
+    function resolveSubOptionKey(index) {
+      if (index === 0) return "ALL";
+      if (index === 1) return "NONE";
+      return null;
+    }
+
+    function selectAnswer(question, value, scoreKey) {
       answers[question.id] = value;
+      answerKeys[question.id] = scoreKey;
       persistStep1Answers();
       render();
       window.setTimeout(() => { moveNext(); }, 140);
     }
+
     function renderNav() {
       navList.innerHTML = "";
       questions.forEach((question, index) => {
@@ -149,10 +512,14 @@
         if (index === currentIndex) button.classList.add("active");
         else if (answers[question.id]) button.classList.add("done");
         button.innerHTML = `<span class="no">${question.id}</span><span class="label">${question.nav}</span>`;
-        button.addEventListener("click", () => { currentIndex = index; render(); });
+        button.addEventListener("click", () => {
+          currentIndex = index;
+          render();
+        });
         navList.appendChild(button);
       });
     }
+
     function renderOptions(question) {
       optionList.innerHTML = "";
       question.options.forEach((option) => {
@@ -160,36 +527,39 @@
         button.type = "button";
         button.className = "option-card";
         if (option.cardClass) button.classList.add(option.cardClass);
-        if (answers[question.id] === option.title) button.classList.add("selected");
+        if (answerKeys[question.id] === option.key) button.classList.add("selected");
         button.style.backgroundImage = option.visual;
         button.style.backgroundColor = option.color || "#fffdfa";
         button.innerHTML = `<div class="option-copy"><span class="option-label">${option.key}</span><span class="option-title">${option.title}</span><span class="option-desc">${option.desc}</span></div>`;
-        button.addEventListener("click", () => selectAnswer(option.title));
+        button.addEventListener("click", () => selectAnswer(question, option.title, option.key));
         optionList.appendChild(button);
       });
     }
+
     function renderSubOptions(question) {
       subOptions.innerHTML = "";
-      question.subOptions.forEach((label) => {
+      question.subOptions.forEach((label, index) => {
+        const scoreKey = resolveSubOptionKey(index);
         const button = document.createElement("button");
         button.type = "button";
         button.className = "sub-option";
-        if (answers[question.id] === label) button.classList.add("selected");
+        if (answerKeys[question.id] === scoreKey) button.classList.add("selected");
         button.textContent = label;
-        button.addEventListener("click", () => selectAnswer(label));
+        button.addEventListener("click", () => selectAnswer(question, label, scoreKey));
         subOptions.appendChild(button);
       });
     }
+
     function updateButtons() {
       const onLastQuestion = currentIndex === questions.length - 1;
       headerPrevBtn.disabled = currentIndex === 0;
       headerNextText.textContent = onLastQuestion ? "STEP2 へ進む" : "次の質問";
       headerNextBtn.setAttribute("aria-label", onLastQuestion ? "STEP2 へ進む" : "次の質問");
     }
+
     function render() {
       const question = questions[currentIndex];
       const progress = ((currentIndex + 1) / questions.length) * 100;
-      const answer = answers[question.id];
       renderNav();
       renderOptions(question);
       renderSubOptions(question);
@@ -199,10 +569,13 @@
       progressLabel.textContent = `${currentIndex + 1} / ${questions.length}`;
       questionTitle.textContent = question.title;
       questionCaption.textContent = question.caption;
-      noteTitle.innerHTML = question.noteTitle.replace("＜", "<br>＜");
+      noteTitle.innerHTML = question.noteTitle.replace("・・", "<br>・・");
       noteBody.textContent = question.noteBody;
       updateButtons();
     }
+
+    persistScoringConfig(cloneConfig(MASTER_SCORING_CONFIG));
+
     brandLink.addEventListener("click", (event) => {
       event.preventDefault();
       returnToTop();
@@ -216,3 +589,5 @@
 </body>
 
 </html>
+
+
