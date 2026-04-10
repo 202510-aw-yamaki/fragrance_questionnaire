@@ -147,9 +147,6 @@
       sweet: 50
     };
 
-    const RESERVATION_SLOT_API = "/api/reservation-slots";
-    const RESERVATION_API = "/api/reservations";
-
     const siteHeader = document.querySelector(".site-header");
     const pageShell = document.querySelector(".page-shell");
     const summaryHeadline = document.getElementById("summary-headline");
@@ -172,9 +169,8 @@
     let activeWeekKey = "";
     let lastModalTrigger = null;
     let weekData = [];
-    let isDemoMode = false;
 
-function getFocusableElements(container) {
+    function getFocusableElements(container) {
       return [...container.querySelectorAll(
         'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
       )].filter((element) => !element.hidden && element.offsetParent !== null);
@@ -412,46 +408,12 @@ function getFocusableElements(container) {
       slotList.appendChild(tabs);
     }
 
-    async function loadReservationSlots() {
-      selectedStatus.textContent = "予約枠を読み込み中です...";
-      confirmBtn.disabled = true;
-
-      try {
-        const today = new Date();
-        const requests = [];
-        for (let dayOffset = 1; dayOffset <= 14; dayOffset += 1) {
-          const date = new Date(today);
-          date.setDate(today.getDate() + dayOffset);
-          const dateText = date.toISOString().slice(0, 10);
-          requests.push(fetch(`${RESERVATION_SLOT_API}?date=${dateText}`));
-        }
-
-        const responses = await Promise.all(requests);
-        const payloads = await Promise.all(responses.map(async (response) => {
-          if (!response.ok) {
-            throw new Error("failed to load reservation slots");
-          }
-          return response.json();
-        }));
-
-        const flattened = payloads.flat().map((slot) => ({
-          ...slot,
-          label: slot.label || `${formatApiDateLabel(slot.date)} ${slot.time}`
-        }));
-
-        isDemoMode = false;
-        weekData = buildWeekData(flattened);
-        renderSlots();
-        selectedStatus.textContent = "未選択: 来店日時を選んでください";
-        updateSelectionState();
-      } catch (error) {
-        isDemoMode = true;
-        const demoSlots = buildDemoReservationSlots();
-        weekData = buildWeekData(demoSlots);
-        renderSlots();
-        selectedStatus.textContent = "デモ表示中: 仮の予約枠を表示しています";
-        updateSelectionState();
-      }
+    function loadReservationSlots() {
+      const demoSlots = buildDemoReservationSlots();
+      weekData = buildWeekData(demoSlots);
+      renderSlots();
+      selectedStatus.textContent = "未選択: 来店日時を選んでください";
+      updateSelectionState();
     }
 
     function selectWeek(weekKey, triggerButton = null) {
@@ -546,23 +508,22 @@ function getFocusableElements(container) {
       staffMemo.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    function buildDemoReservationPayload(requestPayload) {
-      const reservationCode = `DEMO-${Date.now().toString().slice(-6)}`;
+    function buildReservationPayload(requestPayload) {
+      const reservationCode = `FRG-${Date.now().toString().slice(-6)}`;
       return {
         reservationCode,
         slot: requestPayload.slotLabel,
         visitType: requestPayload.visitType,
         guestCount: requestPayload.guestCount,
-        memo: requestPayload.staffMemo || "",
-        demoMode: true
+        memo: requestPayload.staffMemo || ""
       };
     }
 
-    async function handleReservationComplete() {
+    function handleReservationComplete() {
       if (!selectedSlot) return;
 
       confirmBtn.disabled = true;
-      selectedStatus.textContent = "予約を登録中です...";
+      selectedStatus.textContent = "予約内容を確定しています...";
 
       const requestPayload = {
         slotId: selectedSlot.slotId,
@@ -572,41 +533,9 @@ function getFocusableElements(container) {
         staffMemo: staffMemo.value.trim(),
         summaryHeadline: summaryHeadline.textContent
       };
-
-      if (isDemoMode) {
-        const demoReservation = buildDemoReservationPayload(requestPayload);
-        window.sessionStorage.setItem("fragranceReservationConfirmation", JSON.stringify(demoReservation));
-        window.location.href = `reservation-complete.html?reservationCode=${encodeURIComponent(demoReservation.reservationCode)}&demo=1`;
-        return;
-      }
-
-      try {
-        const response = await fetch(RESERVATION_API, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(requestPayload)
-        });
-
-        if (!response.ok) {
-          throw new Error("failed to create reservation");
-        }
-
-        const reservation = await response.json();
-        const payload = {
-          reservationCode: reservation.reservationCode,
-          slot: reservation.slotLabel,
-          visitType: reservation.visitType,
-          guestCount: reservation.guestCount,
-          memo: reservation.staffMemo || ""
-        };
-        window.sessionStorage.setItem("fragranceReservationConfirmation", JSON.stringify(payload));
-        window.location.href = `reservation-complete.html?reservationCode=${encodeURIComponent(reservation.reservationCode)}`;
-      } catch (error) {
-        selectedStatus.textContent = "予約登録に失敗しました。内容を確認して再度お試しください。";
-        updateSelectionState();
-      }
+      const reservation = buildReservationPayload(requestPayload);
+      window.sessionStorage.setItem("fragranceReservationConfirmation", JSON.stringify(reservation));
+      window.location.href = "reservation-complete.html";
     }
 
     guestCount.addEventListener("change", () => {
