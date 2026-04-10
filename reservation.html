@@ -10,6 +10,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/common.css">
   <link rel="stylesheet" href="css/reservation.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/public-data.js"></script>
 </head>
 
 <body class="page-canvas">
@@ -449,9 +453,19 @@
       slotList.appendChild(tabs);
     }
 
-    function loadReservationSlots() {
-      const demoSlots = buildDemoReservationSlots();
-      weekData = buildWeekData(demoSlots);
+    async function loadReservationSlots() {
+      const remoteSlots = await window.FragrancePublicData?.fetchPublicReservationSlots?.();
+      const slotSource = Array.isArray(remoteSlots)
+        ? remoteSlots.map((slot) => ({
+            slotId: slot.id,
+            date: slot.slot_date,
+            time: String(slot.slot_time || "").slice(0, 5),
+            label: slot.slot_label,
+            status: slot.status,
+            instructorName: slot.instructor_name || "担当未定"
+          }))
+        : buildDemoReservationSlots();
+      weekData = buildWeekData(slotSource);
       renderSlots();
       selectedStatus.textContent = "未選択: 来店日時を選んでください";
       updateSelectionState();
@@ -550,9 +564,8 @@
     }
 
     function buildReservationPayload(requestPayload) {
-      const reservationCode = `FRG-${Date.now().toString().slice(-6)}`;
       return {
-        reservationCode,
+        reservationCode: window.FragrancePublicData?.createCode?.("FR") || `FR${Date.now()}`,
         slot: requestPayload.slotLabel,
         visitType: requestPayload.visitType,
         guestCount: requestPayload.guestCount,
@@ -564,7 +577,7 @@
       };
     }
 
-    function handleReservationComplete() {
+    async function handleReservationComplete() {
       if (!selectedSlot) return;
 
       confirmBtn.disabled = true;
@@ -582,8 +595,26 @@
         axes: axes
       };
       const reservation = buildReservationPayload(requestPayload);
+      const scoreState = getScoreState();
+      const persistedReservation = await window.FragrancePublicData?.createReservation?.({
+        reservation_code: reservation.reservationCode,
+        questionnaire_result_id: scoreState.questionnaireResultId || null,
+        slot_id: requestPayload.slotId || null,
+        slot_label: requestPayload.slotLabel,
+        visit_type: requestPayload.visitType,
+        guest_count: requestPayload.guestCount,
+        staff_memo: requestPayload.staffMemo || null,
+        summary_headline: requestPayload.summaryHeadline || null,
+        summary_body: requestPayload.summaryBody || null,
+        profile_key: requestPayload.profileKey || null,
+        axes: requestPayload.axes,
+        updated_at: new Date().toISOString()
+      });
+      if (persistedReservation?.reservation_code) {
+        reservation.reservationCode = persistedReservation.reservation_code;
+      }
       window.sessionStorage.setItem("fragranceReservationConfirmation", JSON.stringify(reservation));
-      window.location.href = "reservation-complete.html";
+      window.location.href = `reservation-complete.html?reservationCode=${encodeURIComponent(reservation.reservationCode)}`;
     }
 
     guestCount.addEventListener("change", () => {

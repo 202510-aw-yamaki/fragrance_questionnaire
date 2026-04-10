@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>管理ログイン | Fragrance Workshop</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/admin-common.css">
+</head>
+<body class="page-canvas admin-page">
+  <main class="admin-main site-container">
+    <section class="admin-panel" style="max-width:32rem;margin-inline:auto;">
+      <p class="section-label">Admin Login</p>
+      <h1>管理画面へログイン</h1>
+      <p class="admin-note">Supabase Auth のメールアドレスとパスワードでサインインします。</p>
+      <p class="admin-error" id="config-error" hidden>Supabase 設定が未完了です。`js/supabase-config.js` を設定してください。</p>
+      <form class="admin-form" id="login-form">
+        <label>メールアドレス
+          <input id="login-email" type="email" autocomplete="email" required>
+        </label>
+        <label>パスワード
+          <input id="login-password" type="password" autocomplete="current-password" required>
+        </label>
+        <p class="admin-error" id="login-error" hidden></p>
+        <div class="admin-actions">
+          <button class="admin-btn primary" type="submit">ログイン</button>
+          <a class="admin-btn secondary" href="index.html">公開サイトへ戻る</a>
+        </div>
+      </form>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/admin-auth.js"></script>
+  <script>
+    const form = document.getElementById("login-form");
+    const emailInput = document.getElementById("login-email");
+    const passwordInput = document.getElementById("login-password");
+    const errorEl = document.getElementById("login-error");
+    const configErrorEl = document.getElementById("config-error");
+
+    async function bootstrap() {
+      if (!window.AdminAuth.isConfigured()) {
+        configErrorEl.hidden = false;
+        form.querySelector("button[type='submit']").disabled = true;
+        return;
+      }
+      const session = await window.AdminAuth.getSession();
+      if (session) {
+        window.location.replace("admin-dashboard.html");
+      }
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      errorEl.hidden = true;
+      try {
+        await window.AdminAuth.signInAdmin(emailInput.value.trim(), passwordInput.value);
+        window.location.replace("admin-dashboard.html");
+      } catch (error) {
+        errorEl.textContent = error.message || "ログインに失敗しました。";
+        errorEl.hidden = false;
+      }
+    });
+
+    bootstrap();
+  </script>
+</body>
+</html>

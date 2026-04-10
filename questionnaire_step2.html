@@ -12,6 +12,10 @@
   <link rel="stylesheet" href="css/common.css">
   <link rel="stylesheet" href="css/questionnaire-common.css">
   <link rel="stylesheet" href="css/questionnaire-step2.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/public-data.js"></script>
 </head>
 
 <body class="page-canvas">
@@ -282,6 +286,46 @@
       sessionStorage.setItem(SCORE_STATE_KEY, JSON.stringify(nextState));
       return nextState;
     }
+    function calculateNearestProfile(axes, profiles) {
+      let winnerKey = null;
+      let winnerProfile = null;
+      let bestDistance = Number.POSITIVE_INFINITY;
+      Object.entries(profiles || {}).forEach(([profileKey, profile]) => {
+        const distance = (getScoringConfig().axisOrder || []).reduce((sum, axis) => {
+          return sum + Math.abs((axes?.[axis] || 0) - (profile.axes?.[axis] || 0));
+        }, 0);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          winnerKey = profileKey;
+          winnerProfile = profile;
+        }
+      });
+      return { profileKey: winnerKey, profile: winnerProfile };
+    }
+    async function persistQuestionnaireResult(scorePayload) {
+      const payload = {
+        step1_answers_json: scorePayload.step1Answers || {},
+        step1_answer_keys_json: scorePayload.step1AnswerKeys || {},
+        step2_answers_json: scorePayload.step2Answers || {},
+        step2_answer_keys_json: scorePayload.step2AnswerKeys || {},
+        branch_key: scorePayload.branchKey || null,
+        axes_after_step1: scorePayload.axesAfterStep1 || null,
+        axes_after_step2: scorePayload.axesAfterStep2 || null,
+        final_axes: scorePayload.finalAxes || null,
+        reset_axes: scorePayload.resetAxes || null,
+        selected_finish: scorePayload.selectedFinish || null,
+        profile_key: scorePayload.profileKey || null,
+        summary_headline: scorePayload.summaryHeadline || null,
+        summary_body: scorePayload.summaryBody || null,
+        updated_at: new Date().toISOString()
+      };
+      const result = await window.FragrancePublicData?.createQuestionnaireResult?.(payload);
+      if (!result) return null;
+      return {
+        questionnaireResultId: result.id,
+        questionnaireResultCode: result.result_code
+      };
+    }
     function getStep2Questions() { return questionBanks[activeBranchKey] || questionBanks.floral; }
     function getActiveBranchKey() {
       const config = getScoringConfig();
@@ -311,21 +355,30 @@
       });
       return clampAxes(axes, config);
     }
-    function showCompletion() {
+    async function showCompletion() {
       const config = getScoringConfig();
       const scoreState = getScoreState();
       const baseAxes = scoreState.axesAfterStep1 || createInitialAxes(config);
       const axesAfterStep2 = scoreStep2Answers(baseAxes, activeBranchKey, answerKeys, config);
       const finishResult = applyFinishAdjustment(axesAfterStep2, answerKeys.Q8 || "B", config);
-      persistScoreState({
+      const nearestProfile = calculateNearestProfile(finishResult.finalAxes, config.summaryProfiles);
+      const nextState = persistScoreState({
         step2Answers: { ...answers },
         step2AnswerKeys: { ...answerKeys },
         branchKey: activeBranchKey,
+        axesAfterStep1: scoreState.axesAfterStep1 || baseAxes,
         axesAfterStep2,
         finalAxes: finishResult.finalAxes,
         resetAxes: finishResult.finalAxes,
-        selectedFinish: finishResult.selectedFinish
+        selectedFinish: finishResult.selectedFinish,
+        profileKey: nearestProfile.profileKey,
+        summaryHeadline: nearestProfile.profile?.headline || null,
+        summaryBody: nearestProfile.profile?.body || null
       });
+      const persistedResult = await persistQuestionnaireResult(nextState);
+      if (persistedResult) {
+        persistScoreState(persistedResult);
+      }
       window.location.href = "fragrance-graph.html";
     }
     function moveNext() {

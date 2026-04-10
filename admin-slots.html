@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>予約枠管理 | Fragrance Workshop</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/admin-common.css">
+</head>
+<body class="page-canvas admin-page">
+  <header class="admin-header" id="admin-header"></header>
+  <main class="admin-main site-container admin-grid cols-2">
+    <section class="admin-panel">
+      <p class="section-label">Slots</p>
+      <h1>予約枠管理</h1>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>日付</th><th>時刻</th><th>ラベル</th><th>担当</th><th>status</th><th>人数</th><th>公開</th><th>編集</th></tr></thead>
+          <tbody id="slot-rows"></tbody>
+        </table>
+      </div>
+    </section>
+    <section class="admin-panel">
+      <h2>新規作成 / 編集</h2>
+      <form class="admin-form" id="slot-form">
+        <input id="slot-id" type="hidden">
+        <label>slot_code<input id="slot-code" type="text" required></label>
+        <label>日付<input id="slot-date" type="date" required></label>
+        <label>時刻<input id="slot-time" type="time" required></label>
+        <label>表示ラベル<input id="slot-label" type="text" required></label>
+        <label>担当者名<input id="slot-instructor" type="text"></label>
+        <label>status
+          <select id="slot-status">
+            <option value="open">open</option>
+            <option value="recommended">recommended</option>
+            <option value="closed">closed</option>
+          </select>
+        </label>
+        <label>capacity<input id="slot-capacity" type="number" min="1" value="1"></label>
+        <label>sort_order<input id="slot-sort" type="number" min="0" value="0"></label>
+        <label><input id="slot-active" type="checkbox" checked> is_active</label>
+        <div class="admin-actions">
+          <button class="admin-btn primary" type="submit">保存</button>
+          <button class="admin-btn secondary" id="slot-reset" type="button">入力をクリア</button>
+        </div>
+      </form>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/admin-auth.js"></script>
+  <script src="js/admin-data.js"></script>
+  <script>
+    const rowsEl = document.getElementById("slot-rows");
+    const form = document.getElementById("slot-form");
+    const resetButton = document.getElementById("slot-reset");
+
+    function resetForm() {
+      form.reset();
+      document.getElementById("slot-id").value = "";
+      document.getElementById("slot-capacity").value = "1";
+      document.getElementById("slot-sort").value = "0";
+      document.getElementById("slot-active").checked = true;
+    }
+
+    function fillForm(row) {
+      document.getElementById("slot-id").value = row.id || "";
+      document.getElementById("slot-code").value = row.slot_code || "";
+      document.getElementById("slot-date").value = row.slot_date || "";
+      document.getElementById("slot-time").value = String(row.slot_time || "").slice(0, 5);
+      document.getElementById("slot-label").value = row.slot_label || "";
+      document.getElementById("slot-instructor").value = row.instructor_name || "";
+      document.getElementById("slot-status").value = row.status || "open";
+      document.getElementById("slot-capacity").value = row.capacity || 1;
+      document.getElementById("slot-sort").value = row.sort_order || 0;
+      document.getElementById("slot-active").checked = row.is_active !== false;
+    }
+
+    async function getAllSlots() {
+      return window.AdminData.listRows("reservation_slots", { orders: [{ column: "slot_date", ascending: true }, { column: "slot_time", ascending: true }, { column: "sort_order", ascending: true }] }).catch(() => []);
+    }
+
+    async function renderRows() {
+      const rows = await getAllSlots();
+      rowsEl.innerHTML = "";
+      rows.forEach((row) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row.slot_date || ""}</td>
+          <td>${String(row.slot_time || "").slice(0, 5)}</td>
+          <td>${row.slot_label || ""}</td>
+          <td>${row.instructor_name || ""}</td>
+          <td>${row.status || ""}</td>
+          <td>${row.capacity || ""}</td>
+          <td>${row.is_active ? "公開中" : "非表示"}</td>
+          <td>
+            <button class="admin-btn secondary" data-edit-id="${row.id}" type="button">編集</button>
+            <button class="admin-btn secondary" data-hide-id="${row.id}" type="button">非表示</button>
+          </td>
+        `;
+        rowsEl.appendChild(tr);
+      });
+      rowsEl.querySelectorAll("[data-edit-id]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const rows = await getAllSlots();
+          const target = rows.find((row) => row.id === button.dataset.editId);
+          if (target) fillForm(target);
+        });
+      });
+      rowsEl.querySelectorAll("[data-hide-id]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          await window.AdminData.updateRow("reservation_slots", button.dataset.hideId, { is_active: false, updated_at: new Date().toISOString() }).catch(console.error);
+          await renderRows();
+        });
+      });
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const payload = {
+        slot_code: document.getElementById("slot-code").value.trim(),
+        slot_date: document.getElementById("slot-date").value,
+        slot_time: document.getElementById("slot-time").value,
+        slot_label: document.getElementById("slot-label").value.trim(),
+        instructor_name: document.getElementById("slot-instructor").value.trim() || null,
+        status: document.getElementById("slot-status").value,
+        capacity: Number(document.getElementById("slot-capacity").value || 1),
+        sort_order: Number(document.getElementById("slot-sort").value || 0),
+        is_active: document.getElementById("slot-active").checked,
+        updated_at: new Date().toISOString()
+      };
+      const id = document.getElementById("slot-id").value;
+      if (id) {
+        await window.AdminData.updateRow("reservation_slots", id, payload).catch(console.error);
+      } else {
+        await window.AdminData.insertRow("reservation_slots", payload).catch(console.error);
+      }
+      resetForm();
+      await renderRows();
+    });
+
+    resetButton.addEventListener("click", resetForm);
+
+    async function bootstrap() {
+      window.AdminAuth.renderAdminHeader("slots");
+      const session = await window.AdminAuth.requireAdminSession();
+      if (!session) return;
+      resetForm();
+      await renderRows();
+    }
+    bootstrap();
+  </script>
+</body>
+</html>

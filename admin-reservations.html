@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>予約情報管理 | Fragrance Workshop</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/admin-common.css">
+</head>
+<body class="page-canvas admin-page">
+  <header class="admin-header" id="admin-header"></header>
+  <main class="admin-main site-container admin-grid">
+    <section class="admin-panel">
+      <p class="section-label">Reservations</p>
+      <h1>予約情報</h1>
+      <form class="admin-form" id="filter-form">
+        <div class="admin-grid cols-3">
+          <label>日付<input id="filter-date" type="date"></label>
+          <label>status
+            <select id="filter-status">
+              <option value="">すべて</option>
+              <option value="confirmed">confirmed</option>
+              <option value="canceled">canceled</option>
+              <option value="completed">completed</option>
+            </select>
+          </label>
+          <label>キーワード<input id="filter-keyword" type="text" placeholder="予約コード・見出し"></label>
+        </div>
+        <div class="admin-actions">
+          <button class="admin-btn primary" type="submit">絞り込む</button>
+        </div>
+      </form>
+    </section>
+    <section class="admin-panel">
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>予約コード</th><th>枠</th><th>来店目的</th><th>人数</th><th>傾向</th><th>作成日時</th><th>status</th><th>操作</th></tr></thead>
+          <tbody id="reservation-rows"></tbody>
+        </table>
+      </div>
+      <p class="admin-empty" id="reservation-empty" hidden>該当する予約はありません。</p>
+    </section>
+    <section class="admin-panel" id="detail-panel">
+      <h2>詳細</h2>
+      <pre id="reservation-detail" style="white-space:pre-wrap;margin:0;"></pre>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/admin-auth.js"></script>
+  <script src="js/admin-data.js"></script>
+  <script>
+    const rowsEl = document.getElementById("reservation-rows");
+    const emptyEl = document.getElementById("reservation-empty");
+    const detailEl = document.getElementById("reservation-detail");
+    const filterForm = document.getElementById("filter-form");
+
+    function matchesKeyword(row, keyword) {
+      if (!keyword) return true;
+      const text = [row.reservation_code, row.slot_label, row.summary_headline].join(" ").toLowerCase();
+      return text.includes(keyword.toLowerCase());
+    }
+
+    async function renderRows() {
+      const rows = await window.AdminData.listRows("reservations", { orders: [{ column: "created_at", ascending: false }], select: "*" }).catch(() => []);
+      const dateValue = document.getElementById("filter-date").value;
+      const statusValue = document.getElementById("filter-status").value;
+      const keywordValue = document.getElementById("filter-keyword").value.trim();
+      const filtered = rows.filter((row) => {
+        const createdDate = String(row.created_at || "").slice(0, 10);
+        if (dateValue && createdDate !== dateValue) return false;
+        if (statusValue && row.status !== statusValue) return false;
+        return matchesKeyword(row, keywordValue);
+      });
+      rowsEl.innerHTML = "";
+      emptyEl.hidden = filtered.length > 0;
+      filtered.forEach((row) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row.reservation_code || ""}</td>
+          <td>${row.slot_label || ""}</td>
+          <td>${row.visit_type || ""}</td>
+          <td>${row.guest_count || ""}</td>
+          <td>${row.summary_headline || ""}</td>
+          <td>${String(row.created_at || "").slice(0, 16).replace("T", " ")}</td>
+          <td>
+            <select data-status-id="${row.id}">
+              <option value="confirmed"${row.status === "confirmed" ? " selected" : ""}>confirmed</option>
+              <option value="canceled"${row.status === "canceled" ? " selected" : ""}>canceled</option>
+              <option value="completed"${row.status === "completed" ? " selected" : ""}>completed</option>
+            </select>
+          </td>
+          <td><button class="admin-btn secondary" data-detail-id="${row.id}" type="button">詳細</button></td>
+        `;
+        rowsEl.appendChild(tr);
+      });
+
+      rowsEl.querySelectorAll("[data-status-id]").forEach((select) => {
+        select.addEventListener("change", async () => {
+          await window.AdminData.updateRow("reservations", select.dataset.statusId, { status: select.value, updated_at: new Date().toISOString() }).catch(console.error);
+        });
+      });
+      rowsEl.querySelectorAll("[data-detail-id]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const target = filtered.find((row) => row.id === button.dataset.detailId);
+          detailEl.textContent = JSON.stringify(target, null, 2);
+        });
+      });
+    }
+
+    async function bootstrap() {
+      window.AdminAuth.renderAdminHeader("reservations");
+      const session = await window.AdminAuth.requireAdminSession();
+      if (!session) return;
+      await renderRows();
+    }
+
+    filterForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      await renderRows();
+    });
+
+    bootstrap();
+  </script>
+</body>
+</html>

@@ -12,6 +12,10 @@
   <link rel="stylesheet" href="css/common.css">
   <link rel="stylesheet" href="css/questionnaire-common.css">
   <link rel="stylesheet" href="css/questionnaire-step1.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/public-data.js"></script>
 </head>
 
 <body class="page-canvas">
@@ -429,7 +433,7 @@
     }
 
     function saveStep1ScoreState() {
-      const config = cloneConfig(MASTER_SCORING_CONFIG);
+      const config = getCurrentScoringConfig();
       const axesAfterStep1 = scoreStep1Answers(answerKeys, config);
       const branchKey = calculateBranchKey(axesAfterStep1, config);
       const nearestProfile = calculateNearestProfile(axesAfterStep1, config.summaryProfiles);
@@ -447,6 +451,21 @@
         selectedFinish: null,
         profileKey: nearestProfile.profileKey
       });
+    }
+
+    function getCurrentScoringConfig() {
+      try {
+        const parsed = JSON.parse(sessionStorage.getItem(SCORING_CONFIG_KEY) || "null");
+        if (parsed && parsed.axisOrder) return parsed;
+      } catch (error) {
+        console.error("Failed to read scoring config from sessionStorage.", error);
+      }
+      return cloneConfig(MASTER_SCORING_CONFIG);
+    }
+
+    async function initializeScoringConfig() {
+      const remoteConfig = await window.FragrancePublicData?.loadActiveScoringConfig?.();
+      persistScoringConfig(remoteConfig && remoteConfig.axisOrder ? remoteConfig : cloneConfig(MASTER_SCORING_CONFIG));
     }
 
     function persistStep1Answers() {
@@ -574,8 +593,6 @@
       updateButtons();
     }
 
-    persistScoringConfig(cloneConfig(MASTER_SCORING_CONFIG));
-
     brandLink.addEventListener("click", (event) => {
       event.preventDefault();
       returnToTop();
@@ -584,7 +601,7 @@
     returnTopBtnMobile.addEventListener("click", returnToTop);
     headerPrevBtn.addEventListener("click", movePrev);
     headerNextBtn.addEventListener("click", moveNext);
-    render();
+    initializeScoringConfig().finally(render);
   </script>
 </body>
 

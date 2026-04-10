@@ -11,6 +11,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/common.css">
   <link rel="stylesheet" href="css/reservation-complete.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/public-data.js"></script>
 </head>
 
 <body class="page-canvas">
@@ -203,11 +207,31 @@
       }, 1000);
     }
 
-    function loadReservation() {
+    async function loadReservation() {
       try {
         reservation = JSON.parse(window.sessionStorage.getItem(STORAGE_KEY) || "null");
       } catch (error) {
         reservation = null;
+      }
+
+      if ((!reservation || !reservation.slot || !reservation.guestCount) && window.FragrancePublicData?.fetchReservationByCode) {
+        const params = new URLSearchParams(window.location.search);
+        const reservationCode = params.get("reservationCode");
+        const remoteReservation = await window.FragrancePublicData.fetchReservationByCode(reservationCode);
+        if (remoteReservation) {
+          reservation = {
+            reservationCode: remoteReservation.reservation_code,
+            slot: remoteReservation.slot_label,
+            visitType: remoteReservation.visit_type,
+            guestCount: remoteReservation.guest_count,
+            memo: remoteReservation.staff_memo || "",
+            axes: remoteReservation.axes || null,
+            profileKey: remoteReservation.profile_key || null,
+            summaryHeadline: remoteReservation.summary_headline || null,
+            summaryBody: remoteReservation.summary_body || null
+          };
+          window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(reservation));
+        }
       }
 
       if (!reservation || !reservation.slot || !reservation.guestCount) {

@@ -8,6 +8,10 @@
   <meta name="description" content="アンケート回答後の香りバランス確認ページです。5軸グラフとスライダーで微調整し、店頭での香りづくり準備につなげます。">
   <link rel="stylesheet" href="css/common.css">
   <link rel="stylesheet" href="css/fragrance-graph.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/public-data.js"></script>
 </head>
 
 <body class="page-canvas">
@@ -137,11 +141,13 @@
     const brandLink = document.getElementById("brand-link");
     const reserveLink = document.getElementById("reserve-link");
     const presetButtons = document.querySelectorAll("[data-preset]");
+    let syncTimerId = null;
     function clampValue(value, min = 0, max = 100) { return Math.min(max, Math.max(min, Math.round(value))); }
     function getScoreState() { try { return JSON.parse(sessionStorage.getItem(SCORE_STATE_KEY) || "{}") || {}; } catch (error) { return {}; } }
     function getConfig() { try { return JSON.parse(sessionStorage.getItem(SCORING_CONFIG_KEY) || "null") || {}; } catch (error) { return {}; } }
     function getDraft() { try { return JSON.parse(sessionStorage.getItem(DRAFT_KEY) || "null"); } catch (error) { return null; } }
     function getPresets() { return getConfig().graphPresets || FALLBACK_PRESETS; }
+    function getProfileMap() { return getConfig().summaryProfiles || {}; }
     function getCurrentAxes() {
       const draft = getDraft();
       const scoreState = getScoreState();
@@ -165,7 +171,7 @@
       const axisPayload = Object.fromEntries(axes.map((axis) => [axis.id, clampValue(axis.value)]));
       const config = getConfig();
       const scoreState = getScoreState();
-      const nearestProfile = calculateNearestProfile(axisPayload, config.summaryProfiles);
+      const nearestProfile = calculateNearestProfile(axisPayload, getProfileMap());
       sessionStorage.setItem(DRAFT_KEY, JSON.stringify({
         axes: axisPayload,
         selectedFinish: scoreState.selectedFinish || null,
@@ -174,6 +180,25 @@
         summaryBody: nearestProfile.profile?.body || null,
         updatedAt: new Date().toISOString()
       }));
+      queueQuestionnaireResultSync(axisPayload, nearestProfile);
+    }
+    function queueQuestionnaireResultSync(axisPayload, nearestProfile) {
+      const scoreState = getScoreState();
+      const identifier = {
+        id: scoreState.questionnaireResultId,
+        resultCode: scoreState.questionnaireResultCode
+      };
+      if (!identifier.id && !identifier.resultCode) return;
+      if (syncTimerId) window.clearTimeout(syncTimerId);
+      syncTimerId = window.setTimeout(async () => {
+        await window.FragrancePublicData?.updateQuestionnaireResult?.(identifier, {
+          adjusted_axes: axisPayload,
+          profile_key: nearestProfile.profileKey || null,
+          summary_headline: nearestProfile.profile?.headline || null,
+          summary_body: nearestProfile.profile?.body || null,
+          updated_at: new Date().toISOString()
+        });
+      }, 400);
     }
     function returnToTop() {
       if (!window.confirm("トップページへ戻ると、ここまでの調整内容は破棄されます。戻りますか？")) return;
