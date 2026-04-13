@@ -41,3 +41,6 @@ UTF-8、BOMはつけてはいけない。
 
 必要以上に Markdown を増やさないでください。  
 役割が既存文書と重なる場合は、新規作成ではなく既存文書への追記・更新・統合を優先してください。
+
+## 現行実装における優先順位
+正とする順序は 現行実装と schema → active scoring_configs → questionnaire.html の MASTER_SCORING_CONFIG → 研究メモ / 将来構想
