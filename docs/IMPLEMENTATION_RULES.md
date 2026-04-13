@@ -1,110 +1,79 @@
 # IMPLEMENTATION_RULES
 
-本書は `ロジック実装.md` と `Supabase 前提の静的HTMLアプリへ移行.md` を、実装時の共通ルールとして再編したものです。
+本書は、今後このリポジトリで実装を進める際の共通ルールです。
+
+## 文書運用ルール
+
+- `SPEC.md`、`IMPLEMENTATION_RULES.md`、`SURVEY_SCORING_LOGIC.md`、`MATERIAL_POINTS.md` は固定仕様書として扱う
+- `COMPLETED_REQUIREMENTS.md` は実装済みだけを書く
+- `UNMET_REQUIREMENTS.md` は未達だけを書く
+- 未達が達成されたら `UNMET_REQUIREMENTS.md` から削除し、`COMPLETED_REQUIREMENTS.md` へ移す
+- 同じ項目を `COMPLETED` と `UNMET` の両方に置かない
+- 実装状況の変化で更新するのは主に `COMPLETED` と `UNMET`
+- 要件そのものが変わったときに更新するのは `SPEC`、`SURVEY_SCORING_LOGIC`、`MATERIAL_POINTS`
 
 ## 判断優先順位
 
-仕様や文言に差分が見えた場合は、以下の順で判断する。
+1. 最新のユーザー指示
+2. `docs/SPEC.md`
+3. `docs/SURVEY_SCORING_LOGIC.md`
+4. `docs/MATERIAL_POINTS.md`
+5. `deep-research-report.md`
+6. 現行コード
 
-1. 現在の実装コード
-2. `supabase/schema.sql`
-3. active `scoring_configs`
-4. `questionnaire.html` の `MASTER_SCORING_CONFIG`
-5. `deep-research-report.md` 由来の研究値や将来案
+補足:
 
-研究メモは根拠資料として扱うが、現行挙動の正解データとしては扱わない。
+- 配点や原料プロファイルで現行コードと `deep-research-report.md` が異なる場合、仕様上は `deep-research-report.md` 側を正とする
+- その差分は「未実装」または「未追従」として `UNMET_REQUIREMENTS.md` に残す
 
-## 共通方針
+## 顧客側 UI ルール
 
-- 既存の UI、レイアウト、DOM 構造、class 名、CTA 導線、モバイル表示を大きく崩さない
-- 実装基盤は静的 HTML + CSS + JavaScript とし、フレームワーク前提にしない
-- 公開ページのロジックは、既存方針どおり各 HTML 内の script を基本とする
-- 複数ページで共通化価値がある処理のみ `js/` 配下へ切り出す
+- 現在の FrontPage 群の見た目と導線を大きく崩さない
+- 公開ページは匿名利用前提でよい
+- 顧客が入力した回答や五軸は、後続の予約と店舗対応に引き継げること
 
-## 配点設定の扱い
+## 店舗スタッフ / 管理者 UI ルール
 
-- 配点ロジックの fallback 主編集箇所は `questionnaire.html` の `MASTER_SCORING_CONFIG`
-- 本番運用での主編集経路は `admin-scoring.html` と `scoring_configs`
-- `questionnaire_step2.html`、`fragrance-graph.html`、`reservation.html` には、主編集箇所が `questionnaire.html` 側にあることを分かるコメントを残す
-- 文書更新時は、現行挙動を先に合わせ、その後に fallback 値と説明文を追随させる
+- IT リテラシーが高くなくても使える粒度にする
+- JSON 直接編集を前提にしない
+- 数値調整はスピンボタンや明示的な入力欄で扱う
+- 必要なページは役割単位で明確に分ける
+- ボタン名称と入力項目名は業務用語に寄せる
 
-## 固定ルール
+## 認証・権限ルール
 
-- 軸順は `floral -> fresh -> woody -> spicy -> sweet`
-- 全軸の演算結果は常に `0` から `100` に clamp する
-- 回答キーは表示文言ではなく `A` / `B` / `C` / `ALL` / `NONE` で保持する
-- `全部好き` は `ALL`、`この中にはない` は `NONE` として扱う
-- STEP2 の分岐 tie-break は `floral -> fresh -> woody`
+- 顧客側は基本的に未認証で使える構成
+- 管理導線は Supabase Auth を使う
+- ロールは最低限 `staff` と `manager` を分ける
+- `manager` は `staff` の権限に加えて、権限管理、基剤管理、原料管理を扱える
+- クライアント側で `service role key` は使わない
 
-## sessionStorage ルール
+## データ管理ルール
 
-### `fragranceScoringConfig`
+- `customer_id` で顧客履歴を束ねる
+- 五軸は最低限次の 3 時点を持つ
+  - アンケート結果
+  - 予約時点で確定した値
+  - 店舗調整後の最終値
+- レシピは、最終五軸と材料構成が結びついた形で保存する
+- 材料マスタは `material_type = base | ingredient` を持つ共通設計を正とする
+- UI 上は基剤と原料を分けて見せてもよい
 
-- active scoring config を保存する
-- public ページ間で同じ配点設定を参照する
+## 数値入力ルール
 
-### `fragranceScoreState`
+- 五軸は `floral` / `fresh` / `woody` / `spicy` / `sweet` の 5 軸固定
+- 基剤・原料の数値は「単位量あたり五軸へ与える値」で持つ
+- 基剤・原料ともに次を管理対象とする
+  - 名称
+  - ID
+  - 商品種
+  - ロット
+  - 単位量あたり五軸値
+  - テンプレート種別
 
-- STEP1 回答
-- STEP1 / STEP2 / Q8 の回答キー
-- `branchKey`
-- `axesAfterStep1`
-- `axesAfterStep2`
-- `finalAxes`
-- `resetAxes`
-- `selectedFinish`
-- `profileKey`
-- `updatedAt`
+## 実装上の前提
 
-### `fragranceReservationDraft`
-
-- graph 画面での調整後軸
-- 仕上がりキー
-- 要約見出し / 本文
-- 更新時刻
-
-### `fragranceReservationConfirmation`
-
-- 予約確定後に完了画面へ渡す表示用 payload
-
-## Supabase 利用ルール
-
-- クライアント側では `anonKey` のみを使う
-- `service role key` は使わない
-- 管理画面は Supabase Auth の email / password + RLS を前提にする
-- 公開ページは未認証でも使える範囲の policy を持つ
-- Supabase 接続は `js/supabase-client.js` に集約する
-- 公開導線のデータ入出力は `js/public-data.js` に集約する
-- 管理画面の CRUD は `js/admin-data.js` に集約する
-- 認証関連は `js/admin-auth.js` に集約する
-
-## ページごとの責務
-
-- `questionnaire.html`
-  active scoring config の取得、STEP1 計算、STEP2 への引き渡し
-- `questionnaire_step2.html`
-  STEP2 と Q8 の計算、`questionnaire_results` 保存
-- `fragrance-graph.html`
-  調整後軸の保存、preset 適用、要約プロフィールの再計算
-- `reservation.html`
-  予約枠取得、予約保存、完了画面への遷移
-- `reservation-complete.html`
-  `reservationCode` による予約内容復元
-- 管理画面
-  認証、ダッシュボード、予約、予約枠、配点、原料、設定の管理
-
-## fallback ルール
-
-- 公開ページの優先順は `Supabase -> sessionStorage -> ローカル fallback / demo data`
-- `questionnaire.html` と `questionnaire_step2.html` はローカル進行を維持できること
-- `fragrance-graph.html` はローカル draft で使えること
-- `reservation.html` は予約枠取得失敗時のみ demo slots fallback を許容すること
-- `reservation-complete.html` は sessionStorage を優先しつつ、必要時は `reservationCode` で Supabase 参照できること
-
-## 品質条件
-
-- `null` / `undefined` / network error を安全に扱う
-- 例外で画面全体が停止しない構造にする
-- `console.error` の出力は許容する
-- `alert` の乱用は避ける
-- 長い重複コードは避け、共有化できるものだけ共有する
+- バックエンドは Supabase
+- 公開導線と管理導線でデータを分断しない
+- 再注文やおすすめテンプレート拡張に備えて、顧客、五軸、レシピ、材料構成の紐付けを残す
+- 将来の推薦ロジック追加を前提に、五軸とレシピを再利用しやすい粒度で保存する

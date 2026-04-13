@@ -1,30 +1,31 @@
 # MATERIAL_POINTS
 
-本書は `deep-research-report.md` の原料プロファイル案と、`Supabase 前提の静的HTMLアプリへ移行.md` の `material_points` テーブル定義を再編したものです。
+本書は `deep-research-report.md` を基準に、材料マスタと初期原料プロファイルを定義する仕様書です。
 
-## この文書で正とする範囲
+## 基本方針
 
-- 本書は `material_points` の初期テンプレートと将来拡張の前提を定義する
-- 本書の値は、現行のアンケート配点ロジックそのものを決める主データではない
-- 公開導線の現在挙動に差分がある場合は、`SURVEY_SCORING_LOGIC.md` と実装コードを優先する
+- 基剤と原料は、DB 上は共通マスタ `material_points` で管理し、`material_type` に `base` / `ingredient` を持たせる方針を正とする
+- UI 上は「基剤管理」と「原料管理」を分けてよい
+- 数値は「単位量あたり五軸へ与える値」で持つ
+- 入力 UI はスピンボタンで微調整できる形を基本とする
 
-## 現在の位置づけ
+## 管理対象項目
 
-- `material_points` は将来の提案ロジック拡張用の基礎データ
-- 現段階では管理画面 `admin-materials.html` から CRUD できることを主目的とする
-- 公開導線ではまだ原料推薦や自動ブレンド計算に直結していない
-
-## `material_points` テーブルの想定
-
-- `material_code`
+- `material_type`
 - `material_name`
-- `category`
-- `point_axes`
+- `material_id`
+- `product_type`
+- `lot`
+- `unit_label`
+- `point_axes_per_unit`
+- `template_tags`
 - `note`
 - `is_active`
 - `sort_order`
 
-`point_axes` は次の 5 軸を持つ。
+## `point_axes_per_unit`
+
+`point_axes_per_unit` は次の 5 軸を持つ。
 
 - `floral`
 - `fresh`
@@ -32,35 +33,62 @@
 - `spicy`
 - `sweet`
 
-## 初期原料プロファイル案
+## マスタの扱い
 
-以下は研究メモから移した初期値であり、将来の提案ロジックや校正対象のベースとする。
+### 基剤
+
+- 基剤名
+- 基剤 ID
+- 商品種
+- ロット
+- 香りゲージに与える数値 / 料単位
+- テンプレート種類
+
+### 原料
+
+- 原料名
+- 原料 ID
+- 商品種
+- ロット
+- 香りゲージに与える数値 / 料単位
+- テンプレート種類
+
+## 初期原料プロファイル
+
+以下は `deep-research-report.md` の 16 原料プロファイルを、そのまま初期値として採用したものです。  
+これは現段階の正本であり、将来の校正前提の初期値です。
 
 ```json
 {
   "ingredientProfiles": {
     "bergamot":   {"floral": 10, "fresh": 60, "woody": 15, "spicy": 10, "sweet": 5},
-    "lemon":      {"floral": 2, "fresh": 78, "woody": 5, "spicy": 5, "sweet": 10},
-    "grapefruit": {"floral": 5, "fresh": 70, "woody": 5, "spicy": 5, "sweet": 15},
+    "lemon":      {"floral": 2,  "fresh": 78, "woody": 5,  "spicy": 5,  "sweet": 10},
+    "grapefruit": {"floral": 5,  "fresh": 70, "woody": 5,  "spicy": 5,  "sweet": 15},
     "lavender":   {"floral": 35, "fresh": 25, "woody": 15, "spicy": 15, "sweet": 10},
-    "muguet":     {"floral": 55, "fresh": 25, "woody": 5, "spicy": 5, "sweet": 10},
-    "damaskRose": {"floral": 60, "fresh": 10, "woody": 5, "spicy": 5, "sweet": 20},
+    "muguet":     {"floral": 55, "fresh": 25, "woody": 5,  "spicy": 5,  "sweet": 10},
+    "damaskRose": {"floral": 60, "fresh": 10, "woody": 5,  "spicy": 5,  "sweet": 20},
     "assamTea":   {"floral": 10, "fresh": 25, "woody": 35, "spicy": 20, "sweet": 10},
-    "cassis":     {"floral": 5, "fresh": 25, "woody": 5, "spicy": 15, "sweet": 50},
+    "cassis":     {"floral": 5,  "fresh": 25, "woody": 5,  "spicy": 15, "sweet": 50},
     "magnolia":   {"floral": 55, "fresh": 15, "woody": 10, "spicy": 10, "sweet": 10},
-    "musk":       {"floral": 10, "fresh": 25, "woody": 10, "spicy": 5, "sweet": 50},
-    "amber":      {"floral": 5, "fresh": 15, "woody": 35, "spicy": 20, "sweet": 25},
-    "sandalwood": {"floral": 5, "fresh": 5, "woody": 55, "spicy": 10, "sweet": 25},
-    "squash":     {"floral": 10, "fresh": 65, "woody": 3, "spicy": 2, "sweet": 20},
-    "seaBlue":    {"floral": 10, "fresh": 75, "woody": 5, "spicy": 5, "sweet": 5},
-    "hibiscus":   {"floral": 50, "fresh": 15, "woody": 5, "spicy": 5, "sweet": 25},
-    "coconutRum": {"floral": 5, "fresh": 10, "woody": 15, "spicy": 10, "sweet": 60}
+    "musk":       {"floral": 10, "fresh": 25, "woody": 10, "spicy": 5,  "sweet": 50},
+    "amber":      {"floral": 5,  "fresh": 15, "woody": 35, "spicy": 20, "sweet": 25},
+    "sandalwood": {"floral": 5,  "fresh": 5,  "woody": 55, "spicy": 10, "sweet": 25},
+    "squash":     {"floral": 10, "fresh": 65, "woody": 3,  "spicy": 2,  "sweet": 20},
+    "seaBlue":    {"floral": 10, "fresh": 75, "woody": 5,  "spicy": 5,  "sweet": 5},
+    "hibiscus":   {"floral": 50, "fresh": 15, "woody": 5,  "spicy": 5,  "sweet": 25},
+    "coconutRum": {"floral": 5,  "fresh": 10, "woody": 15, "spicy": 10, "sweet": 60}
   }
 }
 ```
 
+## レシピとの紐付け方針
+
+- 最終五軸グラフと、基剤 / 原料 / 割合 / ロットを 1 セットで保存する
+- レシピは再注文時に参照できること
+- 将来は、再注文が増えたレシピや五軸傾向をおすすめテンプレート化できる構造にする
+
 ## 運用メモ
 
-- 同名原料でも精油、アコード、仕入先差で香りは変わるため、固定真値として扱わない
-- 研究値は「初期パラメータ」として保持し、実運用後に見直せる前提にする
-- 原料推薦ロジック、Top/Middle/Last のブレンド探索、比率最適化は今後の拡張範囲
+- 同名の基剤や原料でも、ロット差や仕入先差で香り傾向は変わり得る
+- 初期値は固定真値ではなく、将来の校正前提で扱う
+- 基剤の初期テンプレート値は、店舗で扱う商品種に応じて今後追加していく

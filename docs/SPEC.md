@@ -1,97 +1,118 @@
 # SPEC
 
-本書は `deep-research-report.md`、`ロジック実装.md`、`Supabase 前提の静的HTMLアプリへ移行.md` を、現行実装の構成に合わせて再編した仕様固定書です。
+本書は、今後このリポジトリで目標とする仕様の固定書です。  
+配点設計と原料プロファイル設計の正本は `deep-research-report.md` とし、実装の進捗管理は `COMPLETED_REQUIREMENTS.md` / `UNMET_REQUIREMENTS.md` で行います。
 
-## 仕様の優先順位
+## 正本の考え方
 
-迷った場合は、以下の順で正とする。
+- 配点ロジックと原料プロファイルの基準は `deep-research-report.md`
+- 目標仕様の整理先は `docs/SPEC.md`、`docs/IMPLEMENTATION_RULES.md`、`docs/SURVEY_SCORING_LOGIC.md`、`docs/MATERIAL_POINTS.md`
+- 実装済み / 未達の状態管理は `docs/COMPLETED_REQUIREMENTS.md`、`docs/UNMET_REQUIREMENTS.md`
+- 現行コードが仕様書と異なる場合は、原則としてコード側が未追従とみなす
 
-1. 現在のリポジトリ内の実装と `supabase/schema.sql`
-2. 実行時に参照される active `scoring_configs`
-3. `questionnaire.html` の `MASTER_SCORING_CONFIG`
-4. 研究メモ由来の案や将来構想
+## システムの到達目標
 
-補足:
+- 顧客側は現状のフロント導線を大きく崩さず使えること
+- 店舗スタッフが IT に強くなくても、予約枠作成、予約確認、来店前準備、ワークショップ結果登録、レシピ登録まで扱えること
+- 店舗管理者が、スタッフ権限、基剤、原料、将来のテンプレート拡張を管理できること
+- バックエンドは Supabase を使用すること
+- 再注文時に過去レシピと五軸グラフを参照でき、蓄積結果を将来のおすすめテンプレートへ反映できること
 
-- 本書は「現行仕様」を固定する文書であり、研究メモや構想メモより優先する
-- `material_points` は現行公開導線の挙動を決める主データではない
+## 役割
 
-## プロジェクト概要
+### A. 顧客側
 
-- 本アプリは、静的 HTML + CSS + JavaScript を前提にした香りアンケート / 香りグラフ / 予約導線 / 管理画面の構成を持つ
-- 公開導線の保存先と取得先は Supabase を前提とする
-- README は案内用途として現状維持し、本書群で仕様を固定する
+- 現状の FrontPage 群をそのまま使う
+- 対象ページ
+  - `index.html`
+  - `questionnaire.html`
+  - `questionnaire_step2.html`
+  - `fragrance-graph.html`
+  - `reservation.html`
+  - `reservation-complete.html`
+- 取得したい情報
+  - アンケート回答
+  - アンケート計算後の五軸
+  - 予約時点で確定した五軸
+  - 予約情報
+  - 顧客識別用の `customer_id`
 
-## 画面構成
+### B. 店舗スタッフ側
 
-### 公開導線
+- 管理画面ログイン
+- 出勤シフトに応じた予約枠作成
+- 予約状況確認
+- 来店前の顧客情報確認
+  - 予約情報
+  - 事前アンケート回答
+  - 五軸グラフ
+- 店舗での対話後に確定した最終五軸グラフの入力
+- 商品作成時のレシピ登録
+  - 基剤
+  - 原料
+  - 各割合
+  - ロット
+  - 商品種
 
-1. `index.html`
-2. `questionnaire.html`
-3. `questionnaire_step2.html`
-4. `fragrance-graph.html`
-5. `reservation.html`
-6. `reservation-complete.html`
+### C. 店舗管理者側
 
-### 管理画面
+- 管理者画面への登録権限 / 編集
+- 店舗スタッフ権限の登録 / 編集
+- 基剤登録 / 編集
+- 原料登録 / 編集
+- 将来のおすすめテンプレート管理
 
-1. `admin-login.html`
-2. `admin-dashboard.html`
-3. `admin-reservations.html`
-4. `admin-slots.html`
-5. `admin-scoring.html`
-6. `admin-materials.html`
-7. `admin-settings.html`
+## 管理画面の考え方
 
-## 固定ドメイン
+- UI 上は「店舗スタッフ向け機能」と「店舗管理者向け機能」を分ける
+- ただしログイン導線は共通管理ログインでよい
+- 権限はロールで分ける
+  - `staff`
+  - `manager`
 
-- 香り評価軸は `floral` / `fresh` / `woody` / `spicy` / `sweet` の 5 軸固定
-- 軸スコアは `0` から `100` の範囲で扱い、初期値は `50`
-- アンケートの回答キーは `A` / `B` / `C` / `ALL` / `NONE` を固定で使う
-- 公開ページで使う配点ロジックは、通常時は Supabase の `scoring_configs` の active レコードを優先し、取得できない場合は `questionnaire.html` の `MASTER_SCORING_CONFIG` を fallback とする
-- `material_points` は将来の提案ロジック拡張用のデータ置き場であり、現段階では管理用 CRUD が主用途
+## Supabase で扱う情報
 
-## データ保存
+### 顧客・予約・結果
 
-### sessionStorage
+- `customer_id`
+- 予約情報
+- 事前アンケート回答
+- 五軸グラフ
+  - アンケート計算直後
+  - 予約時点
+  - 店舗調整後の最終値
+- スタッフメモ
+- 再注文履歴
 
-- `fragranceScoringConfig`
-- `fragranceScoreState`
-- `fragranceStep1Answers`
-- `fragranceReservationDraft`
-- `fragranceReservationConfirmation`
+### レシピ
 
-### Supabase テーブル
+- 店舗で確定した五軸グラフ
+- 使用した基剤
+- 使用した原料
+- 各割合
+- ロット
+- 商品種
+- 五軸との紐付け
 
-- `questionnaire_results`
-- `reservation_slots`
-- `reservations`
-- `scoring_configs`
-- `material_points`
-- `admin_settings`
+### マスタ
 
-## ページごとの責務
+- 基剤マスタ
+- 原料マスタ
+- 将来のおすすめテンプレート候補
+- スタッフ / 管理者権限
 
-- `questionnaire.html`
-  STEP1 の回答収集、配点設定の確定、STEP1 結果保存
-- `questionnaire_step2.html`
-  STEP2 / Q8 の実行、最終 5 軸計算、要約プロフィール確定、`questionnaire_results` 保存
-- `fragrance-graph.html`
-  最終軸の可視化と手動調整、`adjusted_axes` 更新
-- `reservation.html`
-  予約枠取得、要約表示、予約確定、`reservations` 保存
-- `reservation-complete.html`
-  予約コードによる復元表示
-- 管理画面群
-  予約、予約枠、配点設定、原料ポイント、設定値の管理
+## 基剤と原料の扱い
 
-## データ連携の基本順序
+- DB 上は共通マスタ `material_points` を中心に扱い、`material_type` で `base` / `ingredient` を区別する方針を正とする
+- UI 上は基剤管理画面と原料管理画面を分けてもよい
+- 数値管理は「単位量あたり五軸へ与える値」で扱う
 
-- 公開ページは `Supabase -> sessionStorage -> ローカル fallback / demo data` の優先順で扱う
-- 管理画面は Supabase 前提で動作し、未設定時は明示メッセージを出す
+## 最終成果物の定義
 
-## 現段階の範囲外
-
-- `material_points` を使った原料提案ロジック
-- 16 原料プロファイルからの自動ブレンド探索
-- ワークショップ後の 5 軸評価を使った校正フロー
+- 店舗スタッフが迷わず使える粒度のページ構成
+- Supabase を用いたバックエンド
+- スタッフがシフトに応じて予約枠を作成できること
+- 予約状況や事前アンケートを見て来店前準備ができること
+- ワークショップで出来上がった内容を登録できること
+- レシピと五軸グラフの紐付け粒度を高く保てること
+- 再注文実績が増えたものを将来のフロントおすすめテンプレートに追加できること
