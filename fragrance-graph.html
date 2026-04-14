@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ja">
 
 <head>
@@ -11,6 +11,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
   <script src="js/supabase-client.js"></script>
+  <script src="js/fragrance-master-data.js"></script>
   <script src="js/public-data.js"></script>
 </head>
 
@@ -141,6 +142,7 @@
     const brandLink = document.getElementById("brand-link");
     const reserveLink = document.getElementById("reserve-link");
     const presetButtons = document.querySelectorAll("[data-preset]");
+    let activeMaterialRows = window.FragranceMasterData.createMaterialTemplates();
     let syncTimerId = null;
     function clampValue(value, min = 0, max = 100) { return Math.min(max, Math.max(min, Math.round(value))); }
     function getScoreState() { try { return JSON.parse(sessionStorage.getItem(SCORE_STATE_KEY) || "{}") || {}; } catch (error) { return {}; } }
@@ -157,6 +159,20 @@
       const scoreState = getScoreState();
       return scoreState.resetAxes || scoreState.finalAxes || FALLBACK_AXES;
     }
+    async function loadActiveMaterialRows() {
+      const remoteRows = await window.FragrancePublicData?.loadActiveMaterialPoints?.();
+      if (Array.isArray(remoteRows) && remoteRows.length) {
+        activeMaterialRows = remoteRows;
+      }
+    }
+    function getRecommendedMaterials(axisPayload) {
+      return window.FragranceMasterData.rankMaterials(axisPayload, activeMaterialRows, 4).map((row) => ({
+        materialCode: row.material_code,
+        materialName: row.material_name,
+        category: row.category,
+        score: row.score
+      }));
+    }
     function calculateNearestProfile(axes, profiles) {
       let winnerKey = null; let winnerProfile = null; let bestDistance = Number.POSITIVE_INFINITY;
       Object.entries(profiles || {}).forEach(([profileKey, profile]) => {
@@ -172,12 +188,14 @@
       const config = getConfig();
       const scoreState = getScoreState();
       const nearestProfile = calculateNearestProfile(axisPayload, getProfileMap());
+      const recommendedMaterials = getRecommendedMaterials(axisPayload);
       sessionStorage.setItem(DRAFT_KEY, JSON.stringify({
         axes: axisPayload,
         selectedFinish: scoreState.selectedFinish || null,
         profileKey: nearestProfile.profileKey,
         summaryHeadline: nearestProfile.profile?.headline || null,
         summaryBody: nearestProfile.profile?.body || null,
+        recommendedMaterials,
         updatedAt: new Date().toISOString()
       }));
       queueQuestionnaireResultSync(axisPayload, nearestProfile);
@@ -263,6 +281,7 @@
     brandLink.addEventListener("click", (event) => { event.preventDefault(); returnToTop(); });
     reserveLink.addEventListener("click", persistReservationDraft);
     renderGrid(); renderSliders(); renderShape(); renderSummary(); persistReservationDraft();
+    loadActiveMaterialRows().then(persistReservationDraft);
   </script>
 </body>
 

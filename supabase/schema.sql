@@ -106,6 +106,12 @@ on public.reservation_slots for select
 to anon, authenticated
 using (is_active = true and status in ('open', 'recommended'));
 
+drop policy if exists "public select active material points" on public.material_points;
+create policy "public select active material points"
+on public.material_points for select
+to anon, authenticated
+using (is_active = true);
+
 drop policy if exists "public insert questionnaire results" on public.questionnaire_results;
 create policy "public insert questionnaire results"
 on public.questionnaire_results for insert

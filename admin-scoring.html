@@ -13,26 +13,43 @@
     <section class="admin-panel">
       <p class="section-label">Scoring Config</p>
       <h1>配点ロジック</h1>
-      <p class="admin-note">fallback は `questionnaire.html` の `MASTER_SCORING_CONFIG` です。本番運用では active config をここで更新します。</p>
+      <p class="admin-note">フォームの数値を調整すると、保存用 JSON は自動更新されます。公開側は active version を読み込みます。</p>
       <div class="admin-grid cols-3">
         <article class="admin-kpi"><span>active version</span><strong id="active-version">-</strong></article>
         <article class="admin-kpi"><span>note</span><strong id="active-note" style="font-size:1rem;">-</strong></article>
         <article class="admin-kpi"><span>updated</span><strong id="active-updated" style="font-size:1rem;">-</strong></article>
       </div>
+      <div class="admin-actions">
+        <button class="admin-btn secondary" id="scoring-load-template" type="button">研究レポート初期テンプレートを読込</button>
+        <button class="admin-btn secondary" id="scoring-load-active" type="button">active 設定へ戻す</button>
+      </div>
+      <p class="admin-note" id="scoring-status">読み込み中です。</p>
     </section>
     <section class="admin-grid cols-2">
       <article class="admin-panel">
-        <h2>編集セクションの見取り図</h2>
-        <div class="admin-grid" id="scoring-sections"></div>
+        <div class="admin-card-head">
+          <div>
+            <h2>フォーム編集</h2>
+            <p class="admin-note">非エンジニア向けに、質問ごとの配点を表形式で編集できます。</p>
+          </div>
+        </div>
+        <div class="admin-form-stack" id="scoring-editor"></div>
       </article>
       <article class="admin-panel">
+        <div class="admin-card-head">
+          <div>
+            <h2>保存内容の確認</h2>
+            <p class="admin-note">JSON は確認用です。保存すると新しい version が作られます。</p>
+          </div>
+        </div>
         <form class="admin-form" id="scoring-form">
           <label>version メモ<input id="scoring-note" type="text" placeholder="例: spring update"></label>
-          <label>設定 JSON<textarea id="scoring-json" rows="26"></textarea></label>
+          <label>保存される JSON<textarea id="scoring-json" rows="24" readonly></textarea></label>
           <div class="admin-actions">
             <button class="admin-btn primary" type="submit">新 version として保存</button>
           </div>
         </form>
+        <div class="admin-grid" id="scoring-sections"></div>
       </article>
     </section>
   </main>
@@ -41,74 +58,7 @@
   <script src="js/supabase-client.js"></script>
   <script src="js/admin-auth.js"></script>
   <script src="js/admin-data.js"></script>
-  <script>
-    let activeConfigRow = null;
-    const sectionMount = document.getElementById("scoring-sections");
-    const scoringJson = document.getElementById("scoring-json");
-
-    function renderConfigSections(config) {
-      const sections = [
-        ["初期値 / 重み", { initialAxisScore: config.initialAxisScore, questionWeights: config.questionWeights }],
-        ["STEP1 配点", { step1PrimaryAxes: config.step1PrimaryAxes, step1ScoreMap: config.step1ScoreMap }],
-        ["branchTemplates", { branchTemplates: config.branchTemplates, branchDistanceWeights: config.branchDistanceWeights }],
-        ["STEP2 配点", { step2PrimaryAxes: config.step2PrimaryAxes, step2ScoreMap: config.step2ScoreMap }],
-        ["Q8 / finishTemplates", { q8PrimaryAxes: config.q8PrimaryAxes, q8ScoreMap: config.q8ScoreMap, finishKeyByAnswer: config.finishKeyByAnswer, finishTemplates: config.finishTemplates, finishBlendRatio: config.finishBlendRatio }],
-        ["summaryProfiles", { summaryProfiles: config.summaryProfiles }]
-      ];
-      sectionMount.innerHTML = "";
-      sections.forEach(([title, payload]) => {
-        const card = document.createElement("section");
-        card.className = "admin-panel";
-        card.innerHTML = `<h3>${title}</h3><pre style="white-space:pre-wrap;margin:0;">${JSON.stringify(payload, null, 2)}</pre>`;
-        sectionMount.appendChild(card);
-      });
-    }
-
-    async function loadActiveConfig() {
-      const rows = await window.AdminData.listRows("scoring_configs", { filters: [{ operator: "eq", column: "is_active", value: true }], orders: [{ column: "version", ascending: false }], limit: 1 }).catch(() => []);
-      activeConfigRow = rows[0] || null;
-      document.getElementById("active-version").textContent = activeConfigRow?.version ?? "-";
-      document.getElementById("active-note").textContent = activeConfigRow?.note ?? "-";
-      document.getElementById("active-updated").textContent = activeConfigRow?.updated_at ? String(activeConfigRow.updated_at).slice(0, 16).replace("T", " ") : "-";
-      scoringJson.value = JSON.stringify(activeConfigRow?.config_json || {}, null, 2);
-      renderConfigSections(activeConfigRow?.config_json || {});
-    }
-
-    scoringJson.addEventListener("input", () => {
-      try {
-        renderConfigSections(JSON.parse(scoringJson.value || "{}"));
-      } catch (error) {
-        // JSON 途中入力中は無視
-      }
-    });
-
-    document.getElementById("scoring-form").addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const configJson = JSON.parse(scoringJson.value || "{}");
-      const note = document.getElementById("scoring-note").value.trim();
-      const nextVersion = Number(activeConfigRow?.version || 0) + 1;
-      if (activeConfigRow?.id) {
-        await window.AdminData.updateRow("scoring_configs", activeConfigRow.id, { is_active: false, updated_at: new Date().toISOString() }).catch(console.error);
-      }
-      await window.AdminData.insertRow("scoring_configs", {
-        config_key: `fragrance_master_v${nextVersion}`,
-        version: nextVersion,
-        is_active: true,
-        config_json: configJson,
-        note: note || null,
-        updated_at: new Date().toISOString()
-      }).catch(console.error);
-      document.getElementById("scoring-note").value = "";
-      await loadActiveConfig();
-    });
-
-    async function bootstrap() {
-      window.AdminAuth.renderAdminHeader("scoring");
-      const session = await window.AdminAuth.requireAdminSession();
-      if (!session) return;
-      await loadActiveConfig();
-    }
-    bootstrap();
-  </script>
+  <script src="js/fragrance-master-data.js"></script>
+  <script src="js/admin-scoring-page.js"></script>
 </body>
 </html>

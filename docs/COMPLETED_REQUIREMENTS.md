@@ -23,6 +23,7 @@
 
 - `js/supabase-config.js`、`js/supabase-client.js`、`js/public-data.js` が存在する
 - `public-data.js` に `scoring_configs`、`questionnaire_results`、`reservation_slots`、`reservations` の入出力処理がある
+- `public-data.js` に `material_points` の公開読込処理がある
 - `supabase/schema.sql` が存在する
 - `schema.sql` に次のテーブルがある
   - `questionnaire_results`
@@ -52,9 +53,13 @@
 - `scoring_configs` の CRUD に近い管理機能がある
 - `material_points` の CRUD に近い管理機能がある
 - `admin_settings` の CRUD に近い管理機能がある
+- `admin-scoring.html` で JSON 直編集ではなく、質問別の数値フォームから `scoring_configs` を保存できる
+- `admin-materials.html` で素材テンプレートをカード一覧と数値入力で扱える
+- `admin-materials.html` で `deep-research-report.md` 基準の16原料テンプレートを一括反映できる
 
 ## 既存マスタの状況
 
 - `material_points` という汎用材料マスタが存在する
 - `admin-materials.html` で五軸値を個別に入力して保存できる
+- `fragrance-graph.html` が `material_points` を読んで、現在の五軸に近い候補素材を draft 計算に使える
 - 現時点では「基剤」と「原料」を分けた UI / 権限設計までは入っていない

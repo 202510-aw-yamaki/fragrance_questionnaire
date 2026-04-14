@@ -3,45 +3,78 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>原料ポイント管理 | Fragrance Workshop</title>
+  <title>素材テンプレート管理 | Fragrance Workshop</title>
   <link rel="stylesheet" href="css/common.css">
   <link rel="stylesheet" href="css/admin-common.css">
 </head>
 <body class="page-canvas admin-page">
   <header class="admin-header" id="admin-header"></header>
-  <main class="admin-main site-container admin-grid cols-2">
+  <main class="admin-main site-container admin-grid">
     <section class="admin-panel">
       <p class="section-label">Material Points</p>
-      <h1>原料ごとのポイント</h1>
-      <div class="admin-table-wrap">
-        <table class="admin-table">
-          <thead><tr><th>code</th><th>名称</th><th>分類</th><th>5軸</th><th>公開</th><th>編集</th></tr></thead>
-          <tbody id="material-rows"></tbody>
-        </table>
+      <h1>素材テンプレート管理</h1>
+      <p class="admin-note">JSON ではなく、一覧カードと数値入力で素材テンプレートを管理します。`deep-research-report.md` の16原料はボタンひとつで初期投入できます。</p>
+      <div class="admin-grid cols-3">
+        <article class="admin-kpi"><span>登録件数</span><strong id="materials-kpi-total">-</strong></article>
+        <article class="admin-kpi"><span>公開中</span><strong id="materials-kpi-active">-</strong></article>
+        <article class="admin-kpi"><span>初期テンプレート</span><strong id="materials-kpi-template">16</strong></article>
       </div>
+      <div class="admin-actions">
+        <button class="admin-btn primary" id="material-seed-btn" type="button">16原料テンプレートを一括反映</button>
+      </div>
+      <p class="admin-note" id="material-seed-status">初期テンプレートを入れると、同じ code は上書きされます。</p>
     </section>
-    <section class="admin-panel">
-      <h2>新規作成 / 編集</h2>
-      <form class="admin-form" id="material-form">
-        <input id="material-id" type="hidden">
-        <label>material_code<input id="material-code" type="text" required></label>
-        <label>material_name<input id="material-name" type="text" required></label>
-        <label>category<input id="material-category" type="text"></label>
-        <div class="admin-grid cols-3">
-          <label>floral<input id="axis-floral" type="number" value="0"></label>
-          <label>fresh<input id="axis-fresh" type="number" value="0"></label>
-          <label>woody<input id="axis-woody" type="number" value="0"></label>
-          <label>spicy<input id="axis-spicy" type="number" value="0"></label>
-          <label>sweet<input id="axis-sweet" type="number" value="0"></label>
-          <label>sort_order<input id="material-sort" type="number" value="0"></label>
+    <section class="admin-grid cols-2">
+      <article class="admin-panel">
+        <div class="admin-card-head">
+          <div>
+            <h2>登録済み一覧</h2>
+            <p class="admin-note" id="material-count">0件を表示中</p>
+          </div>
         </div>
-        <label>note<textarea id="material-note" rows="4"></textarea></label>
-        <label><input id="material-active" type="checkbox" checked> is_active</label>
-        <div class="admin-actions">
-          <button class="admin-btn primary" type="submit">保存</button>
-          <button class="admin-btn secondary" id="material-reset" type="button">入力をクリア</button>
+        <div class="admin-grid cols-2">
+          <label>検索<input id="material-search" type="text" placeholder="名称・code・分類で検索"></label>
+          <label>分類<select id="material-filter"><option value="">すべて</option><option value="Top">Top</option><option value="Middle">Middle</option><option value="Last">Last</option></select></label>
         </div>
-      </form>
+        <div class="admin-card-list" id="material-rows"></div>
+      </article>
+      <article class="admin-panel">
+        <div class="admin-card-head">
+          <div>
+            <h2>新規作成 / 編集</h2>
+            <p class="admin-note">テンプレートを選ぶと入力欄へ自動展開されます。</p>
+          </div>
+        </div>
+        <form class="admin-form" id="material-form">
+          <input id="material-id" type="hidden">
+          <div class="admin-grid cols-2">
+            <label>初期テンプレート<select id="material-template-select"></select></label>
+            <div class="admin-actions admin-actions-inline">
+              <button class="admin-btn secondary" id="material-template-apply" type="button">フォームへ反映</button>
+            </div>
+          </div>
+          <label>管理コード<input id="material-code" type="text" required></label>
+          <label>表示名<input id="material-name" type="text" required></label>
+          <div class="admin-grid cols-2">
+            <label>分類<input id="material-category" type="text" placeholder="Top / Middle / Last"></label>
+            <label>表示順<input id="material-sort" type="number" value="0" step="1"></label>
+          </div>
+          <div class="admin-axis-edit-grid">
+            <label>フローラル<input id="axis-floral" type="number" value="0" step="1"></label>
+            <label>フレッシュ<input id="axis-fresh" type="number" value="0" step="1"></label>
+            <label>ウッディ<input id="axis-woody" type="number" value="0" step="1"></label>
+            <label>スパイシー<input id="axis-spicy" type="number" value="0" step="1"></label>
+            <label>スウィート<input id="axis-sweet" type="number" value="0" step="1"></label>
+          </div>
+          <p class="admin-note" id="material-total">現在の合計: 0</p>
+          <label>運用メモ<textarea id="material-note" rows="4"></textarea></label>
+          <label><input id="material-active" type="checkbox" checked> 公開する</label>
+          <div class="admin-actions">
+            <button class="admin-btn primary" type="submit">保存</button>
+            <button class="admin-btn secondary" id="material-reset" type="button">入力をクリア</button>
+          </div>
+        </form>
+      </article>
     </section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -49,104 +82,7 @@
   <script src="js/supabase-client.js"></script>
   <script src="js/admin-auth.js"></script>
   <script src="js/admin-data.js"></script>
-  <script>
-    const rowsEl = document.getElementById("material-rows");
-    const form = document.getElementById("material-form");
-
-    function getAxesInput() {
-      return {
-        floral: Number(document.getElementById("axis-floral").value || 0),
-        fresh: Number(document.getElementById("axis-fresh").value || 0),
-        woody: Number(document.getElementById("axis-woody").value || 0),
-        spicy: Number(document.getElementById("axis-spicy").value || 0),
-        sweet: Number(document.getElementById("axis-sweet").value || 0)
-      };
-    }
-
-    function fillForm(row) {
-      document.getElementById("material-id").value = row.id || "";
-      document.getElementById("material-code").value = row.material_code || "";
-      document.getElementById("material-name").value = row.material_name || "";
-      document.getElementById("material-category").value = row.category || "";
-      document.getElementById("axis-floral").value = row.point_axes?.floral ?? 0;
-      document.getElementById("axis-fresh").value = row.point_axes?.fresh ?? 0;
-      document.getElementById("axis-woody").value = row.point_axes?.woody ?? 0;
-      document.getElementById("axis-spicy").value = row.point_axes?.spicy ?? 0;
-      document.getElementById("axis-sweet").value = row.point_axes?.sweet ?? 0;
-      document.getElementById("material-sort").value = row.sort_order ?? 0;
-      document.getElementById("material-note").value = row.note || "";
-      document.getElementById("material-active").checked = row.is_active !== false;
-    }
-
-    function resetForm() {
-      form.reset();
-      document.getElementById("material-id").value = "";
-      ["axis-floral", "axis-fresh", "axis-woody", "axis-spicy", "axis-sweet", "material-sort"].forEach((id) => {
-        document.getElementById(id).value = "0";
-      });
-      document.getElementById("material-active").checked = true;
-    }
-
-    async function getAllMaterials() {
-      return window.AdminData.listRows("material_points", { orders: [{ column: "sort_order", ascending: true }] }).catch(() => []);
-    }
-
-    async function renderRows() {
-      const rows = await getAllMaterials();
-      rowsEl.innerHTML = "";
-      rows.forEach((row) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${row.material_code || ""}</td>
-          <td>${row.material_name || ""}</td>
-          <td>${row.category || ""}</td>
-          <td>${JSON.stringify(row.point_axes || {})}</td>
-          <td>${row.is_active ? "公開中" : "停止中"}</td>
-          <td><button class="admin-btn secondary" data-edit-id="${row.id}" type="button">編集</button></td>
-        `;
-        rowsEl.appendChild(tr);
-      });
-      rowsEl.querySelectorAll("[data-edit-id]").forEach((button) => {
-        button.addEventListener("click", async () => {
-          const rows = await getAllMaterials();
-          const target = rows.find((row) => row.id === button.dataset.editId);
-          if (target) fillForm(target);
-        });
-      });
-    }
-
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const payload = {
-        material_code: document.getElementById("material-code").value.trim(),
-        material_name: document.getElementById("material-name").value.trim(),
-        category: document.getElementById("material-category").value.trim() || null,
-        point_axes: getAxesInput(),
-        note: document.getElementById("material-note").value.trim() || null,
-        is_active: document.getElementById("material-active").checked,
-        sort_order: Number(document.getElementById("material-sort").value || 0),
-        updated_at: new Date().toISOString()
-      };
-      const id = document.getElementById("material-id").value;
-      if (id) {
-        await window.AdminData.updateRow("material_points", id, payload).catch(console.error);
-      } else {
-        await window.AdminData.insertRow("material_points", payload).catch(console.error);
-      }
-      resetForm();
-      await renderRows();
-    });
-
-    document.getElementById("material-reset").addEventListener("click", resetForm);
-
-    async function bootstrap() {
-      window.AdminAuth.renderAdminHeader("materials");
-      const session = await window.AdminAuth.requireAdminSession();
-      if (!session) return;
-      resetForm();
-      await renderRows();
-    }
-    bootstrap();
-  </script>
+  <script src="js/fragrance-master-data.js"></script>
+  <script src="js/admin-materials-page.js"></script>
 </body>
 </html>

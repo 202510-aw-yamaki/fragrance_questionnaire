@@ -29,6 +29,24 @@
     }
   }
 
+  async function loadActiveMaterialPoints() {
+    const client = window.getSupabaseClient?.();
+    if (!client) return null;
+    try {
+      const { data, error } = await client
+        .from("material_points")
+        .select("id, material_code, material_name, category, point_axes, note, is_active, sort_order, updated_at")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true })
+        .order("material_code", { ascending: true });
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error("Failed to load active material points.", error);
+      return null;
+    }
+  }
+
   async function createQuestionnaireResult(payload) {
     const client = window.getSupabaseClient?.();
     if (!client) return null;
@@ -128,6 +146,7 @@
   window.FragrancePublicData = {
     createCode,
     loadActiveScoringConfig,
+    loadActiveMaterialPoints,
     createQuestionnaireResult,
     updateQuestionnaireResult,
     fetchPublicReservationSlots,
