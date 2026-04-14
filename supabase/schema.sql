@@ -87,12 +87,28 @@ create table if not exists public.admin_settings (
   updated_at timestamptz default now()
 );
 
+create table if not exists public.workshop_sessions (
+  id uuid primary key default gen_random_uuid(),
+  reservation_id uuid unique references public.reservations(id) on delete cascade,
+  questionnaire_result_id uuid references public.questionnaire_results(id) on delete set null,
+  preparation_note text,
+  staff_summary text,
+  pre_visit_axes jsonb,
+  reservation_axes jsonb,
+  final_axes jsonb,
+  recipe_items jsonb not null default '[]'::jsonb,
+  status text not null default 'draft',
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
 alter table public.questionnaire_results enable row level security;
 alter table public.reservation_slots enable row level security;
 alter table public.reservations enable row level security;
 alter table public.scoring_configs enable row level security;
 alter table public.material_points enable row level security;
 alter table public.admin_settings enable row level security;
+alter table public.workshop_sessions enable row level security;
 
 drop policy if exists "public select active scoring config" on public.scoring_configs;
 create policy "public select active scoring config"
@@ -168,6 +184,13 @@ with check (true);
 drop policy if exists "admin settings all" on public.admin_settings;
 create policy "admin settings all"
 on public.admin_settings for all
+to authenticated
+using (true)
+with check (true);
+
+drop policy if exists "admin workshop sessions all" on public.workshop_sessions;
+create policy "admin workshop sessions all"
+on public.workshop_sessions for all
 to authenticated
 using (true)
 with check (true);

@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>&#25509;&#23458;&#23566;&#32218; | Fragrance Workshop</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/admin-common.css">
+</head>
+<body class="page-canvas admin-page">
+  <header class="admin-header" id="admin-header"></header>
+  <main class="admin-main site-container admin-grid">
+    <section class="admin-panel">
+      <p class="section-label">Staff Workspace</p>
+      <h1>&#25509;&#23458;&#23566;&#32218;</h1>
+      <p class="admin-note">&#20104;&#32004;&#24773;&#27841;&#12289;&#20107;&#21069;&#12450;&#12531;&#12465;&#12540;&#12488;&#12289;&#26368;&#32066;&#20116;&#36600;&#12289;&#12524;&#12471;&#12500;&#35352;&#37682;&#12434;&#19968;&#30011;&#38754;&#12391;&#25171;&#12360;&#12427;&#12473;&#12479;&#12483;&#12501;&#21521;&#12369;&#12506;&#12540;&#12472;&#12391;&#12377;&#12290;</p>
+      <div class="admin-grid cols-3">
+        <article class="admin-kpi"><span>&#26469;&#24215;&#20104;&#23450;</span><strong id="workspace-kpi-upcoming">0</strong></article>
+        <article class="admin-kpi"><span>&#20837;&#21147;&#36884;&#20013;</span><strong id="workspace-kpi-draft">0</strong></article>
+        <article class="admin-kpi"><span>&#25509;&#23458;&#23436;&#20102;</span><strong id="workspace-kpi-completed">0</strong></article>
+      </div>
+    </section>
+
+    <section class="admin-workspace-layout">
+      <aside class="admin-grid">
+        <section class="admin-panel">
+          <div class="admin-card-head">
+            <div>
+              <h2>&#20104;&#32004;&#19968;&#35239;</h2>
+              <p class="admin-note" id="workspace-count">0&#20214;&#12434;&#34920;&#31034;&#20013;</p>
+            </div>
+          </div>
+          <form class="admin-form" id="workspace-filter-form">
+            <div class="admin-grid cols-3">
+              <label>&#26085;&#20184;
+                <input id="workspace-filter-date" type="date">
+              </label>
+              <label>&#20104;&#32004;&#12473;&#12486;&#12540;&#12479;&#12473;
+                <select id="workspace-filter-status">
+                  <option value="">&#12377;&#12409;&#12390;</option>
+                  <option value="confirmed">confirmed</option>
+                  <option value="canceled">canceled</option>
+                  <option value="completed">completed</option>
+                </select>
+              </label>
+              <label>&#12461;&#12540;&#12527;&#12540;&#12489;
+                <input id="workspace-filter-keyword" type="text" placeholder="&#20104;&#32004;&#12467;&#12540;&#12489; / &#12469;&#12510;&#12522;&#12540; / &#12513;&#12514;">
+              </label>
+            </div>
+            <div class="admin-actions">
+              <button class="admin-btn secondary" type="submit">&#19968;&#35239;&#12434;&#32094;&#12426;&#36796;&#12416;</button>
+            </div>
+          </form>
+          <div class="admin-card-list" id="workspace-reservation-list"></div>
+          <p class="admin-empty" id="workspace-empty" hidden>&#35442;&#24403;&#12377;&#12427;&#20104;&#32004;&#12399;&#12354;&#12426;&#12414;&#12379;&#12435;&#12290;</p>
+        </section>
+      </aside>
+
+      <div class="admin-grid">
+        <section class="admin-grid cols-2">
+          <div id="workspace-detail-summary"></div>
+          <div id="workspace-question-summary"></div>
+        </section>
+
+        <section class="admin-grid cols-2">
+          <div id="workspace-question-answers" class="admin-grid"></div>
+          <article class="admin-panel">
+            <div class="admin-card-head">
+              <div>
+                <h2>&#25512;&#22888;&#32032;&#26448;</h2>
+                <p class="admin-note">&#26368;&#32066;&#20116;&#36600;&#12395;&#36817;&#12356;&#32032;&#26448;&#12434;&#26368;&#22823;5&#20214;&#12414;&#12391;&#34920;&#31034;&#12375;&#12414;&#12377;&#12290;</p>
+              </div>
+            </div>
+            <div class="admin-card-list" id="workspace-recommended-materials"></div>
+          </article>
+        </section>
+
+        <section class="admin-panel">
+          <div class="admin-card-head">
+            <div>
+              <h2>&#25509;&#23458;&#35352;&#37682;</h2>
+              <p class="admin-note">&#20107;&#21069;&#28310;&#20633;&#12289;&#25509;&#23458;&#24460;&#12398;&#20116;&#36600;&#12289;&#12524;&#12471;&#12500;&#12434;&#20445;&#23384;&#12375;&#12414;&#12377;&#12290;</p>
+            </div>
+          </div>
+          <form class="admin-form-stack" id="workspace-form">
+            <input id="workspace-record-id" type="hidden">
+            <input id="workspace-submit-mode" type="hidden" value="draft">
+
+            <div class="admin-grid cols-2">
+              <label>&#20837;&#21147;&#29366;&#24907;
+                <select id="workspace-session-status">
+                  <option value="draft">draft</option>
+                  <option value="ready">ready</option>
+                  <option value="completed">completed</option>
+                </select>
+              </label>
+              <div class="admin-editor-card">
+                <strong>&#20445;&#23384;&#12398;&#32771;&#12360;&#26041;</strong>
+                <p class="admin-note">&#36884;&#20013;&#20445;&#23384;&#12399;&#28310;&#20633;&#12513;&#12514;&#12392;&#12524;&#12471;&#12500;&#12398;&#26356;&#26032;&#29992;&#12391;&#12377;&#12290;&#25509;&#23458;&#23436;&#20102;&#12391;&#20445;&#23384;&#12377;&#12427;&#12392;&#20104;&#32004;&#12473;&#12486;&#12540;&#12479;&#12473;&#12418; completed &#12395;&#26356;&#26032;&#12375;&#12414;&#12377;&#12290;</p>
+              </div>
+            </div>
+
+            <label>&#26469;&#24215;&#21069;&#28310;&#20633;&#12513;&#12514;
+              <textarea id="workspace-preparation-note" rows="5" placeholder="&#20107;&#21069;&#12450;&#12531;&#12465;&#12540;&#12488;&#12434;&#35211;&#12390;&#28310;&#20633;&#12375;&#12383;&#12356;&#12371;&#12392;&#12434;&#35352;&#20837;"></textarea>
+            </label>
+
+            <label>&#25509;&#23458;&#24460;&#12469;&#12510;&#12522;&#12540;
+              <textarea id="workspace-staff-summary" rows="5" placeholder="&#24403;&#26085;&#12398;&#20250;&#35441;&#12363;&#12425;&#27770;&#12414;&#12387;&#12383;&#26041;&#21521;&#24615;&#12420;&#35036;&#36275;&#12434;&#35352;&#20837;"></textarea>
+            </label>
+
+            <article class="admin-editor-card">
+              <h3>&#26368;&#32066;&#20116;&#36600;&#12464;&#12521;&#12501;</h3>
+              <div class="admin-axis-edit-grid">
+                <label>&#12501;&#12525;&#12540;&#12521;&#12523;
+                  <input id="workspace-axis-floral" type="number" min="0" max="100" step="1" value="0">
+                </label>
+                <label>&#12501;&#12524;&#12483;&#12471;&#12517;
+                  <input id="workspace-axis-fresh" type="number" min="0" max="100" step="1" value="0">
+                </label>
+                <label>&#12454;&#12483;&#12487;&#12451;
+                  <input id="workspace-axis-woody" type="number" min="0" max="100" step="1" value="0">
+                </label>
+                <label>&#12473;&#12497;&#12452;&#12471;&#12540;
+                  <input id="workspace-axis-spicy" type="number" min="0" max="100" step="1" value="0">
+                </label>
+                <label>&#12473;&#12454;&#12451;&#12540;&#12488;
+                  <input id="workspace-axis-sweet" type="number" min="0" max="100" step="1" value="0">
+                </label>
+              </div>
+            </article>
+
+            <article class="admin-editor-card">
+              <div class="admin-card-head">
+                <div>
+                  <h3>&#12524;&#12471;&#12500;&#35352;&#37682;</h3>
+                  <p class="admin-note">&#22522;&#21092; / &#21407;&#26009;&#12289;&#37327;&#12289;&#12525;&#12483;&#12488;&#12289;&#20633;&#32771;&#12434;&#27531;&#12375;&#12414;&#12377;&#12290;</p>
+                </div>
+                <div class="admin-actions">
+                  <button class="admin-btn secondary" id="workspace-add-recipe" type="button">&#34892;&#12434;&#36861;&#21152;</button>
+                </div>
+              </div>
+              <div class="admin-card-list" id="workspace-recipe-list"></div>
+            </article>
+
+            <p class="admin-note" id="workspace-save-status">&#20445;&#23384;&#20869;&#23481;&#12399;&#12371;&#12371;&#12395;&#34920;&#31034;&#12373;&#12428;&#12414;&#12377;&#12290;</p>
+            <div class="admin-actions">
+              <button class="admin-btn secondary" id="workspace-save-draft" type="submit">&#36884;&#20013;&#20445;&#23384;</button>
+              <button class="admin-btn primary" id="workspace-save-complete" type="submit">&#25509;&#23458;&#23436;&#20102;&#12392;&#12375;&#12390;&#20445;&#23384;</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/admin-auth.js"></script>
+  <script src="js/admin-data.js"></script>
+  <script src="js/fragrance-master-data.js"></script>
+  <script src="js/admin-workspace-page.js"></script>
+</body>
+</html>
