@@ -93,6 +93,8 @@
     </section>
   </div>
   <script>
+    const SCORING_LOGIC_SOURCE = "deep-research-report.md";
+    const SCORING_LOGIC_VERSION = "2026-04-14";
     const branchLabels = { floral: "Bloom", fresh: "Air", woody: "Deep" };
     const step1BranchMap = {
       Q1: {
@@ -148,6 +150,8 @@
     const SCORING_CONFIG_KEY = "fragranceScoringConfig";
     const SCORE_STATE_KEY = "fragranceScoreState";
     const FALLBACK_SCORING_CONFIG = {
+      logicSource: SCORING_LOGIC_SOURCE,
+      logicVersion: SCORING_LOGIC_VERSION,
       initialAxisScore: 50,
       axisOrder: ["floral", "fresh", "woody", "spicy", "sweet"],
       questionWeights: { step1: 1, step2: 2, finish: 3 },
@@ -164,36 +168,111 @@
       },
       step2ScoreMap: {
         floral: {
-          Q6: { A: { floral: 3, fresh: 1, woody: 0, spicy: -1, sweet: 1 }, B: { floral: 2, fresh: 0, woody: -1, spicy: -2, sweet: 3 }, C: { floral: 1, fresh: 0, woody: 2, spicy: 0, sweet: -1 } },
-          Q7: { A: { floral: 2, fresh: 1, woody: -1, spicy: -1, sweet: 2 }, B: { floral: 1, fresh: 0, woody: 1, spicy: -1, sweet: 3 }, C: { floral: 1, fresh: 1, woody: 2, spicy: 0, sweet: -3 } }
+          Q6: {
+            A: { floral: 4, fresh: 1, woody: 0, spicy: 0, sweet: 1 },
+            B: { floral: 2, fresh: 0, woody: 0, spicy: -1, sweet: 4 },
+            C: { floral: 2, fresh: 0, woody: 2, spicy: 1, sweet: -1 },
+            ALL: { floral: 3, fresh: 0, woody: 1, spicy: 0, sweet: 1 },
+            NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
+          },
+          Q7: {
+            A: { floral: 3, fresh: 2, woody: 0, spicy: 0, sweet: 1 },
+            B: { floral: 2, fresh: 0, woody: 1, spicy: 0, sweet: 3 },
+            C: { floral: 2, fresh: 2, woody: 0, spicy: 0, sweet: -3 },
+            ALL: { floral: 2, fresh: 1, woody: 0, spicy: 0, sweet: 0 },
+            NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
+          }
         },
         fresh: {
-          Q6: { A: { floral: 0, fresh: 3, woody: -1, spicy: -2, sweet: -1 }, B: { floral: 0, fresh: 3, woody: 0, spicy: -1, sweet: -1 }, C: { floral: -1, fresh: 2, woody: 0, spicy: 2, sweet: -2 } },
-          Q7: { A: { floral: -1, fresh: 3, woody: 0, spicy: 0, sweet: -2 }, B: { floral: 1, fresh: 2, woody: 1, spicy: -1, sweet: 0 }, C: { floral: 0, fresh: 1, woody: 2, spicy: 0, sweet: 1 } }
+          Q6: {
+            A: { floral: 1, fresh: 5, woody: -1, spicy: -1, sweet: 0 },
+            B: { floral: 0, fresh: 4, woody: 0, spicy: -1, sweet: 1 },
+            C: { floral: -1, fresh: 3, woody: 1, spicy: 2, sweet: -2 },
+            ALL: { floral: 0, fresh: 4, woody: 0, spicy: 0, sweet: 0 },
+            NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
+          },
+          Q7: {
+            A: { floral: 0, fresh: 5, woody: 0, spicy: 0, sweet: -1 },
+            B: { floral: 2, fresh: 3, woody: 0, spicy: 0, sweet: 0 },
+            C: { floral: 0, fresh: 3, woody: 2, spicy: 0, sweet: 1 },
+            ALL: { floral: 1, fresh: 4, woody: 1, spicy: 0, sweet: 0 },
+            NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
+          }
         },
         woody: {
-          Q6: { A: { floral: 0, fresh: -1, woody: 3, spicy: 1, sweet: 1 }, B: { floral: -1, fresh: 0, woody: 3, spicy: 0, sweet: -1 }, C: { floral: -1, fresh: 0, woody: 1, spicy: 3, sweet: -1 } },
-          Q7: { A: { floral: 0, fresh: 2, woody: 1, spicy: -1, sweet: -1 }, B: { floral: 0, fresh: 0, woody: 2, spicy: 1, sweet: 0 }, C: { floral: -1, fresh: -2, woody: 2, spicy: 2, sweet: 1 } }
+          Q6: {
+            A: { floral: 0, fresh: 0, woody: 4, spicy: 1, sweet: 1 },
+            B: { floral: 0, fresh: 1, woody: 4, spicy: 0, sweet: 0 },
+            C: { floral: -1, fresh: -1, woody: 3, spicy: 3, sweet: 0 },
+            ALL: { floral: 0, fresh: 0, woody: 4, spicy: 1, sweet: 0 },
+            NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
+          },
+          Q7: {
+            A: { floral: 0, fresh: 3, woody: 2, spicy: -1, sweet: -1 },
+            B: { floral: 0, fresh: 0, woody: 3, spicy: 0, sweet: 2 },
+            C: { floral: 0, fresh: -2, woody: 4, spicy: 2, sweet: 1 },
+            ALL: { floral: 0, fresh: 0, woody: 3, spicy: 0, sweet: 1 },
+            NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
+          }
         }
       },
       q8PrimaryAxes: ["fresh", "floral", "woody"],
       q8ScoreMap: {
-        A: { floral: 0, fresh: 3, woody: -2, spicy: -2, sweet: -1 },
-        B: { floral: 2, fresh: 1, woody: 0, spicy: -2, sweet: 2 },
-        C: { floral: 1, fresh: -2, woody: 2, spicy: 3, sweet: 1 }
+        A: { floral: 1, fresh: 4, woody: -2, spicy: -2, sweet: -1 },
+        B: { floral: 3, fresh: 1, woody: 0, spicy: -1, sweet: 2 },
+        C: { floral: 0, fresh: -2, woody: 3, spicy: 3, sweet: 2 },
+        ALL: { floral: 1, fresh: 1, woody: 0, spicy: 0, sweet: 1 },
+        NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
       },
-      finishKeyByAnswer: { A: "light", B: "balanced", C: "strong", ALL: "balanced", NONE: "balanced" },
+      finishKeyByAnswer: { A: "A", B: "B", C: "C", ALL: "ALL", NONE: "NONE" },
       finishTemplates: {
-        light: { floral: 62, fresh: 72, woody: 34, spicy: 22, sweet: 38 },
-        balanced: { floral: 68, fresh: 58, woody: 48, spicy: 34, sweet: 50 },
-        strong: { floral: 70, fresh: 42, woody: 58, spicy: 52, sweet: 57 }
+        A: { floral: 45, fresh: 75, woody: 35, spicy: 25, sweet: 30 },
+        B: { floral: 65, fresh: 55, woody: 40, spicy: 25, sweet: 60 },
+        C: { floral: 55, fresh: 40, woody: 70, spicy: 55, sweet: 65 },
+        ALL: { floral: 55, fresh: 57, woody: 48, spicy: 35, sweet: 52 },
+        NONE: null
       },
       finishBlendRatio: 0.25,
       summaryProfiles: {
+        floral_soft: {
+          axes: { floral: 74, fresh: 54, woody: 42, spicy: 26, sweet: 62 },
+          headline: "やわらかな華やかさが主役の方向",
+          body: "花のやわらかさを中心に、甘さと親しみやすさが自然に残るバランスです。当日は軽さを見ながら、華やかさを少しずつ整えていく進め方が合います。"
+        },
+        fresh_clear: {
+          axes: { floral: 50, fresh: 76, woody: 38, spicy: 24, sweet: 36 },
+          headline: "透明感と清潔感を主軸にした方向",
+          body: "みずみずしい抜け感と清潔感が中心です。重くしすぎず、必要に応じて花や木のニュアンスをあとから足していくとまとまりやすいです。"
+        },
+        woody_deep: {
+          axes: { floral: 44, fresh: 40, woody: 72, spicy: 54, sweet: 42 },
+          headline: "落ち着きと深みを静かに残す方向",
+          body: "木の落ち着きや余韻の深さが主役です。当日は重たくなりすぎないよう、透明感ややわらかさを会話しながら重ねていく進め方が向いています。"
+        },
+        light_airy: {
+          axes: { floral: 62, fresh: 72, woody: 34, spicy: 22, sweet: 38 },
+          headline: "軽やかさを優先してまとめる方向",
+          body: "抜け感と軽さを優先し、主張しすぎないまとまりを作る方向です。最初は軽めに試し、必要であれば後から深みを足す流れが自然です。"
+        },
         balanced_comfort: {
           axes: { floral: 68, fresh: 58, woody: 48, spicy: 34, sweet: 50 },
           headline: "やわらかさと心地よさのバランス方向",
-          body: "どれか一つを尖らせるよりも、全体を自然につなげるバランス型です。"
+          body: "どれか一つを尖らせるよりも、全体を自然につなげるバランス型です。当日はこの土台から、香りの強さや残り方を少しずつ微調整しやすい状態です。"
+        },
+        strong_presence: {
+          axes: { floral: 70, fresh: 42, woody: 58, spicy: 52, sweet: 57 },
+          headline: "少し印象を残す存在感のある方向",
+          body: "やわらかさを残しつつ、余韻や存在感をしっかり感じる方向です。当日は強さを見ながら、残し方の品の良さを整える進め方が合います。"
+        },
+        floral_fresh: {
+          axes: { floral: 72, fresh: 66, woody: 40, spicy: 24, sweet: 48 },
+          headline: "花のやわらかさに透明感を重ねる方向",
+          body: "フローラルを軸にしながら、重くしすぎず透明感を保つタイプです。親しみやすさと清潔感の両立がしやすいバランスです。"
+        },
+        woody_soft: {
+          axes: { floral: 54, fresh: 46, woody: 62, spicy: 42, sweet: 52 },
+          headline: "深みの中にやわらかさを残す方向",
+          body: "木や落ち着きの軸がありつつ、やわらかさや甘さで角を整えるタイプです。深さを活かしながら重さを抑えたいときの起点になります。"
         }
       }
     };
@@ -221,6 +300,17 @@
     const headerPrevText = headerPrevBtn.querySelector(".nav-text");
     const headerNextText = headerNextBtn.querySelector(".nav-text");
 
+    function isExpectedScoringConfig(config) {
+      return Boolean(
+        config &&
+        config.logicSource === SCORING_LOGIC_SOURCE &&
+        config.logicVersion === SCORING_LOGIC_VERSION &&
+        config.step2ScoreMap?.floral?.Q6?.ALL &&
+        config.q8ScoreMap?.ALL &&
+        Object.prototype.hasOwnProperty.call(config.finishTemplates || {}, "A")
+      );
+    }
+
     function cloneValue(value) { return JSON.parse(JSON.stringify(value)); }
     function clampValue(value, min = 0, max = 100) { return Math.min(max, Math.max(min, Math.round(value))); }
     function clampAxes(axes, config) {
@@ -245,6 +335,7 @@
       return clampAxes(nextAxes, config);
     }
     function scoreQuestionAnswer(axes, answerKey, deltaMap, primaryAxes, weight, config) {
+      if (deltaMap?.[answerKey]) return applyDelta(axes, deltaMap[answerKey], weight, config);
       if (answerKey === "ALL" || answerKey === "NONE") return applySubOptionAdjustment(axes, primaryAxes, answerKey, weight, config);
       return applyDelta(axes, deltaMap?.[answerKey], weight, config);
     }
@@ -273,7 +364,8 @@
     }
     function getScoringConfig() {
       try {
-        return { ...cloneValue(FALLBACK_SCORING_CONFIG), ...JSON.parse(sessionStorage.getItem(SCORING_CONFIG_KEY) || "null") } || cloneValue(FALLBACK_SCORING_CONFIG);
+        const parsed = JSON.parse(sessionStorage.getItem(SCORING_CONFIG_KEY) || "null");
+        return isExpectedScoringConfig(parsed) ? cloneValue(parsed) : cloneValue(FALLBACK_SCORING_CONFIG);
       } catch (error) {
         return cloneValue(FALLBACK_SCORING_CONFIG);
       }
@@ -342,8 +434,9 @@
     function resolveSubOptionKey(index) { if (index === 0) return "ALL"; if (index === 1) return "NONE"; return null; }
     function applyFinishAdjustment(baseAxes, q8AnswerKey, config) {
       const deltaApplied = scoreQuestionAnswer(baseAxes, q8AnswerKey, config.q8ScoreMap, config.q8PrimaryAxes || [], config.questionWeights.finish, config);
-      const selectedFinish = config.finishKeyByAnswer[q8AnswerKey] || "balanced";
-      const finalAxes = blendAxes(deltaApplied, config.finishTemplates[selectedFinish], config.finishBlendRatio, config);
+      const selectedFinish = config.finishKeyByAnswer[q8AnswerKey] || "B";
+      const finishTemplate = config.finishTemplates[selectedFinish] || null;
+      const finalAxes = finishTemplate ? blendAxes(deltaApplied, finishTemplate, config.finishBlendRatio, config) : clampAxes(deltaApplied, config);
       return { selectedFinish, finalAxes };
     }
     function scoreStep2Answers(baseAxes, branchKey, step2AnswerKeys, config) {

@@ -13,6 +13,12 @@
 - `reservation.html` で予約枠取得と予約登録の実装がある
 - `reservation-complete.html` で `reservationCode` による予約復元の実装がある
 
+## `deep-research-report.md` 追従済み
+
+- `questionnaire.html` の STEP1 配点を `deep-research-report.md` の delta 値へ合わせた
+- `questionnaire_step2.html` の STEP2 / Q8 / finishTemplates を `deep-research-report.md` 基準へ合わせた
+- `fragrance-graph.html` のプリセットと `reservation.html` の既定五軸を `deep-research-report.md` の A/B/C/ALL 基準へ合わせた
+
 ## Supabase 連携
 
 - `js/supabase-config.js`、`js/supabase-client.js`、`js/public-data.js` が存在する

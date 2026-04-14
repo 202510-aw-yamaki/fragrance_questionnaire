@@ -93,6 +93,8 @@
     </section>
   </div>
   <script>
+    const SCORING_LOGIC_SOURCE = "deep-research-report.md";
+    const SCORING_LOGIC_VERSION = "2026-04-14";
     // === FRAGRANCE SCORING EDIT POINT: MASTER CONFIG START ===
     // 配点・分岐・Q8・graph preset・reservation summary profile の主編集箇所です。
     // 将来ポイント配分を変えたい場合は、README.md の「配点調整ポイント」を参照し、
@@ -100,6 +102,8 @@
     // questionnaire_step2.html / fragrance-graph.html / reservation.html は
     // この設定を sessionStorage から読む想定です。
     const MASTER_SCORING_CONFIG = {
+      logicSource: SCORING_LOGIC_SOURCE,
+      logicVersion: SCORING_LOGIC_VERSION,
       initialAxisScore: 50,
       axisOrder: ["floral", "fresh", "woody", "spicy", "sweet"],
       questionWeights: {
@@ -120,29 +124,39 @@
       },
       step1ScoreMap: {
         Q1: {
-          A: { floral: 3, fresh: 1, woody: -1, spicy: -2, sweet: 1 },
-          B: { floral: 0, fresh: 3, woody: 0, spicy: -1, sweet: -2 },
-          C: { floral: -1, fresh: -1, woody: 3, spicy: 1, sweet: -1 }
+          A: { floral: 8, fresh: 1, woody: -2, spicy: -1, sweet: 2 },
+          B: { floral: 1, fresh: 8, woody: -2, spicy: -1, sweet: 0 },
+          C: { floral: -2, fresh: -2, woody: 8, spicy: 2, sweet: -1 },
+          ALL: { floral: 2, fresh: 2, woody: 1, spicy: 0, sweet: 0 },
+          NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
         },
         Q2: {
-          A: { floral: 2, fresh: 0, woody: -1, spicy: -2, sweet: 2 },
-          B: { floral: 0, fresh: 3, woody: -1, spicy: -1, sweet: -1 },
-          C: { floral: -1, fresh: -1, woody: 3, spicy: 1, sweet: 0 }
+          A: { floral: 5, fresh: 1, woody: -1, spicy: -1, sweet: 3 },
+          B: { floral: 1, fresh: 5, woody: -1, spicy: -1, sweet: -1 },
+          C: { floral: -1, fresh: -1, woody: 5, spicy: 1, sweet: 0 },
+          ALL: { floral: 2, fresh: 2, woody: 1, spicy: 0, sweet: 1 },
+          NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
         },
         Q3: {
-          A: { floral: 2, fresh: 0, woody: 0, spicy: -2, sweet: 2 },
-          B: { floral: -1, fresh: 3, woody: 0, spicy: 0, sweet: -2 },
-          C: { floral: 0, fresh: -1, woody: 2, spicy: 2, sweet: -1 }
+          A: { floral: 4, fresh: 1, woody: 0, spicy: -1, sweet: 3 },
+          B: { floral: 0, fresh: 5, woody: 0, spicy: 1, sweet: -2 },
+          C: { floral: 0, fresh: -1, woody: 4, spicy: 2, sweet: 0 },
+          ALL: { floral: 1, fresh: 2, woody: 1, spicy: 1, sweet: 0 },
+          NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
         },
         Q4: {
-          A: { floral: 2, fresh: 1, woody: -1, spicy: -1, sweet: 1 },
-          B: { floral: 0, fresh: 3, woody: 0, spicy: -1, sweet: -1 },
-          C: { floral: 0, fresh: -2, woody: 2, spicy: 2, sweet: 1 }
+          A: { floral: 2, fresh: 2, woody: -1, spicy: 0, sweet: 3 },
+          B: { floral: 1, fresh: 3, woody: 1, spicy: -1, sweet: -1 },
+          C: { floral: 0, fresh: -2, woody: 3, spicy: 3, sweet: 2 },
+          ALL: { floral: 1, fresh: 1, woody: 1, spicy: 1, sweet: 1 },
+          NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
         },
         Q5: {
-          A: { floral: 1, fresh: 3, woody: -1, spicy: -1, sweet: 0 },
-          B: { floral: 2, fresh: 0, woody: 1, spicy: -1, sweet: 2 },
-          C: { floral: 0, fresh: -1, woody: 3, spicy: 1, sweet: -1 }
+          A: { floral: 1, fresh: 3, woody: -1, spicy: 0, sweet: 2 },
+          B: { floral: 2, fresh: 1, woody: 1, spicy: 0, sweet: 2 },
+          C: { floral: 0, fresh: 0, woody: 3, spicy: 1, sweet: -1 },
+          ALL: { floral: 1, fresh: 1, woody: 1, spicy: 0, sweet: 1 },
+          NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
         }
       },
       branchTemplates: {
@@ -174,64 +188,80 @@
       step2ScoreMap: {
         floral: {
           Q6: {
-            A: { floral: 3, fresh: 1, woody: 0, spicy: -1, sweet: 1 },
-            B: { floral: 2, fresh: 0, woody: -1, spicy: -2, sweet: 3 },
-            C: { floral: 1, fresh: 0, woody: 2, spicy: 0, sweet: -1 }
+            A: { floral: 4, fresh: 1, woody: 0, spicy: 0, sweet: 1 },
+            B: { floral: 2, fresh: 0, woody: 0, spicy: -1, sweet: 4 },
+            C: { floral: 2, fresh: 0, woody: 2, spicy: 1, sweet: -1 },
+            ALL: { floral: 3, fresh: 0, woody: 1, spicy: 0, sweet: 1 },
+            NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
           },
           Q7: {
-            A: { floral: 2, fresh: 1, woody: -1, spicy: -1, sweet: 2 },
-            B: { floral: 1, fresh: 0, woody: 1, spicy: -1, sweet: 3 },
-            C: { floral: 1, fresh: 1, woody: 2, spicy: 0, sweet: -3 }
+            A: { floral: 3, fresh: 2, woody: 0, spicy: 0, sweet: 1 },
+            B: { floral: 2, fresh: 0, woody: 1, spicy: 0, sweet: 3 },
+            C: { floral: 2, fresh: 2, woody: 0, spicy: 0, sweet: -3 },
+            ALL: { floral: 2, fresh: 1, woody: 0, spicy: 0, sweet: 0 },
+            NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
           }
         },
         fresh: {
           Q6: {
-            A: { floral: 0, fresh: 3, woody: -1, spicy: -2, sweet: -1 },
-            B: { floral: 0, fresh: 3, woody: 0, spicy: -1, sweet: -1 },
-            C: { floral: -1, fresh: 2, woody: 0, spicy: 2, sweet: -2 }
+            A: { floral: 1, fresh: 5, woody: -1, spicy: -1, sweet: 0 },
+            B: { floral: 0, fresh: 4, woody: 0, spicy: -1, sweet: 1 },
+            C: { floral: -1, fresh: 3, woody: 1, spicy: 2, sweet: -2 },
+            ALL: { floral: 0, fresh: 4, woody: 0, spicy: 0, sweet: 0 },
+            NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
           },
           Q7: {
-            A: { floral: -1, fresh: 3, woody: 0, spicy: 0, sweet: -2 },
-            B: { floral: 1, fresh: 2, woody: 1, spicy: -1, sweet: 0 },
-            C: { floral: 0, fresh: 1, woody: 2, spicy: 0, sweet: 1 }
+            A: { floral: 0, fresh: 5, woody: 0, spicy: 0, sweet: -1 },
+            B: { floral: 2, fresh: 3, woody: 0, spicy: 0, sweet: 0 },
+            C: { floral: 0, fresh: 3, woody: 2, spicy: 0, sweet: 1 },
+            ALL: { floral: 1, fresh: 4, woody: 1, spicy: 0, sweet: 0 },
+            NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
           }
         },
         woody: {
           Q6: {
-            A: { floral: 0, fresh: -1, woody: 3, spicy: 1, sweet: 1 },
-            B: { floral: -1, fresh: 0, woody: 3, spicy: 0, sweet: -1 },
-            C: { floral: -1, fresh: 0, woody: 1, spicy: 3, sweet: -1 }
+            A: { floral: 0, fresh: 0, woody: 4, spicy: 1, sweet: 1 },
+            B: { floral: 0, fresh: 1, woody: 4, spicy: 0, sweet: 0 },
+            C: { floral: -1, fresh: -1, woody: 3, spicy: 3, sweet: 0 },
+            ALL: { floral: 0, fresh: 0, woody: 4, spicy: 1, sweet: 0 },
+            NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
           },
           Q7: {
-            A: { floral: 0, fresh: 2, woody: 1, spicy: -1, sweet: -1 },
-            B: { floral: 0, fresh: 0, woody: 2, spicy: 1, sweet: 0 },
-            C: { floral: -1, fresh: -2, woody: 2, spicy: 2, sweet: 1 }
+            A: { floral: 0, fresh: 3, woody: 2, spicy: -1, sweet: -1 },
+            B: { floral: 0, fresh: 0, woody: 3, spicy: 0, sweet: 2 },
+            C: { floral: 0, fresh: -2, woody: 4, spicy: 2, sweet: 1 },
+            ALL: { floral: 0, fresh: 0, woody: 3, spicy: 0, sweet: 1 },
+            NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
           }
         }
       },
       q8PrimaryAxes: ["fresh", "floral", "woody"],
       q8ScoreMap: {
-        A: { floral: 0, fresh: 3, woody: -2, spicy: -2, sweet: -1 },
-        B: { floral: 2, fresh: 1, woody: 0, spicy: -2, sweet: 2 },
-        C: { floral: 1, fresh: -2, woody: 2, spicy: 3, sweet: 1 }
+        A: { floral: 1, fresh: 4, woody: -2, spicy: -2, sweet: -1 },
+        B: { floral: 3, fresh: 1, woody: 0, spicy: -1, sweet: 2 },
+        C: { floral: 0, fresh: -2, woody: 3, spicy: 3, sweet: 2 },
+        ALL: { floral: 1, fresh: 1, woody: 0, spicy: 0, sweet: 1 },
+        NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
       },
       finishKeyByAnswer: {
-        A: "light",
-        B: "balanced",
-        C: "strong",
-        ALL: "balanced",
-        NONE: "balanced"
+        A: "A",
+        B: "B",
+        C: "C",
+        ALL: "ALL",
+        NONE: "NONE"
       },
       finishTemplates: {
-        light: { floral: 62, fresh: 72, woody: 34, spicy: 22, sweet: 38 },
-        balanced: { floral: 68, fresh: 58, woody: 48, spicy: 34, sweet: 50 },
-        strong: { floral: 70, fresh: 42, woody: 58, spicy: 52, sweet: 57 }
+        A: { floral: 45, fresh: 75, woody: 35, spicy: 25, sweet: 30 },
+        B: { floral: 65, fresh: 55, woody: 40, spicy: 25, sweet: 60 },
+        C: { floral: 55, fresh: 40, woody: 70, spicy: 55, sweet: 65 },
+        ALL: { floral: 55, fresh: 57, woody: 48, spicy: 35, sweet: 52 },
+        NONE: null
       },
       finishBlendRatio: 0.25,
       graphPresets: {
-        light: { floral: 62, fresh: 72, woody: 34, spicy: 22, sweet: 38 },
-        balanced: { floral: 68, fresh: 58, woody: 48, spicy: 34, sweet: 50 },
-        strong: { floral: 70, fresh: 42, woody: 58, spicy: 52, sweet: 57 }
+        A: { floral: 45, fresh: 75, woody: 35, spicy: 25, sweet: 30 },
+        B: { floral: 65, fresh: 55, woody: 40, spicy: 25, sweet: 60 },
+        C: { floral: 55, fresh: 40, woody: 70, spicy: 55, sweet: 65 }
       },
       summaryProfiles: {
         floral_soft: {
@@ -313,6 +343,17 @@
       return JSON.parse(JSON.stringify(config));
     }
 
+    function isExpectedScoringConfig(config) {
+      return Boolean(
+        config &&
+        config.logicSource === SCORING_LOGIC_SOURCE &&
+        config.logicVersion === SCORING_LOGIC_VERSION &&
+        config.step1ScoreMap?.Q1?.ALL &&
+        config.q8ScoreMap?.ALL &&
+        Object.prototype.hasOwnProperty.call(config.finishTemplates || {}, "A")
+      );
+    }
+
     function createInitialAxes(config) {
       return Object.fromEntries(config.axisOrder.map((axis) => [axis, config.initialAxisScore]));
     }
@@ -354,6 +395,9 @@
     }
 
     function scoreQuestionAnswer(axes, answerKey, deltaMap, primaryAxes, weight = 1) {
+      if (deltaMap?.[answerKey]) {
+        return applyDelta(axes, deltaMap[answerKey], weight);
+      }
       if (answerKey === "ALL" || answerKey === "NONE") {
         return applySubOptionAdjustment(axes, primaryAxes, answerKey, weight);
       }
@@ -456,7 +500,7 @@
     function getCurrentScoringConfig() {
       try {
         const parsed = JSON.parse(sessionStorage.getItem(SCORING_CONFIG_KEY) || "null");
-        if (parsed && parsed.axisOrder) return parsed;
+        if (isExpectedScoringConfig(parsed)) return parsed;
       } catch (error) {
         console.error("Failed to read scoring config from sessionStorage.", error);
       }
@@ -465,7 +509,7 @@
 
     async function initializeScoringConfig() {
       const remoteConfig = await window.FragrancePublicData?.loadActiveScoringConfig?.();
-      persistScoringConfig(remoteConfig && remoteConfig.axisOrder ? remoteConfig : cloneConfig(MASTER_SCORING_CONFIG));
+      persistScoringConfig(isExpectedScoringConfig(remoteConfig) ? remoteConfig : cloneConfig(MASTER_SCORING_CONFIG));
     }
 
     function persistStep1Answers() {

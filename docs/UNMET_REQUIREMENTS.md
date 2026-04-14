@@ -5,8 +5,6 @@
 
 ## `deep-research-report.md` への実装追従
 
-- 現在のアンケート配点実装を `deep-research-report.md` の delta 値へ合わせる
-- 現在の Q8 / finishTemplates を `deep-research-report.md` 基準へ合わせる
 - 現在の原料プロファイル実装を `MATERIAL_POINTS.md` 基準で扱えるようにする
 - 現行コードの暫定ロジックと、研究レポート基準のロジック差分を解消する
 
