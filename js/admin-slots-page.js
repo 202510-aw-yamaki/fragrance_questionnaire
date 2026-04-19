@@ -2,6 +2,11 @@
   const rowsEl = document.getElementById("slot-rows");
   const form = document.getElementById("slot-form");
   const resetButton = document.getElementById("slot-reset");
+  const previewLabelEl = document.getElementById("slot-preview-label");
+  const previewDateEl = document.getElementById("slot-preview-date");
+  const previewTimeEl = document.getElementById("slot-preview-time");
+  const previewStaffEl = document.getElementById("slot-preview-staff");
+  const previewStatusEl = document.getElementById("slot-preview-status");
   const UI = {
     active: "\u516c\u958b\u4e2d",
     hidden: "\u975e\u8868\u793a",
@@ -17,6 +22,7 @@
     document.getElementById("slot-capacity").value = "1";
     document.getElementById("slot-sort").value = "0";
     document.getElementById("slot-active").checked = true;
+    renderPreview();
   }
 
   function fillForm(row) {
@@ -30,6 +36,22 @@
     document.getElementById("slot-capacity").value = row.capacity || 1;
     document.getElementById("slot-sort").value = row.sort_order || 0;
     document.getElementById("slot-active").checked = row.is_active !== false;
+    renderPreview();
+  }
+
+  function renderPreview() {
+    if (!previewLabelEl) return;
+    const dateValue = document.getElementById("slot-date").value || "-";
+    const timeValue = document.getElementById("slot-time").value || "-";
+    const labelValue = document.getElementById("slot-label").value.trim() || "未入力";
+    const staffValue = document.getElementById("slot-instructor").value.trim() || "未設定";
+    const statusValue = document.getElementById("slot-status").value || "-";
+
+    previewLabelEl.textContent = labelValue;
+    previewDateEl.textContent = dateValue;
+    previewTimeEl.textContent = timeValue;
+    previewStaffEl.textContent = staffValue;
+    previewStatusEl.textContent = statusValue;
   }
 
   async function getAllSlots() {
@@ -108,10 +130,18 @@
 
   resetButton.addEventListener("click", resetForm);
 
+  ["slot-code", "slot-date", "slot-time", "slot-label", "slot-instructor", "slot-status", "slot-capacity"].forEach((id) => {
+    document.getElementById(id)?.addEventListener("input", renderPreview);
+    document.getElementById(id)?.addEventListener("change", renderPreview);
+  });
+
   async function bootstrap() {
-    window.AdminAuth.renderAdminHeader("slots");
+    const role = window.AdminAuth.readRoleFromLocation() || window.AdminAuth.readStoredRole() || "manager";
+    window.AdminAuth.renderAdminHeader("slots", { role });
     const session = await window.AdminAuth.requireAdminSession();
     if (!session) return;
+    window.AdminAuth.persistPortalRole(role);
+    renderPreview();
     resetForm();
     await renderRows();
   }

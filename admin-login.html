@@ -15,6 +15,23 @@
       <p class="admin-note">Supabase Auth のメールアドレスとパスワードでサインインします。</p>
       <p class="admin-error" id="config-error" hidden>Supabase 設定が未完了です。`js/supabase-config.js` を設定してください。</p>
       <form class="admin-form" id="login-form">
+        <fieldset class="admin-role-switch">
+          <legend>ログイン種別</legend>
+          <label class="admin-role-option">
+            <input type="radio" name="portal-role" value="staff">
+            <span>
+              <strong>staff</strong>
+              <small>スタッフ確認ページへ遷移</small>
+            </span>
+          </label>
+          <label class="admin-role-option">
+            <input type="radio" name="portal-role" value="manager" checked>
+            <span>
+              <strong>manager</strong>
+              <small>管理ダッシュボードへ遷移</small>
+            </span>
+          </label>
+        </fieldset>
         <label>メールアドレス
           <input id="login-email" type="email" autocomplete="email" required>
         </label>
@@ -39,6 +56,17 @@
     const passwordInput = document.getElementById("login-password");
     const errorEl = document.getElementById("login-error");
     const configErrorEl = document.getElementById("config-error");
+    const roleInputs = Array.from(document.querySelectorAll('input[name="portal-role"]'));
+
+    function getSelectedRole() {
+      return roleInputs.find((input) => input.checked)?.value || "manager";
+    }
+
+    function syncSelectedRole(role) {
+      roleInputs.forEach((input) => {
+        input.checked = input.value === role;
+      });
+    }
 
     async function bootstrap() {
       if (!window.AdminAuth.isConfigured()) {
@@ -46,9 +74,11 @@
         form.querySelector("button[type='submit']").disabled = true;
         return;
       }
+      const initialRole = window.AdminAuth.readRoleFromLocation() || window.AdminAuth.readStoredRole() || "manager";
+      syncSelectedRole(initialRole);
       const session = await window.AdminAuth.getSession();
       if (session) {
-        window.location.replace("admin-dashboard.html");
+        window.AdminAuth.redirectToRoleHome(window.AdminAuth.resolvePortalRole(session, getSelectedRole()));
       }
     }
 
@@ -57,7 +87,9 @@
       errorEl.hidden = true;
       try {
         await window.AdminAuth.signInAdmin(emailInput.value.trim(), passwordInput.value);
-        window.location.replace("admin-dashboard.html");
+        const role = getSelectedRole();
+        window.AdminAuth.persistPortalRole(role);
+        window.AdminAuth.redirectToRoleHome(role);
       } catch (error) {
         errorEl.textContent = error.message || "ログインに失敗しました。";
         errorEl.hidden = false;

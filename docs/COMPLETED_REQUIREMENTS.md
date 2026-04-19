@@ -75,3 +75,18 @@
 - 配点仕様は `SURVEY_SCORING_LOGIC.md` を正本として整理してある
 - 原料テンプレートは `MATERIAL_POINTS.md` を正本として整理してある
 - 達成済みと未達を `COMPLETED_REQUIREMENTS.md` / `UNMET_REQUIREMENTS.md` に分けて管理する運用にしてある
+
+## 追記: 2026-04-20 スタッフ / 管理ページ初期実装
+
+この追記は、現段階で実装可能なスタッフ側 / 管理者側ページの着手分を、既存記述を残したまま補足するために追加する。
+
+- `admin-login.html` に `staff` / `manager` のログイン種別切替 UI を追加し、ログイン後の遷移先を画面種別ごとに切り替えられるようにした
+- `js/admin-auth.js` に staff / manager 両系統の共通ヘッダー切替、ロール別ホーム遷移、ロール保持を追加した
+- `staff-dashboard.html` を追加し、スタッフ確認ページとして「本日の予定確認」「向こう一週間の予約件数」「向こう二週間の予約枠状況」「予約枠作成ページ / 予約情報一覧ページへの導線」を実装した
+- スタッフ確認ページの日表示カレンダー UI として、前日 / 翌日ナビゲーション、09:00-18:00 のタイムライン、昼休憩帯表示、イベントカード表示を追加した
+- `admin-dashboard.html` に、本日の出勤状況、向こう二週間の予約枠 OK / NG 表示、配点ロジック要約、原料クイックリンクを追加した
+- `admin-materials.html` / `js/admin-materials-page.js` に、`focus` クエリで対象原料へ自動スクロールする導線を追加した
+- `admin-slots.html` に、単件予約枠の入力中プレビューと、一括作成時の件数 / 日付範囲プレビューを追加した
+- `js/admin-slots-bulk-page.js` に、既登録日が含まれる場合の「mm/dd は登録が既にしてあります」ポップアップ確認を追加した
+- `admin-reservations.html` / `js/admin-reservations-page.js` を、予約情報一覧ページとして来店日時ベースの一覧表示と、予約顧客情報詳細ページへの導線付き表示へ更新した
+- `admin-workspace.html` / `js/admin-workspace-page.js` に、予約顧客情報詳細ページ導線での直開き対応、5軸比較の表示順修正、最終5軸の合計100補正 UI を追加した

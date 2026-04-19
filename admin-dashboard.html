@@ -22,11 +22,51 @@
       <article class="admin-panel admin-kpi"><span>原料ポイント件数</span><strong id="kpi-materials">-</strong></article>
     </section>
     <section class="admin-grid cols-3">
-      <a class="admin-panel" href="admin-reservations.html"><h2>予約情報</h2><p class="admin-note">予約一覧と status 更新を行います。</p></a>
-      <a class="admin-panel" href="admin-slots.html"><h2>予約枠管理</h2><p class="admin-note">予約枠の作成、編集、非表示化を行います。</p></a>
-      <a class="admin-panel" href="admin-scoring.html"><h2>配点ロジック</h2><p class="admin-note">active config を確認し、新 version を追加します。</p></a>
-      <a class="admin-panel" href="admin-materials.html"><h2>原料ポイント</h2><p class="admin-note">5軸ポイントを個別入力で管理します。</p></a>
-      <a class="admin-panel" href="admin-settings.html"><h2>その他設定</h2><p class="admin-note">店舗情報や注意文言の保存先です。</p></a>
+      <a class="admin-panel" href="admin-reservations.html?role=manager"><h2>予約情報</h2><p class="admin-note">予約一覧と status 更新を行います。</p></a>
+      <a class="admin-panel" href="admin-slots.html?role=manager"><h2>予約枠管理</h2><p class="admin-note">予約枠の作成、編集、非表示化を行います。</p></a>
+      <a class="admin-panel" href="admin-scoring.html?role=manager"><h2>配点ロジック</h2><p class="admin-note">active config を確認し、新 version を追加します。</p></a>
+      <a class="admin-panel" href="admin-materials.html?role=manager"><h2>原料ポイント</h2><p class="admin-note">5軸ポイントを個別入力で管理します。</p></a>
+      <a class="admin-panel" href="admin-settings.html?role=manager"><h2>その他設定</h2><p class="admin-note">店舗情報や注意文言の保存先です。</p></a>
+    </section>
+    <section class="admin-grid cols-2">
+      <article class="admin-panel">
+        <div class="admin-card-head">
+          <div>
+            <h2>本日の出勤状況</h2>
+            <p class="admin-note">本日分の予約枠に担当名が入っているスタッフを一覧化します。</p>
+          </div>
+        </div>
+        <div class="admin-card-list" id="manager-today-shifts"></div>
+      </article>
+      <article class="admin-panel">
+        <div class="admin-card-head">
+          <div>
+            <h2>向こう二週間の予約枠確認</h2>
+            <p class="admin-note">日単位で予約枠の登録有無を OK / NG で表示します。</p>
+          </div>
+        </div>
+        <div class="admin-date-status-grid" id="manager-slot-coverage"></div>
+      </article>
+    </section>
+    <section class="admin-grid cols-2">
+      <article class="admin-panel">
+        <div class="admin-card-head">
+          <div>
+            <h2>配点ロジック要約</h2>
+            <p class="admin-note">active config の重みと代表テンプレートを表示します。</p>
+          </div>
+        </div>
+        <div class="admin-card-list" id="manager-scoring-summary"></div>
+      </article>
+      <article class="admin-panel">
+        <div class="admin-card-head">
+          <div>
+            <h2>原料クイックリンク</h2>
+            <p class="admin-note">対象原料をクリックすると原料ポイントページの該当原料へ移動します。</p>
+          </div>
+        </div>
+        <div class="admin-link-grid" id="manager-material-links"></div>
+      </article>
     </section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -34,25 +74,8 @@
   <script src="js/supabase-client.js"></script>
   <script src="js/admin-auth.js"></script>
   <script src="js/admin-data.js"></script>
-  <script>
-    async function bootstrap() {
-      window.AdminAuth.renderAdminHeader("dashboard");
-      const session = await window.AdminAuth.requireAdminSession();
-      if (!session) return;
-      if (!window.AdminAuth.isConfigured()) return;
-      const [reservations, slots, scoring, materials] = await Promise.all([
-        window.AdminData.listRows("reservations", { orders: [{ column: "created_at", ascending: false }] }).catch(() => []),
-        window.AdminData.listRows("reservation_slots", { filters: [{ operator: "in", column: "status", value: ["open", "recommended"] }] }).catch(() => []),
-        window.AdminData.listRows("scoring_configs", { filters: [{ operator: "eq", column: "is_active", value: true }], limit: 1 }).catch(() => []),
-        window.AdminData.listRows("material_points").catch(() => [])
-      ]);
-      document.getElementById("kpi-reservations").textContent = reservations.length;
-      document.getElementById("kpi-slots").textContent = slots.length;
-      document.getElementById("kpi-scoring").textContent = scoring[0]?.version ?? "-";
-      document.getElementById("kpi-materials").textContent = materials.length;
-    }
-    bootstrap();
-  </script>
+  <script src="js/fragrance-master-data.js"></script>
+  <script src="js/admin-dashboard-page.js"></script>
 </body>
 </html>
 

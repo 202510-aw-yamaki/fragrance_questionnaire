@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>スタッフ確認ページ | Fragrance Workshop</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/admin-common.css">
+</head>
+<body class="page-canvas admin-page">
+  <header class="admin-header" id="admin-header"></header>
+  <main class="admin-main site-container admin-grid">
+    <section class="admin-panel">
+      <p class="section-label">Staff Confirmation</p>
+      <h1>スタッフ確認ページ</h1>
+      <p class="admin-note">ログイン中スタッフに割り当てられた予約と予約枠をまとめて確認します。</p>
+      <div class="admin-grid cols-3">
+        <article class="admin-kpi">
+          <span>本日の予約件数</span>
+          <strong id="staff-kpi-today">0</strong>
+        </article>
+        <article class="admin-kpi">
+          <span>向こう一週間の予約件数</span>
+          <strong id="staff-kpi-week">0</strong>
+        </article>
+        <article class="admin-kpi">
+          <span>向こう二週間の予約枠数</span>
+          <strong id="staff-kpi-slots">0</strong>
+        </article>
+      </div>
+      <p class="admin-note" id="staff-dashboard-note">担当スタッフを確認中です。</p>
+    </section>
+
+    <section class="admin-link-grid">
+      <a class="admin-mini-card" href="admin-slots.html?role=staff">
+        <h3>予約枠作成ページ</h3>
+        <p class="admin-note">単件作成と一括作成を開きます。</p>
+      </a>
+      <a class="admin-mini-card" href="admin-reservations.html?role=staff">
+        <h3>予約情報一覧ページ</h3>
+        <p class="admin-note">日付・状態・キーワードで予約を確認します。</p>
+      </a>
+    </section>
+
+    <section class="admin-grid cols-2">
+      <article class="admin-panel">
+        <div class="day-view">
+          <div class="day-nav">
+            <div class="day-nav-title">
+              <p class="section-label">Day View</p>
+              <h2 id="staff-day-current-label">本日の予定</h2>
+            </div>
+            <div class="admin-actions">
+              <button class="admin-btn secondary" id="staff-day-prev" type="button">前日</button>
+              <button class="admin-btn secondary" id="staff-day-next" type="button">翌日</button>
+            </div>
+          </div>
+          <div class="day-timeline" id="staff-day-timeline"></div>
+        </div>
+      </article>
+
+      <article class="admin-panel">
+        <div class="admin-card-head">
+          <div>
+            <h2>当日のイベント詳細</h2>
+            <p class="admin-note">予約枠と予約状況を時間順に表示します。</p>
+          </div>
+        </div>
+        <div class="day-list" id="staff-day-events"></div>
+      </article>
+    </section>
+
+    <section class="admin-panel">
+      <div class="admin-card-head">
+        <div>
+          <h2>向こう二週間の予約枠状況</h2>
+          <p class="admin-note">勤務表テーブル未導入のため、現在は登録済み予約枠の有無を日単位で表示します。</p>
+        </div>
+      </div>
+      <div class="admin-date-status-grid" id="staff-date-status-grid"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/admin-auth.js"></script>
+  <script src="js/admin-data.js"></script>
+  <script src="js/staff-dashboard-page.js"></script>
+</body>
+</html>

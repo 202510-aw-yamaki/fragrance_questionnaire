@@ -111,6 +111,7 @@
     rows.forEach((row) => {
       const article = document.createElement("article");
       article.className = "admin-item-card";
+      article.dataset.materialCode = row.material_code || "";
       article.innerHTML = `
         <div class="admin-item-head">
           <div>
@@ -137,6 +138,15 @@
         if (target) fillForm(target);
       });
     });
+
+    const focusCode = new URLSearchParams(window.location.search).get("focus");
+    if (focusCode) {
+      const targetCard = rowsEl.querySelector(`[data-material-code="${focusCode}"]`);
+      if (targetCard) {
+        targetCard.classList.add("is-focused");
+        targetCard.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
   }
 
   function renderTemplateOptions() {
@@ -195,9 +205,13 @@
   });
 
   async function bootstrap() {
-    window.AdminAuth.renderAdminHeader("materials");
+    const role = window.AdminAuth.readRoleFromLocation() || window.AdminAuth.readStoredRole() || "manager";
+    window.AdminAuth.renderAdminHeader("materials", { role });
     const session = await window.AdminAuth.requireAdminSession();
     if (!session) return;
+    window.AdminAuth.persistPortalRole(role);
+    const focusCode = new URLSearchParams(window.location.search).get("focus");
+    if (focusCode) searchInput.value = focusCode;
     renderTemplateOptions();
     resetForm();
     await getAllMaterials();

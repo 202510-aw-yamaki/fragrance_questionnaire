@@ -1,6 +1,9 @@
 (function () {
   const form = document.getElementById("slot-bulk-form");
   const statusEl = document.getElementById("slot-bulk-status-note");
+  const previewCountEl = document.getElementById("slot-bulk-preview-count");
+  const previewRangeEl = document.getElementById("slot-bulk-preview-range");
+  const duplicatePreviewEl = document.getElementById("slot-bulk-duplicate-preview");
 
   if (!form || !statusEl) return;
 
@@ -36,6 +39,11 @@
 
   function getSelectedWeekdays() {
     return Array.from(document.querySelectorAll('input[name="slot-bulk-weekday"]:checked')).map((input) => Number(input.value));
+  }
+
+  function formatMonthDay(dateKey) {
+    const [, month, day] = String(dateKey || "").split("-");
+    return `${month}/${day}`;
   }
 
   function buildPayloads() {
@@ -104,10 +112,64 @@
     return payloads;
   }
 
+  function updatePreview() {
+    if (!previewCountEl || !previewRangeEl) return;
+    try {
+      const payloads = buildPayloads();
+      const first = payloads[0];
+      const last = payloads[payloads.length - 1];
+      previewCountEl.textContent = `${payloads.length}件の予約枠を作成予定です。`;
+      previewRangeEl.textContent = `${formatMonthDay(first.slot_date)} ${String(first.slot_time || "").slice(0, 5)} から ${formatMonthDay(last.slot_date)} ${String(last.slot_time || "").slice(0, 5)} までを対象にします。`;
+    } catch (error) {
+      previewCountEl.textContent = "未計算";
+      previewRangeEl.textContent = error?.message || "開始日と終了日を指定すると表示されます。";
+    }
+  }
+
+  async function findDuplicateDates(payloads) {
+    if (!payloads.length) return [];
+    const first = payloads[0];
+    const last = payloads[payloads.length - 1];
+    const instructor = String(first.instructor_name || "").trim();
+    const existing = await window.AdminData.listRows("reservation_slots", {
+      filters: [
+        { operator: "gte", column: "slot_date", value: first.slot_date },
+        { operator: "lte", column: "slot_date", value: last.slot_date }
+      ]
+    }).catch(() => []);
+    const duplicateDates = new Set();
+
+    existing.forEach((row) => {
+      if (instructor && normalizeName(row.instructor_name) !== normalizeName(instructor)) return;
+      if (payloads.some((payload) => payload.slot_date === row.slot_date)) {
+        duplicateDates.add(row.slot_date);
+      }
+    });
+
+    return Array.from(duplicateDates).sort();
+  }
+
+  function normalizeName(value) {
+    return String(value || "").trim().toLowerCase();
+  }
+
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     try {
       const payloads = buildPayloads();
+      const duplicateDates = await findDuplicateDates(payloads);
+      if (duplicatePreviewEl) {
+        duplicatePreviewEl.textContent = duplicateDates.length
+          ? duplicateDates.map((dateKey) => `${formatMonthDay(dateKey)} は登録が既にしてあります`).join(" / ")
+          : "重複日は見つかっていません。";
+      }
+      if (duplicateDates.length) {
+        const popupMessage = `${duplicateDates.map((dateKey) => `${formatMonthDay(dateKey)} は登録が既にしてあります`).join("\n")}\n\n続けて登録しますか？`;
+        if (!window.confirm(popupMessage)) {
+          setStatus("一括作成を中止しました。", "note");
+          return;
+        }
+      }
       await window.AdminData.upsertRow("reservation_slots", payloads, "slot_code");
       setStatus(`${payloads.length}\u4ef6\u306e\u4e88\u7d04\u67a0\u3092\u4f5c\u6210 / \u66f4\u65b0\u3057\u307e\u3057\u305f\u3002\u30da\u30fc\u30b8\u3092\u518d\u8aad\u307f\u8fbc\u307f\u3057\u307e\u3059\u3002`, "success");
       window.setTimeout(() => {
@@ -117,4 +179,26 @@
       setStatus(error?.message || "\u4e88\u7d04\u67a0\u306e\u4e00\u62ec\u4f5c\u6210\u306b\u5931\u6557\u3057\u307e\u3057\u305f\u3002", "error");
     }
   });
+
+  [
+    "slot-bulk-start-date",
+    "slot-bulk-end-date",
+    "slot-bulk-start-time",
+    "slot-bulk-end-time",
+    "slot-bulk-interval",
+    "slot-bulk-capacity",
+    "slot-bulk-instructor",
+    "slot-bulk-status",
+    "slot-bulk-label",
+    "slot-bulk-prefix",
+    "slot-bulk-sort-start"
+  ].forEach((id) => {
+    document.getElementById(id)?.addEventListener("input", updatePreview);
+    document.getElementById(id)?.addEventListener("change", updatePreview);
+  });
+  document.querySelectorAll('input[name="slot-bulk-weekday"]').forEach((input) => {
+    input.addEventListener("change", updatePreview);
+  });
+
+  updatePreview();
 })();

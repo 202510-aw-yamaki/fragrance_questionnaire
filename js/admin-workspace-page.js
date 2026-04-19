@@ -31,9 +31,9 @@
     guestCount: "\u4eba\u6570",
     reservationStatus: "\u4e88\u7d04\u30b9\u30c6\u30fc\u30bf\u30b9",
     axisCompare: "\u4e94\u8ef8\u306e\u6bd4\u8f03",
-    reservationAxes: "\u4e88\u7d04\u6642\u306e\u4e94\u8ef8",
-    questionnaireAxes: "\u30a2\u30f3\u30b1\u30fc\u30c8\u5f8c\u306e\u4e94\u8ef8",
-    adjustedAxes: "\u8abf\u6574\u5019\u88dc\u306e\u4e94\u8ef8",
+    reservationAxes: "\u4e88\u7d04\u5b8c\u4e86\u6642\u306e5\u8ef8",
+    questionnaireAxes: "\u30a2\u30f3\u30b1\u30fc\u30c8\u56de\u7b54\u6642\u306e5\u8ef8",
+    adjustedAxes: "\u63a5\u5ba2\u5f8c\u306e\u6700\u7d425\u8ef8",
     questionnaireSummary: "\u30a2\u30f3\u30b1\u30fc\u30c8\u8981\u7d04",
     branch: "\u5206\u5c90",
     finish: "\u4ed5\u4e0a\u3052",
@@ -64,6 +64,8 @@
   const kpiUpcomingEl = document.getElementById("workspace-kpi-upcoming");
   const kpiDraftEl = document.getElementById("workspace-kpi-draft");
   const kpiCompletedEl = document.getElementById("workspace-kpi-completed");
+  const axisTotalEl = document.getElementById("workspace-axis-total");
+  const normalizeButton = document.getElementById("workspace-normalize-axes");
 
   let reservations = [];
   let slotMap = new Map();
@@ -141,6 +143,35 @@
       acc[axis] = Number(document.getElementById(`workspace-axis-${axis}`).value || 0);
       return acc;
     }, {});
+  }
+
+  function updateAxisTotal() {
+    if (!axisTotalEl) return;
+    const total = AXIS_ORDER.reduce((sum, axis) => sum + Number(document.getElementById(`workspace-axis-${axis}`).value || 0), 0);
+    axisTotalEl.textContent = `\u5408\u8a08 ${total}`;
+    axisTotalEl.className = total === 100 ? "admin-note admin-note-success" : "admin-note admin-note-warning";
+  }
+
+  function normalizeCurrentAxes() {
+    const currentAxes = getCurrentFinalAxes();
+    const total = AXIS_ORDER.reduce((sum, axis) => sum + Number(currentAxes[axis] || 0), 0);
+    if (!total) return;
+
+    let remainder = 100;
+    const normalized = AXIS_ORDER.map((axis, index) => {
+      if (index === AXIS_ORDER.length - 1) {
+        return [axis, remainder];
+      }
+      const nextValue = Math.round((Number(currentAxes[axis] || 0) / total) * 100);
+      remainder -= nextValue;
+      return [axis, nextValue];
+    });
+
+    normalized.forEach(([axis, value]) => {
+      document.getElementById(`workspace-axis-${axis}`).value = String(value);
+    });
+    updateAxisTotal();
+    renderRecommendedMaterials();
   }
 
   function getMaterialOptions(selectedCode) {
@@ -250,6 +281,7 @@
     document.getElementById("workspace-staff-summary").value = workshop?.staff_summary || "";
     document.getElementById("workspace-session-status").value = workshop?.status || "draft";
     renderRecipeRows(workshop?.recipe_items || []);
+    updateAxisTotal();
     renderRecommendedMaterials();
   }
 
@@ -265,7 +297,7 @@
     const slot = slotMap.get(selectedReservation.slot_id);
     const reservationAxes = selectedReservation.axes || {};
     const questionnaireAxes = selectedQuestionnaire?.final_axes || {};
-    const adjustedAxes = selectedQuestionnaire?.adjusted_axes || {};
+    const adjustedAxes = selectedWorkshop?.final_axes || getCurrentFinalAxes();
 
     detailSummaryEl.innerHTML = `
       <article class="admin-panel admin-panel-soft">
@@ -282,10 +314,10 @@
       </article>
       <article class="admin-panel admin-panel-soft">
         <h3>${UI.axisCompare}</h3>
-        <p class="admin-note">${UI.reservationAxes}</p>
-        ${createAxisBadgeRow(reservationAxes)}
         <p class="admin-note">${UI.questionnaireAxes}</p>
         ${createAxisBadgeRow(questionnaireAxes)}
+        <p class="admin-note">${UI.reservationAxes}</p>
+        ${createAxisBadgeRow(reservationAxes)}
         <p class="admin-note">${UI.adjustedAxes}</p>
         ${createAxisBadgeRow(adjustedAxes)}
       </article>
@@ -420,7 +452,7 @@
       questionnaire_result_id: selectedReservation.questionnaire_result_id || null,
       preparation_note: document.getElementById("workspace-preparation-note").value.trim() || null,
       staff_summary: document.getElementById("workspace-staff-summary").value.trim() || null,
-      pre_visit_axes: normalizeAxes(selectedQuestionnaire?.adjusted_axes || selectedQuestionnaire?.final_axes || selectedReservation.axes || {}),
+      pre_visit_axes: normalizeAxes(selectedQuestionnaire?.final_axes || selectedReservation.axes || {}),
       reservation_axes: normalizeAxes(selectedReservation.axes || {}),
       final_axes: normalizeAxes(getCurrentFinalAxes()),
       recipe_items: collectRecipeItems(),
@@ -466,8 +498,15 @@
   });
 
   AXIS_ORDER.forEach((axis) => {
-    document.getElementById(`workspace-axis-${axis}`).addEventListener("input", renderRecommendedMaterials);
+    document.getElementById(`workspace-axis-${axis}`).addEventListener("input", () => {
+      updateAxisTotal();
+      renderRecommendedMaterials();
+    });
   });
+
+  if (normalizeButton) {
+    normalizeButton.addEventListener("click", normalizeCurrentAxes);
+  }
 
   filterForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -475,13 +514,20 @@
   });
 
   async function bootstrap() {
-    window.AdminAuth.renderAdminHeader("workspace");
     const session = await window.AdminAuth.requireAdminSession();
     if (!session) return;
+    const role = window.AdminAuth.resolvePortalRole(session, window.AdminAuth.readRoleFromLocation());
+    window.AdminAuth.renderAdminHeader("workspace", { role });
+    window.AdminAuth.persistPortalRole(role);
     form.hidden = true;
     setStatus(UI.saveHint);
     await loadBaseData();
-    renderDetail();
+    const reservationId = new URLSearchParams(window.location.search).get("reservation");
+    if (reservationId) {
+      await loadReservationDetail(reservationId);
+    } else {
+      renderDetail();
+    }
   }
 
   bootstrap();
