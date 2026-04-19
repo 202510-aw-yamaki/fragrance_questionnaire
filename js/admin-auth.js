@@ -114,14 +114,32 @@
     ];
   }
 
+  function normalizeHeaderLinks(links) {
+    if (!Array.isArray(links) || !links.length) return null;
+    return links.map((entry) => {
+      if (Array.isArray(entry)) {
+        const [href, label, key] = entry;
+        return { href, label, key };
+      }
+      return {
+        href: entry.href,
+        label: entry.label,
+        key: entry.key || entry.href
+      };
+    }).filter((entry) => entry.href && entry.label);
+  }
+
   function renderAdminHeader(activePage, options = {}) {
     const mount = document.getElementById("admin-header");
     if (!mount) return;
     const role = options.role === "staff" || options.role === "manager" ? options.role : readRoleFromLocation() || readStoredRole() || "manager";
-    const links = getHeaderLinks(role);
+    const session = options.session || null;
+    const links = normalizeHeaderLinks(options.links) || getHeaderLinks(role).map(([href, label, key]) => ({ href, label, key }));
     const brandHref = appendRoleToHref(role === "staff" ? HOME_BY_ROLE.staff : HOME_BY_ROLE.manager, role);
-    const brandName = role === "staff" ? "Fragrance Staff" : "Fragrance Admin";
-    const roleLabel = role === "staff" ? "\u30b9\u30bf\u30c3\u30d5\u5c02\u7528" : "\u7ba1\u7406\u8005";
+    const brandName = options.brandText || (role === "staff"
+      ? `Fragrance STAFF_${getStaffDisplayName(session)}`
+      : `Fragrance STAFF_${getStaffDisplayName(session)}`);
+    const roleLabel = options.roleLabel || (role === "staff" ? "\u30b9\u30bf\u30c3\u30d5\u5c02\u7528" : "\u7ba1\u7406\u8005");
     mount.innerHTML = `
       <div class="admin-header-inner site-container">
         <a class="admin-brand" href="${brandHref}">
@@ -129,7 +147,7 @@
           <small class="admin-brand-meta">${roleLabel}</small>
         </a>
         <nav class="admin-nav" aria-label="\u7ba1\u7406\u30e1\u30cb\u30e5\u30fc">
-          ${links.map(([href, label, key]) => `<a class="${activePage === key ? "active" : ""}" href="${appendRoleToHref(href, role)}">${label}</a>`).join("")}
+          ${links.map(({ href, label, key }) => `<a class="${activePage === key ? "active" : ""}" href="${appendRoleToHref(href, role)}">${label}</a>`).join("")}
         </nav>
         <button class="admin-logout" id="admin-logout-btn" type="button">\u30ed\u30b0\u30a2\u30a6\u30c8</button>
       </div>

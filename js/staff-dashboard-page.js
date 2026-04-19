@@ -4,12 +4,13 @@
   const eventsEl = document.getElementById("staff-day-events");
   const dateLabelEl = document.getElementById("staff-day-current-label");
   const noteEl = document.getElementById("staff-dashboard-note");
-  const dateStatusGridEl = document.getElementById("staff-date-status-grid");
   const prevButton = document.getElementById("staff-day-prev");
   const nextButton = document.getElementById("staff-day-next");
   const kpiTodayEl = document.getElementById("staff-kpi-today");
   const kpiWeekEl = document.getElementById("staff-kpi-week");
-  const kpiSlotsEl = document.getElementById("staff-kpi-slots");
+  const missingPrimaryEl = document.getElementById("staff-missing-primary");
+  const missingSecondaryEl = document.getElementById("staff-missing-secondary");
+  const missingNoteEl = document.getElementById("staff-missing-note");
 
   if (!timelineEl || !eventsEl || !dateLabelEl) return;
 
@@ -169,27 +170,42 @@
     eventsEl.innerHTML = events.map((event) => buildEventMarkup(event, { includeAction: true })).join("");
   }
 
-  function renderDateStatusGrid() {
+  function renderMissingDates() {
     const activeSlots = getAssignedSlots().filter((slot) => slot.is_active !== false);
-    const assignedReservations = getAssignedReservations();
     const today = createLocalDate(new Date());
-    dateStatusGridEl.innerHTML = Array.from({ length: 14 }, (_, index) => {
+    const workingWeekdays = new Set(
+      activeSlots.map((slot) => {
+        const slotDate = new Date(`${slot.slot_date}T00:00:00`);
+        return Number.isNaN(slotDate.getTime()) ? null : slotDate.getDay();
+      }).filter((value) => value !== null)
+    );
+    if (!workingWeekdays.size) {
+      [1, 2, 3, 4, 5].forEach((value) => workingWeekdays.add(value));
+    }
+    const missingDates = Array.from({ length: 14 }, (_, index) => {
       const date = addDays(today, index);
       const dateKey = formatDateKey(date);
+      if (!workingWeekdays.has(date.getDay())) return null;
       const slotCount = activeSlots.filter((slot) => slot.slot_date === dateKey).length;
-      const reservationCount = assignedReservations.filter((row) => {
-        const slot = activeSlots.find((candidate) => candidate.id === row.slot_id);
-        return slot?.slot_date === dateKey;
-      }).length;
-      const isReady = slotCount > 0;
-      return `
-        <article class="admin-date-status ${isReady ? "is-ready" : "is-missing"}">
-          <strong>${formatDateLabel(date)}</strong>
-          <span>${isReady ? "OK" : "未作成"}</span>
-          <small>予約枠 ${slotCount} / 予約 ${reservationCount}</small>
-        </article>
-      `;
-    }).join("");
+      return slotCount ? null : formatDateLabel(date);
+    }).filter(Boolean);
+
+    if (!missingPrimaryEl || !missingSecondaryEl) return;
+
+    if (!missingDates.length) {
+      missingPrimaryEl.textContent = "登録済み";
+      missingSecondaryEl.innerHTML = `<span class="admin-chip">向こう二週間は作成済み</span>`;
+      if (missingNoteEl) missingNoteEl.textContent = "現在は未作成日が見つかっていません。";
+      return;
+    }
+
+    missingPrimaryEl.textContent = missingDates[0];
+    missingSecondaryEl.innerHTML = missingDates.slice(1, 6).map((label) => `<span class="admin-chip">${label}</span>`).join("");
+    if (missingNoteEl) {
+      missingNoteEl.textContent = missingDates.length > 1
+        ? `未作成日は合計 ${missingDates.length} 日あります。`
+        : "最初の未作成日を表示しています。";
+    }
   }
 
   function renderKpis() {
@@ -198,7 +214,6 @@
     const todayKey = formatDateKey(new Date());
     const limitDate = addDays(createLocalDate(new Date()), 6);
     const limitKey = formatDateKey(limitDate);
-    const twoWeekLimit = formatDateKey(addDays(createLocalDate(new Date()), 13));
 
     const reservationSlotMap = new Map(activeSlots.map((slot) => [slot.id, slot]));
     const todayReservations = activeReservations.filter((row) => reservationSlotMap.get(row.slot_id)?.slot_date === todayKey);
@@ -206,11 +221,9 @@
       const dateKey = reservationSlotMap.get(row.slot_id)?.slot_date || "";
       return dateKey >= todayKey && dateKey <= limitKey;
     });
-    const twoWeekSlots = activeSlots.filter((slot) => slot.slot_date >= todayKey && slot.slot_date <= twoWeekLimit);
 
     kpiTodayEl.textContent = String(todayReservations.length);
     kpiWeekEl.textContent = String(weeklyReservations.length);
-    kpiSlotsEl.textContent = String(twoWeekSlots.length);
   }
 
   async function loadBaseData() {
@@ -235,14 +248,21 @@
   });
 
   async function bootstrap() {
-    window.AdminAuth.renderAdminHeader("staff-dashboard", { role: "staff" });
     session = await window.AdminAuth.requireAdminSession();
     if (!session) return;
     window.AdminAuth.persistPortalRole("staff");
+    window.AdminAuth.renderAdminHeader("staff-dashboard", {
+      role: "staff",
+      session,
+      links: [
+        { href: "admin-slots.html", label: "予約枠作成", key: "slots" },
+        { href: "admin-reservations.html", label: "予約情報一覧", key: "reservations" }
+      ]
+    });
     await loadBaseData();
     renderKpis();
     renderTimeline();
-    renderDateStatusGrid();
+    renderMissingDates();
   }
 
   bootstrap();

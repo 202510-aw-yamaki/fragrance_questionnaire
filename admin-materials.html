@@ -9,74 +9,153 @@
 </head>
 <body class="page-canvas admin-page">
   <header class="admin-header" id="admin-header"></header>
-  <main class="admin-main site-container admin-grid">
-    <section class="admin-panel">
-      <p class="section-label">Material Points</p>
-      <h1>素材テンプレート管理</h1>
-      <p class="admin-note">JSON ではなく、一覧カードと数値入力で素材テンプレートを管理します。`deep-research-report.md` の16原料はボタンひとつで初期投入できます。</p>
-      <div class="admin-grid cols-3">
-        <article class="admin-kpi"><span>登録件数</span><strong id="materials-kpi-total">-</strong></article>
-        <article class="admin-kpi"><span>公開中</span><strong id="materials-kpi-active">-</strong></article>
-        <article class="admin-kpi"><span>初期テンプレート</span><strong id="materials-kpi-template">16</strong></article>
+  <main class="admin-main site-container portal-stack">
+    <section class="admin-panel portal-hero">
+      <div class="portal-hero-copy-block">
+        <p class="portal-hero-label">MATERIAL POINTS</p>
+        <h1>原料管理</h1>
       </div>
-      <div class="admin-actions">
-        <button class="admin-btn primary" id="material-seed-btn" type="button">16原料テンプレートを一括反映</button>
-      </div>
-      <p class="admin-note" id="material-seed-status">初期テンプレートを入れると、同じ code は上書きされます。</p>
+      <p class="portal-hero-copy portal-hero-copy--align-end">原料の 5 軸ポイントを一覧カードとモーダルで管理し、deep-research-report.md のテンプレート値をベースに編集します。</p>
     </section>
-    <section class="admin-grid cols-2">
-      <article class="admin-panel">
-        <div class="admin-card-head">
-          <div>
-            <h2>登録済み一覧</h2>
-            <p class="admin-note" id="material-count">0件を表示中</p>
+
+    <section class="portal-toolbar-grid">
+      <button class="admin-btn primary" id="material-seed-btn" type="button">16原料テンプレートを一括反映</button>
+      <button class="admin-btn secondary" id="material-export-json" type="button">Jsonファイルとしてローカル保存</button>
+      <button class="admin-btn secondary" id="material-create-button" type="button">新規登録</button>
+      <button class="admin-btn secondary" id="material-import-trigger" type="button">Json読込</button>
+      <input id="material-import-file" type="file" accept="application/json" hidden>
+    </section>
+
+    <p class="admin-note" id="material-seed-status">初期テンプレートを入れると、同じ code は上書きされます。</p>
+
+    <section class="portal-kpi-grid portal-kpi-grid--four">
+      <article class="admin-panel portal-kpi-card">
+        <span>登録件数</span>
+        <strong id="materials-kpi-total">-</strong>
+      </article>
+      <article class="admin-panel portal-kpi-card">
+        <span>公開中</span>
+        <strong id="materials-kpi-active">-</strong>
+      </article>
+      <article class="admin-panel portal-kpi-card">
+        <span>初期テンプレート</span>
+        <strong id="materials-kpi-template">16</strong>
+      </article>
+      <article class="admin-panel portal-kpi-card">
+        <span>現在の並び順</span>
+        <strong id="material-current-sort">登録順（正）</strong>
+      </article>
+    </section>
+
+    <section class="admin-panel">
+      <div class="portal-section-head">
+        <div>
+          <h2>原料一覧</h2>
+          <p class="admin-note" id="material-count">0件を表示中</p>
+        </div>
+      </div>
+      <div class="portal-material-filter-row">
+        <label>検索
+          <input id="material-search" type="text" placeholder="名称・code・分類で検索">
+        </label>
+        <label>分類
+          <select id="material-filter">
+            <option value="">すべて</option>
+            <option value="Top">Top</option>
+            <option value="Middle">Middle</option>
+            <option value="Last">Last</option>
+          </select>
+        </label>
+        <label>並び替え
+          <select id="material-sort-mode">
+            <option value="register-asc">登録順（正）</option>
+            <option value="register-desc">登録順（逆）</option>
+            <option value="name-asc">50音順（正）</option>
+            <option value="name-desc">50音順（逆）</option>
+            <option value="category-asc">ノート順（正）</option>
+            <option value="category-desc">ノート順（逆）</option>
+          </select>
+        </label>
+      </div>
+      <div class="admin-chip-grid portal-material-chip-grid" id="material-chip-grid"></div>
+      <div class="portal-material-card-grid" id="material-rows"></div>
+    </section>
+
+    <section class="admin-panel">
+      <div class="portal-section-head">
+        <div>
+          <h2>保存内容の確認</h2>
+          <p class="admin-note">現在の一覧を JSON で確認できます。</p>
+        </div>
+      </div>
+      <textarea id="material-json-preview" rows="14" readonly></textarea>
+    </section>
+  </main>
+
+  <div class="portal-modal" id="material-modal" hidden>
+    <div class="portal-modal-backdrop" data-modal-close="material-modal"></div>
+    <div class="portal-modal-dialog portal-modal-dialog--wide">
+      <div class="portal-section-head">
+        <div>
+          <p class="portal-hero-label portal-hero-label--muted">MATERIAL EDIT</p>
+          <h2 id="material-modal-title">新規原料登録モーダル</h2>
+        </div>
+        <button class="admin-btn secondary" type="button" data-modal-close="material-modal">閉じる</button>
+      </div>
+      <form class="admin-form" id="material-form">
+        <input id="material-id" type="hidden">
+        <div class="admin-grid cols-2">
+          <label>初期テンプレート
+            <select id="material-template-select"></select>
+          </label>
+          <div class="admin-actions admin-actions-inline">
+            <button class="admin-btn secondary" id="material-template-apply" type="button">フォームへ反映</button>
           </div>
         </div>
         <div class="admin-grid cols-2">
-          <label>検索<input id="material-search" type="text" placeholder="名称・code・分類で検索"></label>
-          <label>分類<select id="material-filter"><option value="">すべて</option><option value="Top">Top</option><option value="Middle">Middle</option><option value="Last">Last</option></select></label>
+          <label>管理名
+            <input id="material-code" type="text" required placeholder="bergamot">
+          </label>
+          <label>表示名
+            <input id="material-name" type="text" required placeholder="ベルガモット">
+          </label>
         </div>
-        <div class="admin-card-list" id="material-rows"></div>
-      </article>
-      <article class="admin-panel">
-        <div class="admin-card-head">
-          <div>
-            <h2>新規作成 / 編集</h2>
-            <p class="admin-note">テンプレートを選ぶと入力欄へ自動展開されます。</p>
-          </div>
+        <p class="admin-note">表示名が 8 文字を超えると一覧カードで収まりにくくなるため、8 文字以内が好ましいです。</p>
+        <div class="admin-grid cols-2">
+          <label>分類
+            <select id="material-category">
+              <option value="Top">Top</option>
+              <option value="Middle">Middle</option>
+              <option value="Last">Last</option>
+            </select>
+          </label>
+          <label>表示順
+            <input id="material-sort" type="number" value="0" step="1">
+          </label>
         </div>
-        <form class="admin-form" id="material-form">
-          <input id="material-id" type="hidden">
-          <div class="admin-grid cols-2">
-            <label>初期テンプレート<select id="material-template-select"></select></label>
-            <div class="admin-actions admin-actions-inline">
-              <button class="admin-btn secondary" id="material-template-apply" type="button">フォームへ反映</button>
-            </div>
-          </div>
-          <label>管理コード<input id="material-code" type="text" required></label>
-          <label>表示名<input id="material-name" type="text" required></label>
-          <div class="admin-grid cols-2">
-            <label>分類<input id="material-category" type="text" placeholder="Top / Middle / Last"></label>
-            <label>表示順<input id="material-sort" type="number" value="0" step="1"></label>
-          </div>
-          <div class="admin-axis-edit-grid">
-            <label>フローラル<input id="axis-floral" type="number" value="0" step="1"></label>
-            <label>フレッシュ<input id="axis-fresh" type="number" value="0" step="1"></label>
-            <label>ウッディ<input id="axis-woody" type="number" value="0" step="1"></label>
-            <label>スパイシー<input id="axis-spicy" type="number" value="0" step="1"></label>
-            <label>スウィート<input id="axis-sweet" type="number" value="0" step="1"></label>
-          </div>
-          <p class="admin-note" id="material-total">現在の合計: 0</p>
-          <label>運用メモ<textarea id="material-note" rows="4"></textarea></label>
-          <label><input id="material-active" type="checkbox" checked> 公開する</label>
-          <div class="admin-actions">
-            <button class="admin-btn primary" type="submit">保存</button>
-            <button class="admin-btn secondary" id="material-reset" type="button">入力をクリア</button>
-          </div>
-        </form>
-      </article>
-    </section>
-  </main>
+        <div class="admin-axis-edit-grid">
+          <label>フローラル<input id="axis-floral" type="number" value="0" step="1"></label>
+          <label>フレッシュ<input id="axis-fresh" type="number" value="0" step="1"></label>
+          <label>ウッディ<input id="axis-woody" type="number" value="0" step="1"></label>
+          <label>スパイシー<input id="axis-spicy" type="number" value="0" step="1"></label>
+          <label>スウィート<input id="axis-sweet" type="number" value="0" step="1"></label>
+        </div>
+        <p class="admin-note" id="material-total">現在の合計: 0</p>
+        <label>運用メモ
+          <textarea id="material-note" rows="4"></textarea>
+        </label>
+        <label class="portal-inline-checkbox">
+          <input id="material-active" type="checkbox" checked>
+          <span>公開する</span>
+        </label>
+        <div class="admin-actions">
+          <button class="admin-btn primary" type="submit">保存</button>
+          <button class="admin-btn secondary" id="material-reset" type="button">入力をクリア</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
   <script src="js/supabase-client.js"></script>

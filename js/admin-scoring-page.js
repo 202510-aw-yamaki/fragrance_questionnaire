@@ -4,13 +4,20 @@
   const STEP1_SCHEMA = window.FragranceMasterData.STEP1_QUESTION_SCHEMA;
   const STEP2_SCHEMA = window.FragranceMasterData.STEP2_QUESTION_SCHEMA;
   const Q8_SCHEMA = window.FragranceMasterData.Q8_SCHEMA;
-  const editorMount = document.getElementById("scoring-editor");
+  const branchSettingsMount = document.getElementById("scoring-branch-settings");
+  const step1Mount = document.getElementById("scoring-step1-section");
+  const step2Mount = document.getElementById("scoring-step2-section");
+  const q8Mount = document.getElementById("scoring-q8-section");
+  const finishMount = document.getElementById("scoring-finish-section");
   const overviewMount = document.getElementById("scoring-sections");
   const scoringJson = document.getElementById("scoring-json");
   const scoringStatus = document.getElementById("scoring-status");
   const activeVersionEl = document.getElementById("active-version");
   const activeNoteEl = document.getElementById("active-note");
   const activeUpdatedEl = document.getElementById("active-updated");
+  const exportButtons = Array.from(document.querySelectorAll("[data-scoring-export]"));
+  const importTriggerButtons = Array.from(document.querySelectorAll("[data-scoring-import-trigger]"));
+  const importInput = document.getElementById("scoring-import-json");
   let activeConfigRow = null;
   let workingConfig = window.FragranceMasterData.createDefaultScoringConfig();
 
@@ -33,6 +40,7 @@
   }
 
   function renderOverview(config) {
+    if (!overviewMount) return;
     const sections = [
       ["初期値 / 重み", { initialAxisScore: config.initialAxisScore, questionWeights: config.questionWeights, finishBlendRatio: config.finishBlendRatio }],
       ["STEP1 配点", { step1PrimaryAxes: config.step1PrimaryAxes, step1ScoreMap: config.step1ScoreMap }],
@@ -44,7 +52,7 @@
     overviewMount.innerHTML = "";
     sections.forEach(([title, payload]) => {
       const card = document.createElement("section");
-      card.className = "admin-panel admin-panel-soft";
+      card.className = "admin-panel admin-panel-soft portal-config-preview-card";
       card.innerHTML = `<h3>${title}</h3><pre style="white-space:pre-wrap;margin:0;">${JSON.stringify(payload, null, 2)}</pre>`;
       overviewMount.appendChild(card);
     });
@@ -52,11 +60,11 @@
 
   function renderSimpleFieldCard() {
     return `
-      <section class="admin-editor-card">
+      <section class="admin-editor-card portal-scoring-panel-card portal-scoring-basic-card">
         <div class="admin-card-head">
           <div>
             <h3>基本設定</h3>
-            <p class="admin-note">重みとブレンド比率だけ先に調整できます。</p>
+            <p class="admin-note">重みとブレンド比率</p>
           </div>
         </div>
         <div class="admin-grid cols-4">
@@ -69,19 +77,19 @@
     `;
   }
 
-  function renderBranchCard() {
+  function renderBranchTemplateCard() {
     return `
-      <section class="admin-editor-card">
+      <section class="admin-editor-card portal-scoring-panel-card">
         <div class="admin-card-head">
           <div>
             <h3>分岐テンプレート</h3>
-            <p class="admin-note">STEP1 後の五軸から、どの分岐へ入るかを決める基準です。</p>
+            <p class="admin-note">Bloom / floral、Air / fresh、Deep / woody の基準値です。</p>
           </div>
         </div>
-        <div class="admin-grid cols-3">
+        <div class="portal-scoring-branch-grid">
           ${Object.entries(BRANCH_LABELS).map(([branchKey, label]) => {
             return `
-              <article class="admin-panel admin-panel-soft">
+              <article class="admin-panel admin-panel-soft portal-scoring-branch-card">
                 <h4>${label}</h4>
                 <div class="admin-axis-edit-grid">
                   ${AXIS_ORDER.map((axis) => {
@@ -92,61 +100,67 @@
             `;
           }).join("")}
         </div>
-        <div class="admin-grid cols-5">
+      </section>
+    `;
+  }
+
+  function renderBranchWeightCard() {
+    return `
+      <section class="admin-editor-card portal-scoring-panel-card portal-scoring-weight-card">
+        <div class="admin-card-head">
+          <div>
+            <h3>距離重み</h3>
+            <p class="admin-note">5軸を横並びで確認する帯状レイアウト。</p>
+          </div>
+        </div>
+        <div class="portal-scoring-weight-grid">
           ${AXIS_ORDER.map((axis) => {
-            return `<label>${AXIS_LABELS[axis]} の距離重み<input data-branch-weight-axis="${axis}" type="number" step="0.1" value="${Number(workingConfig.branchDistanceWeights?.[axis] || 1)}"></label>`;
+            return `<label class="portal-scoring-weight-pill">${AXIS_LABELS[axis]}<input data-branch-weight-axis="${axis}" type="number" step="0.1" value="${Number(workingConfig.branchDistanceWeights?.[axis] || 1)}"></label>`;
           }).join("")}
         </div>
       </section>
     `;
   }
 
-  function renderMatrixSection(title, description, schemaList, resolveValue, attributes) {
+  function renderMatrixQuestionCard(schema, resolveValue, attributes, options = {}) {
     return `
-      <section class="admin-editor-card">
+      <article class="admin-editor-card portal-scoring-question-card">
         <div class="admin-card-head">
           <div>
-            <h3>${title}</h3>
-            <p class="admin-note">${description}</p>
+            <h3>${schema.title}${options.textEditable ? "（テキスト入力可）" : ""}</h3>
+            <p class="admin-note">回答（回答も変更可）</p>
           </div>
         </div>
-        ${schemaList.map((schema) => {
-          return `
-            <article class="admin-panel admin-panel-soft">
-              <h4>${schema.title}</h4>
-              <div class="admin-matrix">
-                <div class="admin-matrix-row admin-matrix-head">
-                  <div>回答</div>
-                  ${AXIS_ORDER.map((axis) => `<div>${AXIS_LABELS[axis]}</div>`).join("")}
-                </div>
-                ${Object.entries(schema.answers).map(([answerKey, answerLabel]) => {
+        <div class="admin-matrix">
+          <div class="admin-matrix-row admin-matrix-head">
+            <div>回答</div>
+            ${AXIS_ORDER.map((axis) => `<div>${AXIS_LABELS[axis]}</div>`).join("")}
+          </div>
+          ${Object.entries(schema.answers).map(([answerKey, answerLabel]) => {
+            return `
+              <div class="admin-matrix-row">
+                <div class="admin-answer-cell"><strong>${answerKey}.</strong><span>${answerLabel}</span></div>
+                ${AXIS_ORDER.map((axis) => {
                   return `
-                    <div class="admin-matrix-row">
-                      <div class="admin-answer-cell"><strong>${answerKey}</strong><span>${answerLabel}</span></div>
-                      ${AXIS_ORDER.map((axis) => {
-                        return `
-                          <div>
-                            <input
-                              type="number"
-                              step="1"
-                              value="${Number(resolveValue(schema.id, answerKey, axis, attributes.branch) || 0)}"
-                              data-matrix-kind="${attributes.kind}"
-                              data-question="${schema.id}"
-                              data-answer="${answerKey}"
-                              data-axis="${axis}"
-                              ${attributes.branch ? `data-branch="${attributes.branch}"` : ""}
-                            >
-                          </div>
-                        `;
-                      }).join("")}
+                    <div>
+                      <input
+                        type="number"
+                        step="1"
+                        value="${Number(resolveValue(schema.id, answerKey, axis, attributes.branch) || 0)}"
+                        data-matrix-kind="${attributes.kind}"
+                        data-question="${schema.id}"
+                        data-answer="${answerKey}"
+                        data-axis="${axis}"
+                        ${attributes.branch ? `data-branch="${attributes.branch}"` : ""}
+                      >
                     </div>
                   `;
                 }).join("")}
               </div>
-            </article>
-          `;
-        }).join("")}
-      </section>
+            `;
+          }).join("")}
+        </div>
+      </article>
     `;
   }
 
@@ -158,22 +172,14 @@
       { key: "ALL", label: "ALL 平均" }
     ];
     return `
-      <section class="admin-editor-card">
+      <section class="admin-editor-card portal-scoring-panel-card">
         <div class="admin-card-head">
           <div>
-            <h3>Q8 と finishTemplates</h3>
-            <p class="admin-note">Q8 の delta と、最後に軽く寄せるテンプレートです。NONE はブレンドなし固定です。</p>
+            <h3>finish template</h3>
+            <p class="admin-note">Q8 の回答に応じて仕上がりを寄せる目標値です。</p>
           </div>
         </div>
-        ${renderMatrixSection(
-          "Q8 配点",
-          "今日の仕上がり回答に対応する delta です。",
-          [Q8_SCHEMA],
-          (questionId, answerKey, axis) => workingConfig.q8ScoreMap?.[answerKey]?.[axis],
-          { kind: "q8" }
-        )}
-        <article class="admin-panel admin-panel-soft">
-          <h4>finish template</h4>
+        <article class="admin-panel admin-panel-soft portal-scoring-finish-table">
           <div class="admin-matrix">
             <div class="admin-matrix-row admin-matrix-head">
               <div>テンプレート</div>
@@ -205,28 +211,73 @@
     `;
   }
 
-  function renderEditor() {
-    editorMount.innerHTML = [
-      renderSimpleFieldCard(),
-      renderBranchCard(),
-      renderMatrixSection(
-        "STEP1 配点",
-        "最初の5問で使う delta を質問ごとに調整します。",
-        STEP1_SCHEMA,
+  function renderBranchSettingsArea() {
+    if (!branchSettingsMount) return;
+    branchSettingsMount.innerHTML = `
+      <div class="portal-scoring-branch-shell">
+        <div class="portal-scoring-branch-shell-basic">${renderSimpleFieldCard()}</div>
+        <div class="portal-scoring-branch-shell-main">${renderBranchTemplateCard()}</div>
+      </div>
+      ${renderBranchWeightCard()}
+    `;
+  }
+
+  function renderStep1Area() {
+    if (!step1Mount) return;
+    step1Mount.innerHTML = STEP1_SCHEMA.map((schema) => {
+      return renderMatrixQuestionCard(
+        schema,
         (questionId, answerKey, axis) => workingConfig.step1ScoreMap?.[questionId]?.[answerKey]?.[axis],
-        { kind: "step1" }
-      ),
-      Object.entries(STEP2_SCHEMA).map(([branchKey, schemaList]) => {
-        return renderMatrixSection(
-          `${BRANCH_LABELS[branchKey]} の STEP2 配点`,
-          "各分岐の Q6 / Q7 を編集します。",
-          schemaList,
-          (questionId, answerKey, axis, branch) => workingConfig.step2ScoreMap?.[branch]?.[questionId]?.[answerKey]?.[axis],
-          { kind: "step2", branch: branchKey }
-        );
-      }).join(""),
-      renderFinishTemplateCard()
-    ].join("");
+        { kind: "step1" },
+        { textEditable: true }
+      );
+    }).join("");
+  }
+
+  function renderStep2Area() {
+    if (!step2Mount) return;
+    step2Mount.innerHTML = Object.entries(STEP2_SCHEMA).map(([branchKey, schemaList]) => {
+      return `
+        <section class="admin-editor-card portal-scoring-panel-card portal-scoring-step2-group">
+          <div class="admin-card-head">
+            <div>
+              <h3>${BRANCH_LABELS[branchKey]} の STEP2 配点</h3>
+            </div>
+          </div>
+          ${schemaList.map((schema) => {
+            return renderMatrixQuestionCard(
+              schema,
+              (questionId, answerKey, axis, branch) => workingConfig.step2ScoreMap?.[branch]?.[questionId]?.[answerKey]?.[axis],
+              { kind: "step2", branch: branchKey },
+              { textEditable: true }
+            );
+          }).join("")}
+        </section>
+      `;
+    }).join("");
+  }
+
+  function renderQ8Area() {
+    if (!q8Mount) return;
+    q8Mount.innerHTML = renderMatrixQuestionCard(
+      Q8_SCHEMA,
+      (questionId, answerKey, axis) => workingConfig.q8ScoreMap?.[answerKey]?.[axis],
+      { kind: "q8" },
+      { textEditable: true }
+    );
+  }
+
+  function renderFinishArea() {
+    if (!finishMount) return;
+    finishMount.innerHTML = renderFinishTemplateCard();
+  }
+
+  function renderEditor() {
+    renderBranchSettingsArea();
+    renderStep1Area();
+    renderStep2Area();
+    renderQ8Area();
+    renderFinishArea();
     bindEditorInputs();
   }
 
@@ -244,12 +295,12 @@
   }
 
   function bindEditorInputs() {
-    editorMount.querySelectorAll("[data-config-field]").forEach((input) => {
+    document.querySelectorAll("[data-config-field]").forEach((input) => {
       input.addEventListener("input", () => {
         setNestedNumber(input.dataset.configField, input.value);
       });
     });
-    editorMount.querySelectorAll("[data-branch-template]").forEach((input) => {
+    document.querySelectorAll("[data-branch-template]").forEach((input) => {
       input.addEventListener("input", () => {
         const branchKey = input.dataset.branchTemplate;
         const axis = input.dataset.axis;
@@ -258,14 +309,14 @@
         renderOverview(workingConfig);
       });
     });
-    editorMount.querySelectorAll("[data-branch-weight-axis]").forEach((input) => {
+    document.querySelectorAll("[data-branch-weight-axis]").forEach((input) => {
       input.addEventListener("input", () => {
         workingConfig.branchDistanceWeights[input.dataset.branchWeightAxis] = Number(input.value || 0);
         refreshJsonPreview();
         renderOverview(workingConfig);
       });
     });
-    editorMount.querySelectorAll("[data-matrix-kind]").forEach((input) => {
+    document.querySelectorAll("[data-matrix-kind]").forEach((input) => {
       input.addEventListener("input", () => {
         const kind = input.dataset.matrixKind;
         const questionId = input.dataset.question;
@@ -283,7 +334,7 @@
         renderOverview(workingConfig);
       });
     });
-    editorMount.querySelectorAll("[data-finish-template]").forEach((input) => {
+    document.querySelectorAll("[data-finish-template]").forEach((input) => {
       input.addEventListener("input", () => {
         const templateKey = input.dataset.finishTemplate;
         const axis = input.dataset.axis;
@@ -326,6 +377,41 @@
     applyWorkingConfig(activeConfigRow?.config_json || window.FragranceMasterData.createDefaultScoringConfig(), activeConfigRow ? "active 設定をフォームへ戻しました。" : "active 設定がないため、初期テンプレートを読み込みました。");
   });
 
+  if (exportButtons.length) {
+    exportButtons.forEach((button) => button.addEventListener("click", () => {
+      const blob = new Blob([JSON.stringify(workingConfig, null, 2)], { type: "application/json" });
+      const url = window.URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `scoring-config-v${activeConfigRow?.version || "draft"}.json`;
+      anchor.click();
+      window.URL.revokeObjectURL(url);
+      updateStatus("現在の配点ロジックを Json ファイルとして保存しました。");
+    }));
+  }
+
+  if (importTriggerButtons.length && importInput) {
+    importTriggerButtons.forEach((button) => button.addEventListener("click", () => {
+      importInput.click();
+    }));
+    importInput.addEventListener("change", async () => {
+      const file = importInput.files?.[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        if (!window.FragranceMasterData.isExpectedScoringConfig(parsed)) {
+          throw new Error("配点ロジック JSON の構造が想定と異なります。");
+        }
+        applyWorkingConfig(parsed, `${file.name} を読み込みました。`);
+      } catch (error) {
+        updateStatus(error.message || "Json 読込に失敗しました。");
+      } finally {
+        importInput.value = "";
+      }
+    });
+  }
+
   document.getElementById("scoring-form").addEventListener("submit", async (event) => {
     event.preventDefault();
     const note = document.getElementById("scoring-note").value.trim();
@@ -350,9 +436,18 @@
   });
 
   async function bootstrap() {
-    window.AdminAuth.renderAdminHeader("scoring");
     const session = await window.AdminAuth.requireAdminSession();
     if (!session) return;
+    window.AdminAuth.persistPortalRole("manager");
+    window.AdminAuth.renderAdminHeader("scoring", {
+      role: "manager",
+      session,
+      links: [
+        { href: "admin-settings.html", label: "スタッフ登録/管理", key: "settings" },
+        { href: "admin-scoring.html", label: "配点ロジック", key: "scoring" },
+        { href: "admin-materials.html", label: "原料ポイント", key: "materials" }
+      ]
+    });
     await loadActiveConfig();
   }
 

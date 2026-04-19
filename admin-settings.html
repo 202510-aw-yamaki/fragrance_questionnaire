@@ -3,101 +3,166 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>その他設定 | Fragrance Workshop</title>
+  <title>スタッフ登録 / 管理 | Fragrance Workshop</title>
   <link rel="stylesheet" href="css/common.css">
   <link rel="stylesheet" href="css/admin-common.css">
 </head>
 <body class="page-canvas admin-page">
   <header class="admin-header" id="admin-header"></header>
-  <main class="admin-main site-container admin-grid cols-2">
+  <main class="admin-main site-container portal-stack">
+    <section class="admin-panel portal-hero">
+      <div class="portal-hero-copy-block">
+        <p class="portal-hero-label">STAFF CONTROL</p>
+        <h1>スタッフ新規登録 / 管理</h1>
+      </div>
+      <p class="portal-hero-copy portal-hero-copy--align-end">本日の出勤者、登録済みスタッフ、向こう一週間のカレンダーを同じ画面で確認しながら管理します。</p>
+    </section>
+
+    <section class="portal-control-grid">
+      <article class="admin-panel">
+        <div class="portal-section-head">
+          <div>
+            <h2>本日（<span id="settings-today-label">--/--</span>）の出勤者</h2>
+            <p class="admin-note">予約枠の担当名とスタッフ設定を照合して表示します。</p>
+          </div>
+        </div>
+        <div class="admin-card-list" id="settings-today-staff"></div>
+      </article>
+
+      <article class="admin-panel portal-side-stack">
+        <div class="portal-section-head">
+          <div>
+            <h2>スタッフ登録 / 編集</h2>
+            <p class="admin-note">登録モーダル、個別出勤モーダル、既存スタッフの呼び出しをまとめています。</p>
+          </div>
+        </div>
+        <div class="portal-action-stack">
+          <button class="admin-btn primary" id="staff-create-button" type="button">スタッフ新規登録</button>
+          <button class="admin-btn secondary" id="staff-shift-button" type="button">スタッフ基本編集</button>
+          <label>スタッフ出勤管理
+            <select id="staff-manage-select"></select>
+          </label>
+        </div>
+        <p class="admin-note" id="settings-control-note">スタッフ設定を読み込み中です。</p>
+        <div class="admin-chip-grid" id="settings-staff-chip-grid"></div>
+      </article>
+    </section>
+
     <section class="admin-panel">
-      <p class="section-label">Settings</p>
-      <h1>その他設定</h1>
-      <div class="admin-table-wrap">
-        <table class="admin-table">
-          <thead><tr><th>setting_key</th><th>setting_value</th><th>編集</th></tr></thead>
-          <tbody id="settings-rows"></tbody>
+      <div class="portal-section-head">
+        <div>
+          <h2>スタッフカレンダー表</h2>
+          <p class="admin-note" id="settings-calendar-range">向こう一週間の予定を表示します。</p>
+        </div>
+        <div class="admin-actions">
+          <button class="admin-btn secondary" id="settings-week-prev" type="button">前週</button>
+          <button class="admin-btn secondary" id="settings-week-next" type="button">翌週</button>
+        </div>
+      </div>
+      <div class="portal-calendar-shell">
+        <table class="portal-calendar-table">
+          <thead id="settings-calendar-head"></thead>
+          <tbody id="settings-calendar-body"></tbody>
         </table>
       </div>
     </section>
-    <section class="admin-panel">
-      <h2>設定を保存</h2>
-      <form class="admin-form" id="settings-form">
-        <input id="setting-id" type="hidden">
-        <label>setting_key<input id="setting-key" type="text" required placeholder="store_info"></label>
-        <label>setting_value (JSON)<textarea id="setting-value" rows="10">{}</textarea></label>
+  </main>
+
+  <div class="portal-modal" id="staff-modal" hidden>
+    <div class="portal-modal-backdrop" data-modal-close="staff-modal"></div>
+    <div class="portal-modal-dialog portal-modal-dialog--wide">
+      <div class="portal-section-head">
+        <div>
+          <p class="portal-hero-label portal-hero-label--muted">REGISTER</p>
+          <h2 id="staff-modal-title">スタッフ新規登録</h2>
+        </div>
+        <button class="admin-btn secondary" type="button" data-modal-close="staff-modal">閉じる</button>
+      </div>
+      <form class="admin-form" id="staff-form">
+        <input id="staff-id" type="hidden">
+        <div class="admin-grid cols-2">
+          <label>スタッフID
+            <input id="staff-code" type="text" required placeholder="staff-001">
+          </label>
+          <label>表示名
+            <input id="staff-name" type="text" required placeholder="香り 花子">
+          </label>
+        </div>
+        <div class="admin-grid cols-3">
+          <label>権限
+            <select id="staff-role">
+              <option value="staff">staff</option>
+              <option value="manager">manager</option>
+            </select>
+          </label>
+          <label>メールアドレス
+            <input id="staff-email" type="email" placeholder="staff@example.com">
+          </label>
+          <label>電話番号
+            <input id="staff-phone" type="text" placeholder="090-0000-0000">
+          </label>
+        </div>
+        <div class="admin-grid cols-3">
+          <label>カードカラー
+            <input id="staff-color" type="color" value="#c78862">
+          </label>
+          <label>標準出勤
+            <input id="staff-default-start" type="time" value="10:00">
+          </label>
+          <label>標準退勤
+            <input id="staff-default-end" type="time" value="18:00">
+          </label>
+        </div>
+        <section class="admin-panel admin-panel-soft">
+          <div class="portal-section-head">
+            <div>
+              <h3>曜日ごとの基本出勤</h3>
+              <p class="admin-note">個別出勤モーダルで日付単位の上書きができます。</p>
+            </div>
+          </div>
+          <div class="portal-week-pattern" id="staff-weekly-pattern"></div>
+        </section>
         <div class="admin-actions">
           <button class="admin-btn primary" type="submit">保存</button>
+          <button class="admin-btn secondary" type="button" data-modal-close="staff-modal">キャンセル</button>
         </div>
       </form>
-      <p class="admin-note">例: 店舗名、住所、予約時注意文言、予約完了ページ補足文言、担当候補一覧など。</p>
-    </section>
-  </main>
+    </div>
+  </div>
+
+  <div class="portal-modal" id="shift-modal" hidden>
+    <div class="portal-modal-backdrop" data-modal-close="shift-modal"></div>
+    <div class="portal-modal-dialog portal-modal-dialog--wide">
+      <div class="portal-section-head">
+        <div>
+          <p class="portal-hero-label portal-hero-label--muted">SHIFT EDIT</p>
+          <h2 id="shift-modal-title">個別出勤モーダル</h2>
+        </div>
+        <button class="admin-btn secondary" type="button" data-modal-close="shift-modal">閉じる</button>
+      </div>
+      <form class="admin-form" id="shift-form">
+        <input id="shift-staff-id" type="hidden">
+        <label class="portal-checkbox">
+          <input id="shift-extend-weeks" type="checkbox">
+          <span>
+            <strong>翌週も追加で表示する</strong>
+            <small>チェックすると 2 週間分までモーダルを伸ばして表示します。</small>
+          </span>
+        </label>
+        <div class="portal-shift-grid" id="shift-rows"></div>
+        <div class="admin-actions">
+          <button class="admin-btn primary" type="submit">個別出勤を保存</button>
+          <button class="admin-btn secondary" type="button" data-modal-close="shift-modal">キャンセル</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
   <script src="js/supabase-client.js"></script>
   <script src="js/admin-auth.js"></script>
   <script src="js/admin-data.js"></script>
-  <script>
-    const rowsEl = document.getElementById("settings-rows");
-    const form = document.getElementById("settings-form");
-
-    function fillForm(row) {
-      document.getElementById("setting-id").value = row.id || "";
-      document.getElementById("setting-key").value = row.setting_key || "";
-      document.getElementById("setting-value").value = JSON.stringify(row.setting_value || {}, null, 2);
-    }
-
-    async function getAllSettings() {
-      return window.AdminData.listRows("admin_settings", { orders: [{ column: "updated_at", ascending: false }] }).catch(() => []);
-    }
-
-    async function renderRows() {
-      const rows = await getAllSettings();
-      rowsEl.innerHTML = "";
-      rows.forEach((row) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${row.setting_key || ""}</td>
-          <td><pre style="white-space:pre-wrap;margin:0;">${JSON.stringify(row.setting_value || {}, null, 2)}</pre></td>
-          <td><button class="admin-btn secondary" data-edit-id="${row.id}" type="button">編集</button></td>
-        `;
-        rowsEl.appendChild(tr);
-      });
-      rowsEl.querySelectorAll("[data-edit-id]").forEach((button) => {
-        button.addEventListener("click", async () => {
-          const rows = await getAllSettings();
-          const target = rows.find((row) => row.id === button.dataset.editId);
-          if (target) fillForm(target);
-        });
-      });
-    }
-
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const payload = {
-        setting_key: document.getElementById("setting-key").value.trim(),
-        setting_value: JSON.parse(document.getElementById("setting-value").value || "{}"),
-        updated_at: new Date().toISOString()
-      };
-      const id = document.getElementById("setting-id").value;
-      if (id) {
-        await window.AdminData.updateRow("admin_settings", id, payload).catch(console.error);
-      } else {
-        await window.AdminData.insertRow("admin_settings", payload).catch(console.error);
-      }
-      form.reset();
-      document.getElementById("setting-value").value = "{}";
-      await renderRows();
-    });
-
-    async function bootstrap() {
-      window.AdminAuth.renderAdminHeader("settings");
-      const session = await window.AdminAuth.requireAdminSession();
-      if (!session) return;
-      await renderRows();
-    }
-    bootstrap();
-  </script>
+  <script src="js/admin-settings-page.js"></script>
 </body>
 </html>

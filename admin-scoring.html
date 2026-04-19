@@ -9,48 +9,116 @@
 </head>
 <body class="page-canvas admin-page">
   <header class="admin-header" id="admin-header"></header>
-  <main class="admin-main site-container admin-grid">
-    <section class="admin-panel">
-      <p class="section-label">Scoring Config</p>
-      <h1>配点ロジック</h1>
-      <p class="admin-note">フォームの数値を調整すると、保存用 JSON は自動更新されます。公開側は active version を読み込みます。</p>
-      <div class="admin-grid cols-3">
-        <article class="admin-kpi"><span>active version</span><strong id="active-version">-</strong></article>
-        <article class="admin-kpi"><span>note</span><strong id="active-note" style="font-size:1rem;">-</strong></article>
-        <article class="admin-kpi"><span>updated</span><strong id="active-updated" style="font-size:1rem;">-</strong></article>
+  <main class="admin-main site-container portal-stack">
+    <section class="admin-panel portal-scoring-hero-card">
+      <div class="portal-scoring-hero-grid">
+        <div class="portal-hero-copy-block">
+          <p class="portal-hero-label">SCORING LOGIC</p>
+          <h1>配点ロジック</h1>
+        </div>
+        <div class="portal-scoring-top-actions">
+          <button class="admin-btn primary" form="scoring-form" type="submit">新 version をデータベースに保存</button>
+          <button class="admin-btn primary" data-scoring-export type="button">Jsonファイルとしてローカル保存</button>
+        </div>
       </div>
-      <div class="admin-actions">
-        <button class="admin-btn secondary" id="scoring-load-template" type="button">研究レポート初期テンプレートを読込</button>
-        <button class="admin-btn secondary" id="scoring-load-active" type="button">active 設定へ戻す</button>
+      <div class="portal-scoring-hero-bottom">
+        <p class="portal-hero-copy">配点・分岐・アンケートの数値、文言の変更をできます。active version <strong id="active-version">-</strong> / note <strong id="active-note">-</strong> / updated <strong id="active-updated">-</strong></p>
+        <div class="admin-actions">
+          <button class="admin-btn secondary" id="scoring-load-template" type="button">研究レポート初期テンプレートを読込</button>
+          <button class="admin-btn secondary" id="scoring-load-active" type="button">active 設定へ戻す</button>
+          <button class="admin-btn primary portal-scoring-import-button" data-scoring-import-trigger type="button">Json読込</button>
+        </div>
       </div>
       <p class="admin-note" id="scoring-status">読み込み中です。</p>
+      <input id="scoring-import-json" type="file" accept="application/json" hidden>
     </section>
-    <section class="admin-grid cols-2">
-      <article class="admin-panel">
-        <div class="admin-card-head">
-          <div>
-            <h2>フォーム編集</h2>
-            <p class="admin-note">非エンジニア向けに、質問ごとの配点を表形式で編集できます。</p>
-          </div>
+
+    <section class="admin-panel portal-scoring-branch-area">
+      <div class="portal-section-head">
+        <div>
+          <h2>分岐設定エリア</h2>
         </div>
-        <div class="admin-form-stack" id="scoring-editor"></div>
-      </article>
-      <article class="admin-panel">
-        <div class="admin-card-head">
-          <div>
-            <h2>保存内容の確認</h2>
-            <p class="admin-note">JSON は確認用です。保存すると新しい version が作られます。</p>
+        <p class="admin-note">基本設定と3種の分岐設定、距離重みをひとまとまりで確認するエリア。</p>
+      </div>
+      <div id="scoring-branch-settings"></div>
+    </section>
+
+    <section class="portal-scoring-columns">
+      <div class="portal-scoring-column">
+        <section class="admin-panel">
+          <div class="portal-section-head">
+            <div>
+              <h2>STEP1 配点</h2>
+              <p class="admin-note">最初の5問で使う質問ごとに調整できます。</p>
+            </div>
           </div>
+          <div class="admin-form-stack" id="scoring-step1-section"></div>
+        </section>
+
+        <div class="portal-scoring-inline-actions">
+          <button class="admin-btn primary" form="scoring-form" type="submit">新 version をデータベースに保存</button>
+          <button class="admin-btn primary" data-scoring-export type="button">Jsonファイルとしてローカル保存</button>
         </div>
-        <form class="admin-form" id="scoring-form">
-          <label>version メモ<input id="scoring-note" type="text" placeholder="例: spring update"></label>
-          <label>保存される JSON<textarea id="scoring-json" rows="24" readonly></textarea></label>
-          <div class="admin-actions">
-            <button class="admin-btn primary" type="submit">新 version として保存</button>
+
+        <section class="admin-panel">
+          <div class="portal-section-head">
+            <div>
+              <h2>Q8 配点（今日の仕上がり回答に対応です。）</h2>
+            </div>
           </div>
-        </form>
-        <div class="admin-grid" id="scoring-sections"></div>
-      </article>
+          <div class="admin-form-stack" id="scoring-q8-section"></div>
+        </section>
+      </div>
+
+      <div class="portal-scoring-column">
+        <section class="admin-panel">
+          <div class="portal-section-head">
+            <div>
+              <h2>STEP2 配点</h2>
+              <p class="admin-note">STEP2の分岐質問3種を質問ごとに調整できます。</p>
+            </div>
+          </div>
+          <div class="admin-form-stack" id="scoring-step2-section"></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="admin-panel portal-scoring-finish-panel">
+      <div class="portal-scoring-finish-grid">
+        <div>
+          <div class="portal-section-head">
+            <div>
+              <h2>finish template</h2>
+              <p class="admin-note">Q8の回答に応じて仕上がりを寄せるテンプレートです。</p>
+            </div>
+          </div>
+          <div class="admin-form-stack" id="scoring-finish-section"></div>
+        </div>
+
+        <div class="portal-scoring-explanation">
+          <h2>finishTemplates は、</h2>
+          <p>Q8 の回答ごとに用意された「仕上がりの理想プロファイル」です。</p>
+          <p>A 「軽やか」 は Fresh 高め、B 「やわらか」 は Floral / Sweet 高め、C 「印象」 は Woody / Spicy / Sweet 高めの想定です。</p>
+          <p>最終軸は Q8 delta 反映後の値と finishTemplate を blend した結果になります。</p>
+          <form class="admin-form portal-scoring-save-form" id="scoring-form">
+            <label>version メモ
+              <input id="scoring-note" type="text" placeholder="例: spring update">
+            </label>
+            <details class="portal-scoring-json-details">
+              <summary>保存内容の確認</summary>
+              <label>保存される JSON
+                <textarea id="scoring-json" rows="14" readonly></textarea>
+              </label>
+              <div class="portal-config-grid" id="scoring-sections"></div>
+            </details>
+            <div class="admin-actions">
+              <button class="admin-btn primary portal-scoring-import-button" data-scoring-import-trigger type="button">Json読込</button>
+              <button class="admin-btn primary" type="submit">新 version をデータベースに保存</button>
+              <button class="admin-btn primary" data-scoring-export type="button">Jsonファイルとしてローカル保存</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

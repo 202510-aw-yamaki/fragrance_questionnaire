@@ -9,123 +9,147 @@
 </head>
 <body class="page-canvas admin-page">
   <header class="admin-header" id="admin-header"></header>
-  <main class="admin-main site-container admin-grid cols-2">
-    <section class="admin-panel">
-      <p class="section-label">Slots</p>
-      <h1>&#20104;&#32004;&#26528;</h1>
-      <div class="admin-table-wrap">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>&#26085;&#20184;</th>
-              <th>&#26178;&#38291;</th>
-              <th>&#34920;&#31034;&#12521;&#12505;&#12523;</th>
-              <th>&#25285;&#24403;</th>
-              <th>status</th>
-              <th>&#23450;&#21729;</th>
-              <th>&#20844;&#38283;</th>
-              <th>&#25805;&#20316;</th>
-            </tr>
-          </thead>
-          <tbody id="slot-rows"></tbody>
-        </table>
+  <main class="admin-main site-container portal-stack">
+    <section class="admin-panel portal-hero">
+      <div class="portal-hero-copy-block">
+        <p class="portal-hero-label">DASHBOARD</p>
+        <h1>予約枠作成ページ</h1>
       </div>
+      <p class="portal-hero-copy portal-hero-copy--align-end">予約枠一覧・単件作成 / 編集・入力中プレビュー・一括作成を 1 画面で確認できます。</p>
     </section>
 
-    <section class="admin-panel">
-      <h2>&#26032;&#35215;&#20316;&#25104; / &#32232;&#38598;</h2>
-      <form class="admin-form" id="slot-form">
-        <input id="slot-id" type="hidden">
-        <label>slot_code<input id="slot-code" type="text" required></label>
-        <label>&#26085;&#20184;<input id="slot-date" type="date" required></label>
-        <label>&#26178;&#38291;<input id="slot-time" type="time" required></label>
-        <label>&#34920;&#31034;&#12521;&#12505;&#12523;<input id="slot-label" type="text" required></label>
-        <label>&#25285;&#24403;&#12473;&#12479;&#12483;&#12501;<input id="slot-instructor" type="text"></label>
-        <label>status
-          <select id="slot-status">
-            <option value="open">open</option>
-            <option value="recommended">recommended</option>
-            <option value="closed">closed</option>
-          </select>
-        </label>
-        <label>capacity<input id="slot-capacity" type="number" min="1" value="1"></label>
-        <label>sort_order<input id="slot-sort" type="number" min="0" value="0"></label>
-        <label><input id="slot-active" type="checkbox" checked> is_active</label>
+    <section class="portal-slot-layout">
+      <section class="admin-panel">
+        <div class="portal-section-head">
+          <div>
+            <p class="portal-hero-label portal-hero-label--muted">SLOTS</p>
+            <h2>予約枠一覧</h2>
+          </div>
+        </div>
+        <div class="portal-list-head portal-slot-head">
+          <span>年月日</span>
+          <span>時間</span>
+          <span>定員</span>
+          <span>総組数</span>
+          <span>操作</span>
+        </div>
+        <div id="slot-rows" class="portal-list-body"></div>
+      </section>
+
+      <section class="admin-panel">
+        <div class="portal-section-head">
+          <div>
+            <h2>新規作成 / 編集</h2>
+            <p class="admin-note">必要項目を入力して保存します。</p>
+          </div>
+        </div>
+        <form class="admin-form portal-slot-form" id="slot-form">
+          <input id="slot-id" type="hidden">
+          <input id="slot-code" type="hidden">
+          <input id="slot-label" type="hidden">
+          <input id="slot-sort" type="hidden" value="0">
+          <input id="slot-active" type="checkbox" checked hidden>
+          <label>年月日<input id="slot-date" type="date" required></label>
+          <label>開始時間<input id="slot-time" type="time" required></label>
+          <label>枠間隔 (minutes)<input id="slot-interval" type="number" min="15" step="15" value="60"></label>
+          <label>定員<input id="slot-capacity" type="number" min="1" value="1"></label>
+          <label>担当スタッフ<input id="slot-instructor" type="text" placeholder="ログイン中スタッフ名を利用"></label>
+          <label>公開状態
+            <select id="slot-status">
+              <option value="open">公開中</option>
+              <option value="recommended">おすすめ表示</option>
+              <option value="closed">非公開</option>
+            </select>
+          </label>
+          <div class="admin-actions">
+            <button class="admin-btn primary" type="submit">保存</button>
+            <button class="admin-btn secondary" id="slot-reset" type="button">入力をクリア</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="admin-panel">
+        <div class="portal-section-head">
+          <div>
+            <h2>入力/選択中の枠プレビュー</h2>
+            <p class="admin-note" id="slot-preview-label">未入力</p>
+          </div>
+        </div>
+        <div class="portal-preview-grid portal-preview-grid--single">
+          <article class="admin-preview-card">
+            <div class="admin-meta-row"><span>年月日</span><strong id="slot-preview-date">-</strong></div>
+            <div class="admin-meta-row"><span>開始時間</span><strong id="slot-preview-time">-</strong></div>
+            <div class="admin-meta-row"><span>枠間隔</span><strong id="slot-preview-interval">60分</strong></div>
+            <div class="admin-meta-row"><span>定員</span><strong id="slot-preview-capacity">1名</strong></div>
+            <div class="admin-meta-row"><span>担当</span><strong id="slot-preview-staff">-</strong></div>
+            <div class="admin-meta-row"><span>公開状態</span><strong id="slot-preview-status">-</strong></div>
+          </article>
+        </div>
         <div class="admin-actions">
-          <button class="admin-btn primary" type="submit">&#20445;&#23384;</button>
-          <button class="admin-btn secondary" id="slot-reset" type="button">&#20837;&#21147;&#12434;&#12463;&#12522;&#12450;</button>
+          <button class="admin-btn secondary" id="slot-preview-focus" type="button">編集</button>
+          <button class="admin-btn secondary" id="slot-delete" type="button">枠削除</button>
         </div>
-      </form>
-      <article class="admin-preview-card" id="slot-preview-card">
-        <h3>&#20837;&#21147;&#20013;&#12398;&#26528;&#12503;&#12524;&#12499;&#12517;&#12540;</h3>
-        <p id="slot-preview-label">&#26410;&#20837;&#21147;</p>
-        <div class="admin-card-list">
-          <div class="admin-meta-row"><span>&#26085;&#20184;</span><strong id="slot-preview-date">-</strong></div>
-          <div class="admin-meta-row"><span>&#26178;&#38291;</span><strong id="slot-preview-time">-</strong></div>
-          <div class="admin-meta-row"><span>&#25285;&#24403;</span><strong id="slot-preview-staff">-</strong></div>
-          <div class="admin-meta-row"><span>status</span><strong id="slot-preview-status">-</strong></div>
-        </div>
-      </article>
+      </section>
     </section>
 
-    <section class="admin-panel" style="grid-column: 1 / -1;">
-      <div class="admin-card-head">
+    <section class="admin-panel portal-bulk-panel">
+      <div class="portal-section-head">
         <div>
-          <h2>&#12471;&#12501;&#12488;&#12363;&#12425;&#20104;&#32004;&#26528;&#12434;&#19968;&#25324;&#20316;&#25104;</h2>
-          <p class="admin-note">&#20986;&#21220;&#26178;&#38291;&#24111;&#12395;&#21512;&#12431;&#12379;&#12390;&#12289;&#26085;&#20184;&#31684;&#22258;&#12392;&#26178;&#38291;&#38291;&#38548;&#12363;&#12425;&#20104;&#32004;&#26528;&#12434;&#12414;&#12392;&#12417;&#12390;&#20316;&#25104;&#12375;&#12414;&#12377;&#12290;&#21516;&#12376; <code>slot_code</code> &#12399;&#19978;&#26360;&#12365;&#12373;&#12428;&#12414;&#12377;&#12290;</p>
+          <h2>予約枠を一括作成</h2>
+          <p class="admin-note">開始日から終了日、時間帯、曜日を指定してまとめて作成 / 更新します。</p>
         </div>
       </div>
       <form class="admin-form" id="slot-bulk-form">
         <div class="admin-grid cols-4">
-          <label>&#38283;&#22987;&#26085;<input id="slot-bulk-start-date" type="date" required></label>
-          <label>&#32066;&#20102;&#26085;<input id="slot-bulk-end-date" type="date" required></label>
-          <label>&#38283;&#22987;&#26178;&#21051;<input id="slot-bulk-start-time" type="time" required></label>
-          <label>&#32066;&#20102;&#26178;&#21051;<input id="slot-bulk-end-time" type="time" required></label>
+          <label>開始日<input id="slot-bulk-start-date" type="date" required></label>
+          <label>終了日<input id="slot-bulk-end-date" type="date" required></label>
+          <label>開始時間<input id="slot-bulk-start-time" type="time" required></label>
+          <label>終了時間<input id="slot-bulk-end-time" type="time" required></label>
         </div>
         <div class="admin-grid cols-4">
-          <label>&#26528;&#38291;&#38548;&#65288;&#20998;&#65289;<input id="slot-bulk-interval" type="number" min="15" step="15" value="60" required></label>
-          <label>&#23450;&#21729;<input id="slot-bulk-capacity" type="number" min="1" step="1" value="1"></label>
-          <label>&#25285;&#24403;&#12473;&#12479;&#12483;&#12501;<input id="slot-bulk-instructor" type="text" placeholder="&#20363;: &#23665;&#30000;"></label>
-          <label>status
+          <label>枠間隔 (minutes)<input id="slot-bulk-interval" type="number" min="15" step="15" value="60" required></label>
+          <label>定員<input id="slot-bulk-capacity" type="number" min="1" step="1" value="1"></label>
+          <label>担当スタッフ<input id="slot-bulk-instructor" type="text" placeholder="例: 山田"></label>
+          <label>公開状態
             <select id="slot-bulk-status">
-              <option value="open">open</option>
-              <option value="recommended">recommended</option>
-              <option value="closed">closed</option>
+              <option value="open">公開中</option>
+              <option value="recommended">おすすめ表示</option>
+              <option value="closed">非公開</option>
             </select>
           </label>
         </div>
         <div class="admin-grid cols-3">
-          <label>&#12471;&#12501;&#12488;&#21517;<input id="slot-bulk-label" type="text" value="&#25509;&#23458;&#26528;" required></label>
-          <label>&#12467;&#12540;&#12489;&#25509;&#38957;&#36766;<input id="slot-bulk-prefix" type="text" value="SHIFT"></label>
-          <label>&#38283;&#22987; sort_order<input id="slot-bulk-sort-start" type="number" min="0" step="1" value="0"></label>
+          <label>表示ラベル<input id="slot-bulk-label" type="text" value="接客枠" required></label>
+          <label>コード接頭辞<input id="slot-bulk-prefix" type="text" value="SHIFT"></label>
+          <label>開始 sort_order<input id="slot-bulk-sort-start" type="number" min="0" step="1" value="0"></label>
         </div>
-        <fieldset class="admin-editor-card">
-          <legend>&#20316;&#25104;&#26332;&#26085;</legend>
-          <div class="admin-grid cols-4">
-            <label><input type="checkbox" name="slot-bulk-weekday" value="1" checked> &#26376;</label>
-            <label><input type="checkbox" name="slot-bulk-weekday" value="2" checked> &#28779;</label>
-            <label><input type="checkbox" name="slot-bulk-weekday" value="3" checked> &#27700;</label>
-            <label><input type="checkbox" name="slot-bulk-weekday" value="4" checked> &#26408;</label>
-            <label><input type="checkbox" name="slot-bulk-weekday" value="5" checked> &#37329;</label>
-            <label><input type="checkbox" name="slot-bulk-weekday" value="6"> &#22303;</label>
-            <label><input type="checkbox" name="slot-bulk-weekday" value="0"> &#26085;</label>
+        <fieldset class="admin-editor-card portal-weekday-card">
+          <legend>作成曜日</legend>
+          <div class="portal-weekday-grid">
+            <label><input type="checkbox" name="slot-bulk-weekday" value="1" checked> 月</label>
+            <label><input type="checkbox" name="slot-bulk-weekday" value="2" checked> 火</label>
+            <label><input type="checkbox" name="slot-bulk-weekday" value="3" checked> 水</label>
+            <label><input type="checkbox" name="slot-bulk-weekday" value="4" checked> 木</label>
+            <label><input type="checkbox" name="slot-bulk-weekday" value="5" checked> 金</label>
+            <label><input type="checkbox" name="slot-bulk-weekday" value="6"> 土</label>
+            <label><input type="checkbox" name="slot-bulk-weekday" value="0"> 日</label>
           </div>
         </fieldset>
         <div class="admin-actions">
-          <button class="admin-btn primary" type="submit">&#12414;&#12392;&#12417;&#12390;&#20316;&#25104; / &#26356;&#26032;</button>
+          <button class="admin-btn primary" type="submit">まとめて作成 / 更新</button>
         </div>
         <div class="admin-preview-grid">
           <article class="admin-preview-card">
-            <h3>&#19968;&#25324;&#20316;&#25104;&#12503;&#12524;&#12499;&#12517;&#12540;</h3>
-            <p class="admin-note" id="slot-bulk-preview-count">&#26410;&#35336;&#31639;</p>
-            <p class="admin-note" id="slot-bulk-preview-range">&#26085;&#20184;&#12434;&#25351;&#23450;&#12377;&#12427;&#12392;&#34920;&#31034;&#12373;&#12428;&#12414;&#12377;&#12290;</p>
+            <h3>一括作成プレビュー</h3>
+            <p class="admin-note" id="slot-bulk-preview-count">未計算</p>
+            <p class="admin-note" id="slot-bulk-preview-range">日付を指定すると表示されます。</p>
           </article>
           <article class="admin-preview-card">
-            <h3>&#26082;&#30331;&#37682;&#26085;&#12481;&#12455;&#12483;&#12463;</h3>
-            <p class="admin-note" id="slot-bulk-duplicate-preview">&#20316;&#25104;&#26178;&#12395;&#37325;&#35079;&#26085;&#12434;&#30906;&#35469;&#12375;&#12414;&#12377;&#12290;</p>
+            <h3>既登録日の確認</h3>
+            <p class="admin-note" id="slot-bulk-duplicate-preview">作成時に重複日を確認します。</p>
           </article>
         </div>
-        <p class="admin-note" id="slot-bulk-status-note">&#20316;&#25104;&#24460;&#12399;&#12371;&#12398;&#30011;&#38754;&#12434;&#20877;&#35501;&#12415;&#36796;&#12415;&#12375;&#12390;&#19968;&#35239;&#12408;&#21453;&#26144;&#12375;&#12414;&#12377;&#12290;</p>
+        <p class="admin-note" id="slot-bulk-status-note">作成後はこの画面を再読み込みして一覧へ反映します。</p>
       </form>
     </section>
   </main>

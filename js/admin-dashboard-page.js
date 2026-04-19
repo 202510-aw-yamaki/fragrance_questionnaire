@@ -1,10 +1,13 @@
 (function () {
   const kpiReservationsEl = document.getElementById("kpi-reservations");
+  const kpiReservationsWeekEl = document.getElementById("kpi-reservations-week");
   const kpiSlotsEl = document.getElementById("kpi-slots");
   const kpiScoringEl = document.getElementById("kpi-scoring");
   const kpiMaterialsEl = document.getElementById("kpi-materials");
   const todayShiftsEl = document.getElementById("manager-today-shifts");
+  const nextWeekSummaryEl = document.getElementById("manager-next-week-summary");
   const coverageEl = document.getElementById("manager-slot-coverage");
+  const scoringWeightSummaryEl = document.getElementById("manager-scoring-weight-summary");
   const scoringSummaryEl = document.getElementById("manager-scoring-summary");
   const materialLinksEl = document.getElementById("manager-material-links");
 
@@ -64,17 +67,50 @@
     `).join("");
   }
 
+  function groupByStaff(slots) {
+    return slots.reduce((acc, slot) => {
+      const key = slot.instructor_name || "未設定";
+      const bucket = acc.get(key) || [];
+      bucket.push(slot);
+      acc.set(key, bucket);
+      return acc;
+    }, new Map());
+  }
+
   function renderCoverage(slots) {
-    const today = createLocalDate(new Date());
-    coverageEl.innerHTML = Array.from({ length: 14 }, (_, index) => {
-      const date = addDays(today, index);
-      const dateKey = formatDateKey(date);
-      const count = slots.filter((row) => row.slot_date === dateKey && row.is_active !== false).length;
+    const today = formatDateKey(new Date());
+    const twoWeekLimit = formatDateKey(addDays(createLocalDate(new Date()), 13));
+    const grouped = groupByStaff(slots.filter((row) => row.is_active !== false && row.slot_date >= today && row.slot_date <= twoWeekLimit));
+
+    if (!grouped.size) {
+      coverageEl.innerHTML = `<p class="admin-empty">確認できる予約枠はありません。</p>`;
+      return;
+    }
+
+    coverageEl.innerHTML = Array.from(grouped.entries()).map(([staffName, staffSlots]) => `
+      <article class="admin-item-card">
+        <div class="admin-meta-row"><span>${staffName}</span><strong class="${staffSlots.length ? "portal-ok-text" : "portal-ng-text"}">${staffSlots.length ? "OK" : "NG"}</strong></div>
+      </article>
+    `).join("");
+  }
+
+  function renderNextWeekSummary(slots, reservations) {
+    if (!nextWeekSummaryEl) return;
+    const today = formatDateKey(new Date());
+    const weekLimit = formatDateKey(addDays(createLocalDate(new Date()), 6));
+    const grouped = groupByStaff(slots.filter((row) => row.is_active !== false && row.slot_date >= today && row.slot_date <= weekLimit));
+    const reservationMap = new Map(reservations.map((row) => [row.slot_id, row]));
+
+    if (!grouped.size) {
+      nextWeekSummaryEl.innerHTML = `<p class="admin-empty">翌週分のデータはありません。</p>`;
+      return;
+    }
+
+    nextWeekSummaryEl.innerHTML = Array.from(grouped.entries()).map(([staffName, staffSlots]) => {
+      const reservationCount = staffSlots.filter((slot) => reservationMap.has(slot.id)).length;
       return `
-        <article class="admin-date-status ${count ? "is-ready" : "is-missing"}">
-          <strong>${formatDateLabel(date)}</strong>
-          <span>${count ? "OK" : "NG"}</span>
-          <small>予約枠 ${count}</small>
+        <article class="admin-item-card">
+          <div class="admin-meta-row"><span>${staffName}</span><strong>${reservationCount}/${staffSlots.length}</strong></div>
         </article>
       `;
     }).join("");
@@ -84,10 +120,23 @@
     const config = window.FragranceMasterData.getCompatibleScoringConfig(scoringRow?.config_json || null);
     const questionWeights = config.questionWeights || {};
     const branchTemplates = Object.entries(config.branchTemplates || {}).slice(0, 3);
+    if (scoringWeightSummaryEl) {
+      scoringWeightSummaryEl.innerHTML = `
+        <article class="admin-item-card">
+          <div class="admin-meta-row"><span>共通質問（1〜5）</span><strong>${questionWeights.step1 ?? "-"}</strong></div>
+        </article>
+        <article class="admin-item-card">
+          <div class="admin-meta-row"><span>分岐質問（6〜7）</span><strong>${questionWeights.step2 ?? "-"}</strong></div>
+        </article>
+        <article class="admin-item-card">
+          <div class="admin-meta-row"><span>最終質問（8）</span><strong>${questionWeights.finish ?? "-"}</strong></div>
+        </article>
+        <article class="admin-item-card">
+          <div class="admin-meta-row"><span>仕上げ補正</span><strong>${config.finishBlendRatio ?? "-"}</strong></div>
+        </article>
+      `;
+    }
     scoringSummaryEl.innerHTML = `
-      <div class="admin-meta-row"><span>active version</span><strong>${scoringRow?.version ?? "-"}</strong></div>
-      <div class="admin-meta-row"><span>logic source</span><strong>${config.logicSource || "-"}</strong></div>
-      <div class="admin-meta-row"><span>step1 / step2 / finish</span><strong>${questionWeights.step1 ?? "-"} / ${questionWeights.step2 ?? "-"} / ${questionWeights.finish ?? "-"}</strong></div>
       ${branchTemplates.map(([key, axes]) => `
         <article class="admin-editor-card">
           <h3>${key}</h3>
@@ -100,7 +149,7 @@
   }
 
   function renderMaterialLinks(materials) {
-    const activeMaterials = materials.filter((row) => row.is_active !== false).slice(0, 8);
+    const activeMaterials = materials.filter((row) => row.is_active !== false);
     materialLinksEl.innerHTML = activeMaterials.length
       ? activeMaterials.map((row) => `
           <a class="admin-mini-card" href="${window.AdminAuth.appendRoleToHref(`admin-materials.html?focus=${encodeURIComponent(row.material_code)}`, "manager")}">
@@ -112,10 +161,18 @@
   }
 
   async function bootstrap() {
-    window.AdminAuth.renderAdminHeader("dashboard", { role: "manager" });
     const session = await window.AdminAuth.requireAdminSession();
     if (!session) return;
     window.AdminAuth.persistPortalRole("manager");
+    window.AdminAuth.renderAdminHeader("dashboard", {
+      role: "manager",
+      session,
+      links: [
+        { href: "admin-settings.html", label: "スタッフ登録/管理", key: "settings" },
+        { href: "admin-scoring.html", label: "配点ロジック", key: "scoring" },
+        { href: "admin-materials.html", label: "原料ポイント", key: "materials" }
+      ]
+    });
 
     const [reservations, slots, scoringRows, materials] = await Promise.all([
       window.AdminData.listRows("reservations", { orders: [{ column: "created_at", ascending: false }] }).catch(() => []),
@@ -124,12 +181,26 @@
       window.AdminData.listRows("material_points").catch(() => [])
     ]);
 
-    kpiReservationsEl.textContent = String(reservations.length);
-    kpiSlotsEl.textContent = String(slots.filter((row) => row.is_active !== false).length);
+    const todayKey = formatDateKey(new Date());
+    const slotMap = new Map(slots.map((row) => [row.id, row]));
+    const todayReservations = reservations.filter((row) => slotMap.get(row.slot_id)?.slot_date === todayKey);
+    kpiReservationsEl.textContent = String(todayReservations.length);
+    if (kpiReservationsWeekEl) {
+      const today = todayKey;
+      const weekLimit = formatDateKey(addDays(createLocalDate(new Date()), 6));
+      const weeklyReservations = reservations.filter((row) => {
+        const dateKey = slotMap.get(row.slot_id)?.slot_date || "";
+        return dateKey >= today && dateKey <= weekLimit;
+      });
+      const weeklySlots = slots.filter((row) => row.is_active !== false && row.slot_date >= today && row.slot_date <= weekLimit);
+      kpiReservationsWeekEl.textContent = String(weeklyReservations.length);
+      kpiSlotsEl.textContent = String(weeklySlots.length);
+    }
     kpiScoringEl.textContent = scoringRows[0]?.version ?? "-";
     kpiMaterialsEl.textContent = String(materials.length);
 
     renderTodayShifts(slots, reservations);
+    renderNextWeekSummary(slots, reservations);
     renderCoverage(slots);
     renderScoringSummary(scoringRows[0] || null);
     renderMaterialLinks(materials);

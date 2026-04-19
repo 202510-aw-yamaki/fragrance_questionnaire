@@ -5,23 +5,73 @@
   const previewLabelEl = document.getElementById("slot-preview-label");
   const previewDateEl = document.getElementById("slot-preview-date");
   const previewTimeEl = document.getElementById("slot-preview-time");
+  const previewIntervalEl = document.getElementById("slot-preview-interval");
+  const previewCapacityEl = document.getElementById("slot-preview-capacity");
   const previewStaffEl = document.getElementById("slot-preview-staff");
   const previewStatusEl = document.getElementById("slot-preview-status");
+  const previewFocusButton = document.getElementById("slot-preview-focus");
+  const deleteButton = document.getElementById("slot-delete");
   const UI = {
     active: "\u516c\u958b\u4e2d",
-    hidden: "\u975e\u8868\u793a",
+    hidden: "\u975e\u516c\u958b",
     edit: "\u7de8\u96c6",
-    hide: "\u975e\u8868\u793a"
+    hide: "\u524a\u9664"
   };
 
   if (!rowsEl || !form || !resetButton) return;
+
+  let reservations = [];
+
+  function formatMonthDay(value) {
+    if (!value) return "-";
+    return value.replace(/-/g, "/");
+  }
+
+  function getSelectedRole() {
+    return window.AdminAuth.readRoleFromLocation() || window.AdminAuth.readStoredRole() || "manager";
+  }
+
+  function getDefaultInstructorName() {
+    return getSelectedRole() === "staff"
+      ? (window.AdminAuth.getStaffDisplayName(window.__adminSession || null) || "")
+      : "";
+  }
+
+  function getStatusLabel(status) {
+    if (status === "recommended") return "おすすめ表示";
+    if (status === "closed") return "非公開";
+    return "公開中";
+  }
+
+  function buildSlotCode(dateValue, timeValue) {
+    const safeDate = String(dateValue || "").replaceAll("-", "");
+    const safeTime = String(timeValue || "").replaceAll(":", "");
+    const isValidDate = /^\d{8}$/.test(safeDate);
+    const isValidTime = /^\d{4}$/.test(safeTime);
+    return isValidDate && isValidTime ? `SLOT-${safeDate}-${safeTime}` : "";
+  }
+
+  function buildSlotLabel(timeValue, intervalValue) {
+    if (!/^\d{2}:\d{2}$/.test(String(timeValue || ""))) return "未入力";
+    const interval = Number(intervalValue || 60);
+    const [hours, minutes] = String(timeValue || "00:00").split(":").map((value) => Number(value || 0));
+    const totalMinutes = (hours * 60) + minutes + interval;
+    const endHours = String(Math.floor(totalMinutes / 60)).padStart(2, "0");
+    const endMinutes = String(totalMinutes % 60).padStart(2, "0");
+    return timeValue ? `${timeValue}-${endHours}:${endMinutes}` : "未入力";
+  }
 
   function resetForm() {
     form.reset();
     document.getElementById("slot-id").value = "";
     document.getElementById("slot-capacity").value = "1";
+    document.getElementById("slot-interval").value = "60";
+    document.getElementById("slot-status").value = "open";
     document.getElementById("slot-sort").value = "0";
     document.getElementById("slot-active").checked = true;
+    if (!document.getElementById("slot-instructor").value) {
+      document.getElementById("slot-instructor").value = getDefaultInstructorName();
+    }
     renderPreview();
   }
 
@@ -34,6 +84,7 @@
     document.getElementById("slot-instructor").value = row.instructor_name || "";
     document.getElementById("slot-status").value = row.status || "open";
     document.getElementById("slot-capacity").value = row.capacity || 1;
+    document.getElementById("slot-interval").value = "60";
     document.getElementById("slot-sort").value = row.sort_order || 0;
     document.getElementById("slot-active").checked = row.is_active !== false;
     renderPreview();
@@ -43,15 +94,21 @@
     if (!previewLabelEl) return;
     const dateValue = document.getElementById("slot-date").value || "-";
     const timeValue = document.getElementById("slot-time").value || "-";
-    const labelValue = document.getElementById("slot-label").value.trim() || "未入力";
-    const staffValue = document.getElementById("slot-instructor").value.trim() || "未設定";
+    const intervalValue = document.getElementById("slot-interval").value || "60";
+    const capacityValue = document.getElementById("slot-capacity").value || "1";
+    const labelValue = buildSlotLabel(timeValue, intervalValue);
+    const staffValue = document.getElementById("slot-instructor").value.trim() || getDefaultInstructorName() || "未設定";
     const statusValue = document.getElementById("slot-status").value || "-";
 
+    document.getElementById("slot-code").value = buildSlotCode(dateValue, timeValue);
+    document.getElementById("slot-label").value = labelValue;
     previewLabelEl.textContent = labelValue;
-    previewDateEl.textContent = dateValue;
+    previewDateEl.textContent = formatMonthDay(dateValue);
     previewTimeEl.textContent = timeValue;
+    if (previewIntervalEl) previewIntervalEl.textContent = `${intervalValue}分`;
+    if (previewCapacityEl) previewCapacityEl.textContent = `${capacityValue}名`;
     previewStaffEl.textContent = staffValue;
-    previewStatusEl.textContent = statusValue;
+    previewStatusEl.textContent = getStatusLabel(statusValue);
   }
 
   async function getAllSlots() {
@@ -64,25 +121,31 @@
     }).catch(() => []);
   }
 
+  async function getAllReservations() {
+    return window.AdminData.listRows("reservations").catch(() => []);
+  }
+
   async function renderRows() {
     const rows = await getAllSlots();
+    const reservationCounts = reservations.reduce((acc, row) => {
+      acc.set(row.slot_id, (acc.get(row.slot_id) || 0) + 1);
+      return acc;
+    }, new Map());
     rowsEl.innerHTML = "";
     rows.forEach((row) => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${row.slot_date || ""}</td>
-        <td>${String(row.slot_time || "").slice(0, 5)}</td>
-        <td>${row.slot_label || ""}</td>
-        <td>${row.instructor_name || ""}</td>
-        <td>${row.status || ""}</td>
-        <td>${row.capacity || ""}</td>
-        <td>${row.is_active ? UI.active : UI.hidden}</td>
-        <td>
+      const article = document.createElement("article");
+      article.className = "portal-list-row portal-slot-row";
+      article.innerHTML = `
+        <span>${formatMonthDay(row.slot_date || "")}</span>
+        <span>${String(row.slot_time || "").slice(0, 5)}</span>
+        <span>${row.capacity || 1}名</span>
+        <span>${reservationCounts.get(row.id) || 0}組</span>
+        <span class="portal-row-actions">
           <button class="admin-btn secondary" data-edit-id="${row.id}" type="button">${UI.edit}</button>
           <button class="admin-btn secondary" data-hide-id="${row.id}" type="button">${UI.hide}</button>
-        </td>
+        </span>
       `;
-      rowsEl.appendChild(tr);
+      rowsEl.appendChild(article);
     });
 
     rowsEl.querySelectorAll("[data-edit-id]").forEach((button) => {
@@ -106,12 +169,16 @@
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
+    const dateValue = document.getElementById("slot-date").value;
+    const timeValue = document.getElementById("slot-time").value;
+    const intervalValue = document.getElementById("slot-interval").value || "60";
+    const instructorValue = document.getElementById("slot-instructor").value.trim() || getDefaultInstructorName() || null;
     const payload = {
-      slot_code: document.getElementById("slot-code").value.trim(),
-      slot_date: document.getElementById("slot-date").value,
-      slot_time: document.getElementById("slot-time").value,
-      slot_label: document.getElementById("slot-label").value.trim(),
-      instructor_name: document.getElementById("slot-instructor").value.trim() || null,
+      slot_code: buildSlotCode(dateValue, timeValue),
+      slot_date: dateValue,
+      slot_time: timeValue,
+      slot_label: buildSlotLabel(timeValue, intervalValue),
+      instructor_name: instructorValue,
       status: document.getElementById("slot-status").value,
       capacity: Number(document.getElementById("slot-capacity").value || 1),
       sort_order: Number(document.getElementById("slot-sort").value || 0),
@@ -130,17 +197,47 @@
 
   resetButton.addEventListener("click", resetForm);
 
-  ["slot-code", "slot-date", "slot-time", "slot-label", "slot-instructor", "slot-status", "slot-capacity"].forEach((id) => {
+  ["slot-date", "slot-time", "slot-interval", "slot-instructor", "slot-status", "slot-capacity"].forEach((id) => {
     document.getElementById(id)?.addEventListener("input", renderPreview);
     document.getElementById(id)?.addEventListener("change", renderPreview);
   });
 
+  if (previewFocusButton) {
+    previewFocusButton.addEventListener("click", () => {
+      document.getElementById("slot-date").focus();
+    });
+  }
+
+  if (deleteButton) {
+    deleteButton.addEventListener("click", async () => {
+      const id = document.getElementById("slot-id").value;
+      if (!id) return;
+      await window.AdminData.deleteRow("reservation_slots", id).catch(console.error);
+      resetForm();
+      await renderRows();
+    });
+  }
+
   async function bootstrap() {
-    const role = window.AdminAuth.readRoleFromLocation() || window.AdminAuth.readStoredRole() || "manager";
-    window.AdminAuth.renderAdminHeader("slots", { role });
+    const role = getSelectedRole();
     const session = await window.AdminAuth.requireAdminSession();
     if (!session) return;
+    window.__adminSession = session;
     window.AdminAuth.persistPortalRole(role);
+    window.AdminAuth.renderAdminHeader("slots", {
+      role,
+      session,
+      links: role === "staff"
+        ? [
+            { href: "admin-reservations.html", label: "予約情報一覧", key: "reservations" },
+            { href: "admin-slots.html", label: "予約枠作成", key: "slots" }
+          ]
+        : [
+            { href: "admin-dashboard.html", label: "戻る", key: "dashboard" },
+            { href: "admin-reservations.html", label: "予約確認", key: "reservations" }
+          ]
+    });
+    reservations = await getAllReservations();
     renderPreview();
     resetForm();
     await renderRows();

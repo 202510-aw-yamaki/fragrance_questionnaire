@@ -66,6 +66,19 @@
   const kpiCompletedEl = document.getElementById("workspace-kpi-completed");
   const axisTotalEl = document.getElementById("workspace-axis-total");
   const normalizeButton = document.getElementById("workspace-normalize-axes");
+  const axisCompareEl = document.getElementById("workspace-axis-compare");
+  const finalAxisPreviewEl = document.getElementById("workspace-final-axis-preview");
+  const selectorCardEl = document.getElementById("workspace-selector-card");
+  const customerModalEl = document.getElementById("workspace-customer-modal");
+  const customerFormEl = document.getElementById("workspace-customer-form");
+  const customerOpenButton = document.getElementById("workspace-customer-open");
+  const customerNameEl = document.getElementById("workspace-customer-name");
+  const customerEmailEl = document.getElementById("workspace-customer-email");
+  const customerPhoneEl = document.getElementById("workspace-customer-phone");
+  const customerConsentEl = document.getElementById("workspace-customer-consent");
+  const customerFeedbackEl = document.getElementById("workspace-customer-feedback");
+  const qrPreviewEl = document.getElementById("workspace-qr-preview");
+  const generateQrButton = document.getElementById("workspace-generate-qr");
 
   let reservations = [];
   let slotMap = new Map();
@@ -73,10 +86,123 @@
   let selectedReservation = null;
   let selectedQuestionnaire = null;
   let selectedWorkshop = null;
+  let customerDraft = null;
+  let currentQrCode = null;
 
   function setStatus(message, kind = "note") {
     statusEl.textContent = message;
     statusEl.className = kind === "error" ? "admin-error" : kind === "success" ? "admin-note admin-note-success" : "admin-note";
+  }
+
+  function getCustomerDraftStorageKey(reservationId) {
+    return `fragranceCustomerDraft:${reservationId}`;
+  }
+
+  function readCustomerDraft(reservation) {
+    if (!reservation?.id) return null;
+    try {
+      const stored = window.sessionStorage.getItem(getCustomerDraftStorageKey(reservation.id));
+      return stored ? JSON.parse(stored) : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function persistCustomerDraft(reservation, payload) {
+    if (!reservation?.id) return;
+    window.sessionStorage.setItem(getCustomerDraftStorageKey(reservation.id), JSON.stringify(payload));
+  }
+
+  function openCustomerModal() {
+    if (!customerModalEl) return;
+    customerModalEl.hidden = false;
+  }
+
+  function closeCustomerModal() {
+    if (!customerModalEl) return;
+    customerModalEl.hidden = true;
+  }
+
+  function fillCustomerForm(draft) {
+    if (!customerFormEl) return;
+    customerNameEl.value = draft?.name || "";
+    customerEmailEl.value = draft?.email || "";
+    customerPhoneEl.value = draft?.phone || "";
+    customerConsentEl.checked = Boolean(draft?.consent);
+  }
+
+  function createAxisBars(axes, tone = "final") {
+    return `
+      <div class="portal-axis-bars">
+        ${AXIS_ORDER.map((axis) => {
+          const value = Number(axes?.[axis] || 0);
+          return `
+            <div class="portal-axis-bar portal-axis-bar--${tone}">
+              <span>${AXIS_LABELS[axis]}</span>
+              <strong>${value}</strong>
+              <div class="portal-axis-track"><i style="width:${Math.max(0, Math.min(100, value))}%"></i></div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    `;
+  }
+
+  function renderAxisCompare(questionnaireAxes, reservationAxes, adjustedAxes) {
+    if (!axisCompareEl) return;
+    axisCompareEl.innerHTML = `
+      <div class="portal-compare-grid">
+        <article class="portal-compare-card">
+          <h3>アンケート時点の5軸</h3>
+          <p class="admin-note">回答内容からの初期プロフィール</p>
+          ${createAxisBars(questionnaireAxes, "survey")}
+        </article>
+        <article class="portal-compare-card">
+          <h3>予約完了時の5軸</h3>
+          <p class="admin-note">予約完了時のプロフィール</p>
+          ${createAxisBars(reservationAxes, "reservation")}
+        </article>
+        <article class="portal-compare-card portal-compare-card--full">
+          <h3>最終提案の5軸</h3>
+          <p class="admin-note">スタッフが調整した最終プロフィール</p>
+          ${createAxisBars(adjustedAxes, "final")}
+        </article>
+      </div>
+    `;
+  }
+
+  function updateFinalAxisPreview() {
+    if (!finalAxisPreviewEl) return;
+    finalAxisPreviewEl.innerHTML = createAxisBars(getCurrentFinalAxes(), "final");
+  }
+
+  function buildCustomerQrValue() {
+    const reservationCode = selectedReservation?.reservation_code || "draft";
+    const target = new URL("customer-top.html", window.location.href);
+    target.searchParams.set("reservation", reservationCode);
+    return target.toString();
+  }
+
+  function renderQrCode(force = false) {
+    if (!qrPreviewEl) return;
+    if (!window.QRCode) {
+      qrPreviewEl.textContent = "QR ライブラリを読み込めなかったため表示できません。";
+      return;
+    }
+    if (!force) {
+      qrPreviewEl.textContent = "QR コードがここに表示されます";
+      return;
+    }
+    if (!selectedReservation) return;
+    qrPreviewEl.innerHTML = "";
+    currentQrCode = new window.QRCode(qrPreviewEl, {
+      text: buildCustomerQrValue(),
+      width: 180,
+      height: 180,
+      colorDark: "#3d2f24",
+      colorLight: "#fffdf9",
+      correctLevel: window.QRCode.CorrectLevel.M
+    });
   }
 
   function createAxisBadgeRow(axes) {
@@ -150,6 +276,7 @@
     const total = AXIS_ORDER.reduce((sum, axis) => sum + Number(document.getElementById(`workspace-axis-${axis}`).value || 0), 0);
     axisTotalEl.textContent = `\u5408\u8a08 ${total}`;
     axisTotalEl.className = total === 100 ? "admin-note admin-note-success" : "admin-note admin-note-warning";
+    updateFinalAxisPreview();
   }
 
   function normalizeCurrentAxes() {
@@ -174,6 +301,63 @@
     renderRecommendedMaterials();
   }
 
+  function calculateRecipeDerivedAxes() {
+    const items = collectRecipeItems();
+    const totalAmount = items.reduce((sum, item) => sum + Math.max(0, Number(item.amount || 0)), 0);
+    if (!items.length || !totalAmount) return null;
+
+    const axes = AXIS_ORDER.reduce((acc, axis) => {
+      acc[axis] = 0;
+      return acc;
+    }, {});
+
+    items.forEach((item) => {
+      const material = materialRows.find((entry) => entry.material_code === item.material_code);
+      if (!material) return;
+      const ratio = Math.max(0, Number(item.amount || 0)) / totalAmount;
+      AXIS_ORDER.forEach((axis) => {
+        axes[axis] += Number(material.point_axes?.[axis] || 0) * ratio;
+      });
+    });
+
+    return AXIS_ORDER.reduce((acc, axis) => {
+      acc[axis] = Math.round(axes[axis]);
+      return acc;
+    }, {});
+  }
+
+  function refreshFinalAxesFromRecipe() {
+    const derived = calculateRecipeDerivedAxes();
+    if (!derived) {
+      updateAxisTotal();
+      renderRecommendedMaterials();
+      return;
+    }
+    AXIS_ORDER.forEach((axis) => {
+      document.getElementById(`workspace-axis-${axis}`).value = String(derived[axis]);
+    });
+    updateAxisTotal();
+    renderRecommendedMaterials();
+  }
+
+  function normalizeRecipeAmounts() {
+    const amountInputs = Array.from(recipeListEl.querySelectorAll('[data-recipe-field="amount"]'));
+    if (!amountInputs.length) return;
+    const values = amountInputs.map((input) => Math.max(0, Number(input.value || 0)));
+    const total = values.reduce((sum, value) => sum + value, 0);
+    if (!total) return;
+
+    let remainder = 100;
+    amountInputs.forEach((input, index) => {
+      const nextValue = index === amountInputs.length - 1
+        ? remainder
+        : Math.round((values[index] / total) * 100);
+      remainder -= nextValue;
+      input.value = String(Math.max(0, nextValue));
+    });
+    refreshFinalAxesFromRecipe();
+  }
+
   function getMaterialOptions(selectedCode) {
     return [`<option value="">${UI.materialPlaceholder}</option>`].concat(materialRows.map((row) => {
       const selected = row.material_code === selectedCode ? " selected" : "";
@@ -185,33 +369,25 @@
     const row = document.createElement("div");
     row.className = "admin-editor-card";
     row.innerHTML = `
-      <div class="admin-grid cols-5">
-        <label>${UI.role}
-          <select data-recipe-field="role">
-            <option value="base"${item.role === "base" ? " selected" : ""}>${UI.base}</option>
-            <option value="ingredient"${item.role === "ingredient" ? " selected" : ""}>${UI.ingredient}</option>
-          </select>
-        </label>
+      <input data-recipe-field="role" type="hidden" value="${item.role || "ingredient"}">
+      <input data-recipe-field="lot" type="hidden" value="${item.lot || ""}">
+      <input data-recipe-field="note" type="hidden" value="${item.note || ""}">
+      <div class="portal-recipe-row">
         <label>${UI.material}
           <select data-recipe-field="material_code">${getMaterialOptions(item.material_code || "")}</select>
         </label>
         <label>${UI.amount}
           <input data-recipe-field="amount" type="number" min="0" step="0.1" value="${Number(item.amount || 0)}">
         </label>
-        <label>${UI.lot}
-          <input data-recipe-field="lot" type="text" value="${item.lot || ""}">
-        </label>
-        <label>${UI.note}
-          <input data-recipe-field="note" type="text" value="${item.note || ""}">
-        </label>
-      </div>
-      <div class="admin-actions">
         <button class="admin-btn secondary" type="button" data-remove-recipe>${UI.removeRow}</button>
       </div>
     `;
     row.querySelector("[data-remove-recipe]").addEventListener("click", () => {
       row.remove();
+      refreshFinalAxesFromRecipe();
     });
+    row.querySelector('[data-recipe-field="material_code"]').addEventListener("change", refreshFinalAxesFromRecipe);
+    row.querySelector('[data-recipe-field="amount"]').addEventListener("input", refreshFinalAxesFromRecipe);
     recipeListEl.appendChild(row);
   }
 
@@ -239,30 +415,42 @@
   }
 
   function renderRecommendedMaterials() {
-    const ranked = window.FragranceMasterData.rankMaterials(getCurrentFinalAxes(), materialRows, 5);
-    if (!ranked.length) {
+    const questionnaireRanked = window.FragranceMasterData.rankMaterials(selectedQuestionnaire?.final_axes || {}, materialRows, 3);
+    const reservationRanked = window.FragranceMasterData.rankMaterials(selectedReservation?.axes || {}, materialRows, 3);
+    const finalRanked = window.FragranceMasterData.rankMaterials(getCurrentFinalAxes(), materialRows, 3);
+    if (!questionnaireRanked.length && !reservationRanked.length && !finalRanked.length) {
       recommendedMaterialsEl.innerHTML = `<p class="admin-empty">${UI.noRecommended}</p>`;
       return;
     }
 
-    recommendedMaterialsEl.innerHTML = ranked.map((row) => {
-      return `
-        <article class="admin-item-card">
-          <div class="admin-item-head">
-            <div>
-              <p class="admin-item-code">${row.material_code}</p>
-              <h3>${row.material_name}</h3>
+    const renderGroup = (title, note, rows) => `
+      <article class="admin-item-card">
+        <h3>${title}</h3>
+        <p class="admin-note">${note}</p>
+        ${rows.length ? rows.map((row) => `
+          <div class="portal-material-recommendation">
+            <div class="admin-item-head">
+              <div>
+                <p class="admin-item-code">${row.material_code}</p>
+                <h4>${row.material_name}</h4>
+              </div>
+              <span class="admin-status-pill is-active">${UI.near} ${row.score}</span>
             </div>
-            <span class="admin-status-pill is-active">${UI.near} ${row.score}</span>
+            <div class="admin-meta-row"><span>${UI.category}</span><strong>${row.category || UI.unset}</strong></div>
+            ${createAxisBadgeRow(row.point_axes)}
+            <div class="admin-actions">
+              <button class="admin-btn secondary" type="button" data-add-material="${row.material_code}">${UI.addToRecipe}</button>
+            </div>
           </div>
-          <div class="admin-meta-row"><span>${UI.category}</span><strong>${row.category || UI.unset}</strong></div>
-          ${createAxisBadgeRow(row.point_axes)}
-          <div class="admin-actions">
-            <button class="admin-btn secondary" type="button" data-add-material="${row.material_code}">${UI.addToRecipe}</button>
-          </div>
-        </article>
-      `;
-    }).join("");
+        `).join("") : `<p class="admin-empty">${UI.noRecommended}</p>`}
+      </article>
+    `;
+
+    recommendedMaterialsEl.innerHTML = [
+      renderGroup("アンケート基準原料割当", "回答時点の方向性の原料と割合", questionnaireRanked),
+      renderGroup("予約時基準原料割当", "予約時点の方向性の原料と割合", reservationRanked),
+      renderGroup("最終提案候補", "現在の最終5軸に近い候補", finalRanked)
+    ].join("");
 
     recommendedMaterialsEl.querySelectorAll("[data-add-material]").forEach((button) => {
       button.addEventListener("click", () => {
@@ -280,6 +468,9 @@
     document.getElementById("workspace-preparation-note").value = workshop?.preparation_note || reservation?.staff_memo || "";
     document.getElementById("workspace-staff-summary").value = workshop?.staff_summary || "";
     document.getElementById("workspace-session-status").value = workshop?.status || "draft";
+    if (customerFeedbackEl) {
+      customerFeedbackEl.value = window.sessionStorage.getItem(`fragranceCustomerFeedback:${reservation?.id || ""}`) || "";
+    }
     renderRecipeRows(workshop?.recipe_items || []);
     updateAxisTotal();
     renderRecommendedMaterials();
@@ -290,7 +481,9 @@
       detailSummaryEl.innerHTML = `<p class="admin-empty">${UI.selectReservation}</p>`;
       questionSummaryEl.innerHTML = "";
       questionAnswersEl.innerHTML = "";
+      if (axisCompareEl) axisCompareEl.innerHTML = "";
       form.hidden = true;
+      renderQrCode(false);
       return;
     }
 
@@ -298,34 +491,27 @@
     const reservationAxes = selectedReservation.axes || {};
     const questionnaireAxes = selectedQuestionnaire?.final_axes || {};
     const adjustedAxes = selectedWorkshop?.final_axes || getCurrentFinalAxes();
+    customerDraft = readCustomerDraft(selectedReservation);
 
     detailSummaryEl.innerHTML = `
-      <article class="admin-panel admin-panel-soft">
-        <h2>${selectedReservation.summary_headline || UI.reservationDetail}</h2>
-        <p class="admin-note">${selectedReservation.summary_body || UI.summaryFallback}</p>
-        <div class="admin-card-list">
-          <div class="admin-meta-row"><span>${UI.reservationCode}</span><strong>${selectedReservation.reservation_code || "-"}</strong></div>
-          <div class="admin-meta-row"><span>${UI.slot}</span><strong>${getSlotLabel(selectedReservation)}</strong></div>
-          <div class="admin-meta-row"><span>${UI.staff}</span><strong>${slot?.instructor_name || UI.unset}</strong></div>
-          <div class="admin-meta-row"><span>${UI.visitType}</span><strong>${selectedReservation.visit_type || "-"}</strong></div>
-          <div class="admin-meta-row"><span>${UI.guestCount}</span><strong>${selectedReservation.guest_count || "-"}</strong></div>
-          <div class="admin-meta-row"><span>${UI.reservationStatus}</span><strong>${selectedReservation.status || "-"}</strong></div>
-        </div>
-      </article>
-      <article class="admin-panel admin-panel-soft">
-        <h3>${UI.axisCompare}</h3>
-        <p class="admin-note">${UI.questionnaireAxes}</p>
-        ${createAxisBadgeRow(questionnaireAxes)}
-        <p class="admin-note">${UI.reservationAxes}</p>
-        ${createAxisBadgeRow(reservationAxes)}
-        <p class="admin-note">${UI.adjustedAxes}</p>
-        ${createAxisBadgeRow(adjustedAxes)}
-      </article>
+      <div class="portal-pill-summary">
+        <span class="portal-pill-field">お客様名 : <strong>${customerDraft?.name || selectedReservation.customer_name || "未入力"}</strong></span>
+        <span class="portal-pill-field">個人情報同意 : <strong>${customerDraft?.consent ? "同意済み" : "未取得"}</strong></span>
+        <span class="portal-pill-field">メール : <strong>${customerDraft?.email || "未入力"}</strong></span>
+        <span class="portal-pill-field">電話 : <strong>${customerDraft?.phone || "任意"}</strong></span>
+        <span class="portal-pill-field">予約枠 <strong>${getSlotLabel(selectedReservation)}</strong></span>
+        <span class="portal-pill-field">来店目的 <strong>${selectedReservation.visit_type || "-"}</strong></span>
+      </div>
+      <div class="admin-card-list">
+        <div class="admin-meta-row"><span>${UI.reservationCode}</span><strong>${selectedReservation.reservation_code || "-"}</strong></div>
+        <div class="admin-meta-row"><span>${UI.staff}</span><strong>${slot?.instructor_name || UI.unset}</strong></div>
+        <div class="admin-meta-row"><span>${UI.guestCount}</span><strong>${selectedReservation.guest_count || "-"}</strong></div>
+        <div class="admin-meta-row"><span>${UI.reservationStatus}</span><strong>${selectedReservation.status || "-"}</strong></div>
+      </div>
     `;
 
     questionSummaryEl.innerHTML = `
       <article class="admin-panel admin-panel-soft">
-        <h3>${UI.questionnaireSummary}</h3>
         <div class="admin-card-list">
           <div class="admin-meta-row"><span>${UI.branch}</span><strong>${selectedQuestionnaire?.branch_key || "-"}</strong></div>
           <div class="admin-meta-row"><span>${UI.finish}</span><strong>${selectedQuestionnaire?.selected_finish || "-"}</strong></div>
@@ -335,7 +521,9 @@
     `;
 
     questionAnswersEl.innerHTML = buildQuestionAnswerRows(selectedQuestionnaire);
+    renderAxisCompare(questionnaireAxes, reservationAxes, adjustedAxes);
     form.hidden = false;
+    renderQrCode(false);
   }
 
   async function loadReservationDetail(reservationId) {
@@ -388,9 +576,9 @@
     });
 
     reservationCountEl.textContent = `${filtered.length}${UI.countSuffix}`;
-    kpiUpcomingEl.textContent = String(reservations.filter((row) => row.status === "confirmed").length);
-    kpiDraftEl.textContent = String(reservations.filter((row) => row.status !== "completed").length);
-    kpiCompletedEl.textContent = String(reservations.filter((row) => row.status === "completed").length);
+    if (kpiUpcomingEl) kpiUpcomingEl.textContent = String(reservations.filter((row) => row.status === "confirmed").length);
+    if (kpiDraftEl) kpiDraftEl.textContent = String(reservations.filter((row) => row.status !== "completed").length);
+    if (kpiCompletedEl) kpiCompletedEl.textContent = String(reservations.filter((row) => row.status === "completed").length);
 
     reservationListEl.innerHTML = "";
     emptyEl.hidden = filtered.length > 0;
@@ -476,6 +664,10 @@
         updated_at: new Date().toISOString()
       });
 
+      if (customerFeedbackEl && selectedReservation?.id) {
+        window.sessionStorage.setItem(`fragranceCustomerFeedback:${selectedReservation.id}`, customerFeedbackEl.value.trim());
+      }
+
       document.getElementById("workspace-record-id").value = workshopResponse?.[0]?.id || recordId || "";
       setStatus(submitModeInput.value === "complete" ? UI.completeSaved : UI.draftSaved, "success");
       await loadBaseData();
@@ -505,7 +697,7 @@
   });
 
   if (normalizeButton) {
-    normalizeButton.addEventListener("click", normalizeCurrentAxes);
+    normalizeButton.addEventListener("click", normalizeRecipeAmounts);
   }
 
   filterForm.addEventListener("submit", (event) => {
@@ -513,16 +705,63 @@
     renderReservationList();
   });
 
+  if (customerOpenButton) {
+    customerOpenButton.addEventListener("click", () => {
+      fillCustomerForm(customerDraft);
+      openCustomerModal();
+    });
+  }
+
+  document.querySelectorAll("[data-customer-close]").forEach((button) => {
+    button.addEventListener("click", closeCustomerModal);
+  });
+
+  if (customerFormEl) {
+    customerFormEl.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (!selectedReservation) return;
+      if (!customerConsentEl.checked) {
+        setStatus("個人情報の同意チェックがないため保存できません。", "error");
+        return;
+      }
+      customerDraft = {
+        name: customerNameEl.value.trim(),
+        email: customerEmailEl.value.trim(),
+        phone: customerPhoneEl.value.trim(),
+        consent: customerConsentEl.checked
+      };
+      persistCustomerDraft(selectedReservation, customerDraft);
+      closeCustomerModal();
+      renderDetail();
+      renderReservationList();
+      setStatus("お客様情報をブラウザ下書きとして保存しました。", "success");
+    });
+  }
+
+  if (generateQrButton) {
+    generateQrButton.addEventListener("click", () => {
+      renderQrCode(true);
+    });
+  }
+
   async function bootstrap() {
     const session = await window.AdminAuth.requireAdminSession();
     if (!session) return;
     const role = window.AdminAuth.resolvePortalRole(session, window.AdminAuth.readRoleFromLocation());
-    window.AdminAuth.renderAdminHeader("workspace", { role });
+    window.AdminAuth.renderAdminHeader("workspace", {
+      role,
+      session,
+      brandText: "Fragrance STAFF_お客様詳細画面",
+      links: [
+        { href: "admin-reservations.html", label: "戻る", key: "reservations" }
+      ]
+    });
     window.AdminAuth.persistPortalRole(role);
     form.hidden = true;
     setStatus(UI.saveHint);
     await loadBaseData();
     const reservationId = new URLSearchParams(window.location.search).get("reservation");
+    if (selectorCardEl) selectorCardEl.hidden = Boolean(reservationId);
     if (reservationId) {
       await loadReservationDetail(reservationId);
     } else {

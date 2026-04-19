@@ -1,12 +1,9 @@
 (function () {
   const rowsEl = document.getElementById("reservation-rows");
   const emptyEl = document.getElementById("reservation-empty");
-  const detailSummaryEl = document.getElementById("reservation-detail-summary");
-  const detailMetaEl = document.getElementById("reservation-detail-meta");
-  const detailLinkEl = document.getElementById("reservation-detail-link");
   const filterForm = document.getElementById("filter-form");
 
-  if (!rowsEl || !filterForm || !detailMetaEl) return;
+  if (!rowsEl || !filterForm) return;
 
   let reservations = [];
   let slotMap = new Map();
@@ -23,31 +20,21 @@
 
   function matchesKeyword(row, keyword) {
     if (!keyword) return true;
-    const text = [row.visit_type, row.summary_headline, row.summary_body, row.staff_memo, row.slot_label]
+    const draftCustomer = readDraftCustomer(row);
+    const text = [row.visit_type, row.summary_headline, row.summary_body, row.staff_memo, row.slot_label, draftCustomer?.name]
       .filter(Boolean)
       .join(" ")
       .toLowerCase();
     return text.includes(keyword.toLowerCase());
   }
 
-  function renderDetail(row) {
-    if (!row) {
-      detailSummaryEl.textContent = "一覧から詳細を開くとここに予約概要を表示します。";
-      detailMetaEl.innerHTML = "";
-      detailLinkEl.href = window.AdminAuth.appendRoleToHref("admin-workspace.html", getRole());
-      return;
+  function readDraftCustomer(row) {
+    try {
+      const stored = window.sessionStorage.getItem(`fragranceCustomerDraft:${row.id}`);
+      return stored ? JSON.parse(stored) : null;
+    } catch (error) {
+      return null;
     }
-
-    detailSummaryEl.textContent = row.summary_body || "予約情報の概要は未登録です。";
-    detailMetaEl.innerHTML = `
-      <div class="admin-meta-row"><span>来店日時</span><strong>${formatDateTime(row)}</strong></div>
-      <div class="admin-meta-row"><span>来店目的</span><strong>${row.visit_type || "-"}</strong></div>
-      <div class="admin-meta-row"><span>人数</span><strong>${row.guest_count || "-"}</strong></div>
-      <div class="admin-meta-row"><span>傾向</span><strong>${row.summary_headline || "-"}</strong></div>
-      <div class="admin-meta-row"><span>status</span><strong>${row.status || "-"}</strong></div>
-      <div class="admin-meta-row"><span>メモ</span><strong>${row.staff_memo || "-"}</strong></div>
-    `;
-    detailLinkEl.href = window.AdminAuth.appendRoleToHref(`admin-workspace.html?reservation=${encodeURIComponent(row.id)}`, getRole());
   }
 
   function getFilteredRows() {
@@ -70,23 +57,26 @@
     emptyEl.hidden = filtered.length > 0;
 
     filtered.forEach((row) => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${formatDateTime(row)}</td>
-        <td>${row.visit_type || ""}</td>
-        <td>${row.guest_count || ""}</td>
-        <td>${row.summary_headline || ""}</td>
-        <td>${String(row.created_at || "").slice(0, 16).replace("T", " ")}</td>
-        <td>
+      const draftCustomer = readDraftCustomer(row);
+      const article = document.createElement("article");
+      article.className = "portal-list-row portal-reservation-row";
+      article.innerHTML = `
+        <span>${formatDateTime(row)}</span>
+        <span>${draftCustomer?.name || row.customer_name || "未入力"}</span>
+        <span>${row.visit_type || "-"}</span>
+        <span>${row.guest_count || "-"}</span>
+        <span>${row.summary_headline || "-"}</span>
+        <span>${String(row.created_at || "").slice(0, 10).replaceAll("-", "/") || "-"}</span>
+        <span>
           <select data-status-id="${row.id}">
-            <option value="confirmed"${row.status === "confirmed" ? " selected" : ""}>confirmed</option>
-            <option value="canceled"${row.status === "canceled" ? " selected" : ""}>canceled</option>
-            <option value="completed"${row.status === "completed" ? " selected" : ""}>completed</option>
+            <option value="confirmed"${row.status === "confirmed" ? " selected" : ""}>予約受付</option>
+            <option value="canceled"${row.status === "canceled" ? " selected" : ""}>キャンセル</option>
+            <option value="completed"${row.status === "completed" ? " selected" : ""}>接客完了</option>
           </select>
-        </td>
-        <td><button class="admin-btn secondary" data-detail-id="${row.id}" type="button">詳細を開く</button></td>
+        </span>
+        <span><a class="admin-btn primary" href="${window.AdminAuth.appendRoleToHref(`admin-workspace.html?reservation=${encodeURIComponent(row.id)}`, getRole())}">詳細</a></span>
       `;
-      rowsEl.appendChild(tr);
+      rowsEl.appendChild(article);
     });
 
     rowsEl.querySelectorAll("[data-status-id]").forEach((select) => {
@@ -97,20 +87,6 @@
         }).catch(console.error);
       });
     });
-    rowsEl.querySelectorAll("[data-detail-id]").forEach((button) => {
-      button.addEventListener("click", () => {
-        const target = reservations.find((row) => row.id === button.dataset.detailId) || null;
-        renderDetail(target);
-      });
-    });
-
-    const params = new URLSearchParams(window.location.search);
-    const reservationId = params.get("reservation");
-    if (reservationId) {
-      renderDetail(reservations.find((row) => row.id === reservationId) || null);
-    } else if (!detailMetaEl.children.length && filtered.length) {
-      renderDetail(filtered[0]);
-    }
   }
 
   async function loadBaseData() {
@@ -131,12 +107,23 @@
 
   async function bootstrap() {
     const role = getRole();
-    window.AdminAuth.renderAdminHeader("reservations", { role });
     const session = await window.AdminAuth.requireAdminSession();
     if (!session) return;
     window.AdminAuth.persistPortalRole(role);
+    window.AdminAuth.renderAdminHeader("reservations", {
+      role,
+      session,
+      links: role === "staff"
+        ? [
+            { href: "admin-reservations.html", label: "予約確認", key: "reservations" },
+            { href: "admin-slots.html", label: "予約枠作成", key: "slots" }
+          ]
+        : [
+            { href: "admin-dashboard.html", label: "戻る", key: "dashboard" },
+            { href: "admin-slots.html", label: "予約枠作成", key: "slots" }
+          ]
+    });
     await loadBaseData();
-    renderDetail(null);
     await renderRows();
   }
 

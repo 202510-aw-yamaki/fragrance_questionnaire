@@ -9,60 +9,92 @@
 </head>
 <body class="page-canvas admin-page">
   <header class="admin-header" id="admin-header"></header>
-  <main class="admin-main site-container admin-grid">
-    <section class="admin-panel">
-      <p class="section-label">Dashboard</p>
-      <h1>運用状況の確認</h1>
-      <p class="admin-note">公開予約と設定の現在値をまとめて確認できます。</p>
+  <main class="admin-main site-container portal-stack">
+    <section class="admin-panel portal-hero">
+      <div class="portal-hero-copy-block">
+        <p class="portal-hero-label">DASHBOARD</p>
+        <h1>運用状況の確認</h1>
+      </div>
+      <p class="portal-hero-copy portal-hero-copy--align-end">予約数と公開予約枠の確認と各リンク先の簡単な確認ページ。</p>
     </section>
-    <section class="admin-grid cols-2">
-      <article class="admin-panel admin-kpi"><span>今日以降の予約件数</span><strong id="kpi-reservations">-</strong></article>
-      <article class="admin-panel admin-kpi"><span>公開中の予約枠</span><strong id="kpi-slots">-</strong></article>
-      <article class="admin-panel admin-kpi"><span>active scoring config version</span><strong id="kpi-scoring">-</strong></article>
-      <article class="admin-panel admin-kpi"><span>原料ポイント件数</span><strong id="kpi-materials">-</strong></article>
-    </section>
-    <section class="admin-grid cols-3">
-      <a class="admin-panel" href="admin-reservations.html?role=manager"><h2>予約情報</h2><p class="admin-note">予約一覧と status 更新を行います。</p></a>
-      <a class="admin-panel" href="admin-slots.html?role=manager"><h2>予約枠管理</h2><p class="admin-note">予約枠の作成、編集、非表示化を行います。</p></a>
-      <a class="admin-panel" href="admin-scoring.html?role=manager"><h2>配点ロジック</h2><p class="admin-note">active config を確認し、新 version を追加します。</p></a>
-      <a class="admin-panel" href="admin-materials.html?role=manager"><h2>原料ポイント</h2><p class="admin-note">5軸ポイントを個別入力で管理します。</p></a>
-      <a class="admin-panel" href="admin-settings.html?role=manager"><h2>その他設定</h2><p class="admin-note">店舗情報や注意文言の保存先です。</p></a>
-    </section>
-    <section class="admin-grid cols-2">
+
+    <section class="portal-manager-metric-grid">
       <article class="admin-panel">
-        <div class="admin-card-head">
+        <div class="portal-section-head">
           <div>
-            <h2>本日の出勤状況</h2>
-            <p class="admin-note">本日分の予約枠に担当名が入っているスタッフを一覧化します。</p>
+            <h2>本日の予約件数</h2>
+            <p class="admin-note"><span id="kpi-reservations">-</span></p>
           </div>
         </div>
         <div class="admin-card-list" id="manager-today-shifts"></div>
       </article>
+
       <article class="admin-panel">
-        <div class="admin-card-head">
+        <div class="portal-section-head">
           <div>
-            <h2>向こう二週間の予約枠確認</h2>
-            <p class="admin-note">日単位で予約枠の登録有無を OK / NG で表示します。</p>
+            <h2>翌週の予約件数/枠数</h2>
+            <p class="admin-note">予約 <span id="kpi-reservations-week">-</span> / 枠 <span id="kpi-slots">-</span></p>
           </div>
         </div>
-        <div class="admin-date-status-grid" id="manager-slot-coverage"></div>
+        <div class="admin-card-list" id="manager-next-week-summary"></div>
+      </article>
+
+      <article class="admin-panel">
+        <div class="portal-section-head">
+          <div>
+            <h2>向こう二週間予約枠確認</h2>
+            <p class="admin-note">スタッフ単位で確認します。</p>
+          </div>
+        </div>
+        <div class="admin-card-list" id="manager-slot-coverage"></div>
+      </article>
+
+      <article class="admin-panel">
+        <div class="portal-section-head">
+          <div>
+            <h2>配点ロジック重み</h2>
+            <p class="admin-note">active version <span id="kpi-scoring">-</span> / 原料 <span id="kpi-materials">-</span></p>
+          </div>
+        </div>
+        <div class="admin-card-list" id="manager-scoring-weight-summary"></div>
       </article>
     </section>
-    <section class="admin-grid cols-2">
+
+    <section class="portal-manager-link-grid">
+      <a class="admin-panel portal-action-card" href="admin-settings.html?role=manager">
+        <h3>スタッフ登録</h3>
+        <p class="admin-note">新しいスタッフを登録できます</p>
+      </a>
+      <a class="admin-panel portal-action-card" href="admin-scoring.html?role=manager">
+        <h3>アンケート編集</h3>
+        <p class="admin-note">アンケート文言の追加、及び編集ができます</p>
+      </a>
+      <a class="admin-panel portal-action-card" href="admin-scoring.html?role=manager">
+        <h3>配点ロジック</h3>
+        <p class="admin-note">配点ロジックの修正ができます</p>
+      </a>
+      <a class="admin-panel portal-action-card" href="admin-materials.html?role=manager">
+        <h3>原料ポイント</h3>
+        <p class="admin-note">原料の 5 軸に与えるポイントを編集できます</p>
+      </a>
+    </section>
+
+    <section class="portal-manager-bottom">
       <article class="admin-panel">
-        <div class="admin-card-head">
+        <div class="portal-section-head">
           <div>
-            <h2>配点ロジック要約</h2>
-            <p class="admin-note">active config の重みと代表テンプレートを表示します。</p>
+            <h2>分岐テンプレート</h2>
+            <p class="admin-note">現在の分岐テンプレートの数値です。</p>
           </div>
         </div>
         <div class="admin-card-list" id="manager-scoring-summary"></div>
       </article>
+
       <article class="admin-panel">
-        <div class="admin-card-head">
+        <div class="portal-section-head">
           <div>
-            <h2>原料クイックリンク</h2>
-            <p class="admin-note">対象原料をクリックすると原料ポイントページの該当原料へ移動します。</p>
+            <h2>原料一覧ボタン</h2>
+            <p class="admin-note">現在登録してある原料ページの原料に直接飛べます。</p>
           </div>
         </div>
         <div class="admin-link-grid" id="manager-material-links"></div>

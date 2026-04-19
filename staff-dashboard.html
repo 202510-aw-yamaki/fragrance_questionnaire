@@ -9,45 +9,28 @@
 </head>
 <body class="page-canvas admin-page">
   <header class="admin-header" id="admin-header"></header>
-  <main class="admin-main site-container admin-grid">
-    <section class="admin-panel">
-      <p class="section-label">Staff Confirmation</p>
-      <h1>スタッフ確認ページ</h1>
-      <p class="admin-note">ログイン中スタッフに割り当てられた予約と予約枠をまとめて確認します。</p>
-      <div class="admin-grid cols-3">
-        <article class="admin-kpi">
+  <main class="admin-main site-container portal-stack">
+    <section class="admin-panel portal-hero">
+      <div class="portal-hero-copy-block">
+        <p class="portal-hero-label">DASHBOARD</p>
+        <h1>本日の予定確認ページ</h1>
+        <p class="portal-hero-copy">ログイン中スタッフに割り当てられた予約と予約枠を、1日のタイムラインで確認できるページです。</p>
+      </div>
+      <div class="portal-hero-side">
+        <div class="portal-inline-metric">
           <span>本日の予約件数</span>
           <strong id="staff-kpi-today">0</strong>
-        </article>
-        <article class="admin-kpi">
-          <span>向こう一週間の予約件数</span>
-          <strong id="staff-kpi-week">0</strong>
-        </article>
-        <article class="admin-kpi">
-          <span>向こう二週間の予約枠数</span>
-          <strong id="staff-kpi-slots">0</strong>
-        </article>
+        </div>
+        <p class="admin-note" id="staff-dashboard-note">担当スタッフを確認中です。</p>
       </div>
-      <p class="admin-note" id="staff-dashboard-note">担当スタッフを確認中です。</p>
     </section>
 
-    <section class="admin-link-grid">
-      <a class="admin-mini-card" href="admin-slots.html?role=staff">
-        <h3>予約枠作成ページ</h3>
-        <p class="admin-note">単件作成と一括作成を開きます。</p>
-      </a>
-      <a class="admin-mini-card" href="admin-reservations.html?role=staff">
-        <h3>予約情報一覧ページ</h3>
-        <p class="admin-note">日付・状態・キーワードで予約を確認します。</p>
-      </a>
-    </section>
-
-    <section class="admin-grid cols-2">
-      <article class="admin-panel">
+    <section class="portal-staff-layout">
+      <article class="admin-panel portal-calendar-panel">
         <div class="day-view">
           <div class="day-nav">
             <div class="day-nav-title">
-              <p class="section-label">Day View</p>
+              <p class="portal-hero-label portal-hero-label--muted">DAY VIEW</p>
               <h2 id="staff-day-current-label">本日の予定</h2>
             </div>
             <div class="admin-actions">
@@ -59,25 +42,40 @@
         </div>
       </article>
 
-      <article class="admin-panel">
-        <div class="admin-card-head">
-          <div>
-            <h2>当日のイベント詳細</h2>
-            <p class="admin-note">予約枠と予約状況を時間順に表示します。</p>
-          </div>
-        </div>
-        <div class="day-list" id="staff-day-events"></div>
-      </article>
+      <aside class="portal-side-stack">
+        <article class="admin-panel portal-stat-card">
+          <p class="portal-stat-label">向こう一週間の予約件数</p>
+          <strong class="portal-stat-value" id="staff-kpi-week">0</strong>
+          <p class="admin-note">担当スタッフに割り当てられた予約獲得件数です。</p>
+        </article>
+
+        <article class="admin-panel portal-stat-card">
+          <p class="portal-stat-label">向こう二週間の予約未作成日</p>
+          <strong class="portal-stat-value portal-stat-value--compact" id="staff-missing-primary">--/--</strong>
+          <div class="admin-chip-grid" id="staff-missing-secondary"></div>
+          <p class="admin-note" id="staff-missing-note">休日 / 非出勤日を除いた未作成日を表示します。</p>
+        </article>
+
+        <a class="admin-panel portal-action-card" href="admin-slots.html?role=staff">
+          <h3>予約枠作成ページへ</h3>
+          <p class="admin-note">単件作成と一括作成を開きます。</p>
+        </a>
+
+        <a class="admin-panel portal-action-card" href="admin-reservations.html?role=staff">
+          <h3>予約情報確認ページへ</h3>
+          <p class="admin-note">来店前の予約一覧と詳細導線を確認します。</p>
+        </a>
+      </aside>
     </section>
 
-    <section class="admin-panel">
-      <div class="admin-card-head">
+    <section class="admin-panel portal-detail-panel">
+      <div class="portal-section-head">
         <div>
-          <h2>向こう二週間の予約枠状況</h2>
-          <p class="admin-note">勤務表テーブル未導入のため、現在は登録済み予約枠の有無を日単位で表示します。</p>
+          <h2>当日のイベント詳細</h2>
+          <p class="admin-note">予約枠と予約状況を時間順に表示します。</p>
         </div>
       </div>
-      <div class="admin-date-status-grid" id="staff-date-status-grid"></div>
+      <div class="day-list" id="staff-day-events"></div>
     </section>
   </main>
 

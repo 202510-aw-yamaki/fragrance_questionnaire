@@ -9,47 +9,52 @@
 </head>
 <body class="page-canvas admin-page">
   <header class="admin-header" id="admin-header"></header>
-  <main class="admin-main site-container admin-grid">
-    <section class="admin-panel">
-      <p class="section-label">Reservations</p>
-      <h1>予約情報一覧ページ</h1>
-      <p class="admin-note">予約コードは一覧では表示せず、来店日時・内容・状態から確認します。</p>
-      <form class="admin-form" id="filter-form">
-        <div class="admin-grid cols-3">
-          <label>来店日<input id="filter-date" type="date"></label>
-          <label>status
-            <select id="filter-status">
-              <option value="">すべて</option>
-              <option value="confirmed">confirmed</option>
-              <option value="canceled">canceled</option>
-              <option value="completed">completed</option>
-            </select>
-          </label>
-          <label>キーワード<input id="filter-keyword" type="text" placeholder="来店内容・傾向・メモ"></label>
-        </div>
-        <div class="admin-actions">
+  <main class="admin-main site-container portal-stack">
+    <section class="admin-panel portal-hero portal-hero--stacked">
+      <div class="portal-hero-copy-block">
+        <p class="portal-hero-label">RESERVATIONS</p>
+        <h1>予約情報一覧</h1>
+      </div>
+      <form class="portal-filter-form" id="filter-form">
+        <label>日付
+          <input id="filter-date" type="date">
+        </label>
+        <label>予約情報
+          <select id="filter-status">
+            <option value="">すべて</option>
+            <option value="confirmed">予約受付</option>
+            <option value="canceled">キャンセル</option>
+            <option value="completed">接客完了</option>
+          </select>
+        </label>
+        <label>キーワード
+          <input id="filter-keyword" type="text" placeholder="お客様名・傾向など">
+        </label>
+        <div class="portal-filter-submit">
           <button class="admin-btn primary" type="submit">絞り込む</button>
         </div>
       </form>
     </section>
-    <section class="admin-panel">
-      <div class="admin-table-wrap">
-        <table class="admin-table">
-          <thead><tr><th>来店日時</th><th>来店目的</th><th>人数</th><th>傾向</th><th>作成日時</th><th>予約情報状態</th><th>詳細</th></tr></thead>
-          <tbody id="reservation-rows"></tbody>
-        </table>
+
+    <section class="admin-panel portal-list-card">
+      <div class="portal-list-head portal-reservation-head">
+        <span>来店日時</span>
+        <span>お客様名</span>
+        <span>来店目的</span>
+        <span>人数</span>
+        <span>傾向</span>
+        <span>作成日時</span>
+        <span>予約情報</span>
+        <span>詳細</span>
       </div>
+      <div id="reservation-rows" class="portal-list-body"></div>
       <p class="admin-empty" id="reservation-empty" hidden>該当する予約はありません。</p>
     </section>
-    <section class="admin-panel" id="detail-panel">
-      <div class="admin-card-head">
-        <div>
-          <h2>選択中の予約</h2>
-          <p class="admin-note" id="reservation-detail-summary">一覧から詳細を開くとここに予約概要を表示します。</p>
-        </div>
-        <a class="admin-inline-link" id="reservation-detail-link" href="admin-workspace.html">予約顧客情報詳細ページへ</a>
-      </div>
-      <div class="admin-card-list" id="reservation-detail-meta"></div>
+
+    <section class="admin-panel portal-note-card">
+      <p>ここに予約一覧が表示される。詳細の欄はリンクボタンで、その予約枠の詳細ページに飛ぶ。</p>
+      <p>お客様名はその詳細ページで入力する。</p>
+      <p>予約コードはこの一覧では出ないが、内部的にはデータとして保持する。</p>
     </section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
