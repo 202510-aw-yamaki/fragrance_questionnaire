@@ -1309,6 +1309,10 @@
   overflow-y: auto;
 }
 
+.portal-modal[hidden] {
+  display: none !important;
+}
+
 .portal-modal-backdrop {
   position: absolute;
   inset: 0;
@@ -1717,12 +1721,22 @@
   display: grid;
   gap: 1.25rem;
   grid-template-columns: minmax(17rem, 0.42fr) minmax(0, 1fr);
-  align-items: start;
+  align-items: stretch;
   margin-bottom: 1rem;
 }
 
 .portal-scoring-panel-card {
   background: rgba(250, 245, 237, 0.88);
+}
+
+.portal-scoring-branch-shell-basic,
+.portal-scoring-branch-shell-main {
+  display: grid;
+}
+
+.portal-scoring-branch-shell-basic > .portal-scoring-panel-card,
+.portal-scoring-branch-shell-main > .portal-scoring-panel-card {
+  height: 100%;
 }
 
 .portal-scoring-basic-card .admin-grid.cols-4 {
@@ -1737,6 +1751,8 @@
 }
 
 .portal-scoring-basic-card label input {
+  width: 100%;
+  min-width: 0;
   text-align: center;
 }
 
@@ -1763,6 +1779,8 @@
 }
 
 .portal-scoring-branch-card label input {
+  width: 100%;
+  min-width: 0;
   text-align: center;
 }
 
@@ -1785,6 +1803,8 @@
 }
 
 .portal-scoring-weight-pill input {
+  width: 100%;
+  min-width: 0;
   min-height: 2.8rem;
   text-align: center;
 }
@@ -1814,16 +1834,24 @@
 .portal-scoring-question-card .admin-matrix,
 .portal-scoring-finish-table .admin-matrix {
   gap: 0.8rem;
+  overflow-x: auto;
 }
 
 .portal-scoring-question-card .admin-matrix-row,
 .portal-scoring-finish-table .admin-matrix-row {
-  grid-template-columns: minmax(15rem, 1.8fr) repeat(5, minmax(4rem, 0.9fr));
+  grid-template-columns: minmax(15rem, 1.8fr) repeat(5, minmax(4.75rem, 5.25rem));
   gap: 0.85rem;
+}
+
+.portal-scoring-question-card .admin-matrix-row > div,
+.portal-scoring-finish-table .admin-matrix-row > div {
+  min-width: 0;
 }
 
 .portal-scoring-question-card input,
 .portal-scoring-finish-table input {
+  width: 100%;
+  min-width: 0;
   min-height: 3rem;
   text-align: center;
 }
@@ -2014,11 +2042,24 @@
     width: 100%;
   }
 
-  .portal-scoring-question-card .admin-matrix-row,
-  .portal-scoring-finish-table .admin-matrix-row,
-  .portal-scoring-basic-card label,
+  .portal-scoring-basic-card label {
+    grid-template-columns: minmax(6rem, 1fr) minmax(5rem, 7rem);
+  }
+
   .portal-scoring-branch-card label,
   .portal-scoring-weight-pill {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(5.5rem, 1fr) minmax(4.25rem, 5.75rem);
+    gap: 0.55rem;
+  }
+
+  .portal-scoring-question-card .admin-matrix-row,
+  .portal-scoring-finish-table .admin-matrix-row {
+    grid-template-columns: minmax(12rem, 1.45fr) repeat(5, minmax(4.25rem, 4.85rem));
+    min-width: 38rem;
+  }
+
+  .portal-scoring-question-card .admin-matrix-head,
+  .portal-scoring-finish-table .admin-matrix-head {
+    display: grid !important;
   }
 }
