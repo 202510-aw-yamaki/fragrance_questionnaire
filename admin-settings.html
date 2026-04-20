@@ -19,44 +19,51 @@
     </section>
 
     <section class="portal-control-grid">
-      <article class="admin-panel">
+      <article class="admin-panel portal-settings-today-panel">
         <div class="portal-section-head">
           <div>
             <h2>本日（<span id="settings-today-label">--/--</span>）の出勤者</h2>
-            <p class="admin-note">予約枠の担当名とスタッフ設定を照合して表示します。</p>
           </div>
         </div>
         <div class="admin-card-list" id="settings-today-staff"></div>
       </article>
 
-      <article class="admin-panel portal-side-stack">
+      <article class="admin-panel portal-side-stack portal-settings-side-card">
         <div class="portal-section-head">
           <div>
             <h2>スタッフ登録 / 編集</h2>
-            <p class="admin-note">登録モーダル、個別出勤モーダル、既存スタッフの呼び出しをまとめています。</p>
           </div>
         </div>
-        <div class="portal-action-stack">
+        <div class="portal-action-stack portal-settings-action-stack">
           <button class="admin-btn primary" id="staff-create-button" type="button">スタッフ新規登録</button>
-          <button class="admin-btn secondary" id="staff-shift-button" type="button">スタッフ基本編集</button>
-          <label>スタッフ出勤管理
+          <label class="portal-settings-select">
+            <span>スタッフ出勤管理</span>
             <select id="staff-manage-select"></select>
           </label>
+          <div class="portal-settings-inline-control">
+            <button class="admin-btn secondary" id="staff-shift-button" type="button">個別勤務管理</button>
+            <label class="portal-settings-select portal-settings-select--compact">
+              <span>スタッフ選択</span>
+              <select id="shift-manage-select"></select>
+            </label>
+          </div>
         </div>
-        <p class="admin-note" id="settings-control-note">スタッフ設定を読み込み中です。</p>
-        <div class="admin-chip-grid" id="settings-staff-chip-grid"></div>
+        <p class="admin-note portal-settings-control-note" id="settings-control-note" hidden></p>
       </article>
     </section>
 
-    <section class="admin-panel">
-      <div class="portal-section-head">
-        <div>
+    <section class="admin-panel portal-settings-calendar-panel">
+      <div class="portal-section-head portal-settings-calendar-head">
+        <div class="portal-settings-calendar-copy">
           <h2>スタッフカレンダー表</h2>
-          <p class="admin-note" id="settings-calendar-range">向こう一週間の予定を表示します。</p>
+          <p class="admin-note">向こう一週間分の出勤時間と、各スタッフの予約数 / 予約枠を表形式で表示されます。</p>
         </div>
-        <div class="admin-actions">
-          <button class="admin-btn secondary" id="settings-week-prev" type="button">前週</button>
-          <button class="admin-btn secondary" id="settings-week-next" type="button">翌週</button>
+        <div class="portal-settings-calendar-tools">
+          <p class="admin-note" id="settings-calendar-range">表示期間: 基本向こう一週間が表示される</p>
+          <div class="admin-actions portal-settings-week-actions">
+            <button class="admin-btn secondary" id="settings-week-prev" type="button">◀前の週に戻る</button>
+            <button class="admin-btn secondary" id="settings-week-next" type="button">次の週に送る▶</button>
+          </div>
         </div>
       </div>
       <div class="portal-calendar-shell">

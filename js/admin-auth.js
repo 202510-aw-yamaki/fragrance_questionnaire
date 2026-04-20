@@ -1,6 +1,11 @@
 (function () {
   const LOGIN_PAGE = "admin-login.html";
   const ROLE_STORAGE_KEY = "fragrancePortalRole";
+  const LOGIN_INDEX_STORAGE_KEY = "fragrancePortalLoginIndex";
+  const AUTH_DOMAIN_BY_ROLE = {
+    staff: "staff.portal.fragrance.local",
+    manager: "manager.portal.fragrance.local"
+  };
   const HOME_BY_ROLE = {
     staff: "staff-dashboard.html",
     manager: "admin-dashboard.html"
@@ -27,9 +32,45 @@
     return session;
   }
 
-  async function signInAdmin(email, password) {
+  function normalizePortalLoginId(value) {
+    return String(value || "").trim().toLowerCase();
+  }
+
+  function readPortalLoginIndex() {
+    try {
+      const raw = window.localStorage.getItem(LOGIN_INDEX_STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function hasPortalLoginId(identifier, role) {
+    const raw = String(identifier || "").trim();
+    if (!raw || raw.includes("@")) return true;
+    const registry = readPortalLoginIndex();
+    const pool = registry?.[role === "staff" ? "staff" : "manager"];
+    if (!Array.isArray(pool) || !pool.length) return true;
+    return pool.includes(normalizePortalLoginId(raw));
+  }
+
+  function buildPortalAuthEmail(identifier, role) {
+    const raw = String(identifier || "").trim();
+    if (!raw) return "";
+    if (raw.includes("@")) return raw;
+    const loginId = normalizePortalLoginId(raw);
+    const domain = AUTH_DOMAIN_BY_ROLE[role === "staff" ? "staff" : "manager"];
+    return loginId ? `${loginId}@${domain}` : "";
+  }
+
+  async function signInAdmin(identifier, password, role = "manager") {
     const client = window.getSupabaseClient?.();
     if (!client) throw new Error("Supabase is not configured.");
+    if (!hasPortalLoginId(identifier, role)) {
+      throw new Error(role === "staff" ? "登録済みのスタッフIDを入力してください。" : "登録済みの管理者IDを入力してください。");
+    }
+    const email = buildPortalAuthEmail(identifier, role);
+    if (!email) throw new Error("ログインIDを入力してください。");
     const { data, error } = await client.auth.signInWithPassword({ email, password });
     if (error) throw error;
     return data;
@@ -172,6 +213,9 @@
     requireAdminSession,
     signInAdmin,
     signOutAdmin,
+    normalizePortalLoginId,
+    readPortalLoginIndex,
+    buildPortalAuthEmail,
     readStoredRole,
     persistPortalRole,
     readRoleFromLocation,

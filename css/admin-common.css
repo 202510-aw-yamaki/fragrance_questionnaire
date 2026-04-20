@@ -915,6 +915,56 @@
   gap: 1.2rem;
 }
 
+.portal-settings-side-card {
+  align-content: start;
+}
+
+.portal-settings-side-card .portal-section-head {
+  margin-bottom: 0.5rem;
+}
+
+.portal-settings-action-stack {
+  gap: 1.15rem;
+}
+
+.portal-settings-action-stack .admin-btn,
+.portal-settings-select {
+  width: 100%;
+  min-height: 4.6rem;
+  border-radius: 999px;
+  font-size: 1.15rem;
+}
+
+.portal-settings-select {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0 1.35rem;
+  border: 1px solid rgba(125, 100, 72, 0.14);
+  background: rgba(239, 229, 214, 0.95);
+}
+
+.portal-settings-select span {
+  color: #5a4737;
+  font-weight: 800;
+}
+
+.portal-settings-select select {
+  min-width: 8rem;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: #5a4737;
+  font: inherit;
+  font-weight: 700;
+  padding-right: 0.25rem;
+}
+
+.portal-settings-control-note[hidden] {
+  display: none;
+}
+
 .portal-stat-card {
   display: grid;
   gap: 0.85rem;
@@ -1332,6 +1382,163 @@
   box-shadow: 0 24px 72px rgba(52, 36, 22, 0.18);
 }
 
+.portal-modal-dialog--settings {
+  width: min(58rem, calc(100% - 2rem));
+  padding: 1.9rem;
+  border-radius: 2rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(251, 247, 242, 0.98));
+}
+
+.portal-settings-modal-close {
+  margin-right: auto;
+}
+
+.portal-settings-modal-form {
+  gap: 1.25rem;
+}
+
+.portal-settings-modal-card {
+  display: grid;
+  gap: 1.25rem;
+  border-radius: 1.7rem;
+  background: rgba(255, 252, 248, 0.96);
+  border: 1px solid rgba(125, 100, 72, 0.12);
+  box-shadow: none;
+}
+
+.portal-settings-modal-title {
+  margin: 0 0 1rem;
+  color: #4a392b;
+  font-size: 1.2rem;
+}
+
+.portal-settings-credential-grid {
+  display: grid;
+  gap: 1rem 1.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+}
+
+.portal-settings-field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.portal-settings-field > span {
+  color: #5a4737;
+  font-weight: 800;
+}
+
+.portal-settings-password-wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.portal-settings-visibility-toggle {
+  min-width: 4.4rem;
+  min-height: 3rem;
+  padding-inline: 0.9rem;
+}
+
+.portal-settings-modal-actions {
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+[data-manager-auth-row][hidden] {
+  display: none !important;
+}
+
+.portal-settings-modal-actions .admin-btn[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.portal-settings-duty-card {
+  gap: 1.25rem;
+}
+
+.portal-settings-duty-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.9rem 1.4rem;
+  text-align: center;
+}
+
+.portal-settings-duty-head h3 {
+  margin: 0;
+  color: #4a392b;
+  font-size: clamp(1.8rem, 1.45rem + 0.8vw, 2.3rem);
+}
+
+.portal-settings-duty-table {
+  display: grid;
+  gap: 0;
+}
+
+.portal-settings-duty-head-row,
+.portal-settings-duty-row {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr) minmax(0, 1fr) 4rem;
+  gap: 0.85rem;
+  align-items: center;
+}
+
+.portal-settings-duty-head-row {
+  padding: 0 1.1rem 0.85rem;
+  color: #6f6052;
+  font-size: 0.95rem;
+  font-weight: 800;
+  border-bottom: 1px solid rgba(125, 100, 72, 0.12);
+}
+
+.portal-settings-duty-head-row span:last-child {
+  text-align: center;
+}
+
+.portal-settings-duty-body {
+  gap: 0;
+}
+
+.portal-settings-duty-row {
+  padding: 0.85rem 1.1rem;
+  border-bottom: 1px solid rgba(125, 100, 72, 0.09);
+}
+
+.portal-settings-duty-row:last-child {
+  border-bottom: 0;
+}
+
+.portal-settings-duty-day {
+  color: #5a4737;
+  font-size: 1.05rem;
+  text-align: center;
+}
+
+.portal-settings-duty-time input {
+  min-height: 2.95rem;
+}
+
+.portal-settings-duty-off {
+  display: flex;
+  justify-content: center;
+}
+
+.portal-settings-duty-off input {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.portal-settings-duty-row.is-off .portal-settings-duty-time input {
+  background: rgba(243, 236, 228, 0.92);
+  color: #8a7868;
+}
+
 .portal-checkbox {
   display: flex;
   gap: 0.7rem;
@@ -1524,8 +1731,51 @@
 .portal-control-grid {
   display: grid;
   gap: 1.35rem;
-  grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.9fr);
+  grid-template-columns: minmax(0, 3fr) minmax(18rem, 1fr);
   align-items: start;
+}
+
+.portal-settings-today-panel .admin-card-list {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.portal-settings-staff-card {
+  display: grid;
+  gap: 0.85rem;
+  align-content: center;
+  min-height: 8.75rem;
+  padding: 1.35rem 1.5rem;
+  background: rgba(250, 245, 237, 0.88);
+}
+
+.portal-settings-staff-card[hidden] {
+  display: none !important;
+}
+
+.portal-settings-staff-card h3,
+.portal-settings-staff-card p {
+  margin: 0;
+}
+
+.portal-settings-staff-card h3 {
+  font-size: 1.65rem;
+}
+
+.portal-settings-staff-card p {
+  color: #6f6052;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.portal-settings-staff-card.is-off p {
+  color: #8a7868;
+}
+
+.portal-settings-staff-card.is-temporary {
+  border-style: dashed;
+  border-color: rgba(143, 95, 59, 0.28);
 }
 
 .portal-action-stack {
@@ -1553,9 +1803,34 @@
   overflow-x: auto;
 }
 
+.portal-settings-calendar-panel {
+  display: grid;
+  gap: 1.35rem;
+}
+
+.portal-settings-calendar-head {
+  align-items: end;
+}
+
+.portal-settings-calendar-copy {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.portal-settings-calendar-tools {
+  display: grid;
+  gap: 0.8rem;
+  justify-items: end;
+  text-align: right;
+}
+
+.portal-settings-week-actions {
+  justify-content: flex-end;
+}
+
 .portal-calendar-table {
   width: 100%;
-  min-width: 54rem;
+  min-width: 78rem;
   border-collapse: separate;
   border-spacing: 0;
   overflow: hidden;
@@ -1587,6 +1862,7 @@
   background: rgba(245, 237, 227, 0.92);
   color: #5c4736;
   font-weight: 800;
+  text-align: center;
 }
 
 .portal-calendar-table thead small {
@@ -1629,6 +1905,38 @@
 .portal-calendar-empty {
   text-align: center;
   color: #7f6a58;
+}
+
+.portal-settings-date-cell {
+  min-width: 9rem;
+}
+
+.portal-settings-date-cell strong,
+.portal-settings-date-cell small {
+  display: inline;
+}
+
+.portal-settings-shift-cell {
+  min-width: 10rem;
+}
+
+.portal-settings-count-cell {
+  min-width: 7rem;
+  text-align: center;
+}
+
+.portal-settings-count-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 4.9rem;
+  min-height: 3rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(245, 237, 227, 0.96);
+  color: #8a6241;
+  font-size: 1.05rem;
+  font-weight: 800;
 }
 
 .portal-week-pattern {
@@ -1985,10 +2293,13 @@
 
 @media (max-width: 80em) {
   .portal-kpi-grid--four,
-  .portal-control-grid,
   .portal-scoring-layout,
   .portal-config-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .portal-control-grid {
+    grid-template-columns: minmax(0, 3fr) minmax(16rem, 1fr);
   }
 
   .portal-scoring-branch-grid,
@@ -2026,6 +2337,36 @@
     min-width: 44rem;
   }
 
+  .portal-settings-today-panel .admin-card-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .portal-settings-calendar-head {
+    align-items: start;
+  }
+
+  .portal-settings-calendar-tools {
+    justify-items: start;
+    text-align: left;
+  }
+
+  .portal-settings-week-actions {
+    justify-content: flex-start;
+  }
+
+  .portal-settings-credential-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-settings-duty-table {
+    overflow-x: auto;
+  }
+
+  .portal-settings-duty-head-row,
+  .portal-settings-duty-row {
+    min-width: 31rem;
+  }
+
   .admin-page {
     --container: calc(100% - 1.5rem);
   }
@@ -2061,5 +2402,24 @@
   .portal-scoring-question-card .admin-matrix-head,
   .portal-scoring-finish-table .admin-matrix-head {
     display: grid !important;
+  }
+}
+
+@media (max-width: 47.9375em) {
+  .portal-settings-today-panel .admin-card-list {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-modal-dialog--settings {
+    padding: 1.2rem;
+  }
+
+  .portal-settings-duty-head {
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .portal-settings-duty-row {
+    padding-inline: 0.6rem;
   }
 }

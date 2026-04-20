@@ -19,7 +19,7 @@
           <p class="admin-note">担当スタッフの確認ページ、予約枠作成、予約情報一覧へ進みます。</p>
           <form class="admin-form portal-login-form" data-login-role="staff">
             <label>スタッフID
-              <input data-login-field="email" type="email" autocomplete="email" placeholder="staff@example.com" required>
+              <input data-login-field="identifier" type="text" autocomplete="username" placeholder="staff_a" required>
             </label>
             <label>パスワード
               <input data-login-field="password" type="password" autocomplete="current-password" required>
@@ -34,7 +34,7 @@
           <p class="admin-note">管理スタッフ確認ページ、配点ロジック、原料ポイントなどの管理画面へ進みます。</p>
           <form class="admin-form portal-login-form" data-login-role="manager">
             <label>管理者ID
-              <input data-login-field="email" type="email" autocomplete="email" placeholder="manager@example.com" required>
+              <input data-login-field="identifier" type="text" autocomplete="username" placeholder="manager_a" required>
             </label>
             <label>パスワード
               <input data-login-field="password" type="password" autocomplete="current-password" required>
@@ -77,10 +77,10 @@
         event.preventDefault();
         errorEl.hidden = true;
         const role = currentForm.dataset.loginRole || "manager";
-        const emailInput = currentForm.querySelector('[data-login-field="email"]');
+        const identifierInput = currentForm.querySelector('[data-login-field="identifier"]');
         const passwordInput = currentForm.querySelector('[data-login-field="password"]');
         try {
-          await window.AdminAuth.signInAdmin(emailInput.value.trim(), passwordInput.value);
+          await window.AdminAuth.signInAdmin(identifierInput.value.trim(), passwordInput.value, role);
           window.AdminAuth.persistPortalRole(role);
           window.AdminAuth.redirectToRoleHome(role);
         } catch (error) {
