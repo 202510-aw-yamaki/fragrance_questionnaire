@@ -417,9 +417,9 @@
 
   function setControlNote(message, isError) {
     if (!controlNoteEl) return;
-    controlNoteEl.hidden = !isError || !String(message || "").trim();
+    controlNoteEl.hidden = !String(message || "").trim();
     controlNoteEl.textContent = message;
-    controlNoteEl.className = isError ? "admin-error" : "admin-note";
+    controlNoteEl.className = `portal-settings-control-note ${isError ? "admin-error" : "admin-note"}`;
   }
 
   function openModal(modalEl) {
@@ -456,6 +456,17 @@
       row.querySelectorAll('input[type="time"]').forEach((input) => {
         input.disabled = isOff;
       });
+    });
+  }
+
+  function syncShiftRowState() {
+    shiftRowsEl.querySelectorAll("[data-shift-working]").forEach((input) => {
+      const dateKey = input.dataset.shiftWorking;
+      const isWorking = input.checked === true;
+      const startInput = shiftRowsEl.querySelector(`[data-shift-start="${dateKey}"]`);
+      const endInput = shiftRowsEl.querySelector(`[data-shift-end="${dateKey}"]`);
+      if (startInput) startInput.disabled = !isWorking;
+      if (endInput) endInput.disabled = !isWorking;
     });
   }
 
@@ -570,6 +581,7 @@
       setControlNote("先にスタッフを登録してください。", true);
       return;
     }
+    state.selectedStaffId = staff.id;
     shiftModalTitleEl.textContent = "個別勤務管理";
     shiftStaffNameEl.textContent = staff.staffName;
     document.getElementById("shift-staff-id").value = staff.id;
@@ -705,6 +717,7 @@
         </article>
       `;
     }).join("");
+    syncShiftRowState();
     if (shiftDeleteButtonEl) {
       shiftDeleteButtonEl.disabled = false;
     }
@@ -958,9 +971,59 @@
     }
   });
 
+  if (shiftManageSelectEl) {
+    shiftManageSelectEl.addEventListener("change", () => {
+      state.selectedStaffId = shiftManageSelectEl.value;
+      if (!state.selectedStaffId) {
+        renderShiftManageSelect();
+        return;
+      }
+      const target = getSelectedStaff();
+      renderShiftManageSelect();
+      if (target) {
+        openShiftModal(target);
+        shiftManageSelectEl.value = "";
+      }
+    });
+  }
+
   shiftExtendEl.addEventListener("change", () => {
     renderShiftRows(document.getElementById("shift-staff-id").value);
   });
+
+  shiftRowsEl.addEventListener("change", (event) => {
+    if (event.target instanceof HTMLInputElement && event.target.matches("[data-shift-working]")) {
+      syncShiftRowState();
+    }
+  });
+
+  if (shiftDeleteButtonEl) {
+    shiftDeleteButtonEl.addEventListener("click", async () => {
+      const staffId = document.getElementById("shift-staff-id").value;
+      if (!staffId) {
+        closeModal(shiftModalEl);
+        return;
+      }
+      const staff = findDisplayStaffById(staffId);
+      const targetDates = Array.from(
+        shiftRowsEl.querySelectorAll("[data-shift-working]")
+      ).map((input) => input.dataset.shiftWorking);
+      const beforeLength = state.shiftOverrides.length;
+      state.shiftOverrides = state.shiftOverrides.filter((row) => {
+        return !(row.staffId === staffId && targetDates.includes(row.date));
+      });
+      if (beforeLength === state.shiftOverrides.length) {
+        closeModal(shiftModalEl);
+        setControlNote(`${staff?.staffName || "スタッフ"}の個別勤務上書きはありません。`, false);
+        renderPage();
+        return;
+      }
+      await saveSetting(SHIFT_SETTING_KEY, state.shiftOverrides.map(stripOverrideForSave));
+      closeModal(shiftModalEl);
+      setControlNote(`${staff?.staffName || "スタッフ"}の個別勤務上書きを削除しました。`, false);
+      renderPage();
+    });
+  }
 
   document.getElementById("settings-week-prev").addEventListener("click", () => {
     state.weekOffset -= 1;

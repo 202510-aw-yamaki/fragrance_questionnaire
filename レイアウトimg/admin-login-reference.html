@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>admin-login Design Reference</title>
+    <style>
+:root {
+  --noto-sans-JP-bold-font-family: "Noto Sans JP", Helvetica;
+  --noto-sans-JP-bold-font-weight: 700;
+  --noto-sans-JP-bold-font-size: 16px;
+  --noto-sans-JP-bold-letter-spacing: 0px;
+  --noto-sans-JP-bold-line-height: 27.200000762939453px;
+  --noto-sans-JP-bold-font-style: normal;
+  --noto-sans-JP-bold-upper-font-family: "Noto Sans JP", Helvetica;
+  --noto-sans-JP-bold-upper-font-weight: 700;
+  --noto-sans-JP-bold-upper-font-size: 13px;
+  --noto-sans-JP-bold-upper-letter-spacing: 1.0399999618530273px;
+  --noto-sans-JP-bold-upper-line-height: 22.100000381469727px;
+  --noto-sans-JP-bold-upper-font-style: normal;
+  --noto-sans-JP-regular-font-family: "Noto Sans JP", Helvetica;
+  --noto-sans-JP-regular-font-weight: 400;
+  --noto-sans-JP-regular-font-size: 16px;
+  --noto-sans-JP-regular-letter-spacing: 0px;
+  --noto-sans-JP-regular-line-height: 27.200000762939453px;
+  --noto-sans-JP-regular-font-style: normal;
+  --inter-regular-font-family: "Inter", Helvetica;
+  --inter-regular-font-weight: 400;
+  --inter-regular-font-size: 13px;
+  --inter-regular-letter-spacing: 0.3199999928474426px;
+  --inter-regular-line-height: 22.100000381469727px;
+  --inter-regular-font-style: normal;
+  --inter-bold-font-family: "Inter", Helvetica;
+  --inter-bold-font-weight: 700;
+  --inter-bold-font-size: 13.300000190734863px;
+  --inter-bold-letter-spacing: 0px;
+  --inter-bold-line-height: normal;
+  --inter-bold-font-style: normal;
+  --inter-bold-underline-font-family: "Inter", Helvetica;
+  --inter-bold-underline-font-weight: 700;
+  --inter-bold-underline-font-size: 16px;
+  --inter-bold-underline-letter-spacing: 0.3199999928474426px;
+  --inter-bold-underline-line-height: 27.200000762939453px;
+  --inter-bold-underline-font-style: normal;
+  --inter-bold-upper-font-family: "Inter", Helvetica;
+  --inter-bold-upper-font-weight: 700;
+  --inter-bold-upper-font-size: 13px;
+  --inter-bold-upper-letter-spacing: 1.0399999618530273px;
+  --inter-bold-upper-line-height: 22.100000381469727px;
+  --inter-bold-upper-font-style: normal;
+}
+
+    </style>
+    <style>
+@import url("https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css");
+* {
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0px;
+  height: 100%;
+}
+/* a blue color as a generic focus style */
+button:focus-visible {
+  outline: 2px solid #4a90e2 !important;
+  outline: -webkit-focus-ring-color auto 5px !important;
+}
+a {
+  text-decoration: none;
+}
+/* @FONTWARNING[{"type": "restricted", "family": "Noto Sans JP", "weight": "var(--noto-sans-JP-bold-font-weight)", "style": "normal", "allowsCrossOrigin": false}] */
+
+@font-face {
+  font-family: "Noto Sans JP";
+  src: local("Noto Sans JP");
+}
+/* @FONTWARNING[{"type": "restricted", "family": "Noto Sans JP-Bold", "weight": "700", "style": "normal", "allowsCrossOrigin": false}] */
+
+@font-face {
+  font-family: "Noto Sans JP-Bold";
+  src: local("Noto Sans JP-Bold");
+}
+/* @FONTWARNING[{"type": "restricted", "family": "Noto Sans JP-Regular", "weight": "400", "style": "normal", "allowsCrossOrigin": false}] */
+
+@font-face {
+  font-family: "Noto Sans JP-Regular";
+  src: local("Noto Sans JP-Regular");
+}
+
+.frame {
+  display: flex;
+  flex-direction: column;
+  width: 1200px;
+  min-height: 1200px;
+  align-items: center;
+  position: relative;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(247, 242, 235, 1) 0%,
+      rgba(252, 249, 245, 1) 55%,
+      rgba(255, 255, 255, 1) 100%
+    ),
+    linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 255, 255, 1) 100%
+    );
+}
+
+.frame .main-admin-main {
+  display: flex;
+  flex-direction: column;
+  width: 1120px;
+  min-height: 1200px;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 0px 64px;
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.frame .section-admin-panel {
+  display: flex;
+  max-width: 1024px;
+  align-items: flex-start;
+  gap: 54px;
+  padding: 24px 24px 40.01px;
+  position: relative;
+  width: 100%;
+  flex: 0 0 auto;
+  background-color: #ffffffe0;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid;
+  border-color: #6958471f;
+  box-shadow: 0px 24px 70px #57422c14;
+}
+
+.frame .div {
+  flex-direction: column;
+  align-items: flex-start;
+  display: inline-flex;
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.frame .p-section-label {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  padding: 3.95px 12px 5.05px;
+  position: relative;
+  flex: 0 0 auto;
+  border-radius: 999px;
+}
+
+.frame .text-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  margin-top: -1px;
+  font-family: var(--noto-sans-JP-bold-upper-font-family);
+  font-weight: var(--noto-sans-JP-bold-upper-font-weight);
+  color: #9b7364;
+  font-size: var(--noto-sans-JP-bold-upper-font-size);
+  letter-spacing: var(--noto-sans-JP-bold-upper-letter-spacing);
+  line-height: var(--noto-sans-JP-bold-upper-line-height);
+  white-space: nowrap;
+  font-style: var(--noto-sans-JP-bold-upper-font-style);
+}
+
+.frame .h {
+  display: flex;
+  flex-direction: column;
+  width: 462px;
+  align-items: flex-start;
+  padding: 14.39px 0px 0px;
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.frame .text-wrapper-2 {
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  font-family: "Noto Sans JP-Bold", Helvetica;
+  font-weight: 700;
+  color: #3f3126;
+  font-size: 39.2px;
+  letter-spacing: 0.32px;
+  line-height: 47px;
+  position: relative;
+  margin-top: -1px;
+}
+
+.frame .form-login-form {
+  display: flex;
+  flex-direction: column;
+  width: 462px;
+  height: 348.78px;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14.38px 0px 0px;
+  position: relative;
+}
+
+.frame .div-wrapper {
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  display: inline-flex;
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.frame .text-wrapper-3 {
+  width: fit-content;
+  font-family: "Noto Sans JP-Regular", Helvetica;
+  font-weight: 400;
+  color: #3f3126;
+  font-size: 16px;
+  letter-spacing: 0.32px;
+  line-height: 27.2px;
+  position: relative;
+  margin-top: -1px;
+}
+
+.frame .label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7.68px;
+  position: relative;
+  align-self: stretch;
+  width: 100%;
+  flex: 0 0 auto;
+}
+
+.frame .text-wrapper-4 {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  font-family: "Noto Sans JP-Bold", Helvetica;
+  font-weight: 700;
+  color: #4a3d31;
+  font-size: 16px;
+  letter-spacing: 0.32px;
+  line-height: 27.2px;
+  white-space: nowrap;
+  position: relative;
+  margin-top: -1px;
+}
+
+.frame .div-2 {
+  position: relative;
+  align-self: stretch;
+  width: 100%;
+  height: 53.19px;
+  background-color: #fffdfa;
+  border-radius: 14.4px;
+  border: 1px solid;
+  border-color: #6958472e;
+}
+
+.frame .div-admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  height: 54.78px;
+  align-items: flex-start;
+  gap: 0px 12px;
+  position: relative;
+  align-self: stretch;
+  width: 100%;
+  margin-bottom: -3.12px;
+}
+
+.frame .button-admin-btn {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 13.3px 19.2px 13.48px;
+  position: relative;
+  flex: 0 0 auto;
+  background-color: #8f5f3b;
+  border-radius: 999px;
+}
+
+.frame .text-wrapper-5 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  font-family: var(--noto-sans-JP-bold-font-family);
+  font-weight: var(--noto-sans-JP-bold-font-weight);
+  color: #ffffff;
+  font-size: var(--noto-sans-JP-bold-font-size);
+  text-align: center;
+  letter-spacing: var(--noto-sans-JP-bold-letter-spacing);
+  line-height: var(--noto-sans-JP-bold-line-height);
+  white-space: nowrap;
+  position: relative;
+  margin-top: -1px;
+  font-style: var(--noto-sans-JP-bold-font-style);
+}
+
+.frame .before {
+  position: absolute;
+  width: calc(100% - 2px);
+  top: 1px;
+  left: 1px;
+  height: 6px;
+  background: linear-gradient(
+    90deg,
+    rgba(197, 137, 117, 0.95) 0%,
+    rgba(223, 184, 166, 0.65) 100%
+  );
+}
+
+.frame .div-3 {
+  flex-direction: column;
+  align-items: flex-start;
+  margin-right: -3px;
+  display: inline-flex;
+  position: relative;
+  flex: 0 0 auto;
+}
+
+    </style>
+</head>
+<body>
+<div class="frame" ><div class="main-admin-main" ><div class="section-admin-panel" ><div class="div" ><div class="p-section-label" ><div class="text-wrapper" >STAFF LOGIN</div></div>
+<div class="h" ><div class="text-wrapper-2" >スタッフ画面へログイン</div></div>
+<div class="form-login-form" ><div class="div-wrapper" ><div class="text-wrapper-3" >予約枠作成/編集/確認<br/>個別お客様用管理など</div></div>
+<div class="label" ><div class="text-wrapper-4" >スタッフＩＤ</div>
+<div class="div-2" ></div></div>
+<div class="label" ><div class="text-wrapper-4" >パスワード</div>
+<div class="div-2" ></div></div>
+<div class="div-admin-actions" ><div class="button-admin-btn" ><div class="text-wrapper-5" >ログイン</div></div></div></div></div>
+<div class="before" ></div>
+<div class="div-3" ><div class="p-section-label" ><div class="text-wrapper" >ADMIN LOGIN</div></div>
+<div class="h" ><div class="text-wrapper-2" >管理者画面へログイン</div></div>
+<div class="form-login-form" ><div class="div-wrapper" ><div class="text-wrapper-3" >スタッフの登録/編集/管理<br/>配点/原料の設定登録/編集</div></div>
+<div class="label" ><div class="text-wrapper-4" >管理者ＩＤ</div>
+<div class="div-2" ></div></div>
+<div class="label" ><div class="text-wrapper-4" >パスワード</div>
+<div class="div-2" ></div></div>
+<div class="div-admin-actions" ><div class="button-admin-btn" ><div class="text-wrapper-5" >ログイン</div></div></div></div></div></div></div></div>
+</body>
+</html>

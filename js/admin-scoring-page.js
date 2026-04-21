@@ -70,7 +70,7 @@
         <div class="admin-grid cols-4">
           <label>STEP1 重み<input data-config-field="questionWeights.step1" type="number" step="0.1" value="${Number(workingConfig.questionWeights?.step1 || 1)}"></label>
           <label>STEP2 重み<input data-config-field="questionWeights.step2" type="number" step="0.1" value="${Number(workingConfig.questionWeights?.step2 || 2)}"></label>
-          <label>Q8 重み<input data-config-field="questionWeights.finish" type="number" step="0.1" value="${Number(workingConfig.questionWeights?.finish || 3)}"></label>
+          <label>STEP3 重み<input data-config-field="questionWeights.finish" type="number" step="0.1" value="${Number(workingConfig.questionWeights?.finish || 3)}"></label>
           <label>finish ブレンド比率<input data-config-field="finishBlendRatio" type="number" step="0.01" min="0" max="1" value="${Number(workingConfig.finishBlendRatio || 0.25)}"></label>
         </div>
       </section>
