@@ -19,6 +19,17 @@
       : "";
   }
 
+  function getResolvedInstructorName() {
+    const sharedInstructor = document.getElementById("slot-instructor")?.value.trim() || "";
+    const bulkInstructorEl = document.getElementById("slot-bulk-instructor");
+    const bulkInstructor = bulkInstructorEl?.value.trim() || "";
+    const resolved = sharedInstructor || bulkInstructor || getDefaultInstructorName() || "";
+    if (bulkInstructorEl && resolved) {
+      bulkInstructorEl.value = resolved;
+    }
+    return resolved;
+  }
+
   function setStatus(message, kind = "note") {
     statusEl.textContent = message;
     statusEl.className = kind === "error" ? "admin-error" : kind === "success" ? "admin-note admin-note-success" : "admin-note";
@@ -64,12 +75,7 @@
     const startTime = document.getElementById("slot-bulk-start-time").value;
     const interval = Number(document.getElementById("slot-bulk-interval").value || DEFAULT_INTERVAL);
     const capacity = Number(document.getElementById("slot-bulk-capacity").value || DEFAULT_CAPACITY);
-    const bulkInstructorEl = document.getElementById("slot-bulk-instructor");
-    const resolvedInstructor = bulkInstructorEl?.value.trim() || getDefaultInstructorName() || "";
-    if (bulkInstructorEl && resolvedInstructor) {
-      bulkInstructorEl.value = resolvedInstructor;
-    }
-    const instructor = resolvedInstructor || null;
+    const instructor = getResolvedInstructorName() || null;
     const status = document.getElementById("slot-bulk-status").value;
     const label = document.getElementById("slot-bulk-label").value.trim();
     const prefix = document.getElementById("slot-bulk-prefix").value.trim() || "SHIFT";
@@ -210,7 +216,7 @@
 
   const bulkInstructorEl = document.getElementById("slot-bulk-instructor");
   if (bulkInstructorEl && !bulkInstructorEl.value) {
-    bulkInstructorEl.value = getDefaultInstructorName();
+    bulkInstructorEl.value = getResolvedInstructorName();
   }
   updatePreview();
 })();
