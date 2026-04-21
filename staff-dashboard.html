@@ -43,13 +43,12 @@
       </article>
 
       <aside class="portal-side-stack">
-        <article class="admin-panel portal-stat-card">
+        <article class="admin-panel portal-stat-card portal-stat-card--weekly">
           <p class="portal-stat-label">向こう一週間の予約件数 / 作成枠数</p>
           <strong class="portal-stat-value" id="staff-kpi-week">0</strong>
-          <p class="admin-note">左が予約件数、右が作成枠数です。</p>
         </article>
 
-        <article class="admin-panel portal-stat-card">
+        <article class="admin-panel portal-stat-card portal-stat-card--missing">
           <p class="portal-stat-label">向こう二週間の予約未作成日</p>
           <strong class="portal-stat-value portal-stat-value--compact" id="staff-missing-primary" hidden>--/--</strong>
           <div class="admin-chip-grid" id="staff-missing-secondary"></div>
@@ -58,12 +57,10 @@
 
         <a class="admin-panel portal-action-card" href="admin-slots.html?role=staff">
           <h3>予約枠作成ページへ</h3>
-          <p class="admin-note">単件作成と一括作成を開きます。</p>
         </a>
 
         <a class="admin-panel portal-action-card" href="admin-reservations.html?role=staff">
           <h3>予約情報一覧ページへ</h3>
-          <p class="admin-note">来店前の予約一覧と詳細導線を確認します。</p>
         </a>
       </aside>
     </section>

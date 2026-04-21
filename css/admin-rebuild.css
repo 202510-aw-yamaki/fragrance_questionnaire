@@ -2164,15 +2164,21 @@
 }
 
 .portal-staff-dashboard-page .portal-side-stack {
+  --portal-side-kpi-row: 158px;
+  --portal-side-action-row: 152px;
   display: grid;
-  grid-template-rows: repeat(4, minmax(0, 1fr));
+  grid-template-rows:
+    var(--portal-side-kpi-row)
+    minmax(0, 1fr)
+    var(--portal-side-action-row)
+    var(--portal-side-action-row);
   gap: 20px;
   height: 100%;
   min-height: 0;
 }
 
 .portal-staff-dashboard-page .portal-side-stack > * {
-  height: 100%;
+  height: auto;
   min-height: 0;
 }
 
@@ -2188,9 +2194,30 @@
   align-content: center;
 }
 
+.portal-staff-dashboard-page .portal-stat-card--weekly {
+  min-height: var(--portal-side-kpi-row);
+  justify-items: center;
+  text-align: center;
+}
+
+.portal-staff-dashboard-page .portal-stat-card--missing {
+  min-height: 0;
+  grid-template-rows: auto minmax(0, 1fr);
+  align-content: stretch;
+  justify-items: start;
+  gap: 0.6rem;
+  overflow: hidden;
+}
+
 .portal-staff-dashboard-page .portal-stat-label {
   font-size: 1rem;
   line-height: 1.5;
+}
+
+.portal-staff-dashboard-page .portal-stat-card--weekly .portal-stat-label,
+.portal-staff-dashboard-page .portal-stat-card--weekly .portal-stat-value {
+  width: 100%;
+  text-align: center;
 }
 
 .portal-staff-dashboard-page .portal-stat-value {
@@ -2206,15 +2233,36 @@
   line-height: 1.6;
 }
 
+.portal-staff-dashboard-page .portal-stat-card--missing .admin-chip-grid {
+  min-height: 0;
+  width: 100%;
+  gap: 0.45rem;
+  align-content: start;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0.2rem;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+
+.portal-staff-dashboard-page .portal-stat-card--missing .admin-chip {
+  min-height: 2.3rem;
+  padding: 0.2rem 0.72rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
 .portal-staff-dashboard-page .portal-staff-layout .portal-action-card {
+  min-height: var(--portal-side-action-row);
   align-content: center;
   justify-items: center;
   text-align: center;
-  gap: 0.45rem;
+  gap: 0;
   border-color: rgba(107, 75, 52, 0.4);
 }
 
 .portal-staff-dashboard-page .portal-staff-layout .portal-action-card h3 {
+  margin: 0;
   font-size: 1.35rem;
   line-height: 1.35;
 }
@@ -2288,8 +2336,17 @@
   }
 
   .portal-staff-dashboard-page .portal-side-stack {
-    grid-template-rows: repeat(4, minmax(8rem, auto));
+    grid-template-rows:
+      minmax(8rem, auto)
+      minmax(8rem, auto)
+      minmax(8rem, auto)
+      minmax(8rem, auto);
     height: auto;
+    min-height: 0;
+  }
+
+  .portal-staff-dashboard-page .portal-side-stack > * {
+    min-height: 8rem;
   }
 }
 
