@@ -2397,3 +2397,383 @@
     border-radius: 1rem;
   }
 }
+
+/* Slots page: reference-aligned staff reservation slot creation layout */
+
+.portal-slots-page {
+  --portal-slots-width: min(1140px, calc(100vw - 60px));
+  --portal-slots-card-shadow: 0 24px 70px rgba(87, 66, 44, 0.08);
+}
+
+.portal-slots-page .admin-header-inner,
+.portal-slots-page .admin-header-inner--staff {
+  width: var(--portal-slots-width);
+}
+
+.portal-slots-page .admin-main.site-container.portal-slots-stack {
+  width: var(--portal-slots-width);
+  margin: 30px auto 48px;
+  padding: 0;
+  gap: 20px;
+}
+
+.portal-slots-page .portal-slots-hero {
+  min-height: 156px;
+  padding: 24px;
+  border-radius: 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+  box-shadow: var(--portal-slots-card-shadow);
+}
+
+.portal-slots-page .portal-slots-hero .portal-hero-label {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+}
+
+.portal-slots-page .portal-slots-hero h1 {
+  font-size: 32px;
+  line-height: 40px;
+}
+
+.portal-slots-page .portal-slots-hero .portal-hero-copy {
+  margin: 0;
+  align-self: center;
+  justify-self: end;
+  max-width: 28rem;
+  color: var(--portal-text-soft);
+  font-size: 16px;
+  line-height: 1.7;
+  text-align: right;
+}
+
+.portal-slots-page .portal-slot-layout--reference {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 29px;
+  align-items: stretch;
+}
+
+.portal-slots-page .portal-slot-layout--reference > .admin-panel {
+  min-height: 538px;
+  padding: 20px;
+  border-radius: 24px;
+  box-shadow: var(--portal-slots-card-shadow);
+}
+
+.portal-slots-page .portal-slot-editor-panel,
+.portal-slots-page .portal-slot-preview-panel,
+.portal-slots-page .portal-bulk-panel--slots {
+  padding: 24px;
+}
+
+.portal-slots-page .portal-slot-list-panel {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.portal-slots-page .portal-slot-editor-panel,
+.portal-slots-page .portal-slot-preview-panel {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.portal-slots-page .portal-slot-card-head {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.portal-slots-page .portal-slot-card-head h2 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 30px;
+}
+
+.portal-slots-page .portal-slot-card-head .admin-note {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--portal-text-soft);
+}
+
+.portal-slots-page .portal-slot-inline-note {
+  display: none;
+}
+
+.portal-slots-page .portal-slot-head {
+  grid-template-columns: 1fr 0.78fr 0.62fr 0.78fr;
+  padding: 13px 10px 16px;
+  border-bottom: 1px solid rgba(105, 88, 71, 0.12);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.portal-slots-page .portal-slot-list-body {
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0.25rem;
+}
+
+.portal-slots-page .portal-slot-list-body::-webkit-scrollbar,
+.portal-slots-page .portal-stat-card--missing .admin-chip-grid::-webkit-scrollbar {
+  width: 8px;
+}
+
+.portal-slots-page .portal-slot-list-body::-webkit-scrollbar-thumb,
+.portal-slots-page .portal-stat-card--missing .admin-chip-grid::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(160, 109, 67, 0.26);
+}
+
+.portal-slots-page .portal-slot-row {
+  grid-template-columns: 1fr 0.78fr 0.62fr 0.78fr;
+  padding: 14px 10px;
+  border-bottom: 1px solid rgba(105, 88, 71, 0.12);
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.portal-slots-page .portal-slot-row:hover,
+.portal-slots-page .portal-slot-row:focus-visible {
+  background: rgba(250, 244, 236, 0.85);
+  outline: none;
+}
+
+.portal-slots-page .portal-slot-row.is-selected {
+  background: rgba(244, 233, 219, 0.95);
+  border-radius: 18px;
+  box-shadow: inset 0 0 0 1px rgba(143, 95, 59, 0.16);
+}
+
+.portal-slots-page .portal-slot-row span {
+  color: var(--portal-text);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.portal-slots-page .portal-slot-row span:last-child {
+  text-align: center;
+}
+
+.portal-slots-page .portal-slot-form--reference {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+
+.portal-slots-page .portal-slot-field {
+  display: grid;
+  gap: 6px;
+  color: var(--portal-text);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.portal-slots-page .portal-slot-field span {
+  line-height: 1.7;
+}
+
+.portal-slots-page .portal-slot-field input,
+.portal-slots-page .portal-slot-field select,
+.portal-slots-page .portal-slot-preview-field strong {
+  min-height: 52px;
+  padding: 12px 14px;
+  border: 1px solid rgba(105, 88, 71, 0.18);
+  border-radius: 14px;
+  background: #fffdfa;
+  color: #000;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.7;
+}
+
+.portal-slots-page .portal-slot-field input:focus,
+.portal-slots-page .portal-slot-field select:focus {
+  outline: 2px solid rgba(143, 95, 59, 0.22);
+  outline-offset: 1px;
+}
+
+.portal-slots-page .portal-slot-card-actions {
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 2px;
+}
+
+.portal-slots-page .portal-slot-card-actions .admin-btn {
+  min-height: 52px;
+  padding: 0.8rem 1.2rem;
+  border-radius: 999px;
+  font-size: 16px;
+}
+
+.portal-slots-page .portal-slot-preview-fields {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+
+.portal-slots-page .portal-slot-preview-field {
+  display: grid;
+  gap: 6px;
+  color: var(--portal-text);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.portal-slots-page .portal-slot-preview-field strong {
+  display: flex;
+  align-items: center;
+}
+
+.portal-slots-page .portal-bulk-panel--slots {
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+  border-radius: 24px;
+  box-shadow: var(--portal-slots-card-shadow);
+}
+
+.portal-slots-page .portal-bulk-form--slots {
+  display: grid;
+  gap: 16px;
+}
+
+.portal-slots-page .portal-bulk-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.portal-slots-page .portal-weekday-card--slots {
+  padding: 0 17px 17px;
+  border: 0;
+  border-radius: 20px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.portal-slots-page .portal-weekday-card--slots legend {
+  padding: 0 0 0.55rem;
+  color: var(--portal-text);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.portal-slots-page .portal-weekday-card--slots .portal-weekday-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  justify-content: space-between;
+}
+
+.portal-slots-page .portal-weekday-card--slots .portal-weekday-grid label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--portal-text);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.portal-slots-page .portal-weekday-card--slots input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+}
+
+.portal-slots-page .portal-bulk-feedback {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.portal-slots-page .portal-bulk-feedback .admin-note,
+.portal-slots-page #slot-bulk-status-note {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+@media (max-width: 72rem) {
+  .portal-slots-page {
+    --portal-slots-width: min(1140px, calc(100vw - 40px));
+  }
+
+  .portal-slots-page .portal-slots-hero {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .portal-slots-page .portal-slots-hero .portal-hero-copy {
+    justify-self: start;
+    text-align: left;
+  }
+
+  .portal-slots-page .portal-slot-layout--reference {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-slots-page .portal-slot-layout--reference > .admin-panel {
+    min-height: auto;
+  }
+
+  .portal-slots-page .portal-slot-list-panel {
+    min-height: 28rem;
+  }
+
+  .portal-slots-page .portal-bulk-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 56rem) {
+  .portal-slots-page {
+    --portal-slots-width: min(1140px, calc(100vw - 24px));
+  }
+
+  .portal-slots-page .admin-main.site-container.portal-slots-stack {
+    margin-top: 20px;
+  }
+
+  .portal-slots-page .portal-slots-hero {
+    min-height: auto;
+    padding: 20px;
+  }
+
+  .portal-slots-page .portal-slot-layout--reference > .admin-panel,
+  .portal-slots-page .portal-bulk-panel--slots {
+    padding: 18px;
+  }
+
+  .portal-slots-page .portal-slot-head {
+    display: none;
+  }
+
+  .portal-slots-page .portal-slot-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem 1rem;
+    padding: 12px;
+    border-radius: 16px;
+    border-bottom: 0;
+    background: rgba(255, 252, 247, 0.92);
+    box-shadow: inset 0 0 0 1px rgba(105, 88, 71, 0.1);
+  }
+
+  .portal-slots-page .portal-slot-row span:last-child {
+    text-align: left;
+  }
+
+  .portal-slots-page .portal-bulk-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .portal-slots-page .portal-weekday-card--slots {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}

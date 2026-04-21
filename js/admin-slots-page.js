@@ -1,4 +1,6 @@
 (function () {
+  const DEFAULT_INTERVAL = "120";
+  const DEFAULT_CAPACITY = "6";
   const rowsEl = document.getElementById("slot-rows");
   const form = document.getElementById("slot-form");
   const resetButton = document.getElementById("slot-reset");
@@ -11,16 +13,11 @@
   const previewStatusEl = document.getElementById("slot-preview-status");
   const previewFocusButton = document.getElementById("slot-preview-focus");
   const deleteButton = document.getElementById("slot-delete");
-  const UI = {
-    active: "\u516c\u958b\u4e2d",
-    hidden: "\u975e\u516c\u958b",
-    edit: "\u7de8\u96c6",
-    hide: "\u524a\u9664"
-  };
 
   if (!rowsEl || !form || !resetButton) return;
 
   let reservations = [];
+  let selectedSlotId = "";
 
   function formatMonthDay(value) {
     if (!value) return "-";
@@ -35,6 +32,32 @@
     return getSelectedRole() === "staff"
       ? (window.AdminAuth.getStaffDisplayName(window.__adminSession || null) || "")
       : "";
+  }
+
+  function syncDefaultInstructors() {
+    const defaultInstructorName = getDefaultInstructorName();
+    const slotInstructorEl = document.getElementById("slot-instructor");
+    const bulkInstructorEl = document.getElementById("slot-bulk-instructor");
+    if (slotInstructorEl && !slotInstructorEl.value) {
+      slotInstructorEl.value = defaultInstructorName;
+    }
+    if (bulkInstructorEl && !bulkInstructorEl.value) {
+      bulkInstructorEl.value = defaultInstructorName;
+    }
+  }
+
+  function normalizeName(value) {
+    return String(value || "").trim().toLowerCase();
+  }
+
+  function getSlotRowsByRole(rows) {
+    const activeRows = rows.filter((row) => row.is_active !== false);
+    if (getSelectedRole() !== "staff") return activeRows;
+    const staffName = getDefaultInstructorName();
+    if (!staffName) return activeRows;
+    const rowsWithInstructor = activeRows.filter((row) => String(row.instructor_name || "").trim());
+    if (!rowsWithInstructor.length) return activeRows;
+    return activeRows.filter((row) => normalizeName(row.instructor_name) === normalizeName(staffName));
   }
 
   function getStatusLabel(status) {
@@ -61,21 +84,27 @@
     return timeValue ? `${timeValue}-${endHours}:${endMinutes}` : "未入力";
   }
 
+  function setDeleteButtonState() {
+    if (!deleteButton) return;
+    deleteButton.disabled = !document.getElementById("slot-id").value;
+  }
+
   function resetForm() {
     form.reset();
+    selectedSlotId = "";
     document.getElementById("slot-id").value = "";
-    document.getElementById("slot-capacity").value = "1";
-    document.getElementById("slot-interval").value = "60";
+    document.getElementById("slot-capacity").value = DEFAULT_CAPACITY;
+    document.getElementById("slot-interval").value = DEFAULT_INTERVAL;
     document.getElementById("slot-status").value = "open";
     document.getElementById("slot-sort").value = "0";
     document.getElementById("slot-active").checked = true;
-    if (!document.getElementById("slot-instructor").value) {
-      document.getElementById("slot-instructor").value = getDefaultInstructorName();
-    }
+    document.getElementById("slot-instructor").value = getDefaultInstructorName();
     renderPreview();
+    setDeleteButtonState();
   }
 
   function fillForm(row) {
+    selectedSlotId = row.id || "";
     document.getElementById("slot-id").value = row.id || "";
     document.getElementById("slot-code").value = row.slot_code || "";
     document.getElementById("slot-date").value = row.slot_date || "";
@@ -83,19 +112,20 @@
     document.getElementById("slot-label").value = row.slot_label || "";
     document.getElementById("slot-instructor").value = row.instructor_name || "";
     document.getElementById("slot-status").value = row.status || "open";
-    document.getElementById("slot-capacity").value = row.capacity || 1;
-    document.getElementById("slot-interval").value = "60";
+    document.getElementById("slot-capacity").value = row.capacity || DEFAULT_CAPACITY;
+    document.getElementById("slot-interval").value = DEFAULT_INTERVAL;
     document.getElementById("slot-sort").value = row.sort_order || 0;
     document.getElementById("slot-active").checked = row.is_active !== false;
     renderPreview();
+    setDeleteButtonState();
   }
 
   function renderPreview() {
     if (!previewLabelEl) return;
     const dateValue = document.getElementById("slot-date").value || "-";
     const timeValue = document.getElementById("slot-time").value || "-";
-    const intervalValue = document.getElementById("slot-interval").value || "60";
-    const capacityValue = document.getElementById("slot-capacity").value || "1";
+    const intervalValue = document.getElementById("slot-interval").value || DEFAULT_INTERVAL;
+    const capacityValue = document.getElementById("slot-capacity").value || DEFAULT_CAPACITY;
     const labelValue = buildSlotLabel(timeValue, intervalValue);
     const staffValue = document.getElementById("slot-instructor").value.trim() || getDefaultInstructorName() || "未設定";
     const statusValue = document.getElementById("slot-status").value || "-";
@@ -107,8 +137,8 @@
     previewTimeEl.textContent = timeValue;
     if (previewIntervalEl) previewIntervalEl.textContent = `${intervalValue}分`;
     if (previewCapacityEl) previewCapacityEl.textContent = `${capacityValue}名`;
-    previewStaffEl.textContent = staffValue;
-    previewStatusEl.textContent = getStatusLabel(statusValue);
+    if (previewStaffEl) previewStaffEl.textContent = staffValue;
+    if (previewStatusEl) previewStatusEl.textContent = getStatusLabel(statusValue);
   }
 
   async function getAllSlots() {
@@ -126,44 +156,38 @@
   }
 
   async function renderRows() {
-    const rows = await getAllSlots();
+    const rows = getSlotRowsByRole(await getAllSlots());
     const reservationCounts = reservations.reduce((acc, row) => {
       acc.set(row.slot_id, (acc.get(row.slot_id) || 0) + 1);
       return acc;
     }, new Map());
     rowsEl.innerHTML = "";
+
+    if (!rows.length) {
+      rowsEl.innerHTML = `<p class="admin-empty">表示できる予約枠はありません。</p>`;
+      return;
+    }
+
     rows.forEach((row) => {
       const article = document.createElement("article");
-      article.className = "portal-list-row portal-slot-row";
+      article.className = `portal-list-row portal-slot-row${selectedSlotId === row.id ? " is-selected" : ""}`;
+      article.tabIndex = 0;
+      article.setAttribute("role", "button");
       article.innerHTML = `
         <span>${formatMonthDay(row.slot_date || "")}</span>
         <span>${String(row.slot_time || "").slice(0, 5)}</span>
         <span>${row.capacity || 1}名</span>
         <span>${reservationCounts.get(row.id) || 0}組</span>
-        <span class="portal-row-actions">
-          <button class="admin-btn secondary" data-edit-id="${row.id}" type="button">${UI.edit}</button>
-          <button class="admin-btn secondary" data-hide-id="${row.id}" type="button">${UI.hide}</button>
-        </span>
       `;
+      const selectRow = () => fillForm(row);
+      article.addEventListener("click", selectRow);
+      article.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          selectRow();
+        }
+      });
       rowsEl.appendChild(article);
-    });
-
-    rowsEl.querySelectorAll("[data-edit-id]").forEach((button) => {
-      button.addEventListener("click", async () => {
-        const rows = await getAllSlots();
-        const target = rows.find((row) => row.id === button.dataset.editId);
-        if (target) fillForm(target);
-      });
-    });
-
-    rowsEl.querySelectorAll("[data-hide-id]").forEach((button) => {
-      button.addEventListener("click", async () => {
-        await window.AdminData.updateRow("reservation_slots", button.dataset.hideId, {
-          is_active: false,
-          updated_at: new Date().toISOString()
-        }).catch(console.error);
-        await renderRows();
-      });
     });
   }
 
@@ -171,7 +195,7 @@
     event.preventDefault();
     const dateValue = document.getElementById("slot-date").value;
     const timeValue = document.getElementById("slot-time").value;
-    const intervalValue = document.getElementById("slot-interval").value || "60";
+    const intervalValue = document.getElementById("slot-interval").value || DEFAULT_INTERVAL;
     const instructorValue = document.getElementById("slot-instructor").value.trim() || getDefaultInstructorName() || null;
     const payload = {
       slot_code: buildSlotCode(dateValue, timeValue),
@@ -180,7 +204,7 @@
       slot_label: buildSlotLabel(timeValue, intervalValue),
       instructor_name: instructorValue,
       status: document.getElementById("slot-status").value,
-      capacity: Number(document.getElementById("slot-capacity").value || 1),
+      capacity: Number(document.getElementById("slot-capacity").value || DEFAULT_CAPACITY),
       sort_order: Number(document.getElementById("slot-sort").value || 0),
       is_active: document.getElementById("slot-active").checked,
       updated_at: new Date().toISOString()
@@ -224,6 +248,7 @@
     if (!session) return;
     window.__adminSession = session;
     window.AdminAuth.persistPortalRole(role);
+    syncDefaultInstructors();
     window.AdminAuth.renderAdminHeader("slots", {
       role,
       session,
