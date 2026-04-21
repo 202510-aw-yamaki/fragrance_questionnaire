@@ -14,7 +14,7 @@
     <section class="admin-panel portal-hero">
       <div class="portal-hero-copy-block">
         <p class="portal-hero-label">DASHBOARD</p>
-        <h1>本日の予定確認ページ</h1>
+        <h1 id="staff-dashboard-heading">本日【--/--（-）】の予定確認ページ</h1>
       </div>
       <div class="portal-hero-side">
         <div class="portal-inline-metric">
@@ -44,16 +44,16 @@
 
       <aside class="portal-side-stack">
         <article class="admin-panel portal-stat-card">
-          <p class="portal-stat-label">向こう一週間の予約件数</p>
+          <p class="portal-stat-label">向こう一週間の予約件数 / 作成枠数</p>
           <strong class="portal-stat-value" id="staff-kpi-week">0</strong>
-          <p class="admin-note">担当スタッフに割り当てられた予約獲得件数です。</p>
+          <p class="admin-note">左が予約件数、右が作成枠数です。</p>
         </article>
 
         <article class="admin-panel portal-stat-card">
           <p class="portal-stat-label">向こう二週間の予約未作成日</p>
-          <strong class="portal-stat-value portal-stat-value--compact" id="staff-missing-primary">--/--</strong>
+          <strong class="portal-stat-value portal-stat-value--compact" id="staff-missing-primary" hidden>--/--</strong>
           <div class="admin-chip-grid" id="staff-missing-secondary"></div>
-          <p class="admin-note" id="staff-missing-note">休日 / 非出勤日を除いた未作成日を表示します。</p>
+          <p class="admin-note" id="staff-missing-note" hidden>休日 / 非出勤日を除いた未作成日を表示します。</p>
         </article>
 
         <a class="admin-panel portal-action-card" href="admin-slots.html?role=staff">
@@ -62,7 +62,7 @@
         </a>
 
         <a class="admin-panel portal-action-card" href="admin-reservations.html?role=staff">
-          <h3>予約情報確認ページへ</h3>
+          <h3>予約情報一覧ページへ</h3>
           <p class="admin-note">来店前の予約一覧と詳細導線を確認します。</p>
         </a>
       </aside>

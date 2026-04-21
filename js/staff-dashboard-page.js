@@ -3,6 +3,7 @@
   const timelineEl = document.getElementById("staff-day-timeline");
   const eventsEl = document.getElementById("staff-day-events");
   const dateLabelEl = document.getElementById("staff-day-current-label");
+  const pageHeadingEl = document.getElementById("staff-dashboard-heading");
   const noteEl = document.getElementById("staff-dashboard-note");
   const prevButton = document.getElementById("staff-day-prev");
   const nextButton = document.getElementById("staff-day-next");
@@ -37,9 +38,22 @@
     ].join("-");
   }
 
-  function formatDateLabel(date) {
+  function formatDateLabel(date, options = {}) {
+    const { padMonthDay = false } = options;
     const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
-    return `${date.getMonth() + 1}/${date.getDate()}（${weekdays[date.getDay()]}）`;
+    const month = padMonthDay
+      ? String(date.getMonth() + 1).padStart(2, "0")
+      : String(date.getMonth() + 1);
+    const day = padMonthDay
+      ? String(date.getDate()).padStart(2, "0")
+      : String(date.getDate());
+    return `${month}/${day}（${weekdays[date.getDay()]}）`;
+  }
+
+  function renderPageHeading() {
+    if (!pageHeadingEl) return;
+    const today = createLocalDate(new Date());
+    pageHeadingEl.textContent = `本日【${formatDateLabel(today, { padMonthDay: true })}】の予定確認ページ`;
   }
 
   function parseMinutes(timeText) {
@@ -150,13 +164,11 @@
     timelineEl.innerHTML = HOURS.map((hour) => {
       const hourStart = hour * 60;
       const matching = events.filter((event) => event.startMinutes >= hourStart && event.startMinutes < hourStart + 60);
-      const lunchMarkup = hour === 12 ? `<div class="day-lunch"><span>&#127860;</span><span>昼休憩帯</span></div>` : "";
       const eventMarkup = matching.map((event) => buildEventMarkup(event)).join("");
       return `
         <div class="day-hour">
           <div class="day-hour-label">${String(hour).padStart(2, "0")}:00</div>
           <div class="day-hour-content">
-            ${lunchMarkup}
             ${eventMarkup}
           </div>
         </div>
@@ -187,25 +199,22 @@
       const dateKey = formatDateKey(date);
       if (!workingWeekdays.has(date.getDay())) return null;
       const slotCount = activeSlots.filter((slot) => slot.slot_date === dateKey).length;
-      return slotCount ? null : formatDateLabel(date);
+      return slotCount ? null : formatDateLabel(date, { padMonthDay: true });
     }).filter(Boolean);
 
     if (!missingPrimaryEl || !missingSecondaryEl) return;
+    missingPrimaryEl.hidden = true;
+    if (missingNoteEl) {
+      missingNoteEl.hidden = true;
+      missingNoteEl.textContent = "";
+    }
 
     if (!missingDates.length) {
-      missingPrimaryEl.textContent = "登録済み";
       missingSecondaryEl.innerHTML = `<span class="admin-chip">向こう二週間は作成済み</span>`;
-      if (missingNoteEl) missingNoteEl.textContent = "現在は未作成日が見つかっていません。";
       return;
     }
 
-    missingPrimaryEl.textContent = missingDates[0];
-    missingSecondaryEl.innerHTML = missingDates.slice(1, 6).map((label) => `<span class="admin-chip">${label}</span>`).join("");
-    if (missingNoteEl) {
-      missingNoteEl.textContent = missingDates.length > 1
-        ? `未作成日は合計 ${missingDates.length} 日あります。`
-        : "最初の未作成日を表示しています。";
-    }
+    missingSecondaryEl.innerHTML = missingDates.map((label) => `<span class="admin-chip">${label}</span>`).join("");
   }
 
   function renderKpis() {
@@ -221,9 +230,10 @@
       const dateKey = reservationSlotMap.get(row.slot_id)?.slot_date || "";
       return dateKey >= todayKey && dateKey <= limitKey;
     });
+    const weeklySlots = activeSlots.filter((slot) => slot.slot_date >= todayKey && slot.slot_date <= limitKey);
 
     kpiTodayEl.textContent = String(todayReservations.length);
-    kpiWeekEl.textContent = String(weeklyReservations.length);
+    kpiWeekEl.textContent = `${weeklyReservations.length}/${weeklySlots.length}`;
   }
 
   async function loadBaseData() {
@@ -260,6 +270,7 @@
       ]
     });
     await loadBaseData();
+    renderPageHeading();
     renderKpis();
     renderTimeline();
     renderMissingDates();
