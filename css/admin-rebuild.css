@@ -1921,3 +1921,232 @@
     max-width: none;
   }
 }
+
+/* Staff dashboard: scale and proportion aligned to staff-dashboard-reference.html */
+
+.portal-staff-dashboard-page {
+  --container: min(1120px, calc(100vw - 5rem));
+}
+
+.portal-staff-dashboard-page .admin-header-inner {
+  min-height: 4.5rem;
+  padding-block: 0.9rem;
+}
+
+.portal-staff-dashboard-page .admin-brand {
+  font-size: 0.995rem;
+  letter-spacing: 0.02em;
+}
+
+.portal-staff-dashboard-page .admin-nav {
+  gap: 0.75rem;
+}
+
+.portal-staff-dashboard-page .admin-nav a,
+.portal-staff-dashboard-page .admin-logout {
+  min-height: 2.7rem;
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+}
+
+.portal-staff-dashboard-page .admin-main {
+  padding: 2rem 0 4rem;
+}
+
+.portal-staff-dashboard-page .portal-stack {
+  gap: 1.25rem;
+}
+
+.portal-staff-dashboard-page .portal-hero {
+  grid-template-columns: 1fr;
+  min-height: auto;
+  gap: 0.8rem;
+  padding: 2.3rem 1.5rem 1.5rem;
+}
+
+.portal-staff-dashboard-page .portal-hero-side {
+  display: none;
+}
+
+.portal-staff-dashboard-page .portal-hero-copy-block {
+  gap: 0.75rem;
+}
+
+.portal-staff-dashboard-page .portal-hero-label {
+  padding: 0;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+}
+
+.portal-staff-dashboard-page .portal-hero h1 {
+  font-size: clamp(2rem, 1.55rem + 0.9vw, 2.45rem);
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+}
+
+.portal-staff-dashboard-page .portal-hero-copy {
+  max-width: 46rem;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.portal-staff-dashboard-page .portal-staff-layout {
+  gap: 1.875rem;
+  grid-template-columns: minmax(0, 1fr) 19.375rem;
+  align-items: start;
+}
+
+.portal-staff-dashboard-page .portal-calendar-panel {
+  padding: 1.25rem 0.75rem;
+  border-radius: 1.875rem;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.portal-staff-dashboard-page .day-view {
+  gap: 0.85rem;
+}
+
+.portal-staff-dashboard-page .day-nav {
+  padding-inline: 0.45rem;
+}
+
+.portal-staff-dashboard-page .day-nav-title h2 {
+  margin: 0.15rem 0 0;
+  font-size: 1.4rem;
+  line-height: 1.3;
+}
+
+.portal-staff-dashboard-page .day-nav .admin-btn {
+  min-height: 2.8rem;
+  padding: 0.65rem 1rem;
+  font-size: 0.95rem;
+}
+
+.portal-staff-dashboard-page .day-timeline {
+  border-radius: 1.45rem;
+}
+
+.portal-staff-dashboard-page .day-hour-label {
+  flex-basis: 5.4rem;
+  width: 5.4rem;
+  padding: 1rem 0.85rem;
+  font-size: 0.95rem;
+}
+
+.portal-staff-dashboard-page .day-hour-content {
+  padding: 0.7rem 0.85rem;
+}
+
+.portal-staff-dashboard-page .day-event {
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.95rem;
+}
+
+.portal-staff-dashboard-page .day-event-title {
+  font-size: 1rem;
+}
+
+.portal-staff-dashboard-page .day-event-time,
+.portal-staff-dashboard-page .day-event-location,
+.portal-staff-dashboard-page .day-event-attendees {
+  font-size: 0.9rem;
+}
+
+.portal-staff-dashboard-page .portal-side-stack {
+  gap: 1rem;
+}
+
+.portal-staff-dashboard-page .portal-stat-card,
+.portal-staff-dashboard-page .portal-staff-layout .portal-action-card {
+  min-height: 8.3rem;
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+}
+
+.portal-staff-dashboard-page .portal-stat-card {
+  align-content: center;
+}
+
+.portal-staff-dashboard-page .portal-stat-label {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.portal-staff-dashboard-page .portal-stat-value {
+  font-size: clamp(2rem, 1.6rem + 0.7vw, 2.5rem);
+}
+
+.portal-staff-dashboard-page .portal-stat-value--compact {
+  font-size: clamp(1.6rem, 1.35rem + 0.65vw, 2rem);
+}
+
+.portal-staff-dashboard-page .portal-stat-card .admin-note {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.portal-staff-dashboard-page .portal-staff-layout .portal-action-card {
+  align-content: center;
+  justify-items: center;
+  text-align: center;
+  gap: 0.5rem;
+  border-color: rgba(107, 75, 52, 0.4);
+}
+
+.portal-staff-dashboard-page .portal-staff-layout .portal-action-card h3 {
+  font-size: 1.5rem;
+  line-height: 1.35;
+}
+
+.portal-staff-dashboard-page .portal-staff-layout .portal-action-card .admin-note {
+  max-width: 13rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.portal-staff-dashboard-page .portal-detail-panel {
+  padding: 1.5rem;
+  border-radius: 1.6rem;
+}
+
+.portal-staff-dashboard-page .portal-detail-panel h2 {
+  font-size: 1.65rem;
+}
+
+.portal-staff-dashboard-page .day-list {
+  gap: 0.7rem;
+}
+
+.portal-staff-dashboard-page .day-list .day-event {
+  padding: 0.8rem 0.9rem;
+}
+
+@media (max-width: 72rem) {
+  .portal-staff-dashboard-page {
+    --container: min(1120px, calc(100vw - 3rem));
+  }
+
+  .portal-staff-dashboard-page .portal-staff-layout {
+    grid-template-columns: minmax(0, 1fr) 18rem;
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 56rem) {
+  .portal-staff-dashboard-page {
+    --container: min(1120px, calc(100vw - 2rem));
+  }
+
+  .portal-staff-dashboard-page .portal-staff-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-staff-dashboard-page .admin-main {
+    padding: 1.5rem 0 2.5rem;
+  }
+
+  .portal-staff-dashboard-page .portal-calendar-panel {
+    padding: 1rem 0.75rem;
+  }
+}
