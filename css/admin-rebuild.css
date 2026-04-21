@@ -45,6 +45,13 @@
   width: min(95vw, 150rem);
 }
 
+.admin-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+}
+
 .admin-brand,
 .admin-nav a,
 .admin-logout {
@@ -70,7 +77,10 @@
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 1rem;
-  margin-left: auto;
+}
+
+.admin-menu-toggle {
+  display: none;
 }
 
 .admin-nav a,
@@ -100,6 +110,75 @@
 .admin-logout:hover {
   transform: translateY(-1px);
   box-shadow: 0 14px 30px rgba(160, 109, 67, 0.08);
+}
+
+.admin-header-inner--staff {
+  min-height: 74px;
+  width: min(1120px, calc(100vw - 60px));
+  padding: 14px 0;
+}
+
+.admin-header-inner--staff .admin-brand {
+  min-height: auto;
+  font-size: 15.9px;
+  letter-spacing: 0.02em;
+}
+
+.admin-header-inner--staff .admin-header-actions--staff {
+  gap: 0.75rem;
+}
+
+.admin-header-inner--staff .admin-nav--staff {
+  gap: 0.75rem;
+}
+
+.admin-header-inner--staff .admin-nav--staff a {
+  flex: 0 0 140px;
+  width: 140px;
+  min-width: 140px;
+  min-height: 45px;
+  height: 45px;
+  padding: 0 0.85rem;
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.admin-header-inner--staff .admin-logout--staff {
+  flex: 0 0 105px;
+  width: 105px;
+  min-width: 105px;
+  min-height: 45px;
+  height: 45px;
+  padding: 0 0.85rem;
+  color: rgba(76, 58, 45, 0.7);
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.admin-header-inner--staff .admin-menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  width: 45px;
+  min-width: 45px;
+  height: 45px;
+  border: 1px solid var(--portal-border);
+  border-radius: 999px;
+  background: rgba(255, 252, 247, 0.92);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+}
+
+.admin-header-inner--staff .admin-menu-toggle span {
+  display: block;
+  width: 16px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--portal-text);
 }
 
 .admin-main {
@@ -1925,43 +2004,36 @@
 /* Staff dashboard: scale and proportion aligned to staff-dashboard-reference.html */
 
 .portal-staff-dashboard-page {
-  --container: min(1120px, calc(100vw - 5rem));
+  --container: min(1120px, calc(100vw - 60px));
+}
+
+.portal-staff-dashboard-page .admin-main.site-container.portal-stack {
+  display: grid;
+  grid-template-rows: 176px 703px;
+  gap: 20px;
+  width: min(1120px, calc(100vw - 60px));
+  height: 899px;
+  margin: 32px auto 0;
+  padding: 0;
+  align-content: start;
+}
+
+.portal-staff-dashboard-page .portal-detail-panel {
+  display: none;
 }
 
 .portal-staff-dashboard-page .admin-header-inner {
-  min-height: 4.5rem;
-  padding-block: 0.9rem;
-}
-
-.portal-staff-dashboard-page .admin-brand {
-  font-size: 0.995rem;
-  letter-spacing: 0.02em;
-}
-
-.portal-staff-dashboard-page .admin-nav {
-  gap: 0.75rem;
-}
-
-.portal-staff-dashboard-page .admin-nav a,
-.portal-staff-dashboard-page .admin-logout {
-  min-height: 2.7rem;
-  padding: 0.7rem 1rem;
-  font-size: 1rem;
-}
-
-.portal-staff-dashboard-page .admin-main {
-  padding: 2rem 0 4rem;
-}
-
-.portal-staff-dashboard-page .portal-stack {
-  gap: 1.25rem;
+  width: min(1120px, calc(100vw - 60px));
 }
 
 .portal-staff-dashboard-page .portal-hero {
   grid-template-columns: 1fr;
-  min-height: auto;
-  gap: 0.8rem;
-  padding: 2.3rem 1.5rem 1.5rem;
+  align-content: start;
+  gap: 0.45rem;
+  height: 176px;
+  min-height: 176px;
+  padding: 37px 24px 24px;
+  border-radius: 24px;
 }
 
 .portal-staff-dashboard-page .portal-hero-side {
@@ -1969,73 +2041,110 @@
 }
 
 .portal-staff-dashboard-page .portal-hero-copy-block {
-  gap: 0.75rem;
+  gap: 0.45rem;
 }
 
 .portal-staff-dashboard-page .portal-hero-label {
   padding: 0;
-  font-size: 0.82rem;
+  font-size: 13px;
   letter-spacing: 0.08em;
 }
 
 .portal-staff-dashboard-page .portal-hero h1 {
-  font-size: clamp(2rem, 1.55rem + 0.9vw, 2.45rem);
-  line-height: 1.25;
+  font-size: 32px;
+  line-height: 40px;
   letter-spacing: 0.01em;
 }
 
 .portal-staff-dashboard-page .portal-hero-copy {
-  max-width: 46rem;
+  max-width: 760px;
   margin: 0;
-  font-size: 1rem;
-  line-height: 1.7;
+  font-size: 16px;
+  line-height: 27.2px;
 }
 
 .portal-staff-dashboard-page .portal-staff-layout {
-  gap: 1.875rem;
-  grid-template-columns: minmax(0, 1fr) 19.375rem;
-  align-items: start;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px;
+  width: 100%;
+  height: 703px;
+  min-height: 703px;
+  align-items: stretch;
+}
+
+.portal-staff-dashboard-page .portal-staff-layout > * {
+  min-height: 0;
 }
 
 .portal-staff-dashboard-page .portal-calendar-panel {
-  padding: 1.25rem 0.75rem;
-  border-radius: 1.875rem;
-  background: rgba(255, 255, 255, 0.96);
+  height: 100%;
+  min-height: 0;
+  padding: 20px 12px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 1);
+  overflow: hidden;
 }
 
 .portal-staff-dashboard-page .day-view {
-  gap: 0.85rem;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 10px;
+  height: 100%;
+  min-height: 0;
 }
 
 .portal-staff-dashboard-page .day-nav {
-  padding-inline: 0.45rem;
+  padding: 0;
+  gap: 0.75rem;
+  align-items: start;
 }
 
 .portal-staff-dashboard-page .day-nav-title h2 {
-  margin: 0.15rem 0 0;
-  font-size: 1.4rem;
+  margin: 0.1rem 0 0;
+  font-size: 22px;
   line-height: 1.3;
 }
 
 .portal-staff-dashboard-page .day-nav .admin-btn {
-  min-height: 2.8rem;
-  padding: 0.65rem 1rem;
+  min-height: 42px;
+  padding: 0.6rem 0.95rem;
   font-size: 0.95rem;
 }
 
 .portal-staff-dashboard-page .day-timeline {
-  border-radius: 1.45rem;
+  min-height: 0;
+  height: 100%;
+  border-radius: 24px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+.portal-staff-dashboard-page .day-timeline::-webkit-scrollbar {
+  width: 10px;
+}
+
+.portal-staff-dashboard-page .day-timeline::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(160, 109, 67, 0.34);
+}
+
+.portal-staff-dashboard-page .day-timeline::-webkit-scrollbar-track {
+  background: rgba(247, 239, 230, 0.7);
 }
 
 .portal-staff-dashboard-page .day-hour-label {
-  flex-basis: 5.4rem;
-  width: 5.4rem;
-  padding: 1rem 0.85rem;
+  flex-basis: 84px;
+  width: 84px;
+  padding: 0.9rem 0.75rem;
   font-size: 0.95rem;
 }
 
 .portal-staff-dashboard-page .day-hour-content {
-  padding: 0.7rem 0.85rem;
+  padding: 0.7rem 0.8rem;
 }
 
 .portal-staff-dashboard-page .day-event {
@@ -2054,17 +2163,27 @@
 }
 
 .portal-staff-dashboard-page .portal-side-stack {
-  gap: 1rem;
+  display: grid;
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  height: 100%;
+  min-height: 0;
+}
+
+.portal-staff-dashboard-page .portal-side-stack > * {
+  height: 100%;
+  min-height: 0;
 }
 
 .portal-staff-dashboard-page .portal-stat-card,
 .portal-staff-dashboard-page .portal-staff-layout .portal-action-card {
-  min-height: 8.3rem;
-  padding: 1.5rem;
-  border-radius: 1.5rem;
+  min-height: 0;
+  padding: 24px;
+  border-radius: 24px;
 }
 
 .portal-staff-dashboard-page .portal-stat-card {
+  display: grid;
   align-content: center;
 }
 
@@ -2090,46 +2209,32 @@
   align-content: center;
   justify-items: center;
   text-align: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   border-color: rgba(107, 75, 52, 0.4);
 }
 
 .portal-staff-dashboard-page .portal-staff-layout .portal-action-card h3 {
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   line-height: 1.35;
 }
 
 .portal-staff-dashboard-page .portal-staff-layout .portal-action-card .admin-note {
-  max-width: 13rem;
-  font-size: 0.95rem;
+  max-width: 12rem;
+  font-size: 0.9rem;
   line-height: 1.6;
-}
-
-.portal-staff-dashboard-page .portal-detail-panel {
-  padding: 1.5rem;
-  border-radius: 1.6rem;
-}
-
-.portal-staff-dashboard-page .portal-detail-panel h2 {
-  font-size: 1.65rem;
-}
-
-.portal-staff-dashboard-page .day-list {
-  gap: 0.7rem;
-}
-
-.portal-staff-dashboard-page .day-list .day-event {
-  padding: 0.8rem 0.9rem;
 }
 
 @media (max-width: 72rem) {
   .portal-staff-dashboard-page {
-    --container: min(1120px, calc(100vw - 3rem));
+    --container: min(1120px, calc(100vw - 40px));
   }
 
-  .portal-staff-dashboard-page .portal-staff-layout {
-    grid-template-columns: minmax(0, 1fr) 18rem;
-    gap: 1.25rem;
+  .portal-staff-dashboard-page .admin-header-inner {
+    width: min(1120px, calc(100vw - 40px));
+  }
+
+  .portal-staff-dashboard-page .admin-main.site-container.portal-stack {
+    width: min(1120px, calc(100vw - 40px));
   }
 }
 
@@ -2140,13 +2245,71 @@
 
   .portal-staff-dashboard-page .portal-staff-layout {
     grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr) auto;
+    height: auto;
+    min-height: 0;
   }
 
-  .portal-staff-dashboard-page .admin-main {
-    padding: 1.5rem 0 2.5rem;
+  .portal-staff-dashboard-page .admin-main.site-container.portal-stack {
+    grid-template-rows: auto auto;
+    width: min(1120px, calc(100vw - 24px));
+    height: auto;
+    margin-top: 20px;
+  }
+
+  .portal-staff-dashboard-page .admin-header-inner {
+    width: min(1120px, calc(100vw - 24px));
   }
 
   .portal-staff-dashboard-page .portal-calendar-panel {
     padding: 1rem 0.75rem;
+    height: 32rem;
+  }
+
+  .portal-staff-dashboard-page .portal-side-stack {
+    grid-template-rows: repeat(4, minmax(8rem, auto));
+    height: auto;
+  }
+}
+
+@media (max-width: 56rem) {
+  .admin-header-inner--staff {
+    min-height: 74px;
+    width: min(1120px, calc(100vw - 24px));
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .admin-header-inner--staff .admin-header-actions--staff {
+    position: relative;
+    gap: 0.5rem;
+  }
+
+  .admin-header-inner--staff .admin-menu-toggle {
+    display: inline-flex;
+  }
+
+  .admin-header-inner--staff .admin-nav--staff {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 40;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border: 1px solid rgba(128, 99, 72, 0.12);
+    border-radius: 1rem;
+    background: rgba(255, 252, 247, 0.98);
+    box-shadow: 0 16px 30px rgba(122, 92, 62, 0.12);
+  }
+
+  .admin-header-inner--staff .admin-nav--staff.is-open {
+    display: flex;
+  }
+
+  .admin-header-inner--staff .admin-nav--staff a {
+    width: 140px;
   }
 }

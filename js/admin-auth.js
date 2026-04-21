@@ -137,10 +137,9 @@
   function getHeaderLinks(role) {
     if (role === "staff") {
       return [
-        ["staff-dashboard.html", "\u30b9\u30bf\u30c3\u30d5\u78ba\u8a8d", "staff-dashboard"],
+        ["staff-dashboard.html", "\u4e88\u5b9a\u78ba\u8a8d", "staff-dashboard"],
         ["admin-slots.html", "\u4e88\u7d04\u67a0\u4f5c\u6210", "slots"],
-        ["admin-reservations.html", "\u4e88\u7d04\u60c5\u5831\u4e00\u89a7", "reservations"],
-        ["admin-workspace.html", "\u4e88\u7d04\u9867\u5ba2\u60c5\u5831\u8a73\u7d30", "workspace"]
+        ["admin-reservations.html", "\u4e88\u7d04\u60c5\u5831\u4e00\u89a7", "reservations"]
       ];
     }
 
@@ -175,26 +174,69 @@
     if (!mount) return;
     const role = options.role === "staff" || options.role === "manager" ? options.role : readRoleFromLocation() || readStoredRole() || "manager";
     const session = options.session || null;
-    const links = normalizeHeaderLinks(options.links) || getHeaderLinks(role).map(([href, label, key]) => ({ href, label, key }));
+    const optionLinks = normalizeHeaderLinks(options.links);
+    const links = (role === "staff"
+      ? getHeaderLinks(role).map(([href, label, key]) => ({ href, label, key }))
+      : (optionLinks || getHeaderLinks(role).map(([href, label, key]) => ({ href, label, key }))))
+      .filter(({ key }) => role !== "staff" || key !== activePage);
     const brandHref = appendRoleToHref(role === "staff" ? HOME_BY_ROLE.staff : HOME_BY_ROLE.manager, role);
     const brandName = options.brandText || (role === "staff"
       ? `Fragrance STAFF_${getStaffDisplayName(session)}`
       : `Fragrance STAFF_${getStaffDisplayName(session)}`);
     const roleLabel = options.roleLabel || (role === "staff" ? "\u30b9\u30bf\u30c3\u30d5\u5c02\u7528" : "\u7ba1\u7406\u8005");
+    const navId = "admin-nav-menu";
+    const showMenuToggle = role === "staff" && links.length > 0;
     mount.innerHTML = `
-      <div class="admin-header-inner site-container">
+      <div class="admin-header-inner site-container ${role === "staff" ? "admin-header-inner--staff" : "admin-header-inner--manager"}">
         <a class="admin-brand" href="${brandHref}">
           <span>${brandName}</span>
           <small class="admin-brand-meta">${roleLabel}</small>
         </a>
-        <nav class="admin-nav" aria-label="\u7ba1\u7406\u30e1\u30cb\u30e5\u30fc">
-          ${links.map(({ href, label, key }) => `<a class="${activePage === key ? "active" : ""}" href="${appendRoleToHref(href, role)}">${label}</a>`).join("")}
-        </nav>
-        <button class="admin-logout" id="admin-logout-btn" type="button">\u30ed\u30b0\u30a2\u30a6\u30c8</button>
+        <div class="admin-header-actions ${role === "staff" ? "admin-header-actions--staff" : ""}">
+          ${showMenuToggle ? `
+            <button
+              class="admin-menu-toggle"
+              id="admin-menu-toggle"
+              type="button"
+              aria-expanded="false"
+              aria-controls="${navId}"
+              aria-label="\u30e1\u30cb\u30e5\u30fc\u3092\u958b\u304f"
+            >
+              <span></span><span></span><span></span>
+            </button>
+          ` : ""}
+          <nav class="admin-nav ${role === "staff" ? "admin-nav--staff" : ""}" id="${navId}" aria-label="\u7ba1\u7406\u30e1\u30cb\u30e5\u30fc">
+            ${links.map(({ href, label, key }) => `<a class="${activePage === key ? "active" : ""}" href="${appendRoleToHref(href, role)}">${label}</a>`).join("")}
+          </nav>
+          <button class="admin-logout ${role === "staff" ? "admin-logout--staff" : ""}" id="admin-logout-btn" type="button">\u30ed\u30b0\u30a2\u30a6\u30c8</button>
+        </div>
       </div>
     `;
     const logoutButton = document.getElementById("admin-logout-btn");
     if (logoutButton) logoutButton.addEventListener("click", signOutAdmin);
+    const menuToggle = document.getElementById("admin-menu-toggle");
+    const navMenu = document.getElementById(navId);
+    if (menuToggle && navMenu) {
+      const closeMenu = () => {
+        navMenu.classList.remove("is-open");
+        menuToggle.setAttribute("aria-expanded", "false");
+      };
+      menuToggle.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const nextState = !navMenu.classList.contains("is-open");
+        navMenu.classList.toggle("is-open", nextState);
+        menuToggle.setAttribute("aria-expanded", nextState ? "true" : "false");
+      });
+      document.addEventListener("click", (event) => {
+        if (!(event.target instanceof Node)) return;
+        if (!navMenu.contains(event.target) && !menuToggle.contains(event.target)) {
+          closeMenu();
+        }
+      });
+      navMenu.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", closeMenu);
+      });
+    }
   }
 
   function getHomePathByRole(role) {
