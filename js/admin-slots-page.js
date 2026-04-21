@@ -325,6 +325,12 @@
     deleteButton.addEventListener("click", async () => {
       const id = document.getElementById("slot-id").value;
       if (!id) return;
+      const dateValue = document.getElementById("slot-date").value;
+      const timeValue = document.getElementById("slot-time").value;
+      const confirmed = window.confirm(
+        `${formatMonthDay(dateValue)}の${String(timeValue || "").replace(":", "/")}の枠を削除しますか？この操作は取り消せません。`
+      );
+      if (!confirmed) return;
       await window.AdminData.deleteRow("reservation_slots", id).catch(console.error);
       resetForm();
       await renderRows();
