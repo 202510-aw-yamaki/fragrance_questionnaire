@@ -52,6 +52,11 @@
     return `${hours}:${minutes}`;
   }
 
+  function buildSlotRangeLabel(startMinutes, intervalMinutes) {
+    const endMinutes = startMinutes + Number(intervalMinutes || DEFAULT_INTERVAL);
+    return `${formatLabelTime(startMinutes)}～${formatLabelTime(endMinutes)}`;
+  }
+
   function formatDateKey(date) {
     return [
       date.getFullYear(),
@@ -67,6 +72,29 @@
   function formatMonthDay(dateKey) {
     const [, month, day] = String(dateKey || "").split("-");
     return `${month}/${day}`;
+  }
+
+  function normalizeName(value) {
+    return String(value || "").trim().toLowerCase();
+  }
+
+  function getSlotWindow(row, fallbackInterval = DEFAULT_INTERVAL) {
+    const startMinutes = parseMinutes(String(row.slot_time || "").slice(0, 5));
+    const rangeMatch = String(row.slot_label || "").match(/(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/);
+    const endMinutes = rangeMatch
+      ? parseMinutes(rangeMatch[2])
+      : startMinutes + Number(fallbackInterval || DEFAULT_INTERVAL);
+    return { startMinutes, endMinutes };
+  }
+
+  function isOverlapping(startA, endA, startB, endB) {
+    return startA < endB && startB < endA;
+  }
+
+  function buildConflictMessage(dateKey, existingWindow, targetWindow) {
+    const existingRange = `${formatLabelTime(existingWindow.startMinutes)}～${formatLabelTime(existingWindow.endMinutes)}`;
+    const targetRange = `${formatLabelTime(targetWindow.startMinutes)}～${formatLabelTime(targetWindow.endMinutes)}`;
+    return `${formatMonthDay(dateKey)}　${existingRange} の時間帯に登録があるため、${formatMonthDay(dateKey)}　${targetRange} は時間帯が重複します。`;
   }
 
   function buildPayloads() {
@@ -99,6 +127,7 @@
     const lastDate = new Date(`${endDate}T00:00:00`);
     const timestamp = new Date().toISOString();
     const timeKey = formatLabelTime(startMinutes);
+    const rangeLabel = buildSlotRangeLabel(startMinutes, interval);
 
     while (cursor <= lastDate) {
       if (weekdays.includes(cursor.getDay())) {
@@ -107,7 +136,7 @@
           slot_code: `${prefix}-${dateKey.replace(/-/g, "")}-${timeKey.replace(":", "")}`,
           slot_date: dateKey,
           slot_time: formatTime(startMinutes),
-          slot_label: `${label} ${timeKey}`,
+          slot_label: `${label} ${rangeLabel}`,
           instructor_name: instructor,
           status,
           capacity,
@@ -141,7 +170,7 @@
     }
   }
 
-  async function findDuplicateDates(payloads) {
+  async function findConflictingSlots(payloads) {
     if (!payloads.length) return [];
     const first = payloads[0];
     const last = payloads[payloads.length - 1];
@@ -152,34 +181,38 @@
         { operator: "lte", column: "slot_date", value: last.slot_date }
       ]
     }).catch(() => []);
-    const duplicateDates = new Set();
+    const conflicts = new Map();
 
     existing.forEach((row) => {
+      if (row.is_active === false) return;
       if (instructor && normalizeName(row.instructor_name) !== normalizeName(instructor)) return;
-      if (payloads.some((payload) => payload.slot_date === row.slot_date)) {
-        duplicateDates.add(row.slot_date);
-      }
+      payloads.forEach((payload) => {
+        if (payload.slot_date !== row.slot_date) return;
+        const payloadWindow = getSlotWindow(payload, DEFAULT_INTERVAL);
+        const existingWindow = getSlotWindow(row, DEFAULT_INTERVAL);
+        if (!isOverlapping(payloadWindow.startMinutes, payloadWindow.endMinutes, existingWindow.startMinutes, existingWindow.endMinutes)) return;
+        const key = `${payload.slot_date}-${payload.slot_time}`;
+        if (!conflicts.has(key)) {
+          conflicts.set(key, buildConflictMessage(payload.slot_date, existingWindow, payloadWindow));
+        }
+      });
     });
 
-    return Array.from(duplicateDates).sort();
-  }
-
-  function normalizeName(value) {
-    return String(value || "").trim().toLowerCase();
+    return Array.from(conflicts.values());
   }
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     try {
       const payloads = buildPayloads();
-      const duplicateDates = await findDuplicateDates(payloads);
+      const conflictMessages = await findConflictingSlots(payloads);
       if (duplicatePreviewEl) {
-        duplicatePreviewEl.textContent = duplicateDates.length
-          ? duplicateDates.map((dateKey) => `${formatMonthDay(dateKey)} は登録が既にしてあります`).join(" / ")
-          : "重複日は見つかっていません。";
+        duplicatePreviewEl.textContent = conflictMessages.length
+          ? conflictMessages.join(" / ")
+          : "重複枠は見つかっていません。";
       }
-      if (duplicateDates.length) {
-        const popupMessage = `${duplicateDates.map((dateKey) => `${formatMonthDay(dateKey)} は登録が既にしてあります`).join("\n")}\n\n続けて登録しますか？`;
+      if (conflictMessages.length) {
+        const popupMessage = `${conflictMessages.join("\n")}\n\n続けて登録しますか？`;
         if (!window.confirm(popupMessage)) {
           setStatus("一括作成を中止しました。", "note");
           return;

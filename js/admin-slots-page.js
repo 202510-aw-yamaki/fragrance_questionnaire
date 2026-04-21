@@ -50,6 +50,63 @@
     return String(value || "").trim().toLowerCase();
   }
 
+  function parseMinutes(timeText) {
+    const [hours, minutes] = String(timeText || "00:00").split(":").map((value) => Number(value || 0));
+    return (hours * 60) + minutes;
+  }
+
+  function formatTimeLabel(totalMinutes) {
+    const hours = String(Math.floor(totalMinutes / 60)).padStart(2, "0");
+    const minutes = String(totalMinutes % 60).padStart(2, "0");
+    return `${hours}:${minutes}`;
+  }
+
+  function formatTimeRangeLabel(startMinutes, endMinutes) {
+    return `${formatTimeLabel(startMinutes)}～${formatTimeLabel(endMinutes)}`;
+  }
+
+  function createSlotDateTime(row) {
+    if (!row?.slot_date || !row?.slot_time) return null;
+    const dateTime = new Date(`${row.slot_date}T${String(row.slot_time).slice(0, 8)}`);
+    return Number.isNaN(dateTime.getTime()) ? null : dateTime;
+  }
+
+  function compareByNearestUpcoming(left, right) {
+    const now = new Date();
+    const leftDate = createSlotDateTime(left);
+    const rightDate = createSlotDateTime(right);
+    if (!leftDate || !rightDate) return 0;
+    const leftFuture = leftDate.getTime() >= now.getTime();
+    const rightFuture = rightDate.getTime() >= now.getTime();
+    if (leftFuture && rightFuture) return leftDate - rightDate;
+    if (leftFuture !== rightFuture) return leftFuture ? -1 : 1;
+    return rightDate - leftDate;
+  }
+
+  function getSlotWindow(row, fallbackInterval = DEFAULT_INTERVAL) {
+    const startText = String(row.slot_time || "").slice(0, 5);
+    const startMinutes = parseMinutes(startText);
+    const rangeMatch = String(row.slot_label || "").match(/(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/);
+    const endMinutes = rangeMatch
+      ? parseMinutes(rangeMatch[2])
+      : startMinutes + Number(fallbackInterval || DEFAULT_INTERVAL);
+    return { startMinutes, endMinutes };
+  }
+
+  function isOverlapping(startA, endA, startB, endB) {
+    return startA < endB && startB < endA;
+  }
+
+  function isSameInstructor(rowInstructor, targetInstructor) {
+    const normalizedTarget = normalizeName(targetInstructor);
+    if (!normalizedTarget) return true;
+    return normalizeName(rowInstructor) === normalizedTarget;
+  }
+
+  function buildConflictMessage(dateValue, existingWindow, targetWindow) {
+    return `${formatMonthDay(dateValue)}　${formatTimeRangeLabel(existingWindow.startMinutes, existingWindow.endMinutes)} の時間帯に登録があるため、${formatMonthDay(dateValue)}　${formatTimeRangeLabel(targetWindow.startMinutes, targetWindow.endMinutes)} は時間帯が重複します。`;
+  }
+
   function getSlotRowsByRole(rows) {
     const activeRows = rows.filter((row) => row.is_active !== false);
     if (getSelectedRole() !== "staff") return activeRows;
@@ -144,9 +201,9 @@
   async function getAllSlots() {
     return window.AdminData.listRows("reservation_slots", {
       orders: [
-        { column: "slot_date", ascending: true },
-        { column: "slot_time", ascending: true },
-        { column: "sort_order", ascending: true }
+        { column: "slot_date", ascending: false },
+        { column: "slot_time", ascending: false },
+        { column: "sort_order", ascending: false }
       ]
     }).catch(() => []);
   }
@@ -156,7 +213,7 @@
   }
 
   async function renderRows() {
-    const rows = getSlotRowsByRole(await getAllSlots());
+    const rows = getSlotRowsByRole(await getAllSlots()).sort(compareByNearestUpcoming);
     const reservationCounts = reservations.reduce((acc, row) => {
       acc.set(row.slot_id, (acc.get(row.slot_id) || 0) + 1);
       return acc;
@@ -191,12 +248,45 @@
     });
   }
 
+  async function findSlotConflict({ dateValue, timeValue, intervalValue, instructorValue, excludeId = "" }) {
+    const rows = await getAllSlots();
+    const targetStart = parseMinutes(timeValue);
+    const targetEnd = targetStart + Number(intervalValue || DEFAULT_INTERVAL);
+    return rows.find((row) => {
+      if (row.is_active === false) return false;
+      if (excludeId && row.id === excludeId) return false;
+      if (row.slot_date !== dateValue) return false;
+      if (!isSameInstructor(row.instructor_name, instructorValue)) return false;
+      const existingWindow = getSlotWindow(row);
+      return isOverlapping(targetStart, targetEnd, existingWindow.startMinutes, existingWindow.endMinutes);
+    }) || null;
+  }
+
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const dateValue = document.getElementById("slot-date").value;
     const timeValue = document.getElementById("slot-time").value;
     const intervalValue = document.getElementById("slot-interval").value || DEFAULT_INTERVAL;
     const instructorValue = document.getElementById("slot-instructor").value.trim() || getDefaultInstructorName() || null;
+    const id = document.getElementById("slot-id").value;
+    const conflict = await findSlotConflict({
+      dateValue,
+      timeValue,
+      intervalValue,
+      instructorValue,
+      excludeId: id
+    });
+    if (conflict) {
+      const targetStart = parseMinutes(timeValue);
+      const targetEnd = targetStart + Number(intervalValue || DEFAULT_INTERVAL);
+      const existingWindow = getSlotWindow(conflict);
+      window.alert(buildConflictMessage(
+        dateValue,
+        existingWindow,
+        { startMinutes: targetStart, endMinutes: targetEnd }
+      ));
+      return;
+    }
     const payload = {
       slot_code: buildSlotCode(dateValue, timeValue),
       slot_date: dateValue,
@@ -209,7 +299,6 @@
       is_active: document.getElementById("slot-active").checked,
       updated_at: new Date().toISOString()
     };
-    const id = document.getElementById("slot-id").value;
     if (id) {
       await window.AdminData.updateRow("reservation_slots", id, payload).catch(console.error);
     } else {
