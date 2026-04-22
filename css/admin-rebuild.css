@@ -3100,3 +3100,420 @@
     width: 100%;
   }
 }
+
+/* Workspace detail page: aligned to staff-admin-workspace-reference.html */
+
+.portal-workspace-detail-page {
+  --portal-detail-width: min(1120px, calc(100vw - 60px));
+}
+
+.portal-workspace-detail-page .admin-main.portal-workspace-detail-main {
+  width: var(--portal-detail-width);
+  margin: 32px auto 0;
+  padding: 0 0 64px;
+  gap: 16px;
+}
+
+.portal-workspace-detail-page .admin-header-inner,
+.portal-workspace-detail-page .admin-header-inner--staff {
+  width: var(--portal-detail-width);
+}
+
+.portal-workspace-detail-page .portal-workspace-hero,
+.portal-workspace-detail-page .portal-workspace-selector,
+.portal-workspace-detail-page .portal-workspace-detail-card,
+.portal-workspace-detail-page .portal-workspace-question-card,
+.portal-workspace-detail-page .portal-workspace-axis-section,
+.portal-workspace-detail-page .portal-workspace-recommend-panel,
+.portal-workspace-detail-page .portal-workspace-entry-panel {
+  padding: 24px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 24px 70px rgba(87, 66, 44, 0.08);
+}
+
+.portal-workspace-detail-page .portal-workspace-hero {
+  min-height: 176px;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.92fr);
+  gap: 16px 20px;
+}
+
+.portal-workspace-detail-page .portal-workspace-hero .portal-hero-copy-block {
+  gap: 0.5rem;
+}
+
+.portal-workspace-detail-page .portal-workspace-hero .portal-hero-label {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+}
+
+.portal-workspace-detail-page .portal-workspace-hero h1 {
+  font-size: 32px;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+}
+
+.portal-workspace-detail-page .portal-workspace-hero .portal-hero-copy {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.portal-workspace-detail-page .portal-section-head {
+  margin-bottom: 16px;
+}
+
+.portal-workspace-detail-page .portal-workspace-selector .portal-filter-form {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  align-items: end;
+}
+
+.portal-workspace-detail-page .portal-workspace-profile-card,
+.portal-workspace-detail-page .portal-workspace-axis-card,
+.portal-workspace-detail-page .portal-workspace-material-group,
+.portal-workspace-detail-page .portal-workspace-answer-card,
+.portal-workspace-detail-page .portal-final-section,
+.portal-workspace-detail-page .portal-feedback-grid > .admin-editor-card {
+  border: 1px solid rgba(105, 88, 71, 0.12);
+  border-radius: 20px;
+  background: rgba(255, 252, 248, 0.88);
+  box-shadow: none;
+}
+
+.portal-workspace-detail-page .portal-workspace-profile-card {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+}
+
+.portal-workspace-detail-page .portal-workspace-profile-top {
+  display: grid;
+  gap: 12px;
+}
+
+.portal-workspace-detail-page .portal-workspace-mini-label {
+  display: inline-flex;
+  margin-bottom: 0.35rem;
+  color: #8a7868;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.portal-workspace-detail-page .portal-workspace-profile-name {
+  margin: 0;
+  color: var(--portal-text);
+  font-size: clamp(1.65rem, 1.35rem + 0.55vw, 2.2rem);
+  line-height: 1.3;
+}
+
+.portal-workspace-detail-page .portal-workspace-profile-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.portal-workspace-detail-page .portal-workspace-profile-chip,
+.portal-workspace-detail-page .portal-workspace-question-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 32px;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid rgba(105, 88, 71, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 253, 250, 0.94);
+  color: #5a4737;
+}
+
+.portal-workspace-detail-page .portal-workspace-profile-chip strong,
+.portal-workspace-detail-page .portal-workspace-question-pill strong {
+  color: var(--portal-text);
+}
+
+.portal-workspace-detail-page .portal-workspace-profile-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.portal-workspace-detail-page .portal-workspace-profile-field,
+.portal-workspace-detail-page .portal-workspace-product-meta {
+  display: grid;
+  gap: 0.2rem;
+  padding: 14px 16px;
+  border: 1px solid rgba(105, 88, 71, 0.1);
+  border-radius: 16px;
+  background: rgba(255, 252, 247, 0.94);
+}
+
+.portal-workspace-detail-page .portal-workspace-profile-field span,
+.portal-workspace-detail-page .portal-workspace-product-meta span {
+  color: #8a7868;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.portal-workspace-detail-page .portal-workspace-profile-field strong,
+.portal-workspace-detail-page .portal-workspace-product-meta strong {
+  color: var(--portal-text);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.portal-workspace-detail-page .portal-workspace-question-strip {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 16px;
+}
+
+.portal-workspace-detail-page .portal-workspace-question-pill {
+  justify-content: space-between;
+}
+
+.portal-workspace-detail-page .portal-workspace-question-pill--wide {
+  grid-column: 1 / -1;
+}
+
+.portal-workspace-detail-page .portal-workspace-question-card .portal-answer-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.portal-workspace-detail-page .portal-workspace-answer-card {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+}
+
+.portal-workspace-detail-page .portal-workspace-answer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.portal-workspace-detail-page .portal-workspace-answer-step {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0.2rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(155, 115, 100, 0.1);
+  color: #9b7364;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.portal-workspace-detail-page .portal-workspace-answer-question,
+.portal-workspace-detail-page .portal-workspace-answer-value {
+  margin: 0;
+}
+
+.portal-workspace-detail-page .portal-workspace-answer-question {
+  color: var(--portal-text);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.portal-workspace-detail-page .portal-workspace-answer-value {
+  color: var(--portal-text-soft);
+  line-height: 1.6;
+}
+
+.portal-workspace-detail-page .portal-workspace-axis-compare-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.portal-workspace-detail-page .portal-workspace-axis-card {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+}
+
+.portal-workspace-detail-page .portal-workspace-axis-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.portal-workspace-detail-page .portal-workspace-axis-card h3 {
+  margin: 0;
+}
+
+.portal-workspace-detail-page .portal-workspace-axis-card .portal-axis-bars {
+  gap: 12px;
+  margin-top: 0;
+}
+
+.portal-workspace-detail-page .portal-workspace-axis-stat-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.portal-workspace-detail-page .portal-workspace-axis-stat {
+  display: grid;
+  gap: 0.25rem;
+  justify-items: center;
+  padding: 12px 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(105, 88, 71, 0.1);
+  background: rgba(255, 252, 247, 0.92);
+}
+
+.portal-workspace-detail-page .portal-workspace-axis-stat span {
+  color: #8a7868;
+  font-size: 13px;
+}
+
+.portal-workspace-detail-page .portal-workspace-axis-stat strong {
+  color: #6b4b34;
+  font-size: 15px;
+}
+
+.portal-workspace-detail-page .portal-workspace-detail-split {
+  gap: 16px;
+}
+
+.portal-workspace-detail-page .portal-workspace-material-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.portal-workspace-detail-page .portal-workspace-material-group {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.portal-workspace-detail-page .portal-workspace-material-list {
+  display: grid;
+  gap: 12px;
+}
+
+.portal-workspace-detail-page .portal-workspace-material-row {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(105, 88, 71, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.portal-workspace-detail-page .portal-workspace-material-copy {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.portal-workspace-detail-page .portal-workspace-material-copy h4 {
+  margin: 0.2rem 0 0;
+  color: var(--portal-text);
+}
+
+.portal-workspace-detail-page .portal-workspace-entry-panel .portal-final-section {
+  padding: 16px;
+}
+
+.portal-workspace-detail-page .portal-workspace-product-summary {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 12px;
+}
+
+.portal-workspace-detail-page .portal-workspace-qr-placeholder {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+  text-align: center;
+}
+
+.portal-workspace-detail-page .portal-workspace-qr-placeholder strong {
+  color: var(--portal-text);
+}
+
+.portal-workspace-detail-page .portal-workspace-qr-placeholder span {
+  color: var(--portal-text-soft);
+  font-size: 0.95rem;
+}
+
+.portal-workspace-detail-page #workspace-product-link[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 72rem) {
+  .portal-workspace-detail-page {
+    --portal-detail-width: min(1120px, calc(100vw - 40px));
+  }
+
+  .portal-workspace-detail-page .portal-workspace-hero,
+  .portal-workspace-detail-page .portal-workspace-axis-compare-grid,
+  .portal-workspace-detail-page .portal-workspace-material-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-workspace-detail-page .portal-workspace-question-card .portal-answer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .portal-workspace-detail-page .portal-workspace-axis-stat-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .portal-workspace-detail-page .portal-workspace-selector .portal-filter-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .portal-workspace-detail-page .portal-workspace-selector .portal-filter-submit {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 56rem) {
+  .portal-workspace-detail-page {
+    --portal-detail-width: min(1120px, calc(100vw - 24px));
+  }
+
+  .portal-workspace-detail-page .portal-workspace-hero,
+  .portal-workspace-detail-page .portal-workspace-selector,
+  .portal-workspace-detail-page .portal-workspace-detail-card,
+  .portal-workspace-detail-page .portal-workspace-question-card,
+  .portal-workspace-detail-page .portal-workspace-axis-section,
+  .portal-workspace-detail-page .portal-workspace-recommend-panel,
+  .portal-workspace-detail-page .portal-workspace-entry-panel {
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  .portal-workspace-detail-page .portal-workspace-profile-grid,
+  .portal-workspace-detail-page .portal-workspace-question-strip,
+  .portal-workspace-detail-page .portal-workspace-product-summary,
+  .portal-workspace-detail-page .portal-workspace-axis-stat-grid,
+  .portal-workspace-detail-page .portal-workspace-question-card .portal-answer-grid,
+  .portal-workspace-detail-page .portal-workspace-selector .portal-filter-form {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-workspace-detail-page .portal-workspace-selector .portal-filter-submit {
+    grid-column: auto;
+  }
+
+  .portal-workspace-detail-page .portal-workspace-material-copy,
+  .portal-workspace-detail-page .portal-workspace-profile-chip-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .portal-workspace-detail-page .portal-workspace-entry-panel .portal-feedback-grid .admin-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}

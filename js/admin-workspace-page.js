@@ -47,6 +47,23 @@
     reservationFallback: "\u4e88\u7d04",
     near: "\u8fd1\u3055"
   };
+  const BRANCH_LABELS = {
+    floral: "\u30d5\u30ed\u30fc\u30e9\u30eb",
+    fresh: "\u30d5\u30ec\u30c3\u30b7\u30e5",
+    woody: "\u30a6\u30c3\u30c7\u30a3"
+  };
+  const RESERVATION_STATUS_LABELS = {
+    confirmed: "\u78ba\u5b9a",
+    canceled: "\u30ad\u30e3\u30f3\u30bb\u30eb",
+    completed: "\u63a5\u5ba2\u5b8c\u4e86",
+    pending: "\u4eee\u4e88\u7d04",
+    draft: "\u4e0b\u66f8\u304d"
+  };
+  const SESSION_STATUS_LABELS = {
+    draft: "\u4e0b\u66f8\u304d",
+    ready: "\u63a5\u5ba2\u6e96\u5099",
+    completed: "\u63a5\u5ba2\u5b8c\u4e86"
+  };
 
   const reservationListEl = document.getElementById("workspace-reservation-list");
   const emptyEl = document.getElementById("workspace-empty");
@@ -79,6 +96,11 @@
   const customerFeedbackEl = document.getElementById("workspace-customer-feedback");
   const qrPreviewEl = document.getElementById("workspace-qr-preview");
   const generateQrButton = document.getElementById("workspace-generate-qr");
+  const heroHeadingEl = document.querySelector(".portal-workspace-hero h1");
+  const heroCopyEl = document.querySelector(".portal-workspace-hero .portal-hero-copy");
+  const legendItemEls = Array.from(document.querySelectorAll(".portal-workspace-hero .portal-legend-item"));
+  let productSummaryEl = document.getElementById("workspace-product-summary");
+  let productLinkEl = document.getElementById("workspace-product-link");
 
   let reservations = [];
   let slotMap = new Map();
@@ -92,6 +114,95 @@
   function setStatus(message, kind = "note") {
     statusEl.textContent = message;
     statusEl.className = kind === "error" ? "admin-error" : kind === "success" ? "admin-note admin-note-success" : "admin-note";
+  }
+
+  function ensureProductUi() {
+    const setText = (selector, text) => {
+      const target = document.querySelector(selector);
+      if (target) target.textContent = text;
+    };
+
+    if (heroHeadingEl) {
+      heroHeadingEl.textContent = "\u304a\u5ba2\u69d8\u8a73\u7d30";
+    }
+    if (heroCopyEl) {
+      heroCopyEl.textContent = "\u304a\u5ba2\u69d8\u60c5\u5831\u3001\u4e8b\u524d\u30a2\u30f3\u30b1\u30fc\u30c8\u3001\u4e88\u7d04\u60c5\u5831\u3001\u6700\u7d42\u30ec\u30b7\u30d4\u3092\u4e00\u753b\u9762\u3067\u78ba\u8a8d\u30fb\u8a18\u9332\u3059\u308b\u305f\u3081\u306e\u30ef\u30fc\u30af\u30b9\u30da\u30fc\u30b9\u3067\u3059\u3002";
+    }
+    if (legendItemEls.length === 3) {
+      legendItemEls[0].lastChild.textContent = "\u30a2\u30f3\u30b1\u30fc\u30c8\u56de\u7b54";
+      legendItemEls[1].lastChild.textContent = "\u4e88\u7d04\u60c5\u5831";
+      legendItemEls[2].lastChild.textContent = "\u6700\u7d42\u8a2d\u8a08";
+    }
+    if (customerOpenButton) {
+      customerOpenButton.textContent = "\u9867\u5ba2\u60c5\u5831\u3092\u78ba\u8a8d\u30fb\u5165\u529b";
+    }
+    if (generateQrButton) {
+      generateQrButton.textContent = "\u5546\u54c1QR\u3092\u8868\u793a";
+    }
+    setText(".portal-workspace-selector .portal-section-head h2", "\u4e88\u7d04\u4e00\u89a7");
+    setText(".portal-workspace-detail-card .portal-section-head h2", "\u304a\u5ba2\u69d8\u60c5\u5831");
+    setText(".portal-workspace-question-card .portal-section-head h2", "\u30a2\u30f3\u30b1\u30fc\u30c8\u56de\u7b54");
+    setText(".portal-workspace-axis-section .portal-section-head h2", "5\u8ef8\u6bd4\u8f03");
+    setText(".portal-workspace-recommend-panel .portal-section-head h2", "\u304a\u3059\u3059\u3081\u539f\u6599");
+    setText(".portal-workspace-entry-panel .portal-section-head h2", "\u63a5\u5ba2\u5165\u529b");
+    if (!qrPreviewEl?.parentElement) return;
+    const qrCard = qrPreviewEl.parentElement;
+    if (!productSummaryEl) {
+      productSummaryEl = document.createElement("div");
+      productSummaryEl.id = "workspace-product-summary";
+      productSummaryEl.className = "portal-workspace-product-summary";
+      qrPreviewEl.before(productSummaryEl);
+    }
+    if (!productLinkEl) {
+      const actionsEl = qrCard.querySelector(".admin-actions");
+      if (actionsEl) {
+        productLinkEl = document.createElement("a");
+        productLinkEl.id = "workspace-product-link";
+        productLinkEl.className = "admin-btn secondary";
+        productLinkEl.href = "product-reservation.html";
+        productLinkEl.target = "_blank";
+        productLinkEl.rel = "noopener";
+        productLinkEl.hidden = true;
+        productLinkEl.textContent = "\u5546\u54c1\u30da\u30fc\u30b8\u3092\u78ba\u8a8d";
+        actionsEl.insertBefore(productLinkEl, generateQrButton || null);
+      }
+    }
+  }
+
+  function syncWorkspaceHeader() {
+    const brandLabel = document.querySelector("#admin-header .admin-brand span");
+    if (brandLabel) {
+      brandLabel.textContent = "Fragrance STAFF_\u304a\u5ba2\u69d8\u8a73\u7d30";
+    }
+    const navLink = document.querySelector("#admin-header .admin-nav a");
+    if (navLink) {
+      navLink.textContent = "\u623b\u308b";
+    }
+  }
+
+  function getBranchLabel(branchKey) {
+    return BRANCH_LABELS[branchKey] || branchKey || UI.unset;
+  }
+
+  function getReservationStatusLabel(status) {
+    return RESERVATION_STATUS_LABELS[status] || status || UI.unset;
+  }
+
+  function getSessionStatusLabel(status) {
+    return SESSION_STATUS_LABELS[status] || status || UI.unset;
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
+
+  function hasAxisValue(axes) {
+    return AXIS_ORDER.some((axis) => Number(axes?.[axis] || 0) > 0);
   }
 
   function getCustomerDraftStorageKey(reservationId) {
@@ -277,6 +388,7 @@
     axisTotalEl.textContent = `\u5408\u8a08 ${total}`;
     axisTotalEl.className = total === 100 ? "admin-note admin-note-success" : "admin-note admin-note-warning";
     updateFinalAxisPreview();
+    renderProductSummary();
   }
 
   function normalizeCurrentAxes() {
@@ -474,6 +586,7 @@
     renderRecipeRows(workshop?.recipe_items || []);
     updateAxisTotal();
     renderRecommendedMaterials();
+    renderProductSummary();
   }
 
   function renderDetail() {
@@ -609,6 +722,312 @@
     reservationListEl.querySelectorAll("[data-open-reservation]").forEach((button) => {
       button.addEventListener("click", () => loadReservationDetail(button.dataset.openReservation));
     });
+  }
+
+  function createAxisStatGrid(axes) {
+    return `
+      <div class="portal-workspace-axis-stat-grid">
+        ${AXIS_ORDER.map((axis) => `
+          <div class="portal-workspace-axis-stat">
+            <span>${AXIS_LABELS[axis]}</span>
+            <strong>${Number(axes?.[axis] || 0)}</strong>
+          </div>
+        `).join("")}
+      </div>
+    `;
+  }
+
+  function formatDisplayValue(value, fallback = UI.unset) {
+    const text = String(value ?? "").trim();
+    return text || fallback;
+  }
+
+  function buildQuestionAnswerRows(questionnaire) {
+    if (!questionnaire) {
+      return `<article class="admin-panel admin-panel-soft"><p class="admin-empty">${UI.questionnaireMissing}</p></article>`;
+    }
+
+    const step1Answers = questionnaire.step1_answers_json || {};
+    const step2Answers = questionnaire.step2_answers_json || {};
+    const branchKey = questionnaire.branch_key || "floral";
+    const step2Schema = STEP2_SCHEMA[branchKey] || STEP2_SCHEMA.floral;
+    const answerCards = STEP1_SCHEMA.map((schema) => ({
+      stage: "STEP1",
+      id: schema.id,
+      label: schema.title,
+      value: step1Answers[schema.id] || "-"
+    })).concat(step2Schema.map((schema) => ({
+      stage: "STEP2",
+      id: schema.id,
+      label: schema.title,
+      value: step2Answers[schema.id] || "-"
+    }))).concat([{
+      stage: "FINISH",
+      id: "Q8",
+      label: UI.q8,
+      value: step2Answers.Q8 || "-"
+    }]);
+
+    return answerCards.map((item) => `
+      <article class="portal-workspace-answer-card">
+        <div class="portal-workspace-answer-head">
+          <span class="portal-workspace-answer-step">${item.stage}</span>
+          <strong>${escapeHtml(item.id)}</strong>
+        </div>
+        <p class="portal-workspace-answer-question">${escapeHtml(item.label)}</p>
+        <p class="portal-workspace-answer-value">${escapeHtml(item.value)}</p>
+      </article>
+    `).join("");
+  }
+
+  function renderAxisCompare(questionnaireAxes, reservationAxes, adjustedAxes) {
+    if (!axisCompareEl) return;
+    axisCompareEl.innerHTML = `
+      <div class="portal-workspace-axis-compare-grid">
+        <article class="portal-workspace-axis-card">
+          <div class="portal-workspace-axis-card-head">
+            <div>
+              <h3>${UI.questionnaireAxes}</h3>
+              <p class="admin-note">\u4e8b\u524d\u30a2\u30f3\u30b1\u30fc\u30c8\u56de\u7b54\u304b\u3089\u5f15\u3044\u305f5\u8ef8\u3067\u3059\u3002</p>
+            </div>
+          </div>
+          ${createAxisBars(questionnaireAxes, "survey")}
+          ${createAxisStatGrid(questionnaireAxes)}
+        </article>
+        <article class="portal-workspace-axis-card">
+          <div class="portal-workspace-axis-card-head">
+            <div>
+              <h3>${UI.reservationAxes}</h3>
+              <p class="admin-note">\u4e88\u7d04\u767b\u9332\u6642\u70b9\u3067\u4fdd\u6301\u3057\u3066\u3044\u308b5\u8ef8\u3067\u3059\u3002</p>
+            </div>
+          </div>
+          ${createAxisBars(reservationAxes, "reservation")}
+          ${createAxisStatGrid(reservationAxes)}
+        </article>
+      </div>
+    `;
+  }
+
+  function createStableHash(source) {
+    let hash = 2166136261;
+    for (let index = 0; index < source.length; index += 1) {
+      hash ^= source.charCodeAt(index);
+      hash = Math.imul(hash, 16777619);
+    }
+    return (hash >>> 0).toString(36);
+  }
+
+  function buildRecipeSignature(items) {
+    const merged = new Map();
+    (items || []).forEach((item) => {
+      if (!item?.material_code) return;
+      const amount = Math.max(0, Number(item.amount || 0));
+      merged.set(item.material_code, Number((Number(merged.get(item.material_code) || 0) + amount).toFixed(2)));
+    });
+    return [...merged.entries()]
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([materialCode, amount]) => `${materialCode}:${amount}`)
+      .join("|");
+  }
+
+  function buildProductSnapshot() {
+    if (!selectedReservation) return null;
+    const currentAxes = getCurrentFinalAxes();
+    const baseAxes = hasAxisValue(currentAxes)
+      ? currentAxes
+      : (selectedWorkshop?.final_axes || selectedReservation?.axes || selectedQuestionnaire?.final_axes || {});
+    const axes = normalizeAxes(baseAxes);
+    const recipeItems = collectRecipeItems();
+    const recipeSignature = buildRecipeSignature(recipeItems);
+    const axisSignature = AXIS_ORDER.map((axis) => `${axis}:${Number(axes?.[axis] || 0)}`).join("|");
+    const total = AXIS_ORDER.reduce((sum, axis) => sum + Number(axes?.[axis] || 0), 0);
+    const productId = `prd-${createStableHash(`${axisSignature}|${recipeSignature || "recipe:none"}`)}`;
+    const target = new URL("product-reservation.html", window.location.href);
+    target.searchParams.set("product_id", productId);
+    AXIS_ORDER.forEach((axis) => {
+      target.searchParams.set(axis, String(Number(axes?.[axis] || 0)));
+    });
+    return {
+      productId,
+      axes,
+      total,
+      recipeItems,
+      url: target.toString(),
+      isReady: hasAxisValue(axes) && recipeItems.length > 0
+    };
+  }
+
+  function renderProductSummary() {
+    ensureProductUi();
+    if (!productSummaryEl) return;
+    const snapshot = buildProductSnapshot();
+    if (!snapshot) {
+      productSummaryEl.innerHTML = `<p class="admin-note">\u5546\u54c1QR\u306f\u4e88\u7d04\u3092\u9078\u629e\u3059\u308b\u3068\u751f\u6210\u3067\u304d\u307e\u3059\u3002</p>`;
+      if (productLinkEl) productLinkEl.hidden = true;
+      return;
+    }
+    productSummaryEl.innerHTML = `
+      <div class="portal-workspace-product-meta">
+        <span>\u5546\u54c1ID</span>
+        <strong>${escapeHtml(snapshot.productId)}</strong>
+      </div>
+      <div class="portal-workspace-product-meta">
+        <span>\u914d\u5408\u884c\u6570</span>
+        <strong>${snapshot.recipeItems.length}</strong>
+      </div>
+      <div class="portal-workspace-product-meta">
+        <span>5\u8ef8\u5408\u8a08</span>
+        <strong>${snapshot.total}</strong>
+      </div>
+      <p class="admin-note">
+        ${snapshot.isReady
+          ? "\u540c\u3058\u6700\u7d425\u8ef8\u3068\u539f\u6599\u914d\u5408\u3067\u3042\u308c\u3070\u540c\u3058\u5546\u54c1ID\u306b\u306a\u308b\u8a2d\u8a08\u3067\u3059\u3002"
+          : "\u5546\u54c1QR\u306f\u300c\u6700\u7d425\u8ef8\u300d\u3068\u300c\u539f\u6599\u914d\u5408\u300d\u304c\u5165\u3063\u305f\u6bb5\u968e\u3067\u751f\u6210\u3067\u304d\u307e\u3059\u3002"}
+      </p>
+    `;
+    if (productLinkEl) {
+      productLinkEl.href = snapshot.url;
+      productLinkEl.hidden = !snapshot.isReady;
+    }
+  }
+
+  function renderQrCode(force = false) {
+    ensureProductUi();
+    if (!qrPreviewEl) return;
+    const snapshot = buildProductSnapshot();
+    if (!window.QRCode) {
+      qrPreviewEl.textContent = "QR \u30e9\u30a4\u30d6\u30e9\u30ea\u3092\u8aad\u307f\u8fbc\u3081\u306a\u304b\u3063\u305f\u305f\u3081\u8868\u793a\u3067\u304d\u307e\u305b\u3093\u3002";
+      return;
+    }
+    if (!force) {
+      qrPreviewEl.innerHTML = snapshot?.isReady
+        ? `<div class="portal-workspace-qr-placeholder"><strong>\u5546\u54c1QR\u3092\u8868\u793a\u3067\u304d\u307e\u3059</strong><span>\u5546\u54c1ID: ${escapeHtml(snapshot.productId)}</span></div>`
+        : `<div class="portal-workspace-qr-placeholder"><strong>\u5546\u54c1QR\u306f\u307e\u3060\u672a\u6e96\u5099\u3067\u3059</strong><span>\u539f\u6599\u914d\u5408\u30921\u884c\u4ee5\u4e0a\u5165\u529b\u3059\u308b\u3068\u751f\u6210\u3067\u304d\u307e\u3059</span></div>`;
+      return;
+    }
+    if (!snapshot?.isReady) {
+      qrPreviewEl.innerHTML = `<div class="portal-workspace-qr-placeholder"><strong>\u5546\u54c1QR\u3092\u751f\u6210\u3067\u304d\u307e\u305b\u3093</strong><span>\u539f\u6599\u914d\u5408\u3068\u6700\u7d425\u8ef8\u3092\u78ba\u8a8d\u3057\u3066\u304f\u3060\u3055\u3044</span></div>`;
+      return;
+    }
+    qrPreviewEl.innerHTML = "";
+    currentQrCode = new window.QRCode(qrPreviewEl, {
+      text: snapshot.url,
+      width: 180,
+      height: 180,
+      colorDark: "#3d2f24",
+      colorLight: "#fffdf9",
+      correctLevel: window.QRCode.CorrectLevel.M
+    });
+  }
+
+  function renderRecommendedMaterials() {
+    const questionnaireRanked = window.FragranceMasterData.rankMaterials(selectedQuestionnaire?.final_axes || {}, materialRows, 3);
+    const reservationRanked = window.FragranceMasterData.rankMaterials(selectedReservation?.axes || {}, materialRows, 3);
+    if (!questionnaireRanked.length && !reservationRanked.length) {
+      recommendedMaterialsEl.innerHTML = `<p class="admin-empty">${UI.noRecommended}</p>`;
+      return;
+    }
+
+    const renderGroup = (title, note, rows) => `
+      <section class="portal-workspace-material-group">
+        <div class="portal-workspace-material-group-head">
+          <div>
+            <h3>${title}</h3>
+            <p class="admin-note">${note}</p>
+          </div>
+        </div>
+        <div class="portal-workspace-material-list">
+          ${rows.length ? rows.map((row) => `
+            <article class="portal-workspace-material-row">
+              <div class="portal-workspace-material-copy">
+                <div>
+                  <p class="admin-item-code">${row.material_code}</p>
+                  <h4>${row.material_name}</h4>
+                </div>
+                <span class="admin-status-pill is-active">${UI.near} ${row.score}</span>
+              </div>
+              <div class="admin-meta-row"><span>${UI.category}</span><strong>${row.category || UI.unset}</strong></div>
+              ${createAxisBadgeRow(row.point_axes)}
+              <div class="admin-actions">
+                <button class="admin-btn secondary" type="button" data-add-material="${row.material_code}">${UI.addToRecipe}</button>
+              </div>
+            </article>
+          `).join("") : `<p class="admin-empty">${UI.noRecommended}</p>`}
+        </div>
+      </section>
+    `;
+
+    recommendedMaterialsEl.innerHTML = `
+      <div class="portal-workspace-material-grid">
+        ${renderGroup("\u30a2\u30f3\u30b1\u30fc\u30c8\u5019\u88dc\u539f\u6599", "\u4e8b\u524d\u30a2\u30f3\u30b1\u30fc\u30c8\u56de\u7b54\u306b\u8fd1\u3044\u539f\u6599\u5019\u88dc\u3067\u3059\u3002", questionnaireRanked)}
+        ${renderGroup("\u4e88\u7d04\u60c5\u5831\u5019\u88dc\u539f\u6599", "\u4e88\u7d04\u767b\u9332\u6642\u306e5\u8ef8\u306b\u5bc4\u305b\u305f\u539f\u6599\u5019\u88dc\u3067\u3059\u3002", reservationRanked)}
+      </div>
+    `;
+
+    recommendedMaterialsEl.querySelectorAll("[data-add-material]").forEach((button) => {
+      button.addEventListener("click", () => {
+        createRecipeRow({ material_code: button.dataset.addMaterial, role: "ingredient" });
+      });
+    });
+  }
+
+  function renderDetail() {
+    ensureProductUi();
+    if (!selectedReservation) {
+      detailSummaryEl.innerHTML = `<p class="admin-empty">${UI.selectReservation}</p>`;
+      questionSummaryEl.innerHTML = "";
+      questionAnswersEl.innerHTML = "";
+      if (axisCompareEl) axisCompareEl.innerHTML = "";
+      form.hidden = true;
+      renderProductSummary();
+      renderQrCode(false);
+      return;
+    }
+
+    const slot = slotMap.get(selectedReservation.slot_id);
+    const reservationAxes = selectedReservation.axes || {};
+    const questionnaireAxes = selectedQuestionnaire?.final_axes || {};
+    customerDraft = readCustomerDraft(selectedReservation);
+
+    detailSummaryEl.innerHTML = `
+      <div class="portal-workspace-profile-card">
+        <div class="portal-workspace-profile-top">
+          <div>
+            <span class="portal-workspace-mini-label">\u304a\u5ba2\u69d8\u540d</span>
+            <h3 class="portal-workspace-profile-name">${escapeHtml(formatDisplayValue(customerDraft?.name || selectedReservation.customer_name, "\u672a\u5165\u529b"))}</h3>
+          </div>
+          <div class="portal-workspace-profile-chip-row">
+            <span class="portal-workspace-profile-chip">\u500b\u4eba\u60c5\u5831\u540c\u610f: <strong>${customerDraft?.consent ? "\u540c\u610f\u6e08\u307f" : "\u672a\u53d6\u5f97"}</strong></span>
+            <span class="portal-workspace-profile-chip">\u30e1\u30fc\u30eb: <strong>${escapeHtml(formatDisplayValue(customerDraft?.email, "\u672a\u5165\u529b"))}</strong></span>
+            <span class="portal-workspace-profile-chip">\u96fb\u8a71: <strong>${escapeHtml(formatDisplayValue(customerDraft?.phone, "\u672a\u5165\u529b"))}</strong></span>
+          </div>
+        </div>
+        <div class="portal-workspace-profile-grid">
+          <div class="portal-workspace-profile-field"><span>${UI.reservationCode}</span><strong>${escapeHtml(formatDisplayValue(selectedReservation.reservation_code, "-"))}</strong></div>
+          <div class="portal-workspace-profile-field"><span>${UI.slot}</span><strong>${escapeHtml(getSlotLabel(selectedReservation))}</strong></div>
+          <div class="portal-workspace-profile-field"><span>${UI.staff}</span><strong>${escapeHtml(formatDisplayValue(slot?.instructor_name))}</strong></div>
+          <div class="portal-workspace-profile-field"><span>${UI.visitType}</span><strong>${escapeHtml(formatDisplayValue(selectedReservation.visit_type, "-"))}</strong></div>
+          <div class="portal-workspace-profile-field"><span>${UI.guestCount}</span><strong>${escapeHtml(formatDisplayValue(selectedReservation.guest_count, "-"))}</strong></div>
+          <div class="portal-workspace-profile-field"><span>${UI.reservationStatus}</span><strong>${escapeHtml(getReservationStatusLabel(selectedReservation.status))}</strong></div>
+          <div class="portal-workspace-profile-field"><span>\u63a5\u5ba2\u30b9\u30c6\u30fc\u30bf\u30b9</span><strong>${escapeHtml(getSessionStatusLabel(selectedWorkshop?.status || document.getElementById("workspace-session-status").value || "draft"))}</strong></div>
+          <div class="portal-workspace-profile-field"><span>\u30b5\u30de\u30ea\u30fc</span><strong>${escapeHtml(formatDisplayValue(selectedReservation.summary_headline || selectedQuestionnaire?.summary_headline, "-"))}</strong></div>
+        </div>
+      </div>
+    `;
+
+    questionSummaryEl.innerHTML = selectedQuestionnaire ? `
+      <div class="portal-workspace-question-strip">
+        <div class="portal-workspace-question-pill"><span>${UI.branch}</span><strong>${escapeHtml(getBranchLabel(selectedQuestionnaire.branch_key))}</strong></div>
+        <div class="portal-workspace-question-pill"><span>${UI.finish}</span><strong>${escapeHtml(formatDisplayValue(selectedQuestionnaire.selected_finish, "-"))}</strong></div>
+        <div class="portal-workspace-question-pill portal-workspace-question-pill--wide"><span>${UI.summary}</span><strong>${escapeHtml(formatDisplayValue(selectedQuestionnaire.summary_headline, "-"))}</strong></div>
+      </div>
+    ` : `<p class="admin-empty">${UI.questionnaireMissing}</p>`;
+
+    questionAnswersEl.innerHTML = buildQuestionAnswerRows(selectedQuestionnaire);
+    renderAxisCompare(questionnaireAxes, reservationAxes, selectedWorkshop?.final_axes || getCurrentFinalAxes());
+    form.hidden = false;
+    renderProductSummary();
+    renderQrCode(false);
   }
 
   async function loadBaseData() {
@@ -748,6 +1167,7 @@
     const session = await window.AdminAuth.requireAdminSession();
     if (!session) return;
     const role = window.AdminAuth.resolvePortalRole(session, window.AdminAuth.readRoleFromLocation());
+    ensureProductUi();
     window.AdminAuth.renderAdminHeader("workspace", {
       role,
       session,
@@ -756,6 +1176,7 @@
         { href: "admin-reservations.html", label: "戻る", key: "reservations" }
       ]
     });
+    syncWorkspaceHeader();
     window.AdminAuth.persistPortalRole(role);
     form.hidden = true;
     setStatus(UI.saveHint);

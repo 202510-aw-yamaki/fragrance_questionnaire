@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>商品予約 | Fragrance Workshop</title>
+  <meta name="description" content="QRコードから遷移した香り商品の5軸情報を確認できるページです。">
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/fragrance-graph.css">
+  <link rel="stylesheet" href="css/product-reservation.css">
+</head>
+<body class="page-canvas product-reservation-page">
+  <header class="site-header">
+    <div class="header-inner page-header-inner site-container product-header">
+      <a class="product-brand" href="index.html">FRAGRANCE WORKSHOP</a>
+      <a class="btn btn-secondary" href="index.html">トップへ戻る</a>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <section class="page-section">
+      <div class="section-inner page-section-inner site-container">
+        <div class="graph-layout product-layout">
+          <article class="graph-card">
+            <div class="section-header">
+              <span class="overline">Product QR</span>
+              <h1>この香りの商品情報</h1>
+              <p id="product-description">商品IDと5軸バランスを表示しています。原料配合は公開していません。</p>
+            </div>
+            <div class="graph-frame">
+              <svg id="radar-graph" viewBox="0 0 360 360" role="img" aria-label="商品の5軸グラフ">
+                <g id="grid-polygons" fill="none" stroke="#d9cec1" stroke-width="1.2"></g>
+                <g id="axis-lines" stroke="#d9cec1" stroke-width="1.2"></g>
+                <g id="axis-labels" fill="#6f665f" font-size="13" text-anchor="middle"></g>
+                <polygon id="radar-shape" fill="rgba(186, 129, 85, 0.24)" stroke="#9c6740" stroke-width="2.5"></polygon>
+                <g id="vertex-dots" fill="#9c6740"></g>
+              </svg>
+            </div>
+            <div class="product-axis-stats" id="product-axis-stats"></div>
+          </article>
+
+          <article class="graph-card product-cta-card">
+            <div class="section-header">
+              <span class="overline">Reservation</span>
+              <h2>商品を予約しますか？</h2>
+              <p>現在は5軸情報のみ公開しています。配合内容はスタッフ管理画面側で保持します。</p>
+            </div>
+            <div class="product-meta-list">
+              <div class="product-meta-row">
+                <span>商品ID</span>
+                <strong id="product-id">-</strong>
+              </div>
+              <div class="product-meta-row">
+                <span>公開内容</span>
+                <strong>5軸グラフのみ</strong>
+              </div>
+              <div class="product-meta-row">
+                <span>配合情報</span>
+                <strong>非公開</strong>
+              </div>
+            </div>
+            <div class="cta-actions product-cta-actions">
+              <button class="btn btn-primary" id="product-order-yes" type="button">はい</button>
+              <a class="btn btn-secondary" href="index.html">いいえ</a>
+            </div>
+            <div class="reassure-card product-order-result" id="product-order-result" hidden>
+              <h3>予約導線は準備中です</h3>
+              <p id="product-order-copy">商品IDを控えて、スタッフへお問い合わせください。</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/product-reservation-page.js"></script>
+</body>
+</html>

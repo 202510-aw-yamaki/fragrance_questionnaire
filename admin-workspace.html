@@ -8,10 +8,10 @@
   <link rel="stylesheet" href="css/admin-common.css">
   <link rel="stylesheet" href="css/admin-rebuild.css">
 </head>
-<body class="page-canvas admin-page">
+<body class="page-canvas admin-page portal-workspace-detail-page">
   <header class="admin-header" id="admin-header"></header>
-  <main class="admin-main site-container portal-stack portal-workspace-page">
-    <section class="admin-panel portal-hero">
+  <main class="admin-main site-container portal-stack portal-workspace-page portal-workspace-detail-main">
+    <section class="admin-panel portal-hero portal-workspace-hero">
       <div class="portal-hero-copy-block">
         <p class="portal-hero-label">STAFF WORKSPACE</p>
         <h1>お客様詳細画面</h1>
@@ -56,7 +56,7 @@
       <p class="admin-empty" id="workspace-empty" hidden>該当する予約はありません。</p>
     </section>
 
-    <section class="admin-panel">
+    <section class="admin-panel portal-workspace-detail-card">
       <div class="portal-section-head">
         <div>
           <h2>お客様情報</h2>
@@ -67,7 +67,7 @@
       <div id="workspace-detail-summary"></div>
     </section>
 
-    <section class="admin-panel">
+    <section class="admin-panel portal-workspace-question-card">
       <div class="portal-section-head">
         <div>
           <h2>アンケート回答</h2>
@@ -78,7 +78,7 @@
       <div id="workspace-question-answers" class="portal-answer-grid"></div>
     </section>
 
-    <section class="admin-panel">
+    <section class="admin-panel portal-workspace-axis-section">
       <div class="portal-section-head">
         <div>
           <h2>5軸グラフ比較</h2>
@@ -88,8 +88,8 @@
       <div id="workspace-axis-compare"></div>
     </section>
 
-    <section class="portal-workspace-split">
-      <section class="admin-panel">
+    <section class="portal-workspace-split portal-workspace-detail-split">
+      <section class="admin-panel portal-workspace-recommend-panel">
         <div class="portal-section-head">
           <div>
             <h2>おすすめ原料エリア</h2>
@@ -99,7 +99,7 @@
         <div class="admin-card-list" id="workspace-recommended-materials"></div>
       </section>
 
-      <section class="admin-panel">
+      <section class="admin-panel portal-workspace-entry-panel">
         <div class="portal-section-head">
           <div>
             <h2>お客様ヒアリング入力</h2>
