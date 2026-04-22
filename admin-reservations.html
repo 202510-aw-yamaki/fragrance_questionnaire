@@ -14,15 +14,17 @@
     <section class="admin-panel portal-hero portal-hero--stacked portal-reservations-hero">
       <div class="portal-hero-copy-block">
         <p class="portal-hero-label">RESERVATIONS</p>
-        <h1>予約情報一覧</h1>
+        <div class="portal-reservations-title-row">
+          <h1>予約情報一覧</h1>
+          <label class="portal-reservations-toggle">
+            <input id="filter-hide-completed" type="checkbox">
+            <span>接客完了情報を非表示にする</span>
+          </label>
+        </div>
       </div>
       <form class="portal-filter-form" id="filter-form">
         <label>日付
           <input id="filter-date" type="date">
-        </label>
-        <label class="portal-reservations-toggle">
-          <input id="filter-hide-completed" type="checkbox">
-          <span>接客完了情報を非表示にする</span>
         </label>
         <label>予約情報
           <select id="filter-status">

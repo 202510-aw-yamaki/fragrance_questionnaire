@@ -120,12 +120,12 @@
       const article = document.createElement("article");
       article.className = "portal-list-row portal-reservation-row";
       article.innerHTML = `
-        <span class="portal-reservation-cell portal-reservation-cell--datetime">${formatDateTime(row)}</span>
-        <span class="portal-reservation-cell portal-reservation-cell--customer">${draftCustomer?.name || row.customer_name || "未入力"}</span>
-        <span class="portal-reservation-cell portal-reservation-cell--visit-type">${formatVisitType(row.visit_type)}</span>
-        <span class="portal-reservation-cell portal-reservation-cell--guest-count">${row.guest_count || "-"}</span>
-        <span class="portal-reservation-cell portal-reservation-cell--summary">${formatBranchLabel(row)}</span>
-        <span class="portal-reservation-cell portal-reservation-cell--created-at">${formatCreatedDate(row.created_at)}</span>
+        <span class="portal-reservation-cell portal-reservation-cell--datetime" data-label="来店日時">${formatDateTime(row)}</span>
+        <span class="portal-reservation-cell portal-reservation-cell--customer" data-label="お客様名">${draftCustomer?.name || row.customer_name || "未入力"}</span>
+        <span class="portal-reservation-cell portal-reservation-cell--visit-type" data-label="来店目的">${formatVisitType(row.visit_type)}</span>
+        <span class="portal-reservation-cell portal-reservation-cell--guest-count" data-label="人数">${row.guest_count || "-"}</span>
+        <span class="portal-reservation-cell portal-reservation-cell--summary" data-label="傾向">${formatBranchLabel(row)}</span>
+        <span class="portal-reservation-cell portal-reservation-cell--created-at" data-label="作成日時">${formatCreatedDate(row.created_at)}</span>
         <span class="portal-reservation-cell portal-reservation-cell--status">
           <select class="portal-reservation-status-select" data-status-id="${row.id}">
             <option value="confirmed"${row.status === "confirmed" ? " selected" : ""}>予約受付</option>
