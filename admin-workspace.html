@@ -26,36 +26,6 @@
       </div>
     </section>
 
-    <section class="admin-panel portal-workspace-selector" id="workspace-selector-card">
-      <div class="portal-section-head">
-        <div>
-          <h2>予約一覧</h2>
-          <p class="admin-note" id="workspace-count">0件を表示中</p>
-        </div>
-      </div>
-      <form class="portal-filter-form" id="workspace-filter-form">
-        <label>日付
-          <input id="workspace-filter-date" type="date">
-        </label>
-        <label>予約ステータス
-          <select id="workspace-filter-status">
-            <option value="">すべて</option>
-            <option value="confirmed">confirmed</option>
-            <option value="canceled">canceled</option>
-            <option value="completed">completed</option>
-          </select>
-        </label>
-        <label>キーワード
-          <input id="workspace-filter-keyword" type="text" placeholder="予約コード / サマリー / メモ">
-        </label>
-        <div class="portal-filter-submit">
-          <button class="admin-btn secondary" type="submit">一覧を絞り込む</button>
-        </div>
-      </form>
-      <div class="admin-card-list" id="workspace-reservation-list"></div>
-      <p class="admin-empty" id="workspace-empty" hidden>該当する予約はありません。</p>
-    </section>
-
     <section class="admin-panel portal-workspace-detail-card">
       <div class="portal-section-head">
         <div>

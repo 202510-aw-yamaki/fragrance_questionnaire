@@ -3120,7 +3120,6 @@
 }
 
 .portal-workspace-detail-page .portal-workspace-hero,
-.portal-workspace-detail-page .portal-workspace-selector,
 .portal-workspace-detail-page .portal-workspace-detail-card,
 .portal-workspace-detail-page .portal-workspace-question-card,
 .portal-workspace-detail-page .portal-workspace-axis-section,
@@ -3161,11 +3160,6 @@
 
 .portal-workspace-detail-page .portal-section-head {
   margin-bottom: 16px;
-}
-
-.portal-workspace-detail-page .portal-workspace-selector .portal-filter-form {
-  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
-  align-items: end;
 }
 
 .portal-workspace-detail-page .portal-workspace-profile-card,
@@ -3467,14 +3461,6 @@
   .portal-workspace-detail-page .portal-workspace-axis-stat-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-
-  .portal-workspace-detail-page .portal-workspace-selector .portal-filter-form {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .portal-workspace-detail-page .portal-workspace-selector .portal-filter-submit {
-    grid-column: 2;
-  }
 }
 
 @media (max-width: 56rem) {
@@ -3483,7 +3469,6 @@
   }
 
   .portal-workspace-detail-page .portal-workspace-hero,
-  .portal-workspace-detail-page .portal-workspace-selector,
   .portal-workspace-detail-page .portal-workspace-detail-card,
   .portal-workspace-detail-page .portal-workspace-question-card,
   .portal-workspace-detail-page .portal-workspace-axis-section,
@@ -3497,13 +3482,8 @@
   .portal-workspace-detail-page .portal-workspace-question-strip,
   .portal-workspace-detail-page .portal-workspace-product-summary,
   .portal-workspace-detail-page .portal-workspace-axis-stat-grid,
-  .portal-workspace-detail-page .portal-workspace-question-card .portal-answer-grid,
-  .portal-workspace-detail-page .portal-workspace-selector .portal-filter-form {
+  .portal-workspace-detail-page .portal-workspace-question-card .portal-answer-grid {
     grid-template-columns: 1fr;
-  }
-
-  .portal-workspace-detail-page .portal-workspace-selector .portal-filter-submit {
-    grid-column: auto;
   }
 
   .portal-workspace-detail-page .portal-workspace-material-copy,

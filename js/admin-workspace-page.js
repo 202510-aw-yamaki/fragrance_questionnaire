@@ -65,9 +65,6 @@
     completed: "\u63a5\u5ba2\u5b8c\u4e86"
   };
 
-  const reservationListEl = document.getElementById("workspace-reservation-list");
-  const emptyEl = document.getElementById("workspace-empty");
-  const reservationCountEl = document.getElementById("workspace-count");
   const detailSummaryEl = document.getElementById("workspace-detail-summary");
   const questionSummaryEl = document.getElementById("workspace-question-summary");
   const questionAnswersEl = document.getElementById("workspace-question-answers");
@@ -76,16 +73,11 @@
   const form = document.getElementById("workspace-form");
   const submitModeInput = document.getElementById("workspace-submit-mode");
   const statusEl = document.getElementById("workspace-save-status");
-  const filterForm = document.getElementById("workspace-filter-form");
   const addRecipeButton = document.getElementById("workspace-add-recipe");
-  const kpiUpcomingEl = document.getElementById("workspace-kpi-upcoming");
-  const kpiDraftEl = document.getElementById("workspace-kpi-draft");
-  const kpiCompletedEl = document.getElementById("workspace-kpi-completed");
   const axisTotalEl = document.getElementById("workspace-axis-total");
   const normalizeButton = document.getElementById("workspace-normalize-axes");
   const axisCompareEl = document.getElementById("workspace-axis-compare");
   const finalAxisPreviewEl = document.getElementById("workspace-final-axis-preview");
-  const selectorCardEl = document.getElementById("workspace-selector-card");
   const customerModalEl = document.getElementById("workspace-customer-modal");
   const customerFormEl = document.getElementById("workspace-customer-form");
   const customerOpenButton = document.getElementById("workspace-customer-open");
@@ -139,7 +131,6 @@
     if (generateQrButton) {
       generateQrButton.textContent = "\u5546\u54c1QR\u3092\u8868\u793a";
     }
-    setText(".portal-workspace-selector .portal-section-head h2", "\u4e88\u7d04\u4e00\u89a7");
     setText(".portal-workspace-detail-card .portal-section-head h2", "\u304a\u5ba2\u69d8\u60c5\u5831");
     setText(".portal-workspace-question-card .portal-section-head h2", "\u30a2\u30f3\u30b1\u30fc\u30c8\u56de\u7b54");
     setText(".portal-workspace-axis-section .portal-section-head h2", "5\u8ef8\u6bd4\u8f03");
@@ -169,14 +160,57 @@
     }
   }
 
-  function syncWorkspaceHeader() {
-    const brandLabel = document.querySelector("#admin-header .admin-brand span");
-    if (brandLabel) {
-      brandLabel.textContent = "Fragrance STAFF_\u304a\u5ba2\u69d8\u8a73\u7d30";
+  function resolveWorkspaceBackLink(role) {
+    let backHref = window.AdminAuth.appendRoleToHref("admin-reservations.html", role);
+    let useHistoryBack = false;
+    try {
+      if (document.referrer) {
+        const referrerUrl = new URL(document.referrer);
+        const currentUrl = new URL(window.location.href);
+        if (referrerUrl.origin === currentUrl.origin && referrerUrl.pathname !== currentUrl.pathname) {
+          backHref = `${referrerUrl.pathname.split("/").pop()}${referrerUrl.search}${referrerUrl.hash}`;
+          useHistoryBack = true;
+        }
+      }
+    } catch (error) {
+      useHistoryBack = false;
     }
-    const navLink = document.querySelector("#admin-header .admin-nav a");
-    if (navLink) {
-      navLink.textContent = "\u623b\u308b";
+    return { backHref, useHistoryBack };
+  }
+
+  function renderWorkspaceHeader(role) {
+    const mount = document.getElementById("admin-header");
+    if (!mount) return;
+
+    const { backHref, useHistoryBack } = resolveWorkspaceBackLink(role);
+    const homeHref = window.AdminAuth.appendRoleToHref("admin-dashboard.html", role);
+
+    mount.innerHTML = `
+      <div class="admin-header-inner site-container admin-header-inner--staff">
+        <a class="admin-brand" href="${homeHref}">
+          <span>Fragrance STAFF_\u304a\u5ba2\u69d8\u8a73\u7d30</span>
+          <small class="admin-brand-meta">\u30b9\u30bf\u30c3\u30d5\u5c02\u7528</small>
+        </a>
+        <div class="admin-header-actions admin-header-actions--staff">
+          <nav class="admin-nav admin-nav--staff" aria-label="\u753b\u9762\u64cd\u4f5c">
+            <a href="${backHref}" id="workspace-back-link">\u623b\u308b</a>
+          </nav>
+          <button class="admin-logout admin-logout--staff" id="admin-logout-btn" type="button">\u30ed\u30b0\u30a2\u30a6\u30c8</button>
+        </div>
+      </div>
+    `;
+
+    const backLink = document.getElementById("workspace-back-link");
+    if (backLink && useHistoryBack) {
+      backLink.addEventListener("click", (event) => {
+        event.preventDefault();
+        window.history.back();
+      });
+    }
+
+    const logoutButton = document.getElementById("admin-logout-btn");
+    if (logoutButton) {
+      logoutButton.addEventListener("click", window.AdminAuth.signOutAdmin);
     }
   }
 
@@ -259,7 +293,7 @@
     `;
   }
 
-  function renderAxisCompare(questionnaireAxes, reservationAxes, adjustedAxes) {
+  function renderAxisCompareLegacy(questionnaireAxes, reservationAxes, adjustedAxes) {
     if (!axisCompareEl) return;
     axisCompareEl.innerHTML = `
       <div class="portal-compare-grid">
@@ -287,14 +321,14 @@
     finalAxisPreviewEl.innerHTML = createAxisBars(getCurrentFinalAxes(), "final");
   }
 
-  function buildCustomerQrValue() {
+  function buildCustomerQrValueLegacy() {
     const reservationCode = selectedReservation?.reservation_code || "draft";
     const target = new URL("customer-top.html", window.location.href);
     target.searchParams.set("reservation", reservationCode);
     return target.toString();
   }
 
-  function renderQrCode(force = false) {
+  function renderQrCodeLegacy(force = false) {
     if (!qrPreviewEl) return;
     if (!window.QRCode) {
       qrPreviewEl.textContent = "QR ライブラリを読み込めなかったため表示できません。";
@@ -307,7 +341,7 @@
     if (!selectedReservation) return;
     qrPreviewEl.innerHTML = "";
     currentQrCode = new window.QRCode(qrPreviewEl, {
-      text: buildCustomerQrValue(),
+      text: buildCustomerQrValueLegacy(),
       width: 180,
       height: 180,
       colorDark: "#3d2f24",
@@ -332,7 +366,7 @@
     return `${slot.slot_date || ""} ${String(slot.slot_time || "").slice(0, 5)} ${slot.slot_label || ""}`.trim();
   }
 
-  function buildQuestionAnswerRows(questionnaire) {
+  function buildQuestionAnswerRowsLegacy(questionnaire) {
     if (!questionnaire) {
       return `<article class="admin-panel admin-panel-soft"><p class="admin-empty">${UI.questionnaireMissing}</p></article>`;
     }
@@ -526,7 +560,7 @@
     }).filter((item) => item.material_code);
   }
 
-  function renderRecommendedMaterials() {
+  function renderRecommendedMaterialsLegacy() {
     const questionnaireRanked = window.FragranceMasterData.rankMaterials(selectedQuestionnaire?.final_axes || {}, materialRows, 3);
     const reservationRanked = window.FragranceMasterData.rankMaterials(selectedReservation?.axes || {}, materialRows, 3);
     const finalRanked = window.FragranceMasterData.rankMaterials(getCurrentFinalAxes(), materialRows, 3);
@@ -589,7 +623,7 @@
     renderProductSummary();
   }
 
-  function renderDetail() {
+  function renderDetailLegacy() {
     if (!selectedReservation) {
       detailSummaryEl.innerHTML = `<p class="admin-empty">${UI.selectReservation}</p>`;
       questionSummaryEl.innerHTML = "";
@@ -665,63 +699,6 @@
     selectedWorkshop = workshopRows[0] || null;
     fillWorkshopForm(selectedReservation, selectedQuestionnaire, selectedWorkshop);
     renderDetail();
-  }
-
-  function matchesKeyword(row, keyword) {
-    if (!keyword) return true;
-    const text = [row.reservation_code, row.slot_label, row.summary_headline, row.summary_body, row.staff_memo]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
-    return text.includes(keyword.toLowerCase());
-  }
-
-  function renderReservationList() {
-    const dateValue = document.getElementById("workspace-filter-date").value;
-    const statusValue = document.getElementById("workspace-filter-status").value;
-    const keywordValue = document.getElementById("workspace-filter-keyword").value.trim();
-
-    const filtered = reservations.filter((row) => {
-      const slot = slotMap.get(row.slot_id);
-      if (dateValue && (slot?.slot_date || "") !== dateValue) return false;
-      if (statusValue && row.status !== statusValue) return false;
-      return matchesKeyword(row, keywordValue);
-    });
-
-    reservationCountEl.textContent = `${filtered.length}${UI.countSuffix}`;
-    if (kpiUpcomingEl) kpiUpcomingEl.textContent = String(reservations.filter((row) => row.status === "confirmed").length);
-    if (kpiDraftEl) kpiDraftEl.textContent = String(reservations.filter((row) => row.status !== "completed").length);
-    if (kpiCompletedEl) kpiCompletedEl.textContent = String(reservations.filter((row) => row.status === "completed").length);
-
-    reservationListEl.innerHTML = "";
-    emptyEl.hidden = filtered.length > 0;
-
-    filtered.forEach((row) => {
-      const slot = slotMap.get(row.slot_id);
-      const isSelected = row.id === selectedReservation?.id;
-      const article = document.createElement("article");
-      article.className = `admin-item-card${isSelected ? " is-selected" : ""}`;
-      article.innerHTML = `
-        <div class="admin-item-head">
-          <div>
-            <p class="admin-item-code">${row.reservation_code || ""}</p>
-            <h3>${row.summary_headline || UI.reservationFallback}</h3>
-          </div>
-          <span class="admin-status-pill ${row.status === "completed" ? "is-active" : "is-paused"}">${row.status || "confirmed"}</span>
-        </div>
-        <div class="admin-meta-row"><span>${UI.slot}</span><strong>${slot?.slot_date || ""} ${String(slot?.slot_time || "").slice(0, 5)} ${row.slot_label || ""}</strong></div>
-        <div class="admin-meta-row"><span>${UI.visitType}</span><strong>${row.visit_type || "-"}</strong></div>
-        <div class="admin-meta-row"><span>${UI.guestCount}</span><strong>${row.guest_count || "-"}</strong></div>
-        <div class="admin-actions">
-          <button class="admin-btn secondary" type="button" data-open-reservation="${row.id}">${UI.openReservation}</button>
-        </div>
-      `;
-      reservationListEl.appendChild(article);
-    });
-
-    reservationListEl.querySelectorAll("[data-open-reservation]").forEach((button) => {
-      button.addEventListener("click", () => loadReservationDetail(button.dataset.openReservation));
-    });
   }
 
   function createAxisStatGrid(axes) {
@@ -974,7 +951,8 @@
   function renderDetail() {
     ensureProductUi();
     if (!selectedReservation) {
-      detailSummaryEl.innerHTML = `<p class="admin-empty">${UI.selectReservation}</p>`;
+      const hasReservationParam = Boolean(new URLSearchParams(window.location.search).get("reservation"));
+      detailSummaryEl.innerHTML = `<p class="admin-empty">${hasReservationParam ? "\u8a72\u5f53\u3059\u308b\u4e88\u7d04\u60c5\u5831\u3092\u8aad\u307f\u8fbc\u3081\u307e\u305b\u3093\u3067\u3057\u305f\u3002" : "\u5bfe\u8c61\u306e\u4e88\u7d04\u304c\u6307\u5b9a\u3055\u308c\u3066\u3044\u307e\u305b\u3093\u3002"}</p>`;
       questionSummaryEl.innerHTML = "";
       questionAnswersEl.innerHTML = "";
       if (axisCompareEl) axisCompareEl.innerHTML = "";
@@ -1031,8 +1009,14 @@
   }
 
   async function loadBaseData() {
+    const requestedReservationId = new URLSearchParams(window.location.search).get("reservation");
     const [reservationRows, slotRows, materialPointRows] = await Promise.all([
-      window.AdminData.listRows("reservations", { orders: [{ column: "created_at", ascending: false }] }).catch(() => []),
+      requestedReservationId
+        ? window.AdminData.listRows("reservations", {
+            filters: [{ operator: "eq", column: "id", value: requestedReservationId }],
+            limit: 1
+          }).catch(() => [])
+        : Promise.resolve([]),
       window.AdminData.listRows("reservation_slots", {
         orders: [{ column: "slot_date", ascending: true }, { column: "slot_time", ascending: true }]
       }).catch(() => []),
@@ -1047,7 +1031,6 @@
     materialRows = (materialPointRows && materialPointRows.length ? materialPointRows : DEFAULT_MATERIALS).map((row) => {
       return window.FragranceMasterData.normalizeMaterialRow(row);
     });
-    renderReservationList();
   }
 
   form.addEventListener("submit", async (event) => {
@@ -1119,11 +1102,6 @@
     normalizeButton.addEventListener("click", normalizeRecipeAmounts);
   }
 
-  filterForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    renderReservationList();
-  });
-
   if (customerOpenButton) {
     customerOpenButton.addEventListener("click", () => {
       fillCustomerForm(customerDraft);
@@ -1152,7 +1130,6 @@
       persistCustomerDraft(selectedReservation, customerDraft);
       closeCustomerModal();
       renderDetail();
-      renderReservationList();
       setStatus("お客様情報をブラウザ下書きとして保存しました。", "success");
     });
   }
@@ -1167,25 +1144,17 @@
     const session = await window.AdminAuth.requireAdminSession();
     if (!session) return;
     const role = window.AdminAuth.resolvePortalRole(session, window.AdminAuth.readRoleFromLocation());
+    const reservationId = new URLSearchParams(window.location.search).get("reservation");
     ensureProductUi();
-    window.AdminAuth.renderAdminHeader("workspace", {
-      role,
-      session,
-      brandText: "Fragrance STAFF_お客様詳細画面",
-      links: [
-        { href: "admin-reservations.html", label: "戻る", key: "reservations" }
-      ]
-    });
-    syncWorkspaceHeader();
+    renderWorkspaceHeader(role);
     window.AdminAuth.persistPortalRole(role);
     form.hidden = true;
     setStatus(UI.saveHint);
     await loadBaseData();
-    const reservationId = new URLSearchParams(window.location.search).get("reservation");
-    if (selectorCardEl) selectorCardEl.hidden = Boolean(reservationId);
     if (reservationId) {
       await loadReservationDetail(reservationId);
     } else {
+      setStatus("\u5bfe\u8c61\u306e\u4e88\u7d04\u304c\u6307\u5b9a\u3055\u308c\u3066\u3044\u307e\u305b\u3093\u3002", "error");
       renderDetail();
     }
   }
