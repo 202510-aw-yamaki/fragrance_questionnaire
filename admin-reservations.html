@@ -8,10 +8,10 @@
   <link rel="stylesheet" href="css/admin-common.css">
   <link rel="stylesheet" href="css/admin-rebuild.css">
 </head>
-<body class="page-canvas admin-page">
+<body class="page-canvas admin-page portal-reservations-page">
   <header class="admin-header" id="admin-header"></header>
-  <main class="admin-main site-container portal-stack">
-    <section class="admin-panel portal-hero portal-hero--stacked">
+  <main class="admin-main site-container portal-stack portal-reservations-stack">
+    <section class="admin-panel portal-hero portal-hero--stacked portal-reservations-hero">
       <div class="portal-hero-copy-block">
         <p class="portal-hero-label">RESERVATIONS</p>
         <h1>予約情報一覧</h1>
@@ -19,6 +19,10 @@
       <form class="portal-filter-form" id="filter-form">
         <label>日付
           <input id="filter-date" type="date">
+        </label>
+        <label class="portal-reservations-toggle">
+          <input id="filter-hide-completed" type="checkbox">
+          <span>接客完了情報を非表示にする</span>
         </label>
         <label>予約情報
           <select id="filter-status">
@@ -37,8 +41,8 @@
       </form>
     </section>
 
-    <section class="admin-panel portal-list-card">
-      <div class="portal-list-head portal-reservation-head">
+    <section class="admin-panel portal-list-card portal-reservations-list-section">
+      <div class="portal-list-head portal-reservation-head portal-reservations-head-row">
         <span>来店日時</span>
         <span>お客様名</span>
         <span>来店目的</span>
@@ -48,14 +52,8 @@
         <span>予約情報</span>
         <span>詳細</span>
       </div>
-      <div id="reservation-rows" class="portal-list-body"></div>
-      <p class="admin-empty" id="reservation-empty" hidden>該当する予約はありません。</p>
-    </section>
-
-    <section class="admin-panel portal-note-card">
-      <p>ここに予約一覧が表示される。詳細の欄はリンクボタンで、その予約枠の詳細ページに飛ぶ。</p>
-      <p>お客様名はその詳細ページで入力する。</p>
-      <p>予約コードはこの一覧では出ないが、内部的にはデータとして保持する。</p>
+      <div id="reservation-rows" class="portal-list-body portal-reservations-list-body"></div>
+      <p class="admin-empty portal-reservations-empty" id="reservation-empty" hidden>該当する予約はありません。</p>
     </section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
