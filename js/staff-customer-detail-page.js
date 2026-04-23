@@ -121,8 +121,12 @@
   function renderHeader() {
     if (!headerEl) return;
     const back = getBackHref();
+    const staffName = window.AdminAuth?.getStaffDisplayName
+      ? window.AdminAuth.getStaffDisplayName(session)
+      : "staff";
     headerEl.innerHTML = `
       <div class="staff-detail-header-inner staff-detail-header-inner-simple">
+        <a class="staff-detail-brand" href="staff-dashboard.html?role=staff">Fragrance STAFF_${escapeHtml(staffName)}</a>
         <div class="staff-detail-header-actions">
           <a class="staff-detail-nav-link" id="staff-detail-back" href="${escapeHtml(back.href)}">戻る</a>
           <button class="staff-detail-logout" id="staff-detail-logout" type="button">ログアウト</button>

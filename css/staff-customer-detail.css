@@ -32,7 +32,15 @@
 }
 
 .staff-detail-header-inner-simple {
-  justify-content: flex-end;
+  justify-content: space-between;
+}
+
+.staff-detail-brand {
+  color: #4a3d31;
+  font-size: 15.9px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-decoration: none;
 }
 
 .staff-detail-header-actions {
@@ -195,10 +203,6 @@
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-}
-
-.staff-profile-top-compact {
-  flex-wrap: nowrap;
 }
 
 .staff-profile-name-block {
@@ -736,6 +740,10 @@
   .staff-recipe-row {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .staff-recipe-list {
+    grid-auto-flow: column;
   }
 
   .staff-recipe-material-field {
