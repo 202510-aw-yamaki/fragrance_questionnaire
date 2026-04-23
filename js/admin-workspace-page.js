@@ -161,7 +161,8 @@
   }
 
   function resolveWorkspaceBackLink(role) {
-    let backHref = window.AdminAuth.appendRoleToHref("admin-reservations.html", role);
+    const reservationListPage = role === "staff" ? "staff-reservations.html" : "admin-reservations.html";
+    let backHref = window.AdminAuth.appendRoleToHref(reservationListPage, role);
     let useHistoryBack = false;
     try {
       if (document.referrer) {

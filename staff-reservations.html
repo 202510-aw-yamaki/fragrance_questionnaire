@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>予約情報管理 | Fragrance Workshop</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/admin-common.css">
+  <link rel="stylesheet" href="css/admin-rebuild.css">
+</head>
+<body class="page-canvas admin-page portal-reservations-page">
+  <header class="admin-header" id="admin-header"></header>
+  <main class="admin-main site-container portal-stack portal-reservations-stack">
+    <section class="admin-panel portal-hero portal-hero--stacked portal-reservations-hero">
+      <div class="portal-hero-copy-block">
+        <p class="portal-hero-label">RESERVATIONS</p>
+        <div class="portal-reservations-title-row">
+          <h1>予約情報一覧</h1>
+          <label class="portal-reservations-toggle">
+            <input id="filter-hide-completed" type="checkbox">
+            <span>接客完了情報を非表示にする</span>
+          </label>
+        </div>
+      </div>
+      <form class="portal-filter-form" id="filter-form">
+        <label>日付
+          <input id="filter-date" type="date">
+        </label>
+        <label>予約情報
+          <select id="filter-status">
+            <option value="">すべて</option>
+            <option value="confirmed">予約受付</option>
+            <option value="canceled">キャンセル</option>
+            <option value="completed">接客完了</option>
+          </select>
+        </label>
+        <label>キーワード
+          <input id="filter-keyword" type="text" placeholder="お客様名・傾向など">
+        </label>
+        <div class="portal-filter-submit">
+          <button class="admin-btn primary" type="submit">絞り込む</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="admin-panel portal-list-card portal-reservations-list-section">
+      <div class="portal-list-head portal-reservation-head portal-reservations-head-row">
+        <span>来店日時</span>
+        <span>お客様名</span>
+        <span>来店目的</span>
+        <span>人数</span>
+        <span>傾向</span>
+        <span>作成日時</span>
+        <span>予約情報</span>
+        <span>詳細</span>
+      </div>
+      <div id="reservation-rows" class="portal-list-body portal-reservations-list-body"></div>
+      <p class="admin-empty portal-reservations-empty" id="reservation-empty" hidden>該当する予約はありません。</p>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/admin-auth.js"></script>
+  <script src="js/admin-data.js"></script>
+  <script src="js/admin-reservations-page.js"></script>
+</body>
+</html>

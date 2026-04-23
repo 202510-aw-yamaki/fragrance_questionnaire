@@ -197,7 +197,7 @@
       session,
       links: role === "staff"
         ? [
-            { href: "admin-reservations.html", label: "予約確認", key: "reservations" },
+            { href: "staff-reservations.html", label: "予約確認", key: "reservations" },
             { href: "admin-slots.html", label: "予約枠作成", key: "slots" }
           ]
         : [

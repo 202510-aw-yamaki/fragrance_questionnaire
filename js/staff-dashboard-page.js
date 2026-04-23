@@ -266,7 +266,7 @@
       session,
       links: [
         { href: "admin-slots.html", label: "予約枠作成", key: "slots" },
-        { href: "admin-reservations.html", label: "予約情報一覧", key: "reservations" }
+        { href: "staff-reservations.html", label: "予約情報一覧", key: "reservations" }
       ]
     });
     await loadBaseData();

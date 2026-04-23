@@ -139,7 +139,7 @@
       return [
         ["staff-dashboard.html", "\u4e88\u5b9a\u78ba\u8a8d", "staff-dashboard"],
         ["admin-slots.html", "\u4e88\u7d04\u67a0\u4f5c\u6210", "slots"],
-        ["admin-reservations.html", "\u4e88\u7d04\u60c5\u5831\u4e00\u89a7", "reservations"]
+        ["staff-reservations.html", "\u4e88\u7d04\u60c5\u5831\u4e00\u89a7", "reservations"]
       ];
     }
 

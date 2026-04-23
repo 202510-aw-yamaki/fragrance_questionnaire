@@ -17,14 +17,6 @@
     ready: "接客準備",
     completed: "接客完了"
   };
-  const RESERVATION_STATUS_LABELS = {
-    confirmed: "予約受付",
-    canceled: "キャンセル",
-    completed: "接客完了",
-    pending: "仮予約",
-    draft: "下書き"
-  };
-
   const headerEl = document.getElementById("staff-detail-header");
   const profileEl = document.getElementById("customer-profile");
   const questionSummaryEl = document.getElementById("question-summary");
@@ -32,6 +24,7 @@
   const axisCompareEl = document.getElementById("axis-compare");
   const recommendedMaterialsEl = document.getElementById("recommended-materials");
   const formEl = document.getElementById("staff-detail-form");
+  const finalSectionEl = document.getElementById("final-section");
   const recordIdEl = document.getElementById("session-record-id");
   const submitModeEl = document.getElementById("submit-mode");
   const sessionStatusEl = document.getElementById("session-status");
@@ -116,42 +109,20 @@
   }
 
   function getBackHref() {
-    try {
-      if (document.referrer) {
-        const referrer = new URL(document.referrer);
-        const current = new URL(window.location.href);
-        if (referrer.origin === current.origin && referrer.pathname !== current.pathname) {
-          return {
-            href: `${referrer.pathname.split("/").pop()}${referrer.search}${referrer.hash}`,
-            useHistory: true
-          };
-        }
-      }
-    } catch (error) {
-      return { href: "staff-dashboard.html?role=staff", useHistory: false };
-    }
-    return { href: "staff-dashboard.html?role=staff", useHistory: false };
+    return { href: "staff-reservations.html?role=staff", useHistory: false };
   }
 
   function renderHeader() {
     if (!headerEl) return;
     const back = getBackHref();
     headerEl.innerHTML = `
-      <div class="staff-detail-header-inner">
-        <a class="staff-detail-brand" href="staff-dashboard.html?role=staff">Fragrance STAFF_お客様詳細画面</a>
+      <div class="staff-detail-header-inner staff-detail-header-inner-simple">
         <div class="staff-detail-header-actions">
           <a class="staff-detail-nav-link" id="staff-detail-back" href="${escapeHtml(back.href)}">戻る</a>
           <button class="staff-detail-logout" id="staff-detail-logout" type="button">ログアウト</button>
         </div>
       </div>
     `;
-    const backEl = document.getElementById("staff-detail-back");
-    if (backEl && back.useHistory) {
-      backEl.addEventListener("click", (event) => {
-        event.preventDefault();
-        window.history.back();
-      });
-    }
     document.getElementById("staff-detail-logout")?.addEventListener("click", window.AdminAuth.signOutAdmin);
   }
 
@@ -174,6 +145,16 @@
     return `${slot.slot_date || ""} ${String(slot.slot_time || "").slice(0, 5)}`.trim();
   }
 
+  function formatVisitType(value) {
+    const text = String(value ?? "").trim();
+    if (!text) return "-";
+    const lower = text.toLowerCase();
+    if (text.includes("ギフト") || lower.includes("gift")) return "ギフト";
+    if (text.includes("再") || lower.includes("return") || lower.includes("repeat")) return "再来店";
+    if (text.includes("初") || text.includes("ワークショップ") || lower.includes("first")) return "初回";
+    return text;
+  }
+
   function getCurrentFinalAxes() {
     return AXIS_ORDER.reduce((acc, axis) => {
       acc[axis] = Number(document.getElementById(`axis-${axis}`)?.value || 0);
@@ -189,22 +170,44 @@
     });
   }
 
-  function createAxisBars(axes, variant) {
+  function getRadarPoint(cx, cy, radius, index, total, scale = 1) {
+    const angle = -Math.PI / 2 + (index * 2 * Math.PI / total);
+    return {
+      x: cx + Math.cos(angle) * radius * scale,
+      y: cy + Math.sin(angle) * radius * scale
+    };
+  }
+
+  function createRadarGraph(axes, variant) {
     const normalized = normalizeAxes(axes);
+    const cx = 130;
+    const cy = 130;
+    const radius = 84;
+    const pointText = AXIS_ORDER.map((axis, index) => {
+      const value = Math.max(0, Math.min(100, Number(normalized[axis] || 0))) / 100;
+      const point = getRadarPoint(cx, cy, radius, index, AXIS_ORDER.length, value);
+      return `${point.x.toFixed(1)},${point.y.toFixed(1)}`;
+    }).join(" ");
     return `
-      <div class="staff-axis-bars">
-        ${AXIS_ORDER.map((axis) => {
-          const value = Math.max(0, Math.min(100, Number(normalized[axis] || 0)));
-          return `
-            <div class="staff-axis-row staff-axis-row-${variant}">
-              <div class="staff-axis-row-head">
-                <span>${AXIS_LABELS[axis]}</span>
-                <strong>${value}</strong>
-              </div>
-              <div class="staff-axis-track"><i style="width:${value}%"></i></div>
-            </div>
-          `;
-        }).join("")}
+      <div class="staff-radar-wrap">
+        <svg class="staff-radar-graph" viewBox="0 0 260 260" role="img" aria-label="5軸グラフ">
+          ${[0.25, 0.5, 0.75, 1].map((scale) => {
+            const points = AXIS_ORDER.map((axis, index) => {
+              const point = getRadarPoint(cx, cy, radius, index, AXIS_ORDER.length, scale);
+              return `${point.x.toFixed(1)},${point.y.toFixed(1)}`;
+            }).join(" ");
+            return `<polygon class="staff-radar-grid" points="${points}"></polygon>`;
+          }).join("")}
+          ${AXIS_ORDER.map((axis, index) => {
+            const end = getRadarPoint(cx, cy, radius, index, AXIS_ORDER.length, 1);
+            const label = getRadarPoint(cx, cy, radius, index, AXIS_ORDER.length, 1.32);
+            return `
+              <line class="staff-radar-axis" x1="${cx}" y1="${cy}" x2="${end.x.toFixed(1)}" y2="${end.y.toFixed(1)}"></line>
+              <text class="staff-radar-label" x="${label.x.toFixed(1)}" y="${label.y.toFixed(1)}">${escapeHtml(AXIS_LABELS[axis])}</text>
+            `;
+          }).join("")}
+          <polygon class="staff-radar-shape staff-radar-shape-${variant}" points="${pointText}"></polygon>
+        </svg>
       </div>
     `;
   }
@@ -230,7 +233,7 @@
       axisTotalEl.textContent = `合計 ${total}`;
     }
     if (finalAxisPreviewEl) {
-      finalAxisPreviewEl.innerHTML = createAxisBars(axes, "final");
+      finalAxisPreviewEl.innerHTML = createRadarGraph(axes, "final");
     }
     renderAxisCompare();
   }
@@ -244,7 +247,7 @@
     const consent = customerDraft?.consent ? "同意済み" : "未取得";
     profileEl.innerHTML = `
       <div class="staff-profile-card">
-        <div class="staff-profile-top">
+        <div class="staff-profile-top staff-profile-top-compact">
           <div class="staff-profile-name-block">
             <span class="staff-profile-label">お客様名:</span>
             <h3 class="staff-profile-name">${escapeHtml(name)}</h3>
@@ -253,13 +256,9 @@
             <span class="staff-profile-chip">個人情報同意: <strong>${escapeHtml(consent)}</strong></span>
             <span class="staff-profile-chip">メール: <strong>${escapeHtml(email)}</strong></span>
             <span class="staff-profile-chip">電話: <strong>${escapeHtml(phone)}</strong></span>
+            <span class="staff-profile-chip">予約枠: <strong>${escapeHtml(getSlotLabel())}</strong></span>
+            <span class="staff-profile-chip">来店目的: <strong>${escapeHtml(formatVisitType(reservation?.visit_type))}</strong></span>
           </div>
-        </div>
-        <div class="staff-profile-meta-row">
-          <span class="staff-profile-meta">予約枠 <strong>${escapeHtml(getSlotLabel())}</strong></span>
-          <span class="staff-profile-meta">来店目的 <strong>${escapeHtml(formatDisplayValue(reservation?.visit_type, "-"))}</strong></span>
-          <span class="staff-profile-meta">人数 <strong>${escapeHtml(formatDisplayValue(reservation?.guest_count, "-"))}</strong></span>
-          <span class="staff-profile-meta">状態 <strong>${escapeHtml(RESERVATION_STATUS_LABELS[reservation?.status] || reservation?.status || "-")}</strong></span>
         </div>
       </div>
     `;
@@ -320,35 +319,18 @@
     if (!axisCompareEl) return;
     const questionnaireAxes = questionnaire?.final_axes || {};
     const reservationAxes = reservation?.axes || {};
-    const finalAxes = getCurrentFinalAxes();
     axisCompareEl.innerHTML = `
       <div class="staff-axis-compare-grid">
         <article class="staff-axis-card">
-          <h3>アンケート回答時点</h3>
-          ${createAxisBars(questionnaireAxes, "survey")}
+          <h3>アンケート時点の5軸</h3>
+          ${createRadarGraph(questionnaireAxes, "survey")}
           ${createAxisStatGrid(questionnaireAxes)}
         </article>
         <article class="staff-axis-card">
-          <h3>予約時点</h3>
-          ${createAxisBars(reservationAxes, "reservation")}
+          <h3>予約完了時の5軸</h3>
+          ${createRadarGraph(reservationAxes, "reservation")}
           ${createAxisStatGrid(reservationAxes)}
         </article>
-        <article class="staff-axis-card">
-          <h3>最終設計</h3>
-          ${createAxisBars(finalAxes, "final")}
-          ${createAxisStatGrid(finalAxes)}
-        </article>
-      </div>
-    `;
-  }
-
-  function createAxisBadgeRow(axes) {
-    const normalized = normalizeAxes(axes);
-    return `
-      <div class="staff-axis-badge-row">
-        ${AXIS_ORDER.map((axis) => `
-          <span class="staff-axis-badge">${AXIS_LABELS[axis]} <strong>${Number(normalized[axis] || 0)}</strong></span>
-        `).join("")}
       </div>
     `;
   }
@@ -360,53 +342,30 @@
       recommendedMaterialsEl.innerHTML = `<p class="admin-empty">原料候補を計算できません。</p>`;
       return;
     }
-    const groups = [
-      {
-        title: "アンケート候補原料",
-        note: "事前アンケート回答に近い原料候補です。",
-        rows: rankMaterials(questionnaire?.final_axes || {}, materialRows, 3)
-      },
-      {
-        title: "予約情報候補原料",
-        note: "予約時点の5軸に近い原料候補です。",
-        rows: rankMaterials(reservation?.axes || {}, materialRows, 3)
-      }
-    ];
+    const rows = rankMaterials(questionnaire?.final_axes || {}, materialRows, 5);
+    const scoreTotal = rows.reduce((sum, row) => sum + Math.max(0, Number(row.score || 0)), 0);
+    const fallbackRatio = rows.length ? Math.round(100 / rows.length) : 0;
+    const getRatio = (row) => scoreTotal
+      ? Math.round((Math.max(0, Number(row.score || 0)) / scoreTotal) * 100)
+      : fallbackRatio;
     recommendedMaterialsEl.innerHTML = `
       <div class="staff-material-grid">
-        ${groups.map((group) => `
-          <section class="staff-material-group">
-            <div>
-              <h3>${escapeHtml(group.title)}</h3>
-              <p class="admin-note">${escapeHtml(group.note)}</p>
-            </div>
-            <div class="staff-material-list">
-              ${group.rows.length ? group.rows.map((row) => `
-                <article class="staff-material-row">
-                  <div class="staff-material-row-head">
-                    <div>
-                      <p class="staff-material-code">${escapeHtml(row.material_code)}</p>
-                      <h4>${escapeHtml(row.material_name)}</h4>
-                    </div>
-                    <span class="staff-profile-chip">近さ <strong>${Number(row.score || 0)}</strong></span>
-                  </div>
-                  <p class="admin-note">${escapeHtml(row.category || "未設定")}</p>
-                  ${createAxisBadgeRow(row.point_axes)}
-                  <div class="admin-actions">
-                    <button class="admin-btn secondary" type="button" data-add-material="${escapeHtml(row.material_code)}">レシピへ追加</button>
-                  </div>
-                </article>
-              `).join("") : `<p class="admin-empty">候補原料はまだありません。</p>`}
-            </div>
-          </section>
-        `).join("")}
+        <section class="staff-material-group">
+          <div>
+            <h3>アンケート基準原料割当</h3>
+            <p class="admin-note">回答時点の方向性の原料と割合</p>
+          </div>
+          <div class="staff-material-list">
+            ${rows.length ? rows.map((row) => `
+              <article class="staff-material-row">
+                <span class="staff-material-name">${escapeHtml(row.material_name)}</span>
+                <strong class="staff-material-ratio">${getRatio(row)}%</strong>
+              </article>
+            `).join("") : `<p class="admin-empty">候補原料はまだありません。</p>`}
+          </div>
+        </section>
       </div>
     `;
-    recommendedMaterialsEl.querySelectorAll("[data-add-material]").forEach((button) => {
-      button.addEventListener("click", () => {
-        createRecipeRow({ material_code: button.dataset.addMaterial, role: "ingredient" });
-      });
-    });
   }
 
   function getMaterialOptions(selectedCode) {
@@ -751,6 +710,7 @@
     renderRecommendedMaterials();
     renderQr(false);
     formEl.hidden = false;
+    if (finalSectionEl) finalSectionEl.hidden = false;
     setStatus("このお客様の接客記録を入力できます。");
   }
 
