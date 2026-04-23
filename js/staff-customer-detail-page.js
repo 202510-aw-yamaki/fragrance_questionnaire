@@ -391,11 +391,15 @@
       <div class="staff-material-grid">
         ${groups.map((group) => `
           <section class="staff-material-group${group.incomplete ? " is-incomplete" : ""}">
-            <div>
+            <div class="staff-material-group-head">
               <h3>${escapeHtml(group.title)}</h3>
               <p class="admin-note">${escapeHtml(group.note)}</p>
             </div>
-            <div class="staff-material-list">
+            <div class="staff-material-table">
+              <div class="staff-material-row staff-material-head-row">
+                <span class="staff-material-name">原料名</span>
+                <strong class="staff-material-ratio">割合</strong>
+              </div>
               ${group.rows.map((row) => `
                 <article class="staff-material-row">
                   <span class="staff-material-name">${escapeHtml(row.material_name)}</span>
@@ -426,15 +430,18 @@
       <input data-recipe-field="role" type="hidden" value="${escapeHtml(item.role || "ingredient")}">
       <input data-recipe-field="lot" type="hidden" value="${escapeHtml(item.lot || "")}">
       <input data-recipe-field="note" type="hidden" value="${escapeHtml(item.note || "")}">
-      <label>原料
+      <label class="staff-recipe-material-field">
+        <span class="staff-recipe-field-label">原料</span>
         <select data-recipe-field="material_code">${getMaterialOptions(item.material_code || "")}</select>
       </label>
       <label class="staff-recipe-amount-field">割合
         <span class="staff-amount-control">
-          <button class="staff-amount-step" type="button" data-adjust-amount="-1" aria-label="割合を減らす">◀</button>
           <input data-recipe-field="amount" type="number" min="0" step="1" value="${Math.round(Number(item.amount || 0))}">
           <span class="staff-amount-unit">%</span>
-          <button class="staff-amount-step" type="button" data-adjust-amount="1" aria-label="割合を増やす">▶</button>
+          <span class="staff-amount-step-group">
+            <button class="staff-amount-step" type="button" data-adjust-amount="-1" aria-label="割合を減らす">◀</button>
+            <button class="staff-amount-step" type="button" data-adjust-amount="1" aria-label="割合を増やす">▶</button>
+          </span>
         </span>
       </label>
       <button class="admin-btn secondary" type="button" data-remove-recipe>削除</button>
