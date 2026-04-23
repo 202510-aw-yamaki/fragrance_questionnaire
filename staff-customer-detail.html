@@ -30,7 +30,6 @@
       <div class="staff-section-head">
         <div>
           <h2>お客様情報</h2>
-          <p class="admin-note">お客様名・連絡先はこの端末の接客用下書きとして扱います。</p>
         </div>
         <button class="admin-btn primary" id="customer-edit-open" type="button">お客様情報を入力</button>
       </div>
@@ -81,10 +80,18 @@
           <input id="session-record-id" type="hidden">
           <input id="submit-mode" type="hidden" value="draft">
           <input id="session-status" type="hidden" value="draft">
-          <input id="preparation-note" type="hidden">
+
+          <div class="staff-note-split">
+            <label>来店前メモ
+              <textarea id="preparation-note" rows="6" placeholder="事前アンケートを見て準備したいこと"></textarea>
+            </label>
+            <label>スタッフ要約
+              <textarea id="staff-summary" rows="6" placeholder="会話から得た印象や要望"></textarea>
+            </label>
+          </div>
 
           <label class="staff-hearing-memo">当日ヒアリングメモ
-            <textarea id="staff-summary" rows="12" placeholder="接客中に確認した好み、避けたい香り、用途、贈り先、調整方針など"></textarea>
+            <textarea id="hearing-note" rows="7" placeholder="接客中に確認した好み、避けたい香り、用途、贈り先、調整方針など"></textarea>
           </label>
         </form>
       </section>

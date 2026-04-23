@@ -30,6 +30,7 @@
   const sessionStatusEl = document.getElementById("session-status");
   const preparationNoteEl = document.getElementById("preparation-note");
   const staffSummaryEl = document.getElementById("staff-summary");
+  const hearingNoteEl = document.getElementById("hearing-note");
   const recipeListEl = document.getElementById("recipe-list");
   const addRecipeRowEl = document.getElementById("add-recipe-row");
   const normalizeRecipeEl = document.getElementById("normalize-recipe");
@@ -55,6 +56,7 @@
   let questionnaire = null;
   let workshop = null;
   let materialRows = [];
+  let materialDataReady = false;
   let customerDraft = null;
 
   function escapeHtml(value) {
@@ -88,6 +90,10 @@
 
   function getFeedbackKey() {
     return reservation?.id ? `fragranceCustomerFeedback:${reservation.id}` : "";
+  }
+
+  function getHearingMemoKey() {
+    return reservation?.id ? `fragranceHearingMemo:${reservation.id}` : "";
   }
 
   function readCustomerDraft() {
@@ -342,28 +348,63 @@
       recommendedMaterialsEl.innerHTML = `<p class="admin-empty">原料候補を計算できません。</p>`;
       return;
     }
-    const rows = rankMaterials(questionnaire?.final_axes || {}, materialRows, 5);
-    const scoreTotal = rows.reduce((sum, row) => sum + Math.max(0, Number(row.score || 0)), 0);
-    const fallbackRatio = rows.length ? Math.round(100 / rows.length) : 0;
-    const getRatio = (row) => scoreTotal
-      ? Math.round((Math.max(0, Number(row.score || 0)) / scoreTotal) * 100)
-      : fallbackRatio;
+    const sampleRows = [
+      { material_name: "サンプル原料 A", ratio: "--" },
+      { material_name: "サンプル原料 B", ratio: "--" },
+      { material_name: "サンプル原料 C", ratio: "--" }
+    ];
+    const buildGroup = (title, note, axes) => {
+      const incomplete = !materialDataReady || !hasAxisValue(axes);
+      if (incomplete) {
+        return {
+          title,
+          note: `${note} / データ未整備（今後の課題）`,
+          rows: sampleRows,
+          incomplete: true
+        };
+      }
+      const rankedRows = rankMaterials(axes, materialRows, 3);
+      if (!rankedRows.length) {
+        return {
+          title,
+          note: `${note} / データ未整備（今後の課題）`,
+          rows: sampleRows,
+          incomplete: true
+        };
+      }
+      const scoreTotal = rankedRows.reduce((sum, row) => sum + Math.max(1, Number(row.score || 0)), 0);
+      let remainder = 100;
+      const rows = rankedRows.map((row, index) => {
+        const ratio = index === rankedRows.length - 1
+          ? remainder
+          : Math.round((Math.max(1, Number(row.score || 0)) / scoreTotal) * 100);
+        remainder -= ratio;
+        return { material_name: row.material_name, ratio };
+      });
+      return { title, note, rows, incomplete: false };
+    };
+    const groups = [
+      buildGroup("アンケート基準原料割当", "回答時点の方向性の原料と配合割合", questionnaire?.final_axes || {}),
+      buildGroup("予約時基準原料割当", "予約完了時点の方向性の原料と配合割合", reservation?.axes || {})
+    ];
     recommendedMaterialsEl.innerHTML = `
       <div class="staff-material-grid">
-        <section class="staff-material-group">
-          <div>
-            <h3>アンケート基準原料割当</h3>
-            <p class="admin-note">回答時点の方向性の原料と割合</p>
-          </div>
-          <div class="staff-material-list">
-            ${rows.length ? rows.map((row) => `
-              <article class="staff-material-row">
-                <span class="staff-material-name">${escapeHtml(row.material_name)}</span>
-                <strong class="staff-material-ratio">${getRatio(row)}%</strong>
-              </article>
-            `).join("") : `<p class="admin-empty">候補原料はまだありません。</p>`}
-          </div>
-        </section>
+        ${groups.map((group) => `
+          <section class="staff-material-group${group.incomplete ? " is-incomplete" : ""}">
+            <div>
+              <h3>${escapeHtml(group.title)}</h3>
+              <p class="admin-note">${escapeHtml(group.note)}</p>
+            </div>
+            <div class="staff-material-list">
+              ${group.rows.map((row) => `
+                <article class="staff-material-row">
+                  <span class="staff-material-name">${escapeHtml(row.material_name)}</span>
+                  <strong class="staff-material-ratio">${escapeHtml(row.ratio)}${group.incomplete ? "" : "%"}</strong>
+                </article>
+              `).join("")}
+            </div>
+          </section>
+        `).join("")}
       </div>
     `;
   }
@@ -372,7 +413,7 @@
     return [`<option value="">選択してください</option>`]
       .concat(materialRows.map((row) => {
         const selected = row.material_code === selectedCode ? " selected" : "";
-        return `<option value="${escapeHtml(row.material_code)}"${selected}>${escapeHtml(row.material_name)} / ${escapeHtml(row.category || "未設定")}</option>`;
+        return `<option value="${escapeHtml(row.material_code)}"${selected}>${escapeHtml(row.material_name)}</option>`;
       }))
       .join("");
   }
@@ -388,8 +429,13 @@
       <label>原料
         <select data-recipe-field="material_code">${getMaterialOptions(item.material_code || "")}</select>
       </label>
-      <label>割合
-        <input data-recipe-field="amount" type="number" min="0" step="0.1" value="${Number(item.amount || 0)}">
+      <label class="staff-recipe-amount-field">割合
+        <span class="staff-amount-control">
+          <button class="staff-amount-step" type="button" data-adjust-amount="-1" aria-label="割合を減らす">◀</button>
+          <input data-recipe-field="amount" type="number" min="0" step="1" value="${Math.round(Number(item.amount || 0))}">
+          <span class="staff-amount-unit">%</span>
+          <button class="staff-amount-step" type="button" data-adjust-amount="1" aria-label="割合を増やす">▶</button>
+        </span>
       </label>
       <button class="admin-btn secondary" type="button" data-remove-recipe>削除</button>
     `;
@@ -399,6 +445,14 @@
     });
     row.querySelector('[data-recipe-field="material_code"]')?.addEventListener("change", refreshFinalAxesFromRecipe);
     row.querySelector('[data-recipe-field="amount"]')?.addEventListener("input", refreshFinalAxesFromRecipe);
+    row.querySelectorAll("[data-adjust-amount]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const input = row.querySelector('[data-recipe-field="amount"]');
+        const nextValue = Math.max(0, Number(input?.value || 0) + Number(button.dataset.adjustAmount || 0));
+        if (input) input.value = String(nextValue);
+        refreshFinalAxesFromRecipe();
+      });
+    });
     recipeListEl.appendChild(row);
   }
 
@@ -483,6 +537,9 @@
     preparationNoteEl.value = workshop?.preparation_note || reservation?.staff_memo || "";
     staffSummaryEl.value = workshop?.staff_summary || "";
     customerFeedbackEl.value = getFeedbackKey() ? window.sessionStorage.getItem(getFeedbackKey()) || "" : "";
+    if (hearingNoteEl) {
+      hearingNoteEl.value = getHearingMemoKey() ? window.sessionStorage.getItem(getHearingMemoKey()) || "" : "";
+    }
     setFinalAxisInputs(baseAxes);
     renderRecipeRows(workshop?.recipe_items || []);
     updateAxisTotal();
@@ -579,6 +636,9 @@
       if (getFeedbackKey()) {
         window.sessionStorage.setItem(getFeedbackKey(), customerFeedbackEl.value.trim());
       }
+      if (hearingNoteEl && getHearingMemoKey()) {
+        window.sessionStorage.setItem(getHearingMemoKey(), hearingNoteEl.value.trim());
+      }
       reservation.staff_memo = payload.preparation_note;
       if (submitModeEl.value === "complete") reservation.status = "completed";
       workshop = { ...(workshop || {}), ...payload, id: recordIdEl.value };
@@ -635,6 +695,7 @@
     questionnaire = questionnaireRows[0] || null;
     workshop = workshopRows[0] || null;
     const defaults = window.FragranceMasterData?.createMaterialTemplates?.() || [];
+    materialDataReady = materialPointRows.length > 0;
     materialRows = (materialPointRows.length ? materialPointRows : defaults)
       .map((row) => window.FragranceMasterData?.normalizeMaterialRow
         ? window.FragranceMasterData.normalizeMaterialRow(row)
