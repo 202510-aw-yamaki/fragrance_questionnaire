@@ -42,6 +42,8 @@ create table if not exists public.reservations (
   id uuid primary key default gen_random_uuid(),
   reservation_code text unique not null,
   questionnaire_result_id uuid references public.questionnaire_results(id) on delete set null,
+  questionnaire_flow_status text not null default 'skipped',
+  questionnaire_sync_error text,
   slot_id uuid references public.reservation_slots(id) on delete set null,
   slot_label text,
   visit_type text,
@@ -55,6 +57,12 @@ create table if not exists public.reservations (
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
+
+alter table public.reservations
+add column if not exists questionnaire_flow_status text not null default 'skipped';
+
+alter table public.reservations
+add column if not exists questionnaire_sync_error text;
 
 create table if not exists public.scoring_configs (
   id uuid primary key default gen_random_uuid(),
@@ -140,6 +148,12 @@ on public.questionnaire_results for update
 to anon, authenticated
 using (true)
 with check (true);
+
+drop policy if exists "staff select questionnaire results" on public.questionnaire_results;
+create policy "staff select questionnaire results"
+on public.questionnaire_results for select
+to authenticated
+using (true);
 
 drop policy if exists "public insert reservations" on public.reservations;
 create policy "public insert reservations"

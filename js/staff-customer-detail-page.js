@@ -17,6 +17,13 @@
     ready: "接客準備",
     completed: "接客完了"
   };
+  const QUESTIONNAIRE_FLOW_LABELS = {
+    linked: "アンケート回答済み",
+    answered_unsaved: "回答済み / 結果保存失敗",
+    skipped: "アンケート未回答",
+    linked_missing: "結果データ取得不可",
+    unknown: "アンケート結果なし"
+  };
   const headerEl = document.getElementById("staff-detail-header");
   const profileEl = document.getElementById("customer-profile");
   const questionSummaryEl = document.getElementById("question-summary");
@@ -302,10 +309,45 @@
     return common.concat(branch, finish);
   }
 
+  function getQuestionnaireMissingState() {
+    if (reservation?.questionnaire_result_id) {
+      return {
+        status: "linked_missing",
+        message: "アンケート結果IDはありますが、結果データを取得できません。通信状態またはDB上の結果データを確認してください。"
+      };
+    }
+    if (reservation?.questionnaire_flow_status === "answered_unsaved") {
+      return {
+        status: "answered_unsaved",
+        message: "アンケート回答済みですが、結果データ保存に失敗した状態で予約されています。"
+      };
+    }
+    if (reservation?.questionnaire_flow_status === "skipped") {
+      return {
+        status: "skipped",
+        message: "アンケート未回答で予約されています。"
+      };
+    }
+    return {
+      status: "unknown",
+      message: "アンケート結果は予約に紐づいていません。"
+    };
+  }
+
   function renderQuestionnaire() {
     if (!questionSummaryEl || !questionAnswerGridEl) return;
     if (!questionnaire) {
-      questionSummaryEl.innerHTML = `<p class="admin-empty">アンケート回答はまだ紐づいていません。</p>`;
+      const missingState = getQuestionnaireMissingState();
+      const syncError = reservation?.questionnaire_sync_error
+        ? `<span class="staff-question-missing-error">保存状態: ${escapeHtml(reservation.questionnaire_sync_error)}</span>`
+        : "";
+      questionSummaryEl.innerHTML = `
+        <div class="staff-question-missing">
+          <strong>${escapeHtml(QUESTIONNAIRE_FLOW_LABELS[missingState.status] || QUESTIONNAIRE_FLOW_LABELS.unknown)}</strong>
+          <p>${escapeHtml(missingState.message)}</p>
+          ${syncError}
+        </div>
+      `;
       questionAnswerGridEl.innerHTML = "";
       return;
     }

@@ -54,7 +54,7 @@
     try {
       const { data, error } = await client
         .from("questionnaire_results")
-        .insert([{ ...payload, result_code: resultCode }])
+        .upsert([{ ...payload, result_code: resultCode }], { onConflict: "result_code" })
         .select("id, result_code")
         .single();
       if (error) throw error;
@@ -108,19 +108,40 @@
     }
   }
 
+  function isMissingColumnError(error) {
+    const message = `${error?.code || ""} ${error?.message || ""}`.toLowerCase();
+    return message.includes("pgrst204") || message.includes("could not find") || message.includes("column");
+  }
+
+  function omitReservationOptionalColumns(payload) {
+    const { questionnaire_flow_status, questionnaire_sync_error, ...basePayload } = payload;
+    return basePayload;
+  }
+
   async function createReservation(payload) {
     const client = window.getSupabaseClient?.();
     if (!client) return null;
     const reservationCode = payload.reservation_code || createCode("FR");
-    try {
+    const insertReservation = async (reservationPayload) => {
       const { data, error } = await client
         .from("reservations")
-        .insert([{ ...payload, reservation_code: reservationCode }])
+        .insert([{ ...reservationPayload, reservation_code: reservationCode }])
         .select("id, reservation_code")
         .single();
       if (error) throw error;
       return data;
+    };
+    try {
+      return await insertReservation(payload);
     } catch (error) {
+      if ((payload.questionnaire_flow_status || payload.questionnaire_sync_error) && isMissingColumnError(error)) {
+        try {
+          return await insertReservation(omitReservationOptionalColumns(payload));
+        } catch (retryError) {
+          console.error("Failed to create reservation.", retryError);
+          return null;
+        }
+      }
       console.error("Failed to create reservation.", error);
       return null;
     }

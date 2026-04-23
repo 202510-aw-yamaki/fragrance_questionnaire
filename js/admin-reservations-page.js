@@ -62,6 +62,10 @@
   }
 
   function formatBranchLabel(row) {
+    if (!row.questionnaire_result_id) {
+      if (row.questionnaire_flow_status === "answered_unsaved") return "保存失敗";
+      if (row.questionnaire_flow_status === "skipped") return "未回答";
+    }
     return BRANCH_LABELS[getBranchKey(row)] || "-";
   }
 

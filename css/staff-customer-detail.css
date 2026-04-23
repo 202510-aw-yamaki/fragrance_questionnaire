@@ -287,6 +287,31 @@
   margin-bottom: 16px;
 }
 
+.staff-question-missing {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid var(--staff-border);
+  border-radius: 18px;
+  background: #fffdfa;
+}
+
+.staff-question-missing strong {
+  color: var(--staff-text);
+  font-size: 18px;
+}
+
+.staff-question-missing p {
+  margin: 0;
+  color: var(--staff-muted);
+}
+
+.staff-question-missing-error {
+  color: #9d5f45;
+  font-size: 13px;
+  font-weight: 700;
+}
+
 .staff-axis-compare-grid {
   display: grid;
   gap: 16px;

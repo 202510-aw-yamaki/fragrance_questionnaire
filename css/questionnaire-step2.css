@@ -35,3 +35,67 @@ img {
 .page-shell {
   padding: 18px 0 24px;
 }
+
+.sync-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(39, 31, 25, 0.42);
+}
+
+.sync-modal.open {
+  display: flex;
+}
+
+.sync-modal-card {
+  width: min(560px, 100%);
+  padding: 28px;
+  border: 1px solid rgba(201, 174, 155, 0.82);
+  border-radius: 24px;
+  background: rgba(255, 251, 246, 0.98);
+  box-shadow: 0 24px 72px rgba(64, 43, 30, 0.18);
+}
+
+.sync-modal-card h2 {
+  margin: 0 0 12px;
+  color: var(--text);
+  font-size: 1.25rem;
+}
+
+.sync-modal-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.sync-modal-status {
+  min-height: 1.6em;
+  padding-top: 12px;
+  font-weight: 700;
+}
+
+.sync-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+@media (max-width: 47.9375em) {
+  .sync-modal {
+    align-items: flex-end;
+    padding: 16px;
+  }
+
+  .sync-modal-card {
+    padding: 22px;
+  }
+
+  .sync-modal-actions .action-btn {
+    width: 100%;
+  }
+}

@@ -37,7 +37,7 @@
           <span class="label-default">回答する</span>
           <span class="label-short">回答</span>
         </a>
-        <a class="btn btn-primary mobile-label-btn" href="reservation.html" aria-label="予約する">
+        <a class="btn btn-primary mobile-label-btn" href="reservation.html?source=direct" aria-label="予約する">
           <span class="label-default">予約する</span>
           <span class="label-short">予約</span>
         </a>
@@ -140,7 +140,7 @@
           <h3>初めての方はアンケートから、再来店の方はそのまま予約へ</h3>
           <div class="flow-action-buttons">
             <a class="btn btn-secondary" href="questionnaire.html">アンケートから始める</a>
-            <a class="btn btn-primary" href="reservation.html">そのまま予約する</a>
+            <a class="btn btn-primary" href="reservation.html?source=direct">そのまま予約する</a>
           </div>
         </article>
       </div>
@@ -161,7 +161,7 @@
               <img class="pc-preview-image" src="img/TOP/クエスチョンPC版大.png" alt="アンケート画面のPCプレビュー">
               <div class="section-cta">
                 <a class="btn btn-primary" href="questionnaire.html">香りづくりをはじめる</a>
-                <a class="btn btn-secondary" href="reservation.html">そのまま予約する</a>
+                <a class="btn btn-secondary" href="reservation.html?source=direct">そのまま予約する</a>
               </div>
             </div>
           </article>
@@ -172,7 +172,7 @@
               <img class="pc-preview-image" src="img/TOP/中間イメージ.png" alt="中間レイアウトのプレビュー">
               <div class="section-cta">
                 <a class="btn btn-primary" href="questionnaire.html">香りづくりをはじめる</a>
-                <a class="btn btn-secondary" href="reservation.html">そのまま予約する</a>
+                <a class="btn btn-secondary" href="reservation.html?source=direct">そのまま予約する</a>
               </div>
             </div>
           </article>
@@ -268,7 +268,7 @@
             <h3>まずはアンケート、またはそのまま予約へ進めます</h3>
             <div class="section-cta">
               <a class="btn btn-secondary" href="questionnaire.html">アンケートから始める</a>
-              <a class="btn btn-primary" href="reservation.html">そのまま予約する</a>
+              <a class="btn btn-primary" href="reservation.html?source=direct">そのまま予約する</a>
             </div>
           </article>
           <article class="value-visual value-visual-secondary" aria-label="調整画面のイメージ">
@@ -306,7 +306,7 @@
               <img class="info-price-image" src="img/TOP/値段表.png" alt="料金表">
               <div class="info-price-actions">
                 <a class="btn btn-secondary" href="questionnaire.html">アンケートから始める</a>
-                <a class="btn btn-primary" href="reservation.html">事前予約をする</a>
+                <a class="btn btn-primary" href="reservation.html?source=direct">事前予約をする</a>
               </div>
             </div>
           </div>
@@ -351,7 +351,7 @@
             </div>
             <div class="section-cta">
               <a class="btn btn-primary" href="questionnaire.html">8問からはじめる</a>
-              <a class="btn btn-secondary" href="reservation.html">そのまま予約する</a>
+              <a class="btn btn-secondary" href="reservation.html?source=direct">そのまま予約する</a>
             </div>
           </article>
 
@@ -404,7 +404,7 @@
             <div class="cta-actions">
               <div class="section-cta">
                 <a class="btn btn-primary" href="questionnaire.html">香りづくりをはじめる</a>
-                <a class="btn btn-secondary" href="reservation.html">そのまま予約する</a>
+                <a class="btn btn-secondary" href="reservation.html?source=direct">そのまま予約する</a>
                 <a class="btn btn-secondary" href="#top">上へ戻る</a>
               </div>
             </div>
@@ -475,10 +475,10 @@
     (function () {
       var reserveLabel = "\u4e88\u7d04\u3059\u308b";
       var ctaRow = document.querySelector(".hero .cta-row");
-      if (ctaRow && !ctaRow.querySelector('a[href="reservation.html"]')) {
+      if (ctaRow && !ctaRow.querySelector('a[href="reservation.html?source=direct"]')) {
         var reserveBtn = document.createElement("a");
         reserveBtn.className = "btn btn-primary";
-        reserveBtn.href = "reservation.html";
+        reserveBtn.href = "reservation.html?source=direct";
         reserveBtn.textContent = reserveLabel;
         ctaRow.insertBefore(reserveBtn, ctaRow.firstChild);
       }

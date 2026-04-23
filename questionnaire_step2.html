@@ -92,6 +92,17 @@
       </div>
     </section>
   </div>
+  <div class="sync-modal" id="questionnaire-sync-modal" role="dialog" aria-modal="true" aria-labelledby="questionnaire-sync-title" aria-hidden="true">
+    <div class="sync-modal-card">
+      <h2 id="questionnaire-sync-title">アンケート結果データの送信に失敗しました。</h2>
+      <p>この画面内の「送信」を押すと再度データの送信を行います。続けて失敗する場合でも予約は可能です。その場合は「このまま進める」を押してください。</p>
+      <p class="sync-modal-status" id="questionnaire-sync-status" aria-live="polite"></p>
+      <div class="sync-modal-actions">
+        <button class="action-btn primary" id="questionnaire-sync-retry" type="button">送信</button>
+        <button class="action-btn" id="questionnaire-sync-continue" type="button">このまま進める</button>
+      </div>
+    </div>
+  </div>
   <script>
     const SCORING_LOGIC_SOURCE = "deep-research-report.md";
     const SCORING_LOGIC_VERSION = "2026-04-14";
@@ -299,6 +310,12 @@
     const headerNextBtn = document.getElementById("header-next-btn");
     const headerPrevText = headerPrevBtn.querySelector(".nav-text");
     const headerNextText = headerNextBtn.querySelector(".nav-text");
+    const syncModal = document.getElementById("questionnaire-sync-modal");
+    const syncRetryBtn = document.getElementById("questionnaire-sync-retry");
+    const syncContinueBtn = document.getElementById("questionnaire-sync-continue");
+    const syncStatus = document.getElementById("questionnaire-sync-status");
+    let pendingCompletionState = null;
+    let completionInProgress = false;
 
     function isExpectedScoringConfig(config) {
       return Boolean(
@@ -396,6 +413,7 @@
     }
     async function persistQuestionnaireResult(scorePayload) {
       const payload = {
+        result_code: scorePayload.questionnaireResultCode || undefined,
         step1_answers_json: scorePayload.step1Answers || {},
         step1_answer_keys_json: scorePayload.step1AnswerKeys || {},
         step2_answers_json: scorePayload.step2Answers || {},
@@ -431,6 +449,48 @@
     function confirmReturnToStep1() { return window.confirm("STEP1 に戻ると、STEP2 の回答は破棄されます。戻りますか？"); }
     function returnToTop() { if (confirmReturnToTop()) window.location.href = "index.html"; }
     function returnToStep1() { if (confirmReturnToStep1()) window.location.href = "questionnaire.html"; }
+    function setSyncModalOpen(isOpen) {
+      syncModal.classList.toggle("open", isOpen);
+      syncModal.setAttribute("aria-hidden", isOpen ? "false" : "true");
+      document.body.style.overflow = isOpen ? "hidden" : "";
+      if (isOpen) {
+        window.requestAnimationFrame(() => syncRetryBtn.focus());
+      }
+    }
+    function setSyncSending(isSending) {
+      syncRetryBtn.disabled = isSending;
+      syncContinueBtn.disabled = isSending;
+      syncStatus.textContent = isSending ? "送信中です..." : "";
+    }
+    function persistQuestionnaireSyncFailure() {
+      persistScoreState({
+        questionnaireResultId: null,
+        questionnaireResultCode: pendingCompletionState?.questionnaireResultCode || null,
+        questionnaireFlowStatus: "answered_unsaved",
+        questionnaireSyncError: "questionnaire_result_insert_failed"
+      });
+    }
+    function continueWithoutQuestionnaireSync() {
+      persistQuestionnaireSyncFailure();
+      window.location.href = "fragrance-graph.html";
+    }
+    async function retryQuestionnaireSync() {
+      if (!pendingCompletionState) return;
+      setSyncSending(true);
+      const persistedResult = await persistQuestionnaireResult(pendingCompletionState);
+      if (persistedResult) {
+        persistScoreState({
+          ...persistedResult,
+          questionnaireFlowStatus: "linked",
+          questionnaireSyncError: null
+        });
+        window.location.href = "fragrance-graph.html";
+        return;
+      }
+      persistQuestionnaireSyncFailure();
+      setSyncSending(false);
+      syncStatus.textContent = "再送信に失敗しました。もう一度送信するか、このまま進んで予約できます。";
+    }
     function resolveSubOptionKey(index) { if (index === 0) return "ALL"; if (index === 1) return "NONE"; return null; }
     function applyFinishAdjustment(baseAxes, q8AnswerKey, config) {
       const deltaApplied = scoreQuestionAnswer(baseAxes, q8AnswerKey, config.q8ScoreMap, config.q8PrimaryAxes || [], config.questionWeights.finish, config);
@@ -449,12 +509,17 @@
       return clampAxes(axes, config);
     }
     async function showCompletion() {
+      if (completionInProgress) return;
+      completionInProgress = true;
+      headerNextBtn.disabled = true;
+      headerNextText.textContent = "送信中";
       const config = getScoringConfig();
       const scoreState = getScoreState();
       const baseAxes = scoreState.axesAfterStep1 || createInitialAxes(config);
       const axesAfterStep2 = scoreStep2Answers(baseAxes, activeBranchKey, answerKeys, config);
       const finishResult = applyFinishAdjustment(axesAfterStep2, answerKeys.Q8 || "B", config);
       const nearestProfile = calculateNearestProfile(finishResult.finalAxes, config.summaryProfiles);
+      const questionnaireResultCode = scoreState.questionnaireResultCode || window.FragrancePublicData?.createCode?.("QR") || `QR${Date.now()}`;
       const nextState = persistScoreState({
         step2Answers: { ...answers },
         step2AnswerKeys: { ...answerKeys },
@@ -466,13 +531,29 @@
         selectedFinish: finishResult.selectedFinish,
         profileKey: nearestProfile.profileKey,
         summaryHeadline: nearestProfile.profile?.headline || null,
-        summaryBody: nearestProfile.profile?.body || null
+        summaryBody: nearestProfile.profile?.body || null,
+        questionnaireResultId: null,
+        questionnaireResultCode,
+        questionnaireFlowStatus: "in_progress",
+        questionnaireSyncError: null,
+        questionnaireCompletedAt: new Date().toISOString()
       });
+      pendingCompletionState = nextState;
       const persistedResult = await persistQuestionnaireResult(nextState);
       if (persistedResult) {
-        persistScoreState(persistedResult);
+        persistScoreState({
+          ...persistedResult,
+          questionnaireFlowStatus: "linked",
+          questionnaireSyncError: null
+        });
+        window.location.href = "fragrance-graph.html";
+        return;
       }
-      window.location.href = "fragrance-graph.html";
+      persistQuestionnaireSyncFailure();
+      completionInProgress = false;
+      updateButtons();
+      setSyncSending(false);
+      setSyncModalOpen(true);
     }
     function moveNext() {
       const questions = getStep2Questions();
@@ -559,6 +640,8 @@
     returnTopBtnMobile.addEventListener("click", returnToTop);
     headerPrevBtn.addEventListener("click", () => { if (currentIndex === 0) { returnToStep1(); return; } movePrev(); });
     headerNextBtn.addEventListener("click", moveNext);
+    syncRetryBtn.addEventListener("click", retryQuestionnaireSync);
+    syncContinueBtn.addEventListener("click", continueWithoutQuestionnaireSync);
     activeBranchKey = getActiveBranchKey();
     render();
   </script>

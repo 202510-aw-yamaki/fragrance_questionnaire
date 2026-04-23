@@ -159,6 +159,16 @@
     const SCORING_CONFIG_KEY = "fragranceScoringConfig";
     const SCORE_STATE_KEY = "fragranceScoreState";
 
+    function clearQuestionnaireStateForDirectReservation() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("source") !== "direct") return;
+      window.sessionStorage.removeItem(SCORE_STATE_KEY);
+      window.sessionStorage.removeItem("fragranceStep1Answers");
+      window.sessionStorage.removeItem("fragranceReservationDraft");
+    }
+
+    clearQuestionnaireStateForDirectReservation();
+
     const siteHeader = document.querySelector(".site-header");
     const pageShell = document.querySelector(".page-shell");
     const summaryHeadline = document.getElementById("summary-headline");
@@ -189,6 +199,18 @@
       } catch (error) {
         return {};
       }
+    }
+
+    function getQuestionnaireFlowStatus(scoreState) {
+      if (scoreState.questionnaireResultId) return "linked";
+      if (scoreState.questionnaireFlowStatus === "answered_unsaved") return "answered_unsaved";
+      if (scoreState.questionnaireCompletedAt) return "answered_unsaved";
+      return "skipped";
+    }
+
+    function getQuestionnaireSyncError(scoreState, flowStatus) {
+      if (flowStatus !== "answered_unsaved") return null;
+      return scoreState.questionnaireSyncError || "questionnaire_result_insert_failed";
     }
 
     function getScoringConfig() {
@@ -596,9 +618,12 @@
       };
       const reservation = buildReservationPayload(requestPayload);
       const scoreState = getScoreState();
+      const questionnaireFlowStatus = getQuestionnaireFlowStatus(scoreState);
       const persistedReservation = await window.FragrancePublicData?.createReservation?.({
         reservation_code: reservation.reservationCode,
         questionnaire_result_id: scoreState.questionnaireResultId || null,
+        questionnaire_flow_status: questionnaireFlowStatus,
+        questionnaire_sync_error: getQuestionnaireSyncError(scoreState, questionnaireFlowStatus),
         slot_id: requestPayload.slotId || null,
         slot_label: requestPayload.slotLabel,
         visit_type: requestPayload.visitType,
