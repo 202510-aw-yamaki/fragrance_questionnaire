@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>お客様詳細画面 | Fragrance Workshop</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/admin-common.css">
+  <link rel="stylesheet" href="css/staff-customer-detail.css">
+</head>
+<body class="page-canvas admin-page staff-customer-detail-page">
+  <header class="admin-header" id="staff-detail-header"></header>
+
+  <main class="staff-detail-main site-container">
+    <section class="staff-detail-panel staff-detail-hero">
+      <div class="staff-detail-hero-main">
+        <p class="staff-detail-label">Staff Workspace</p>
+        <h1>お客様詳細画面</h1>
+      </div>
+      <div class="staff-detail-hero-side">
+        <p>お客様情報、アンケート回答、5軸グラフ、ヒアリング内容、最終原料登録を一画面で扱う接客用ページです。</p>
+        <div class="staff-detail-legend">
+          <span><i class="staff-dot staff-dot-survey"></i>アンケート回答時</span>
+          <span><i class="staff-dot staff-dot-reservation"></i>予約時</span>
+          <span><i class="staff-dot staff-dot-final"></i>最終設計</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="staff-detail-panel">
+      <div class="staff-section-head">
+        <div>
+          <h2>お客様情報</h2>
+          <p class="admin-note">お客様名・連絡先はこの端末の接客用下書きとして扱います。</p>
+        </div>
+        <button class="admin-btn primary" id="customer-edit-open" type="button">お客様情報を入力</button>
+      </div>
+      <div id="customer-profile"></div>
+    </section>
+
+    <section class="staff-detail-panel">
+      <div class="staff-section-head">
+        <div>
+          <h2>アンケート回答</h2>
+          <p class="admin-note">対象のお客様に紐づく回答だけを表示します。</p>
+        </div>
+      </div>
+      <div id="question-summary"></div>
+      <div class="staff-answer-grid" id="question-answer-grid"></div>
+    </section>
+
+    <section class="staff-detail-panel">
+      <div class="staff-section-head">
+        <div>
+          <h2>5軸グラフ比較</h2>
+          <p class="admin-note">アンケート回答時点、予約時点、最終設計の5軸を確認します。</p>
+        </div>
+      </div>
+      <div id="axis-compare"></div>
+    </section>
+
+    <section class="staff-detail-split">
+      <section class="staff-detail-panel">
+        <div class="staff-section-head">
+          <div>
+            <h2>おすすめ原料エリア</h2>
+            <p class="admin-note">アンケート回答と予約時の5軸に近い原料候補を表示します。</p>
+          </div>
+        </div>
+        <div id="recommended-materials"></div>
+      </section>
+
+      <section class="staff-detail-panel">
+        <div class="staff-section-head">
+          <div>
+            <h2>お客様ヒアリング入力</h2>
+            <p class="admin-note">接客中のメモ、最終配合、QR表示をこのお客様の記録として保存します。</p>
+          </div>
+        </div>
+
+        <form class="admin-form-stack" id="staff-detail-form" hidden>
+          <input id="session-record-id" type="hidden">
+          <input id="submit-mode" type="hidden" value="draft">
+
+          <div class="admin-grid cols-2">
+            <label>入力状態
+              <select id="session-status">
+                <option value="draft">下書き</option>
+                <option value="ready">接客準備</option>
+                <option value="completed">接客完了</option>
+              </select>
+            </label>
+            <div class="staff-soft-card">
+              <strong>保存の考え方</strong>
+              <p class="admin-note">途中保存は接客メモとレシピの更新用です。最終登録で予約状態も接客完了に更新します。</p>
+            </div>
+          </div>
+
+          <div class="staff-note-split">
+            <label>来店前メモ
+              <textarea id="preparation-note" rows="6" placeholder="事前アンケートを見て準備したいこと"></textarea>
+            </label>
+            <label>スタッフ要約
+              <textarea id="staff-summary" rows="6" placeholder="会話から得た印象や要望"></textarea>
+            </label>
+          </div>
+
+          <section class="staff-soft-card staff-final-section">
+            <div class="staff-section-head">
+              <div>
+                <h2>最終原料登録と最終5軸</h2>
+                <p class="admin-note">原料と割合を登録すると、最終5軸の確認とQR表示ができます。</p>
+              </div>
+            </div>
+
+            <div class="staff-final-grid">
+              <article class="staff-soft-card">
+                <div class="staff-section-head">
+                  <div>
+                    <h3>最終原料登録エリア</h3>
+                    <p class="admin-note">原料を選び、配合割合を入力します。</p>
+                  </div>
+                  <button class="admin-btn secondary" id="add-recipe-row" type="button">行を追加</button>
+                </div>
+                <div class="staff-recipe-list" id="recipe-list"></div>
+                <div class="admin-actions">
+                  <button class="admin-btn secondary" id="normalize-recipe" type="button">割合を100%に整える</button>
+                </div>
+              </article>
+
+              <article class="staff-soft-card">
+                <h3>最終5軸グラフ</h3>
+                <div class="staff-axis-input-grid" id="final-axis-inputs">
+                  <label>フローラル
+                    <input id="axis-floral" type="number" min="0" max="100" step="1" value="0">
+                  </label>
+                  <label>フレッシュ
+                    <input id="axis-fresh" type="number" min="0" max="100" step="1" value="0">
+                  </label>
+                  <label>ウッディ
+                    <input id="axis-woody" type="number" min="0" max="100" step="1" value="0">
+                  </label>
+                  <label>スパイシー
+                    <input id="axis-spicy" type="number" min="0" max="100" step="1" value="0">
+                  </label>
+                  <label>スウィート
+                    <input id="axis-sweet" type="number" min="0" max="100" step="1" value="0">
+                  </label>
+                </div>
+                <p class="admin-note" id="axis-total">合計 0</p>
+                <div class="staff-axis-preview" id="final-axis-preview"></div>
+              </article>
+            </div>
+
+            <div class="staff-feedback-grid">
+              <article class="staff-soft-card">
+                <h3>お客様の感想</h3>
+                <label>感想メモ
+                  <textarea id="customer-feedback" rows="7" placeholder="仕上がりや持ち帰り後のメモ"></textarea>
+                </label>
+                <p class="admin-note" id="save-status">保存内容はここに表示されます。</p>
+              </article>
+
+              <article class="staff-soft-card staff-qr-card">
+                <h3>QR表示</h3>
+                <div id="qr-preview" class="staff-qr-preview">QRコードがここに表示されます。</div>
+                <div class="admin-actions">
+                  <button class="admin-btn secondary" id="save-draft" type="submit">途中保存</button>
+                  <button class="admin-btn primary" id="save-complete" type="submit">最終登録</button>
+                  <button class="admin-btn primary" id="generate-qr" type="button">QR表示</button>
+                </div>
+              </article>
+            </div>
+          </section>
+        </form>
+      </section>
+    </section>
+  </main>
+
+  <div class="portal-modal" id="customer-modal" hidden>
+    <div class="portal-modal-backdrop" data-customer-close></div>
+    <div class="portal-modal-dialog">
+      <div class="staff-section-head">
+        <div>
+          <h2>お客様情報入力</h2>
+          <p class="admin-note">この端末の接客用下書きとして保存します。</p>
+        </div>
+        <button class="admin-btn secondary" type="button" data-customer-close>閉じる</button>
+      </div>
+      <form class="admin-form" id="customer-form">
+        <label>お客様名
+          <input id="customer-name" type="text" maxlength="80">
+        </label>
+        <label>メールアドレス
+          <input id="customer-email" type="email" maxlength="120">
+        </label>
+        <label>電話番号（任意）
+          <input id="customer-phone" type="text" maxlength="40">
+        </label>
+        <label class="staff-checkbox">
+          <input id="customer-consent" type="checkbox">
+          <span>個人情報の保存について同意をいただきました。</span>
+        </label>
+        <div class="admin-actions">
+          <button class="admin-btn primary" type="submit">保存する</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/admin-auth.js"></script>
+  <script src="js/admin-data.js"></script>
+  <script src="js/fragrance-master-data.js"></script>
+  <script src="js/staff-customer-detail-page.js"></script>
+</body>
+</html>

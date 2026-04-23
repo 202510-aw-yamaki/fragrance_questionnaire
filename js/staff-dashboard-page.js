@@ -139,7 +139,7 @@
 
   function buildEventMarkup(event, options = {}) {
     const actionHref = event.reservation
-      ? window.AdminAuth.appendRoleToHref(`admin-workspace.html?reservation=${encodeURIComponent(event.reservation.id)}`, "staff")
+      ? window.AdminAuth.appendRoleToHref(`staff-customer-detail.html?reservation=${encodeURIComponent(event.reservation.id)}`, "staff")
       : window.AdminAuth.appendRoleToHref("admin-slots.html", "staff");
     const actionLabel = event.reservation ? "詳細を開く" : "予約枠を開く";
     return `

@@ -117,6 +117,8 @@
 
     filtered.forEach((row) => {
       const draftCustomer = readDraftCustomer(row);
+      const detailPage = getRole() === "staff" ? "staff-customer-detail.html" : "admin-workspace.html";
+      const detailHref = window.AdminAuth.appendRoleToHref(`${detailPage}?reservation=${encodeURIComponent(row.id)}`, getRole());
       const article = document.createElement("article");
       article.className = "portal-list-row portal-reservation-row";
       article.innerHTML = `
@@ -133,7 +135,7 @@
             <option value="completed"${row.status === "completed" ? " selected" : ""}>接客完了</option>
           </select>
         </span>
-        <span class="portal-reservation-cell portal-reservation-cell--action"><a class="admin-btn primary portal-row-link" href="${window.AdminAuth.appendRoleToHref(`admin-workspace.html?reservation=${encodeURIComponent(row.id)}`, getRole())}">詳細</a></span>
+        <span class="portal-reservation-cell portal-reservation-cell--action"><a class="admin-btn primary portal-row-link" href="${detailHref}">詳細</a></span>
       `;
       rowsEl.appendChild(article);
     });
