@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>admin-dashboard-reference</title>
+    <style>
+        body { margin: 0; padding: 0; }
+    </style>
+</head>
+<body>
+<div style="width: 1200px; min-width: 360px; background: linear-gradient(180deg, var(--color-grey-95, #F7F2EB) 0%, var(--color-grey-97, #FCF9F5) 55%, var(--color-white-solid, white) 100%), var(--color-white-solid, white); flex-direction: column; justify-content: flex-start; align-items: center; display: inline-flex">
+  <div style="align-self: stretch; background: var(--color-grey-98-92%, rgba(255, 250, 245, 0.92)); border-bottom: 1px var(--color-orange-35-12%, rgba(105, 88, 71, 0.12)) solid; backdrop-filter: blur(7px); justify-content: space-between; align-items: flex-start; display: inline-flex">
+    <div style="flex: 1 1 0; min-height: 72px; padding-left: 30px; padding-right: 30px; padding-top: 14.81px; padding-bottom: 14.81px; justify-content: space-between; align-items: center; display: flex">
+      <div style="flex-direction: column; justify-content: flex-start; align-items: flex-start; display: inline-flex">
+        <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 15.90px; font-family: Noto Sans JP; font-weight: 700; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">Fragrance STAFF_管理スタッフ名</div>
+      </div>
+      <div style="width: 606px; justify-content: flex-end; align-items: center; display: flex">
+        <div style="height: 43.38px; padding-top: 12.19px; padding-bottom: 13.19px; padding-left: 16px; padding-right: 16px; border-radius: 999px; outline: 1px var(--color-orange-35-18%, rgba(105, 88, 71, 0.18)) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+          <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 16px; font-family: Noto Sans JP; font-weight: 700; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">スタッフ登録/管理</div>
+        </div>
+        <div style="height: 43.38px; padding-top: 12.19px; padding-bottom: 13.19px; padding-left: 16px; padding-right: 16px; border-radius: 999px; outline: 1px var(--color-orange-35-18%, rgba(105, 88, 71, 0.18)) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+          <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 16px; font-family: Noto Sans JP; font-weight: 700; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">配点ロジック</div>
+        </div>
+        <div style="height: 43.38px; padding-top: 12.19px; padding-bottom: 13.19px; padding-left: 16px; padding-right: 16px; border-radius: 999px; outline: 1px var(--color-orange-35-18%, rgba(105, 88, 71, 0.18)) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+          <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 16px; font-family: Noto Sans JP; font-weight: 700; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">原料ポイント</div>
+        </div>
+        <div style="padding-top: 12.19px; padding-bottom: 13.19px; padding-left: 16px; padding-right: 16px; border-radius: 999px; outline: 1px var(--color-orange-35-18%, rgba(105, 88, 71, 0.18)) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+          <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 13.30px; font-family: Inter; font-weight: 700; word-wrap: break-word">ログアウト</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="width: 1120px; padding-top: 32px; padding-bottom: 32px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 16px; display: flex">
+    <div style="align-self: stretch; padding-top: 37px; padding-bottom: 24px; padding-left: 24px; padding-right: 24px; background: var(--color-white--88%, rgba(255, 255, 255, 0.88)); box-shadow: 0px 24px 70px rgba(87, 66, 44, 0.08); border-radius: 24px; outline: 1px var(--color-orange-35-12%, rgba(105, 88, 71, 0.12)) solid; outline-offset: -1px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+      <div style="min-height: 32px; padding-top: 3.95px; padding-bottom: 5.05px; padding-left: 12px; padding-right: 12px; border-radius: 999px; justify-content: flex-start; align-items: center; display: inline-flex">
+        <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-50, #9B7364); font-size: 13px; font-family: Noto Sans JP; font-weight: 700; text-transform: uppercase; line-height: 22.10px; letter-spacing: 1.04px; word-wrap: break-word">Dashboard</div>
+      </div>
+      <div style="align-self: stretch; justify-content: flex-start; align-items: flex-start; display: inline-flex">
+        <div style="flex: 1 1 0; padding-top: 13px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: inline-flex">
+          <div style="align-self: stretch; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 32px; font-family: Noto Sans JP; font-weight: 700; line-height: 40px; letter-spacing: 0.32px; word-wrap: break-word">運用状況の確認</div>
+        </div>
+        <div style="flex: 1 1 0; align-self: stretch; flex-direction: column; justify-content: flex-end; align-items: flex-end; display: inline-flex">
+          <div style="align-self: stretch; text-align: right; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-38, #6D6157); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">予約数と公開予約枠の確認と各リンク先の簡単な確認ページ。</div>
+        </div>
+      </div>
+    </div>
+    <div style="align-self: stretch; justify-content: space-between; align-items: center; display: inline-flex">
+      <div style="padding: 12px; background: var(--color-white--88%, rgba(255, 255, 255, 0.88)); box-shadow: 0px 24px 70px rgba(87, 66, 44, 0.08); border-radius: 24px; outline: 1px var(--color-orange-35-12%, rgba(105, 88, 71, 0.12)) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; gap: 6.40px; display: inline-flex">
+        <div style="width: 214px; padding-left: 12px; padding-right: 12px; justify-content: flex-start; align-items: center; display: inline-flex">
+          <div style="flex: 1 1 0; flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 18.70px; font-family: Noto Sans JP; font-weight: 700; line-height: 31.82px; letter-spacing: 0.32px; word-wrap: break-word">本日の予約件数</div>
+          </div>
+          <div style="width: 38px; height: 28px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-31, #6B4B34); font-size: 18.70px; font-family: Noto Sans JP; font-weight: 700; line-height: 31.82px; letter-spacing: 0.32px; word-wrap: break-word">-</div>
+          </div>
+        </div>
+        <div style="width: 214px; padding-left: 12px; padding-right: 12px; border-radius: 12px; outline: 1px var(--color-orange-55, #B97D61) solid; outline-offset: -1px; justify-content: flex-start; align-items: center; display: inline-flex">
+          <div style="width: 114px; flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">スタッフA</div>
+          </div>
+          <div style="flex: 1 1 0; height: 28px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-21, #3F352C); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">出勤</div>
+          </div>
+          <div style="flex: 1 1 0; height: 28px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-31, #6B4B34); font-size: 18.70px; font-family: Noto Sans JP; font-weight: 700; line-height: 31.82px; letter-spacing: 0.32px; word-wrap: break-word">-</div>
+          </div>
+        </div>
+        <div style="width: 214px; padding-left: 12px; padding-right: 12px; border-radius: 12px; outline: 1px var(--color-azure-50, #0075FF) solid; outline-offset: -1px; justify-content: flex-start; align-items: center; display: inline-flex">
+          <div style="width: 114px; flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">スタッフB</div>
+          </div>
+          <div style="flex: 1 1 0; height: 28px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-21, #3F352C); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">休日</div>
+          </div>
+          <div style="flex: 1 1 0; height: 28px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-31, #6B4B34); font-size: 18.70px; font-family: Noto Sans JP; font-weight: 700; line-height: 31.82px; letter-spacing: 0.32px; word-wrap: break-word">/</div>
+          </div>
+        </div>
+        <div style="width: 214px; padding-left: 12px; padding-right: 12px; border-radius: 12px; outline: 1px var(--color-orange-55, #B97D61) solid; outline-offset: -1px; justify-content: flex-start; align-items: center; display: inline-flex">
+          <div style="width: 114px; flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">スタッフC</div>
+          </div>
+          <div style="flex: 1 1 0; height: 28px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-21, #3F352C); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">出勤</div>
+          </div>
+          <div style="flex: 1 1 0; height: 28px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-31, #6B4B34); font-size: 18.70px; font-family: Noto Sans JP; font-weight: 700; line-height: 31.82px; letter-spacing: 0.32px; word-wrap: break-word">-</div>
+          </div>
+        </div>
+        <div style="width: 214px; padding-left: 12px; padding-right: 12px; border-radius: 12px; outline: 1px var(--color-orange-55, #B97D61) solid; outline-offset: -1px; justify-content: flex-start; align-items: center; display: inline-flex">
+          <div style="width: 114px; flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">スタッフD</div>
+          </div>
+          <div style="flex: 1 1 0; height: 28px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-21, #3F352C); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">出勤</div>
+          </div>
+          <div style="flex: 1 1 0; height: 28px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-31, #6B4B34); font-size: 18.70px; font-family: Noto Sans JP; font-weight: 700; line-height: 31.82px; letter-spacing: 0.32px; word-wrap: break-word">-</div>
+          </div>
+        </div>
+      </div>
+      <div style="align-self: stretch; padding-left: 24px; padding-right: 24px; padding-top: 12px; padding-bottom: 12px; background: var(--color-white--88%, rgba(255, 255, 255, 0.88)); box-shadow: 0px 24px 70px rgba(87, 66, 44, 0.08); border-radius: 24px; outline: 1px var(--color-orange-35-12%, rgba(105, 88, 71, 0.12)) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; gap: 6.40px; display: inline-flex">
+        <div style="justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+          <div style="flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">翌週の予約件数/枠数</div>
+          </div>
+          <div style="flex-direction: column; justify-content: flex-start; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-31, #6B4B34); font-size: 18.70px; font-family: Noto Sans JP; font-weight: 700; line-height: 31.82px; letter-spacing: 0.32px; word-wrap: break-word">--/--</div>
+          </div>
+        </div>
+        <div style="height: 28px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+          <div style="width: 154px; flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">スタッフA</div>
+          </div>
+          <div style="flex-direction: column; justify-content: flex-start; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-31, #6B4B34); font-size: 18.70px; font-family: Noto Sans JP; font-weight: 700; line-height: 31.82px; letter-spacing: 0.32px; word-wrap: break-word">--/--</div>
+          </div>
+        </div>
+        <div style="height: 28px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+          <div style="width: 154px; flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">スタッフB</div>
+          </div>
+          <div style="flex-direction: column; justify-content: flex-start; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-31, #6B4B34); font-size: 18.70px; font-family: Noto Sans JP; font-weight: 700; line-height: 31.82px; letter-spacing: 0.32px; word-wrap: break-word">--/--</div>
+          </div>
+        </div>
+        <div style="height: 28px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+          <div style="width: 154px; flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">スタッフC</div>
+          </div>
+          <div style="flex-direction: column; justify-content: flex-start; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-31, #6B4B34); font-size: 18.70px; font-family: Noto Sans JP; font-weight: 700; line-height: 31.82px; letter-spacing: 0.32px; word-wrap: break-word">--/--</div>
+          </div>
+        </div>
+        <div style="height: 28px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+          <div style="width: 154px; flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">スタッフD</div>
+          </div>
+          <div style="flex-direction: column; justify-content: flex-start; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-31, #6B4B34); font-size: 18.70px; font-family: Noto Sans JP; font-weight: 700; line-height: 31.82px; letter-spacing: 0.32px; word-wrap: break-word">--/--</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding-left: 24px; padding-right: 24px; padding-top: 12px; padding-bottom: 12px; background: var(--color-white--88%, rgba(255, 255, 255, 0.88)); box-shadow: 0px 24px 70px rgba(87, 66, 44, 0.08); border-radius: 24px; outline: 1px var(--color-orange-35-12%, rgba(105, 88, 71, 0.12)) solid; outline-offset: -1px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 6.40px; display: inline-flex">
+        <div style="width: 190px; justify-content: flex-start; align-items: center; display: inline-flex">
+          <div style="flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">向こう二週間予約枠確認</div>
+          </div>
+          <div style="flex: 1 1 0; height: 28px"></div>
+        </div>
+        <div style="width: 190px; justify-content: flex-start; align-items: center; display: inline-flex">
+          <div style="flex: 1 1 0; flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">スタッフA</div>
+          </div>
+          <div style="height: 28px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-31, #6B4B34); font-size: 18.70px; font-family: Noto Sans JP; font-weight: 700; line-height: 31.82px; letter-spacing: 0.32px; word-wrap: break-word">OK</div>
+          </div>
+        </div>
+        <div style="width: 190px; justify-content: flex-start; align-items: center; display: inline-flex">
+          <div style="flex: 1 1 0; flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">スタッフB</div>
+          </div>
+          <div style="height: 28px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: #FE6118; font-size: 18.70px; font-family: Noto Sans JP; font-weight: 700; line-height: 31.82px; letter-spacing: 0.32px; word-wrap: break-word">NG</div>
+          </div>
+        </div>
+        <div style="width: 190px; justify-content: flex-start; align-items: center; display: inline-flex">
+          <div style="flex: 1 1 0; flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">スタッフC</div>
+          </div>
+          <div style="height: 28px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-31, #6B4B34); font-size: 18.70px; font-family: Noto Sans JP; font-weight: 700; line-height: 31.82px; letter-spacing: 0.32px; word-wrap: break-word">OK</div>
+          </div>
+        </div>
+        <div style="width: 190px; justify-content: flex-start; align-items: center; display: inline-flex">
+          <div style="flex: 1 1 0; flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">スタッフD</div>
+          </div>
+          <div style="height: 28px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-31, #6B4B34); font-size: 18.70px; font-family: Noto Sans JP; font-weight: 700; line-height: 31.82px; letter-spacing: 0.32px; word-wrap: break-word">OK</div>
+          </div>
+        </div>
+      </div>
+      <div style="width: 240px; padding-top: 12px; padding-bottom: 12px; padding-left: 24px; padding-right: 12px; background: var(--color-white--88%, rgba(255, 255, 255, 0.88)); box-shadow: 0px 24px 70px rgba(87, 66, 44, 0.08); border-radius: 24px; outline: 1px var(--color-orange-35-12%, rgba(105, 88, 71, 0.12)) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: flex-start; gap: 6.40px; display: inline-flex">
+        <div style="align-self: stretch; justify-content: center; align-items: center; display: inline-flex">
+          <div style="flex: 1 1 0; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">配点ロジック重み</div>
+          </div>
+        </div>
+        <div style="align-self: stretch; justify-content: center; align-items: center; display: inline-flex">
+          <div style="flex: 1 1 0; flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">共通質問（1～5）</div>
+          </div>
+          <div style="width: 48px; height: 28px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-31, #6B4B34); font-size: 18.70px; font-family: Noto Sans JP; font-weight: 700; line-height: 31.82px; letter-spacing: 0.32px; word-wrap: break-word">1</div>
+          </div>
+        </div>
+        <div style="align-self: stretch; justify-content: center; align-items: center; display: inline-flex">
+          <div style="flex: 1 1 0; flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">分岐質問（6～7）</div>
+          </div>
+          <div style="width: 48px; height: 28px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-31, #6B4B34); font-size: 18.70px; font-family: Noto Sans JP; font-weight: 700; line-height: 31.82px; letter-spacing: 0.32px; word-wrap: break-word">2</div>
+          </div>
+        </div>
+        <div style="align-self: stretch; justify-content: center; align-items: center; display: inline-flex">
+          <div style="flex: 1 1 0; flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">最終質問（8）</div>
+          </div>
+          <div style="width: 48px; height: 28px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-31, #6B4B34); font-size: 18.70px; font-family: Noto Sans JP; font-weight: 700; line-height: 31.82px; letter-spacing: 0.32px; word-wrap: break-word">3</div>
+          </div>
+        </div>
+        <div style="align-self: stretch; justify-content: center; align-items: center; display: inline-flex">
+          <div style="flex: 1 1 0; flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">仕上げ補正</div>
+          </div>
+          <div style="width: 48px; height: 28px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-31, #6B4B34); font-size: 18.70px; font-family: Noto Sans JP; font-weight: 700; line-height: 31.82px; letter-spacing: 0.32px; word-wrap: break-word">0.25</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="align-self: stretch; justify-content: space-between; align-items: center; display: inline-flex">
+      <div style="width: 240px; height: 135px; padding-left: 24px; padding-right: 24px; padding-top: 12px; padding-bottom: 12px; background: var(--color-white--88%, rgba(255, 255, 255, 0.88)); box-shadow: 0px 24px 70px rgba(87, 66, 44, 0.08); border-radius: 24px; outline: 1px var(--color-orange-35-12%, rgba(105, 88, 71, 0.12)) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+        <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+          <div style="align-self: stretch; text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 24px; font-family: Noto Sans JP; font-weight: 700; line-height: 30px; letter-spacing: 0.32px; word-wrap: break-word">スタッフ登録</div>
+        </div>
+        <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+          <div style="align-self: stretch; text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-38, #6D6157); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">新しいスタッフを<br/>登録できます</div>
+        </div>
+      </div>
+      <div style="width: 251px; height: 134px; padding-left: 24px; padding-right: 24px; padding-top: 12px; padding-bottom: 12px; background: var(--color-white--88%, rgba(255, 255, 255, 0.88)); box-shadow: 0px 24px 70px rgba(87, 66, 44, 0.08); border-radius: 24px; outline: 1px var(--color-orange-35-12%, rgba(105, 88, 71, 0.12)) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+        <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+          <div style="align-self: stretch; text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 24px; font-family: Noto Sans JP; font-weight: 700; line-height: 30px; letter-spacing: 0.32px; word-wrap: break-word">アンケート編集</div>
+        </div>
+        <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+          <div style="align-self: stretch; text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-38, #6D6157); font-size: 15.60px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">アンケート文言の追加、<br/>及び編集ができます</div>
+        </div>
+      </div>
+      <div style="width: 240px; height: 134px; padding-left: 24px; padding-right: 24px; padding-top: 12px; padding-bottom: 12px; background: var(--color-white--88%, rgba(255, 255, 255, 0.88)); box-shadow: 0px 24px 70px rgba(87, 66, 44, 0.08); border-radius: 24px; outline: 1px var(--color-orange-35-12%, rgba(105, 88, 71, 0.12)) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+        <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+          <div style="align-self: stretch; text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 24px; font-family: Noto Sans JP; font-weight: 700; line-height: 30px; letter-spacing: 0.32px; word-wrap: break-word">配点ロジック</div>
+        </div>
+        <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+          <div style="align-self: stretch; text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-38, #6D6157); font-size: 15.60px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">配点ロジックの修正が<br/>できます</div>
+        </div>
+      </div>
+      <div style="width: 240px; height: 134px; padding-left: 24px; padding-right: 24px; padding-top: 12px; padding-bottom: 12px; background: var(--color-white--88%, rgba(255, 255, 255, 0.88)); box-shadow: 0px 24px 70px rgba(87, 66, 44, 0.08); border-radius: 24px; outline: 1px var(--color-orange-35-12%, rgba(105, 88, 71, 0.12)) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+        <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+          <div style="align-self: stretch; text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 24px; font-family: Noto Sans JP; font-weight: 700; line-height: 30px; letter-spacing: 0.32px; word-wrap: break-word">原料ポイント</div>
+        </div>
+        <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+          <div style="align-self: stretch; text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-38, #6D6157); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">原料の5軸に与える<br/>ポイントを編集できます</div>
+        </div>
+      </div>
+    </div>
+    <div style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 37px; display: inline-flex">
+      <div style="width: 524px; padding-left: 12px; padding-right: 12px; padding-top: 24px; padding-bottom: 24px; background: var(--color-white--88%, rgba(255, 255, 255, 0.88)); box-shadow: 0px 24px 70px rgba(87, 66, 44, 0.08); border-radius: 24px; outline: 1px var(--color-orange-35-12%, rgba(105, 88, 71, 0.12)) solid; outline-offset: -1px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 8px; display: inline-flex">
+        <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+          <div style="align-self: stretch; text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 24px; font-family: Noto Sans JP; font-weight: 700; line-height: 30px; letter-spacing: 0.32px; word-wrap: break-word">分岐テンプレート</div>
+        </div>
+        <div style="align-self: stretch; text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-38, #6D6157); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">現在の分岐テンプレートの数値です。</div>
+        <div style="align-self: stretch; padding-top: 8px; padding-bottom: 8px; justify-content: flex-start; align-items: flex-start; gap: 8px; display: inline-flex">
+          <div style="flex: 1 1 0; border-radius: 12px; outline: 1px var(--color-orange-47, #8A7868) solid; outline-offset: -1px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: inline-flex">
+            <div style="align-self: stretch; padding-top: 1px; padding-bottom: 1px; overflow: hidden; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+              <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: black; font-size: 16px; font-family: Noto Sans JP; font-weight: 700; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">Bloom / floral</div>
+            </div>
+            <div style="align-self: stretch; justify-content: flex-start; align-items: flex-start; display: inline-flex">
+              <div style="flex: 1 1 0; padding-top: 12px; padding-bottom: 12px; overflow: hidden; flex-direction: column; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+                <div style="justify-content: center; display: flex; flex-direction: column; color: black; font-size: 16px; font-family: Noto Sans JP; font-weight: 700; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">フローラル<br/>フレッシュ<br/>ウッディ<br/>スパイシー<br/>スウィート</div>
+              </div>
+              <div style="padding-left: 10px; padding-right: 10px; padding-top: 12px; padding-bottom: 12px; overflow: hidden; flex-direction: column; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+                <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: black; font-size: 16px; font-family: Noto Sans JP; font-weight: 700; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">62<br/>54<br/>42<br/>34<br/>58</div>
+              </div>
+            </div>
+          </div>
+          <div style="flex: 1 1 0; height: 190px; border-radius: 12px; outline: 1px var(--color-orange-47, #8A7868) solid; outline-offset: -1px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: inline-flex">
+            <div style="align-self: stretch; padding-top: 1px; padding-bottom: 1px; overflow: hidden; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+              <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: black; font-size: 16px; font-family: Noto Sans JP; font-weight: 700; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">Air / fresh</div>
+            </div>
+            <div style="align-self: stretch; justify-content: flex-start; align-items: flex-start; display: inline-flex">
+              <div style="flex: 1 1 0; padding-top: 12px; padding-bottom: 12px; overflow: hidden; flex-direction: column; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+                <div style="justify-content: center; display: flex; flex-direction: column; color: black; font-size: 16px; font-family: Noto Sans JP; font-weight: 700; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">フローラル<br/>フレッシュ<br/>ウッディ<br/>スパイシー<br/>スウィート</div>
+              </div>
+              <div style="padding-left: 10px; padding-right: 10px; padding-top: 12px; padding-bottom: 12px; overflow: hidden; flex-direction: column; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+                <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: black; font-size: 16px; font-family: Noto Sans JP; font-weight: 700; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">46<br/>64<br/>44<br/>36<br/>40</div>
+              </div>
+            </div>
+          </div>
+          <div style="flex: 1 1 0; height: 190px; justify-content: flex-start; align-items: flex-start; display: flex">
+            <div style="flex: 1 1 0; border-radius: 12px; outline: 1px var(--color-orange-47, #8A7868) solid; outline-offset: -1px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: inline-flex">
+              <div style="align-self: stretch; padding-top: 1px; padding-bottom: 1px; overflow: hidden; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+                <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: black; font-size: 16px; font-family: Noto Sans JP; font-weight: 700; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">Deep / woody</div>
+              </div>
+              <div style="align-self: stretch; justify-content: flex-start; align-items: flex-start; display: inline-flex">
+                <div style="flex: 1 1 0; padding-top: 12px; padding-bottom: 12px; overflow: hidden; flex-direction: column; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+                  <div style="justify-content: center; display: flex; flex-direction: column; color: black; font-size: 16px; font-family: Noto Sans JP; font-weight: 700; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">フローラル<br/>フレッシュ<br/>ウッディ<br/>スパイシー<br/>スウィート</div>
+                </div>
+                <div style="padding-left: 10px; padding-right: 10px; padding-top: 12px; padding-bottom: 12px; overflow: hidden; flex-direction: column; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+                  <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: black; font-size: 16px; font-family: Noto Sans JP; font-weight: 700; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">44<br/>42<br/>64<br/>52<br/>44</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="flex: 1 1 0; align-self: stretch; padding: 24px; background: var(--color-white--88%, rgba(255, 255, 255, 0.88)); box-shadow: 0px 24px 70px rgba(87, 66, 44, 0.08); border-radius: 24px; outline: 1px var(--color-orange-35-12%, rgba(105, 88, 71, 0.12)) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; gap: 8px; display: inline-flex">
+        <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+          <div style="align-self: stretch; text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 24px; font-family: Noto Sans JP; font-weight: 700; line-height: 30px; letter-spacing: 0.32px; word-wrap: break-word">原料一覧ボタン</div>
+        </div>
+        <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+          <div style="align-self: stretch; text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-38, #6D6157); font-size: 16px; font-family: Noto Sans JP; font-weight: 400; line-height: 27.20px; letter-spacing: 0.32px; word-wrap: break-word">現在登録してある原料ページの原料に直接飛べます</div>
+        </div>
+        <div style="width: 463px; height: 197px; position: relative; background: white">
+          <div style="width: 120px; height: 43.38px; padding-left: 4px; padding-right: 4px; left: 0px; top: 0px; position: absolute; background: var(--color-grey-95-70%, rgba(248, 243, 236, 0.70)); border-radius: 999px; outline: 1px var(--color-orange-50, #9B7364) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 13.30px; font-family: Noto Sans JP; font-weight: 700; line-height: 22.67px; letter-spacing: 0.53px; word-wrap: break-word">ベルガモット</div>
+          </div>
+          <div style="width: 106px; height: 43.38px; padding-left: 4px; padding-right: 4px; left: 128px; top: 0px; position: absolute; background: var(--color-grey-95-70%, rgba(248, 243, 236, 0.70)); border-radius: 999px; outline: 1px var(--color-orange-50, #9B7364) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 13.30px; font-family: Noto Sans JP; font-weight: 700; line-height: 22.67px; letter-spacing: 0.53px; word-wrap: break-word">ミュゲ</div>
+          </div>
+          <div style="width: 107px; height: 43.38px; padding-left: 4px; padding-right: 4px; left: 242px; top: 0px; position: absolute; background: var(--color-grey-95-70%, rgba(248, 243, 236, 0.70)); border-radius: 999px; outline: 1px var(--color-orange-50, #9B7364) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 13.30px; font-family: Noto Sans JP; font-weight: 700; line-height: 22.67px; letter-spacing: 0.53px; word-wrap: break-word">マグノリア</div>
+          </div>
+          <div style="width: 106px; height: 43.38px; padding-left: 4px; padding-right: 4px; left: 357px; top: 0px; position: absolute; background: var(--color-grey-95-70%, rgba(248, 243, 236, 0.70)); border-radius: 999px; outline: 1px var(--color-orange-50, #9B7364) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 13.30px; font-family: Noto Sans JP; font-weight: 700; line-height: 22.67px; letter-spacing: 0.53px; word-wrap: break-word">スカッシュ</div>
+          </div>
+          <div style="width: 120px; height: 43.38px; padding-left: 4px; padding-right: 4px; left: 0px; top: 51.38px; position: absolute; background: var(--color-grey-95-70%, rgba(248, 243, 236, 0.70)); border-radius: 999px; outline: 1px var(--color-orange-50, #9B7364) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 13.30px; font-family: Noto Sans JP; font-weight: 700; line-height: 22.67px; letter-spacing: 0.53px; word-wrap: break-word">レモン</div>
+          </div>
+          <div style="width: 106px; height: 43.38px; padding-left: 4px; padding-right: 4px; left: 128px; top: 51.38px; position: absolute; background: var(--color-grey-95-70%, rgba(248, 243, 236, 0.70)); border-radius: 999px; outline: 1px var(--color-orange-50, #9B7364) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 13.30px; font-family: Noto Sans JP; font-weight: 700; line-height: 22.67px; letter-spacing: 0.53px; word-wrap: break-word">ダマスクローズ</div>
+          </div>
+          <div style="width: 107px; height: 43.38px; padding-left: 4px; padding-right: 4px; left: 242px; top: 51.38px; position: absolute; background: var(--color-grey-95-70%, rgba(248, 243, 236, 0.70)); border-radius: 999px; outline: 1px var(--color-orange-50, #9B7364) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 13.30px; font-family: Noto Sans JP; font-weight: 700; line-height: 22.67px; letter-spacing: 0.53px; word-wrap: break-word">ムスク</div>
+          </div>
+          <div style="width: 106px; height: 43.38px; padding-left: 4px; padding-right: 4px; left: 357px; top: 51.38px; position: absolute; background: var(--color-grey-95-70%, rgba(248, 243, 236, 0.70)); border-radius: 999px; outline: 1px var(--color-orange-50, #9B7364) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 13.30px; font-family: Noto Sans JP; font-weight: 700; line-height: 22.67px; letter-spacing: 0.53px; word-wrap: break-word">シーブルー</div>
+          </div>
+          <div style="width: 120px; height: 43.38px; padding-left: 4px; padding-right: 4px; left: 0px; top: 102.76px; position: absolute; background: var(--color-grey-95-70%, rgba(248, 243, 236, 0.70)); border-radius: 999px; outline: 1px var(--color-orange-50, #9B7364) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 13.30px; font-family: Noto Sans JP; font-weight: 700; line-height: 22.67px; letter-spacing: 0.53px; word-wrap: break-word">グレープフルーツ</div>
+          </div>
+          <div style="width: 106px; height: 43.38px; padding-left: 4px; padding-right: 4px; left: 128px; top: 102.76px; position: absolute; background: var(--color-grey-95-70%, rgba(248, 243, 236, 0.70)); border-radius: 999px; outline: 1px var(--color-orange-50, #9B7364) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 13.30px; font-family: Noto Sans JP; font-weight: 700; line-height: 22.67px; letter-spacing: 0.53px; word-wrap: break-word">アッサムティー</div>
+          </div>
+          <div style="width: 107px; height: 43.38px; padding-left: 4px; padding-right: 4px; left: 242px; top: 102.76px; position: absolute; background: var(--color-grey-95-70%, rgba(248, 243, 236, 0.70)); border-radius: 999px; outline: 1px var(--color-orange-50, #9B7364) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 13.30px; font-family: Noto Sans JP; font-weight: 700; line-height: 22.67px; letter-spacing: 0.53px; word-wrap: break-word">アンバー</div>
+          </div>
+          <div style="width: 106px; height: 43.38px; padding-left: 4px; padding-right: 4px; left: 357px; top: 102.76px; position: absolute; background: var(--color-grey-95-70%, rgba(248, 243, 236, 0.70)); border-radius: 999px; outline: 1px var(--color-orange-50, #9B7364) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 13.30px; font-family: Noto Sans JP; font-weight: 700; line-height: 22.67px; letter-spacing: 0.53px; word-wrap: break-word">ハイビスカス</div>
+          </div>
+          <div style="width: 120px; height: 43.38px; padding-left: 4px; padding-right: 4px; left: 0px; top: 154.14px; position: absolute; background: var(--color-grey-95-70%, rgba(248, 243, 236, 0.70)); border-radius: 999px; outline: 1px var(--color-orange-50, #9B7364) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 13.30px; font-family: Noto Sans JP; font-weight: 700; line-height: 22.67px; letter-spacing: 0.53px; word-wrap: break-word">ラベンダー</div>
+          </div>
+          <div style="width: 106px; height: 43.38px; padding-left: 4px; padding-right: 4px; left: 128px; top: 154.14px; position: absolute; background: var(--color-grey-95-70%, rgba(248, 243, 236, 0.70)); border-radius: 999px; outline: 1px var(--color-orange-50, #9B7364) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 13.30px; font-family: Noto Sans JP; font-weight: 700; line-height: 22.67px; letter-spacing: 0.53px; word-wrap: break-word">カシス</div>
+          </div>
+          <div style="width: 107px; height: 43.38px; padding-left: 4px; padding-right: 4px; left: 242px; top: 154.14px; position: absolute; background: var(--color-grey-95-70%, rgba(248, 243, 236, 0.70)); border-radius: 999px; outline: 1px var(--color-orange-50, #9B7364) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 13.30px; font-family: Noto Sans JP; font-weight: 700; line-height: 22.67px; letter-spacing: 0.53px; word-wrap: break-word">サンダルウッド</div>
+          </div>
+          <div style="width: 106px; height: 43.38px; padding-left: 4px; padding-right: 4px; left: 357px; top: 154.14px; position: absolute; background: var(--color-grey-95-70%, rgba(248, 243, 236, 0.70)); border-radius: 999px; outline: 1px var(--color-orange-50, #9B7364) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+            <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: var(--color-orange-24, #4A3D31); font-size: 13.30px; font-family: Noto Sans JP; font-weight: 700; line-height: 22.67px; letter-spacing: 0.53px; word-wrap: break-word">ココナッツラム</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></body>
+</html>
