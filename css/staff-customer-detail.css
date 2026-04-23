@@ -76,6 +76,12 @@
 
 .staff-customer-detail-page .admin-btn {
   min-height: 2.2rem;
+  padding: 0.4rem 1.2rem;
+}
+
+.staff-customer-detail-page .admin-form label {
+  grid-auto-flow: column;
+  justify-content: stretch;
 }
 
 .staff-detail-hero {
@@ -375,7 +381,7 @@
   display: grid;
   grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
   gap: 16px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .staff-material-grid {
@@ -414,7 +420,7 @@
 
 .staff-material-table {
   display: grid;
-  gap: 18.72px;
+  gap: 0;
 }
 
 .staff-material-row {
@@ -631,6 +637,7 @@
 }
 
 .staff-recipe-normalize-actions {
+  align-items: center;
   flex-direction: row-reverse;
 }
 
