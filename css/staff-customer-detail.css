@@ -74,8 +74,11 @@
   box-shadow: 0 24px 70px rgba(87, 66, 44, 0.08);
 }
 
+.staff-customer-detail-page .admin-btn {
+  min-height: 2.2rem;
+}
+
 .staff-detail-hero {
-  min-height: 176px;
   padding-bottom: 8px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.92fr);
@@ -499,6 +502,8 @@
 .staff-recipe-list {
   display: grid;
   gap: 8px;
+  align-content: space-evenly;
+  justify-items: stretch;
 }
 
 .staff-recipe-row {
@@ -625,6 +630,10 @@
   justify-content: space-between;
 }
 
+.staff-recipe-normalize-actions {
+  flex-direction: row-reverse;
+}
+
 .staff-checkbox {
   display: flex;
   align-items: center;
@@ -633,6 +642,25 @@
 
 .staff-checkbox input {
   width: auto;
+}
+
+.staff-consent-field {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.staff-consent-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.staff-consent-link {
+  color: #6b4b34;
+  font-weight: 700;
+}
+
+#customer-consent {
+  min-height: 1.6rem;
 }
 
 @media (max-width: 72rem) {

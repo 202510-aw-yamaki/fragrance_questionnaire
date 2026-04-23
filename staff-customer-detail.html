@@ -115,7 +115,7 @@
                   <button class="admin-btn secondary" id="add-recipe-row" type="button">行を追加</button>
                 </div>
                 <div class="staff-recipe-list" id="recipe-list"></div>
-                <div class="admin-actions">
+                <div class="admin-actions staff-recipe-normalize-actions">
                   <button class="admin-btn secondary" id="normalize-recipe" type="button">割合を100%に整える</button>
                 </div>
               </article>
@@ -150,7 +150,6 @@
                 <label>感想メモ
                   <textarea id="customer-feedback" rows="7" placeholder="仕上がりや持ち帰り後のメモ"></textarea>
                 </label>
-                <p class="admin-note" id="save-status">保存内容はここに表示されます。</p>
               </article>
 
               <article class="staff-soft-card staff-qr-card">
@@ -172,7 +171,6 @@
       <div class="staff-section-head">
         <div>
           <h2>お客様情報入力</h2>
-          <p class="admin-note">この端末の接客用下書きとして保存します。</p>
         </div>
         <button class="admin-btn secondary" type="button" data-customer-close>閉じる</button>
       </div>
@@ -186,9 +184,12 @@
         <label>電話番号（任意）
           <input id="customer-phone" type="text" maxlength="40">
         </label>
-        <label class="staff-checkbox">
+        <label class="staff-checkbox staff-consent-field">
+          <span class="staff-consent-copy">
+            <a class="staff-consent-link" href="#" target="_blank" rel="noopener">個人情報取り扱いに関するリンク（仮）</a>
+            <span>個人情報の保存について同意をいただきました。</span>
+          </span>
           <input id="customer-consent" type="checkbox">
-          <span>個人情報の保存について同意をいただきました。</span>
         </label>
         <div class="admin-actions">
           <button class="admin-btn primary" type="submit">保存する</button>

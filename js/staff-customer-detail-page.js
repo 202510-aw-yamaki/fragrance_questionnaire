@@ -467,7 +467,7 @@
     if (!recipeListEl) return;
     recipeListEl.innerHTML = "";
     (Array.isArray(items) ? items : []).forEach((item) => createRecipeRow(item));
-    if (!recipeListEl.children.length) {
+    while (recipeListEl.children.length < 3) {
       createRecipeRow({ role: "ingredient" });
     }
   }
@@ -779,7 +779,6 @@
     renderQr(false);
     formEl.hidden = false;
     if (finalSectionEl) finalSectionEl.hidden = false;
-    setStatus("このお客様の接客記録を入力できます。");
   }
 
   bootstrap();
