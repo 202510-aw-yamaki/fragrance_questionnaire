@@ -3578,8 +3578,8 @@
 }
 
 .portal-admin-dashboard-page .portal-hero {
-  min-height: 176px;
-  padding: 37px 24px 24px;
+  min-height: 120px;
+  padding: 20px 24px 18px;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 20px;
   align-items: start;
@@ -3601,7 +3601,7 @@
 }
 
 .portal-admin-dashboard-page .portal-hero h1 {
-  margin: 13px 0 0;
+  margin: 8px 0 0;
   color: #4a3d31;
   font-size: 32px;
   font-weight: 700;
@@ -3626,7 +3626,7 @@
 
 .portal-admin-dashboard-page .portal-manager-metric-grid {
   display: grid;
-  grid-template-columns: 238px minmax(260px, 1fr) 238px 240px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
   align-items: stretch;
 }
@@ -3691,6 +3691,20 @@
   display: none;
 }
 
+.portal-admin-dashboard-page .portal-manager-metric-grid > .admin-panel:nth-child(2) {
+  --dashboard-summary-value-width: 62px;
+}
+
+.portal-admin-dashboard-page .portal-manager-metric-grid > .admin-panel:nth-child(2) .portal-section-head > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--dashboard-summary-value-width);
+  justify-content: stretch;
+}
+
+.portal-admin-dashboard-page .portal-manager-metric-grid > .admin-panel:nth-child(2) .portal-section-head .admin-note {
+  text-align: center;
+}
+
 .portal-admin-dashboard-page .portal-manager-metric-grid .admin-card-list {
   display: grid;
   justify-items: center;
@@ -3725,6 +3739,10 @@
   text-align: center;
 }
 
+.portal-admin-dashboard-page .portal-dashboard-row strong.portal-ng-text {
+  color: #fe6118;
+}
+
 .portal-admin-dashboard-page .portal-dashboard-row--today {
   width: 214px;
   grid-template-columns: minmax(0, 114px) minmax(44px, 1fr) minmax(38px, 1fr);
@@ -3739,8 +3757,8 @@
 
 .portal-admin-dashboard-page .portal-dashboard-row--summary {
   width: 100%;
-  grid-template-columns: minmax(0, 154px) auto;
-  justify-content: start;
+  grid-template-columns: minmax(0, 1fr) var(--dashboard-summary-value-width, 62px);
+  justify-content: stretch;
   gap: 10px;
 }
 
@@ -3757,8 +3775,8 @@
 
 .portal-admin-dashboard-page .portal-manager-link-grid {
   display: grid;
-  grid-template-columns: 240px 251px 240px 240px;
-  justify-content: space-between;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  justify-content: stretch;
   gap: 16px;
 }
 
@@ -3889,9 +3907,8 @@
 
 .portal-admin-dashboard-page .portal-manager-bottom .admin-link-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
-  width: min(100%, 463px);
   margin: 0 auto;
   padding-top: 8px;
   background: #fff;
@@ -3994,7 +4011,7 @@
   }
 
   .portal-admin-dashboard-page .portal-manager-bottom .admin-link-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     background: transparent;
   }
 }
