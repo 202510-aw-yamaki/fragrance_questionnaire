@@ -38,13 +38,13 @@
         <div class="portal-action-stack portal-settings-action-stack">
           <button class="admin-btn primary" id="staff-create-button" type="button">スタッフ新規登録</button>
           <label class="portal-settings-select">
-            <span>スタッフ出勤管理</span>
+            <span>スタッフ登録編集</span>
             <select id="staff-manage-select"></select>
           </label>
           <div class="portal-settings-inline-control">
-            <button class="admin-btn secondary" id="staff-shift-button" type="button">個別勤務管理</button>
+            <button class="admin-btn secondary" id="staff-shift-button" type="button">スタッフ出勤管理</button>
             <label class="portal-settings-select portal-settings-select--compact">
-              <span>スタッフ選択</span>
+              <span>スタッフ出勤管理</span>
               <select id="shift-manage-select"></select>
             </label>
           </div>
@@ -125,7 +125,7 @@
           <div class="portal-section-head">
             <div>
               <h3>曜日ごとの基本出勤</h3>
-              <p class="admin-note">個別出勤モーダルで日付単位の上書きができます。</p>
+              <p class="admin-note">スタッフ出勤管理で勤務設定を更新できます。</p>
             </div>
           </div>
           <div class="portal-week-pattern" id="staff-weekly-pattern"></div>
@@ -133,34 +133,6 @@
         <div class="admin-actions">
           <button class="admin-btn primary" type="submit">保存</button>
           <button class="admin-btn secondary" type="button" data-modal-close="staff-modal">キャンセル</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div class="portal-modal" id="shift-modal" hidden>
-    <div class="portal-modal-backdrop" data-modal-close="shift-modal"></div>
-    <div class="portal-modal-dialog portal-modal-dialog--wide">
-      <div class="portal-section-head">
-        <div>
-          <p class="portal-hero-label portal-hero-label--muted">SHIFT EDIT</p>
-          <h2 id="shift-modal-title">個別出勤モーダル</h2>
-        </div>
-        <button class="admin-btn secondary" type="button" data-modal-close="shift-modal">閉じる</button>
-      </div>
-      <form class="admin-form" id="shift-form">
-        <input id="shift-staff-id" type="hidden">
-        <label class="portal-checkbox">
-          <input id="shift-extend-weeks" type="checkbox">
-          <span>
-            <strong>翌週も追加で表示する</strong>
-            <small>チェックすると 2 週間分までモーダルを伸ばして表示します。</small>
-          </span>
-        </label>
-        <div class="portal-shift-grid" id="shift-rows"></div>
-        <div class="admin-actions">
-          <button class="admin-btn primary" type="submit">個別出勤を保存</button>
-          <button class="admin-btn secondary" type="button" data-modal-close="shift-modal">キャンセル</button>
         </div>
       </form>
     </div>

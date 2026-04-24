@@ -68,14 +68,10 @@
                 </span>
               </label>
             </div>
-            <div class="admin-actions portal-settings-modal-actions">
-              <button class="admin-btn secondary portal-settings-modal-close" type="button" data-modal-close="staff-modal">閉じる</button>
-              <button class="admin-btn primary" type="submit">保存</button>
-              <button class="admin-btn secondary" id="staff-delete-button" type="button">削除</button>
-            </div>
           </section>
 
           <section class="admin-panel admin-panel-soft portal-settings-modal-card portal-settings-duty-card">
+            <div class="portal-settings-shift-staff-banner" id="staff-duty-name-display" hidden></div>
             <div class="portal-settings-duty-head">
               <h3>勤務設定</h3>
               <p class="admin-note">曜日ごとの基準出勤 / 退勤 / 休み設定</p>
@@ -90,44 +86,12 @@
               <div class="portal-week-pattern portal-settings-duty-body" id="staff-weekly-pattern"></div>
             </div>
           </section>
-        </form>
-      </div>
-    `;
-  }
-  const shiftModalEl = document.getElementById("shift-modal");
-  if (shiftModalEl) {
-    shiftModalEl.innerHTML = `
-      <div class="portal-modal-backdrop" data-modal-close="shift-modal"></div>
-      <div class="portal-modal-dialog portal-modal-dialog--shift">
-        <div class="portal-settings-shift-staff-banner" id="shift-staff-name-display">スタッフA</div>
-        <form class="admin-form portal-settings-shift-form" id="shift-form">
-          <input id="shift-staff-id" type="hidden">
-          <section class="admin-panel admin-panel-soft portal-settings-modal-card portal-settings-shift-card">
-            <div class="portal-settings-duty-head portal-settings-shift-head">
-              <h3 id="shift-modal-title">個別勤務管理</h3>
-              <p class="admin-note">曜日ごとの基準出勤 / 退勤 / 休み設定</p>
-            </div>
-            <div class="portal-settings-duty-table portal-settings-shift-table">
-              <div class="portal-settings-duty-head-row" aria-hidden="true">
-                <span>月日</span>
-                <span>出勤</span>
-                <span>退勤</span>
-                <span>休み</span>
-              </div>
-              <div class="portal-shift-grid portal-settings-shift-body" id="shift-rows"></div>
-            </div>
-            <div class="admin-actions portal-settings-shift-actions">
-              <label class="admin-btn secondary portal-settings-shift-toggle" for="shift-extend-weeks">
-                <input id="shift-extend-weeks" type="checkbox" hidden>
-                <span>翌週も追加で表示する</span>
-              </label>
-              <div class="admin-actions portal-settings-shift-actions-right">
-                <button class="admin-btn secondary" type="button" data-modal-close="shift-modal">閉じる</button>
-                <button class="admin-btn primary" type="submit">保存</button>
-                <button class="admin-btn secondary" id="shift-delete-button" type="button">削除</button>
-              </div>
-            </div>
-          </section>
+
+          <div class="admin-actions portal-settings-modal-actions">
+            <button class="admin-btn secondary portal-settings-modal-close" type="button" data-modal-close="staff-modal">閉じる</button>
+            <button class="admin-btn primary" type="submit">保存</button>
+            <button class="admin-btn secondary" id="staff-delete-button" type="button">削除</button>
+          </div>
         </form>
       </div>
     `;
@@ -147,13 +111,13 @@
   const staffDefaultEndEl = document.getElementById("staff-default-end");
   const staffModalTitleEl = document.getElementById("staff-modal-title");
   const staffDeleteButtonEl = document.getElementById("staff-delete-button");
-  const shiftForm = document.getElementById("shift-form");
-  const shiftModalTitleEl = document.getElementById("shift-modal-title");
-  const shiftStaffNameEl = document.getElementById("shift-staff-name-display");
-  const shiftDeleteButtonEl = document.getElementById("shift-delete-button");
+  const staffCredentialCardEl = staffModalEl?.querySelector(".portal-settings-credential-card") || null;
+  const staffDutyCardEl = staffModalEl?.querySelector(".portal-settings-duty-card") || null;
+  const staffDutyNameEl = document.getElementById("staff-duty-name-display");
+  const staffShiftButtonEl = document.getElementById("staff-shift-button");
+  const staffManageLabelEl = manageSelectEl?.closest(".portal-settings-select")?.querySelector("span") || null;
+  const shiftManageLabelEl = shiftManageSelectEl?.closest(".portal-settings-select")?.querySelector("span") || null;
   const weeklyPatternEl = document.getElementById("staff-weekly-pattern");
-  const shiftRowsEl = document.getElementById("shift-rows");
-  const shiftExtendEl = document.getElementById("shift-extend-weeks");
   const state = {
     settingRowMap: new Map(),
     staffDirectory: [],
@@ -161,8 +125,13 @@
     slots: [],
     reservations: [],
     weekOffset: 0,
-    selectedStaffId: ""
+    selectedStaffId: "",
+    staffModalMode: "create"
   };
+
+  if (staffManageLabelEl) staffManageLabelEl.textContent = "スタッフ登録編集";
+  if (shiftManageLabelEl) shiftManageLabelEl.textContent = "スタッフ出勤管理";
+  if (staffShiftButtonEl) staffShiftButtonEl.textContent = "スタッフ出勤管理";
 
   function createLocalDate(date) {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -402,8 +371,6 @@
   }
 
   function getShiftForDate(staff, dateKey) {
-    const override = state.shiftOverrides.find((row) => row.staffId === staff.id && row.date === dateKey);
-    if (override) return override;
     const date = new Date(`${dateKey}T00:00:00`);
     const pattern = staff.weeklyPattern[String(date.getDay())] || {};
     return {
@@ -459,17 +426,6 @@
     });
   }
 
-  function syncShiftRowState() {
-    shiftRowsEl.querySelectorAll("[data-shift-working]").forEach((input) => {
-      const dateKey = input.dataset.shiftWorking;
-      const isWorking = input.checked === true;
-      const startInput = shiftRowsEl.querySelector(`[data-shift-start="${dateKey}"]`);
-      const endInput = shiftRowsEl.querySelector(`[data-shift-end="${dateKey}"]`);
-      if (startInput) startInput.disabled = !isWorking;
-      if (endInput) endInput.disabled = !isWorking;
-    });
-  }
-
   function deriveDefaultTimesFromModal() {
     const firstWorkingRow = Array.from({ length: 7 }, (_, dayIndex) => {
       return {
@@ -482,6 +438,22 @@
       defaultStart: firstWorkingRow?.startTime || normalizeTime(staffDefaultStartEl.value, "10:00"),
       defaultEnd: firstWorkingRow?.endTime || normalizeTime(staffDefaultEndEl.value, "18:00")
     };
+  }
+
+  function readWeeklyPatternFromModal(defaultStart, defaultEnd) {
+    return Array.from({ length: 7 }, (_, dayIndex) => {
+      return [
+        String(dayIndex),
+        {
+          isWorking: weeklyPatternEl.querySelector(`[data-weekday-off="${dayIndex}"]`)?.checked !== true,
+          startTime: normalizeTime(weeklyPatternEl.querySelector(`[data-weekday-start="${dayIndex}"]`)?.value, defaultStart),
+          endTime: normalizeTime(weeklyPatternEl.querySelector(`[data-weekday-end="${dayIndex}"]`)?.value, defaultEnd)
+        }
+      ];
+    }).reduce((acc, [day, value]) => {
+      acc[day] = value;
+      return acc;
+    }, {});
   }
 
   function renderWeeklyPatternInputs(staff) {
@@ -503,6 +475,45 @@
 
   function getSelectedStaff() {
     return findDisplayStaffById(state.selectedStaffId) || getDisplayStaffDirectory(6)[0] || null;
+  }
+
+  function getStoredStaffById(staffId) {
+    return state.staffDirectory.find((row) => row.id === staffId) || null;
+  }
+
+  function setCredentialFieldsDisabled(disabled) {
+    [
+      staffCodeEl,
+      staffNameEl,
+      staffRoleEl,
+      staffPasswordEl,
+      managerCodeEl,
+      managerPasswordEl
+    ].forEach((field) => {
+      if (field) field.disabled = disabled;
+    });
+  }
+
+  function setStaffModalMode(mode, staff, isTemporary = false) {
+    state.staffModalMode = mode;
+    if (staffModalEl) staffModalEl.dataset.mode = mode;
+    if (staffCredentialCardEl) staffCredentialCardEl.hidden = mode === "duty";
+    if (staffDutyCardEl) staffDutyCardEl.hidden = mode === "edit";
+    if (staffDutyNameEl) {
+      staffDutyNameEl.hidden = mode !== "duty";
+      staffDutyNameEl.textContent = staff?.staffName || "";
+    }
+    if (mode === "duty") {
+      setCredentialFieldsDisabled(true);
+    } else {
+      setCredentialFieldsDisabled(false);
+      syncRoleFields();
+    }
+    if (staffDeleteButtonEl) {
+      const canDelete = mode === "edit" && staff && !isTemporary;
+      staffDeleteButtonEl.hidden = !canDelete;
+      staffDeleteButtonEl.disabled = !canDelete;
+    }
   }
 
   function openStaffModal(staff) {
@@ -542,8 +553,9 @@
     syncWeeklyPatternState();
   }
 
-  function launchStaffModal(staff) {
+  function launchStaffModal(staff, mode = "") {
     const isTemporary = staff?.isTemporary === true;
+    const modalMode = mode || (staff && !isTemporary ? "edit" : "create");
     const temporaryTimes = extractShiftTimes(staff?.todayShiftLabel, "10:00", "18:00");
     const target = isTemporary
       ? normalizeStaff({
@@ -554,7 +566,9 @@
         weeklyPattern: buildDefaultWeeklyPattern(temporaryTimes.startTime, temporaryTimes.endTime)
       })
       : (staff ? normalizeStaff(staff) : normalizeStaff({}));
-    staffModalTitleEl.textContent = staff && !isTemporary ? "スタッフ編集" : "スタッフ新規登録";
+    staffModalTitleEl.textContent = modalMode === "duty"
+      ? "スタッフ出勤管理"
+      : (modalMode === "edit" ? "スタッフ編集" : "スタッフ新規登録");
     staffIdEl.value = isTemporary ? "" : (staff?.id || "");
     staffCodeEl.value = isTemporary ? "" : (staff?.staffCode || "");
     staffNameEl.value = target.staffName || "";
@@ -567,42 +581,31 @@
     staffColorEl.value = target.color || "#c78862";
     staffDefaultStartEl.value = target.defaultStart || "10:00";
     staffDefaultEndEl.value = target.defaultEnd || "18:00";
-    if (staffDeleteButtonEl) {
-      staffDeleteButtonEl.disabled = !staff || isTemporary;
-    }
     renderStaffWeeklyPattern(target);
-    syncRoleFields();
+    setStaffModalMode(modalMode, target, isTemporary);
     setControlNote("", false);
     openModal(staffModalEl);
   }
 
-  function openShiftModal(staff) {
-    if (!staff) {
+  function openStaffDutyModal(staff) {
+    if (!staff || staff.isTemporary) {
       setControlNote("先にスタッフを登録してください。", true);
       return;
     }
     state.selectedStaffId = staff.id;
-    shiftModalTitleEl.textContent = "個別勤務管理";
-    shiftStaffNameEl.textContent = staff.staffName;
-    document.getElementById("shift-staff-id").value = staff.id;
-    shiftExtendEl.checked = false;
-    renderShiftRows(staff.id);
-    if (shiftDeleteButtonEl) {
-      shiftDeleteButtonEl.disabled = false;
-    }
-    openModal(shiftModalEl);
+    launchStaffModal(staff, "duty");
   }
 
   function renderManageSelect() {
-    const staffRows = getSelectableStaffDirectory(6);
-    manageSelectEl.innerHTML = buildStaffSelectMarkup(staffRows, "スタッフを選択");
+    const staffRows = state.staffDirectory;
+    manageSelectEl.innerHTML = buildStaffSelectMarkup(staffRows, "スタッフ登録編集");
     manageSelectEl.value = "";
   }
 
   function renderShiftManageSelect() {
     if (!shiftManageSelectEl) return;
-    const staffRows = getSelectableStaffDirectory(6);
-    shiftManageSelectEl.innerHTML = buildStaffSelectMarkup(staffRows, "スタッフを選択");
+    const staffRows = state.staffDirectory;
+    shiftManageSelectEl.innerHTML = buildStaffSelectMarkup(staffRows, "スタッフ出勤管理");
     shiftManageSelectEl.value = "";
   }
 
@@ -689,40 +692,6 @@
     }).join("");
   }
 
-  function renderShiftRows(staffId) {
-    const staff = findDisplayStaffById(staffId);
-    if (!staff) {
-      shiftRowsEl.innerHTML = `<p class="admin-empty">スタッフが見つかりません。</p>`;
-      if (shiftDeleteButtonEl) {
-        shiftDeleteButtonEl.disabled = true;
-      }
-      return;
-    }
-    const dates = getWeekDates(shiftExtendEl.checked ? 14 : 7);
-    shiftRowsEl.innerHTML = dates.map((date) => {
-      const dateKey = formatDateKey(date);
-      const shift = getShiftForDate(staff, dateKey);
-      return `
-        <article class="portal-shift-row">
-          <div class="portal-shift-date">
-            <strong>${formatMonthDay(date)}</strong>
-            <small>${WEEKDAY_LABELS[date.getDay()]}</small>
-          </div>
-          <label class="portal-inline-checkbox">
-            <input type="checkbox" data-shift-working="${dateKey}" ${shift.isWorking ? "checked" : ""}>
-            <span>出勤</span>
-          </label>
-          <input type="time" data-shift-start="${dateKey}" value="${shift.startTime}">
-          <input type="time" data-shift-end="${dateKey}" value="${shift.endTime}">
-        </article>
-      `;
-    }).join("");
-    syncShiftRowState();
-    if (shiftDeleteButtonEl) {
-      shiftDeleteButtonEl.disabled = false;
-    }
-  }
-
   function renderPage() {
     renderManageSelect();
     renderShiftManageSelect();
@@ -787,6 +756,31 @@
     const staffCode = normalizeLoginId(staffCodeEl.value);
     const managerCode = normalizeLoginId(managerCodeEl.value);
     const role = staffRoleEl.value;
+    const modalMode = state.staffModalMode || "create";
+    const editingId = staffIdEl.value || undefined;
+    const existingStaff = editingId ? getStoredStaffById(editingId) : null;
+    if (modalMode === "duty") {
+      if (!existingStaff) {
+        setControlNote("先にスタッフを登録してください。", true);
+        return;
+      }
+      const { defaultStart, defaultEnd } = deriveDefaultTimesFromModal();
+      const payload = normalizeStaff({
+        ...existingStaff,
+        defaultStart,
+        defaultEnd,
+        weeklyPattern: readWeeklyPatternFromModal(defaultStart, defaultEnd)
+      });
+      const index = state.staffDirectory.findIndex((row) => row.id === payload.id);
+      if (index >= 0) state.staffDirectory[index] = payload;
+      state.shiftOverrides = state.shiftOverrides.filter((row) => row.staffId !== payload.id);
+      await saveSetting(STAFF_SETTING_KEY, state.staffDirectory.map(stripStaffForSave));
+      await saveSetting(SHIFT_SETTING_KEY, state.shiftOverrides.map(stripOverrideForSave));
+      closeModal(staffModalEl);
+      setControlNote(`${payload.staffName} の勤務設定を保存しました。`, false);
+      renderPage();
+      return;
+    }
     if (!staffNameEl.value.trim()) {
       setControlNote("スタッフ名を入力してください。", true);
       return;
@@ -807,7 +801,6 @@
       setControlNote("管理者用のパスワードを入力してください。", true);
       return;
     }
-    const editingId = staffIdEl.value || undefined;
     const hasDuplicateStaffId = state.staffDirectory.some((row) => row.id !== editingId && normalizeLoginId(row.staffCode) === staffCode);
     if (hasDuplicateStaffId) {
       setControlNote("同じスタッフIDは登録できません。", true);
@@ -818,22 +811,15 @@
       setControlNote("同じ管理者IDは登録できません。", true);
       return;
     }
-    const { defaultStart, defaultEnd } = deriveDefaultTimesFromModal();
+    const derivedTimes = modalMode === "edit" && existingStaff
+      ? { defaultStart: existingStaff.defaultStart, defaultEnd: existingStaff.defaultEnd }
+      : deriveDefaultTimesFromModal();
+    const { defaultStart, defaultEnd } = derivedTimes;
     staffDefaultStartEl.value = defaultStart;
     staffDefaultEndEl.value = defaultEnd;
-    const weeklyPattern = Array.from({ length: 7 }, (_, dayIndex) => {
-      return [
-        String(dayIndex),
-        {
-          isWorking: weeklyPatternEl.querySelector(`[data-weekday-off="${dayIndex}"]`)?.checked !== true,
-          startTime: normalizeTime(weeklyPatternEl.querySelector(`[data-weekday-start="${dayIndex}"]`)?.value, defaultStart),
-          endTime: normalizeTime(weeklyPatternEl.querySelector(`[data-weekday-end="${dayIndex}"]`)?.value, defaultEnd)
-        }
-      ];
-    }).reduce((acc, [day, value]) => {
-      acc[day] = value;
-      return acc;
-    }, {});
+    const weeklyPattern = modalMode === "edit" && existingStaff
+      ? existingStaff.weeklyPattern
+      : readWeeklyPatternFromModal(defaultStart, defaultEnd);
     const payload = normalizeStaff({
       id: editingId,
       staffCode,
@@ -860,27 +846,6 @@
     syncLoginIndexStorage();
     closeModal(staffModalEl);
     setControlNote(`${payload.staffName} を保存しました。`, false);
-    renderPage();
-  });
-
-  shiftForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const staffId = document.getElementById("shift-staff-id").value;
-    const targetDates = Array.from(shiftRowsEl.querySelectorAll("[data-shift-working]")).map((input) => input.dataset.shiftWorking);
-    state.shiftOverrides = state.shiftOverrides.filter((row) => !(row.staffId === staffId && targetDates.includes(row.date)));
-    targetDates.forEach((dateKey) => {
-      state.shiftOverrides.push(stripOverrideForSave({
-        staffId,
-        date: dateKey,
-        isWorking: shiftRowsEl.querySelector(`[data-shift-working="${dateKey}"]`)?.checked === true,
-        startTime: normalizeTime(shiftRowsEl.querySelector(`[data-shift-start="${dateKey}"]`)?.value, "10:00"),
-        endTime: normalizeTime(shiftRowsEl.querySelector(`[data-shift-end="${dateKey}"]`)?.value, "18:00")
-      }));
-    });
-    await saveSetting(SHIFT_SETTING_KEY, state.shiftOverrides.map(stripOverrideForSave));
-    closeModal(shiftModalEl);
-    const staff = state.staffDirectory.find((row) => row.id === staffId);
-    setControlNote(`${staff?.staffName || "スタッフ"} の個別出勤を保存しました。`, false);
     renderPage();
   });
 
@@ -953,9 +918,11 @@
     launchStaffModal(null);
   });
 
-  document.getElementById("staff-shift-button").addEventListener("click", () => {
-    openShiftModal(getSelectedStaff());
-  });
+  if (staffShiftButtonEl) {
+    staffShiftButtonEl.addEventListener("click", () => {
+      openStaffDutyModal(getStoredStaffById(state.selectedStaffId) || state.staffDirectory[0] || null);
+    });
+  }
 
   manageSelectEl.addEventListener("change", () => {
     state.selectedStaffId = manageSelectEl.value;
@@ -981,47 +948,9 @@
       const target = getSelectedStaff();
       renderShiftManageSelect();
       if (target) {
-        openShiftModal(target);
+        openStaffDutyModal(target);
         shiftManageSelectEl.value = "";
       }
-    });
-  }
-
-  shiftExtendEl.addEventListener("change", () => {
-    renderShiftRows(document.getElementById("shift-staff-id").value);
-  });
-
-  shiftRowsEl.addEventListener("change", (event) => {
-    if (event.target instanceof HTMLInputElement && event.target.matches("[data-shift-working]")) {
-      syncShiftRowState();
-    }
-  });
-
-  if (shiftDeleteButtonEl) {
-    shiftDeleteButtonEl.addEventListener("click", async () => {
-      const staffId = document.getElementById("shift-staff-id").value;
-      if (!staffId) {
-        closeModal(shiftModalEl);
-        return;
-      }
-      const staff = findDisplayStaffById(staffId);
-      const targetDates = Array.from(
-        shiftRowsEl.querySelectorAll("[data-shift-working]")
-      ).map((input) => input.dataset.shiftWorking);
-      const beforeLength = state.shiftOverrides.length;
-      state.shiftOverrides = state.shiftOverrides.filter((row) => {
-        return !(row.staffId === staffId && targetDates.includes(row.date));
-      });
-      if (beforeLength === state.shiftOverrides.length) {
-        closeModal(shiftModalEl);
-        setControlNote(`${staff?.staffName || "スタッフ"}の個別勤務上書きはありません。`, false);
-        renderPage();
-        return;
-      }
-      await saveSetting(SHIFT_SETTING_KEY, state.shiftOverrides.map(stripOverrideForSave));
-      closeModal(shiftModalEl);
-      setControlNote(`${staff?.staffName || "スタッフ"}の個別勤務上書きを削除しました。`, false);
-      renderPage();
     });
   }
 

@@ -827,6 +827,16 @@
   box-shadow: none;
 }
 
+#staff-modal[data-mode="edit"] .portal-settings-duty-card,
+#staff-modal[data-mode="duty"] .portal-settings-credential-card {
+  display: none !important;
+}
+
+#staff-modal:not([data-mode="duty"]) #staff-duty-name-display,
+#staff-duty-name-display[hidden] {
+  display: none !important;
+}
+
 .portal-settings-modal-title {
   margin: 0 0 0.5rem;
 }
