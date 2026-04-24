@@ -4015,3 +4015,618 @@
     background: transparent;
   }
 }
+
+/* Admin settings page: aligned to admin-settings-reference.html */
+
+.portal-admin-settings-page {
+  --settings-container: min(1120px, calc(100vw - 60px));
+  --settings-card-bg: rgba(255, 255, 255, 0.88);
+  --settings-card-border: rgba(105, 88, 71, 0.12);
+  --settings-shadow: 0 24px 70px rgba(87, 66, 44, 0.08);
+  background:
+    linear-gradient(180deg, #f7f2eb 0%, #fcf9f5 55%, #fff 100%),
+    #fff;
+  color: #4a3d31;
+}
+
+.portal-admin-settings-page .admin-header {
+  background: rgba(255, 250, 245, 0.92);
+  border-bottom: 1px solid var(--settings-card-border);
+  box-shadow: none;
+  backdrop-filter: blur(7px);
+}
+
+.portal-admin-settings-page .admin-header-inner--manager {
+  width: var(--settings-container);
+  min-height: 72px;
+  padding: 14px 0;
+  gap: 30px;
+}
+
+.portal-admin-settings-page .admin-header-inner--manager .admin-brand {
+  min-height: 27.2px;
+  color: #4a3d31;
+  font-size: 15.9px;
+  font-weight: 700;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+}
+
+.portal-admin-settings-page .admin-header-inner--manager .admin-brand-meta {
+  display: none;
+}
+
+.portal-admin-settings-page .admin-header-inner--manager .admin-header-actions {
+  justify-content: flex-end;
+  gap: 0;
+  margin-left: auto;
+}
+
+.portal-admin-settings-page .admin-header-inner--manager .admin-nav {
+  gap: 0;
+}
+
+.portal-admin-settings-page .admin-header-inner--manager .admin-nav a,
+.portal-admin-settings-page .admin-header-inner--manager .admin-logout {
+  min-height: 43.38px;
+  padding: 0 16px;
+  border: 1px solid rgba(105, 88, 71, 0.18);
+  border-radius: 999px;
+  background: transparent;
+  box-shadow: none;
+  color: #4a3d31;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+}
+
+.portal-admin-settings-page .admin-header-inner--manager .admin-logout {
+  color: rgba(74, 61, 49, 0.8);
+  font-size: 13.3px;
+}
+
+.portal-admin-settings-page .admin-main.site-container.portal-stack {
+  width: var(--settings-container);
+  margin: 12px auto 48px;
+  padding: 0;
+  gap: 24px;
+}
+
+.portal-admin-settings-page .admin-main > .admin-panel,
+.portal-admin-settings-page .portal-control-grid > .admin-panel {
+  border: 1px solid var(--settings-card-border);
+  border-radius: 24px;
+  background: var(--settings-card-bg);
+  box-shadow: var(--settings-shadow);
+}
+
+.portal-admin-settings-page .portal-hero {
+  min-height: 160px;
+  padding: 37px 24px 24px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 21.4px;
+  align-items: stretch;
+}
+
+.portal-admin-settings-page .portal-hero .portal-hero-copy-block {
+  gap: 0;
+}
+
+.portal-admin-settings-page .portal-hero-label {
+  min-height: 32px;
+  margin: 0;
+  padding: 3.95px 12px 5.05px;
+  color: #9b7364;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.7;
+  letter-spacing: 0.08em;
+}
+
+.portal-admin-settings-page .portal-hero h1 {
+  margin: 13.04px 0 0;
+  color: #3f352c;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 54.4px;
+  letter-spacing: 0.01em;
+}
+
+.portal-admin-settings-page .portal-hero-copy {
+  margin: 0;
+  color: #6d6157;
+  font-size: 16px;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+}
+
+.portal-admin-settings-page .portal-hero-copy--align-end {
+  align-self: end;
+  max-width: none;
+  justify-self: end;
+  text-align: right;
+}
+
+.portal-admin-settings-page .portal-control-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 20px;
+  align-items: stretch;
+  width: 100%;
+  padding: 12px 0;
+}
+
+.portal-admin-settings-page .portal-settings-today-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 12px 24px;
+  gap: 16px;
+}
+
+.portal-admin-settings-page .portal-settings-today-panel .portal-section-head,
+.portal-admin-settings-page .portal-settings-side-card .portal-section-head,
+.portal-admin-settings-page .portal-settings-calendar-head {
+  margin: 0;
+}
+
+.portal-admin-settings-page .portal-settings-today-panel .portal-section-head h2,
+.portal-admin-settings-page .portal-settings-side-card h2,
+.portal-admin-settings-page .portal-settings-calendar-copy h2 {
+  margin: 0;
+  color: #3f352c;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 40.8px;
+  letter-spacing: 0.02em;
+}
+
+.portal-admin-settings-page .portal-settings-today-panel .admin-card-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: 72.58px;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+}
+
+.portal-admin-settings-page .portal-settings-staff-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-width: 0;
+  min-height: 72.58px;
+  padding: 8px 16px;
+  overflow: hidden;
+  border: 1px solid var(--settings-card-border);
+  border-radius: 16px;
+  background: rgba(255, 252, 248, 0.9);
+  box-shadow: none;
+}
+
+.portal-admin-settings-page .portal-settings-staff-card h3 {
+  margin: 0;
+  overflow: hidden;
+  color: #4a3d31;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 27.2px;
+  letter-spacing: 0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.portal-admin-settings-page .portal-settings-staff-card p {
+  margin: 0;
+  overflow: hidden;
+  color: #6d6157;
+  font-size: 13.8px;
+  line-height: 25.57px;
+  letter-spacing: 0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.portal-admin-settings-page .portal-settings-side-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 24px;
+  gap: 16px;
+}
+
+.portal-admin-settings-page .portal-settings-side-card .portal-section-head {
+  justify-content: center;
+  text-align: center;
+}
+
+.portal-admin-settings-page .portal-settings-action-stack {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 143px;
+  padding: 0 24px;
+  gap: 16px;
+}
+
+.portal-admin-settings-page .portal-settings-action-stack .admin-btn,
+.portal-admin-settings-page .portal-settings-select {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  min-height: 35.2px;
+  padding: 4px 12px;
+  border: 0;
+  border-radius: 999px;
+  box-shadow: none;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.portal-admin-settings-page .portal-settings-action-stack .admin-btn.primary {
+  background: #8f5f3b;
+  color: #fff;
+}
+
+.portal-admin-settings-page .portal-settings-action-stack .admin-btn.secondary,
+.portal-admin-settings-page .portal-settings-select {
+  background: #eee4d8;
+  color: #5a4737;
+}
+
+.portal-admin-settings-page .portal-settings-select {
+  gap: 10px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.portal-admin-settings-page .portal-settings-select span {
+  min-width: 0;
+  overflow: hidden;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.portal-admin-settings-page .portal-settings-select::after {
+  content: "\25BE";
+  flex: 0 0 auto;
+  color: inherit;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.portal-admin-settings-page .portal-settings-select select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.portal-admin-settings-page .portal-settings-inline-control {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  width: 200px;
+  min-height: 35.2px;
+}
+
+.portal-admin-settings-page .portal-settings-inline-control #staff-shift-button {
+  width: 100%;
+  min-height: 35.2px;
+  background: #eee4d8;
+  color: #5a4737;
+  pointer-events: none;
+}
+
+.portal-admin-settings-page .portal-settings-inline-control .portal-settings-select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  opacity: 0;
+}
+
+.portal-admin-settings-page .portal-settings-inline-control .portal-settings-select::after {
+  content: none;
+}
+
+.portal-admin-settings-page .portal-settings-inline-control::after {
+  content: "\25BE";
+  position: absolute;
+  top: 50%;
+  right: 18px;
+  color: #5a4737;
+  font-size: 12px;
+  line-height: 1;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.portal-admin-settings-page .portal-settings-control-note {
+  margin: 0;
+  text-align: center;
+}
+
+.portal-admin-settings-page .portal-settings-calendar-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  gap: 16px;
+}
+
+.portal-admin-settings-page .portal-settings-calendar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 24px;
+}
+
+.portal-admin-settings-page .portal-settings-calendar-copy {
+  min-width: 0;
+  padding-left: 24px;
+}
+
+.portal-admin-settings-page .portal-settings-calendar-copy .admin-note {
+  margin: 0;
+  color: #6d6157;
+  font-size: 16px;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+}
+
+.portal-admin-settings-page .portal-settings-calendar-tools {
+  display: grid;
+  align-self: stretch;
+  min-width: 300px;
+  padding-right: 24px;
+  align-content: center;
+  justify-items: end;
+  gap: 0;
+  text-align: right;
+}
+
+.portal-admin-settings-page #settings-calendar-range {
+  margin: 0;
+  color: #8a7868;
+  font-size: 13.7px;
+  line-height: 25px;
+  letter-spacing: 0.02em;
+}
+
+.portal-admin-settings-page .portal-settings-week-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+}
+
+.portal-admin-settings-page .portal-settings-week-actions .admin-btn {
+  min-height: 35.2px;
+  padding: 4px 12px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #3f3126;
+  font-size: 13.7px;
+  font-weight: 400;
+  line-height: 25px;
+  letter-spacing: 0.02em;
+}
+
+.portal-admin-settings-page .portal-calendar-shell {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 16px;
+}
+
+.portal-admin-settings-page .portal-calendar-table {
+  width: 100%;
+  min-width: 980px;
+  overflow: hidden;
+  border: 0;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.portal-admin-settings-page .portal-calendar-table thead th {
+  padding: 16.19px 12px 16.69px;
+  background: rgba(248, 243, 236, 0.78);
+  color: #5a4737;
+  font-size: 14.7px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-align: left;
+}
+
+.portal-admin-settings-page .portal-calendar-table th,
+.portal-admin-settings-page .portal-calendar-table td {
+  border-right: 0;
+  border-bottom: 1px solid var(--settings-card-border);
+  vertical-align: middle;
+}
+
+.portal-admin-settings-page .portal-calendar-table tr:last-child th,
+.portal-admin-settings-page .portal-calendar-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.portal-admin-settings-page .portal-calendar-table th:nth-child(1),
+.portal-admin-settings-page .portal-calendar-table td:nth-child(1) {
+  width: 150px;
+  min-width: 150px;
+}
+
+.portal-admin-settings-page .portal-calendar-table th:nth-child(2n),
+.portal-admin-settings-page .portal-calendar-table td:nth-child(2n) {
+  width: 150px;
+  min-width: 150px;
+}
+
+.portal-admin-settings-page .portal-calendar-table th:nth-child(2n+3),
+.portal-admin-settings-page .portal-calendar-table td:nth-child(2n+3) {
+  width: 70px;
+  min-width: 70px;
+}
+
+.portal-admin-settings-page .portal-calendar-table tbody th,
+.portal-admin-settings-page .portal-calendar-table tbody td {
+  height: 40px;
+  padding: 12px;
+  color: #4a3d31;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.portal-admin-settings-page .portal-settings-date-cell strong,
+.portal-admin-settings-page .portal-settings-date-cell small {
+  display: inline;
+  margin: 0;
+  color: #4a3d31;
+  font-size: 13.9px;
+  font-weight: 700;
+}
+
+.portal-admin-settings-page .portal-settings-date-cell small::before {
+  content: " ";
+}
+
+.portal-admin-settings-page .portal-calendar-cell {
+  display: block;
+}
+
+.portal-admin-settings-page .portal-calendar-cell strong {
+  color: #4a3d31;
+  font-size: 12.8px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.portal-admin-settings-page .portal-settings-count-cell {
+  padding: 2px 12px;
+  text-align: center;
+}
+
+.portal-admin-settings-page .portal-settings-count-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(143, 95, 59, 0.08);
+  color: #7a5338;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.portal-admin-settings-page .portal-calendar-empty {
+  height: 72px;
+  color: #6d6157;
+  font-size: 14px;
+  text-align: center;
+}
+
+@media (max-width: 72rem) {
+  .portal-admin-settings-page {
+    --settings-container: min(1120px, calc(100vw - 40px));
+  }
+
+  .portal-admin-settings-page .portal-hero,
+  .portal-admin-settings-page .portal-control-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-admin-settings-page .portal-hero-copy--align-end {
+    justify-self: start;
+    text-align: left;
+  }
+
+  .portal-admin-settings-page .portal-settings-side-card {
+    min-height: 220px;
+  }
+}
+
+@media (max-width: 56rem) {
+  .portal-admin-settings-page {
+    --settings-container: min(1120px, calc(100vw - 24px));
+  }
+
+  .portal-admin-settings-page .admin-header-inner--manager {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .portal-admin-settings-page .admin-header-inner--manager .admin-header-actions,
+  .portal-admin-settings-page .admin-header-inner--manager .admin-nav {
+    width: 100%;
+  }
+
+  .portal-admin-settings-page .admin-header-inner--manager .admin-header-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .portal-admin-settings-page .admin-header-inner--manager .admin-nav {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .portal-admin-settings-page .admin-header-inner--manager .admin-nav a,
+  .portal-admin-settings-page .admin-header-inner--manager .admin-logout {
+    width: 100%;
+  }
+
+  .portal-admin-settings-page .portal-hero {
+    min-height: auto;
+    padding: 24px;
+  }
+
+  .portal-admin-settings-page .portal-settings-today-panel .admin-card-list {
+    grid-template-columns: 1fr;
+    grid-auto-rows: minmax(72.58px, auto);
+  }
+
+  .portal-admin-settings-page .portal-settings-calendar-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .portal-admin-settings-page .portal-settings-calendar-copy,
+  .portal-admin-settings-page .portal-settings-calendar-tools {
+    width: 100%;
+    padding: 0;
+  }
+
+  .portal-admin-settings-page .portal-settings-calendar-tools {
+    min-width: 0;
+    justify-items: start;
+    text-align: left;
+  }
+}
