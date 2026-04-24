@@ -1,4 +1,6 @@
 (function () {
+  const STAFF_SETTING_KEY = "staff_directory";
+  const SHIFT_SETTING_KEY = "staff_shift_overrides";
   const kpiReservationsEl = document.getElementById("kpi-reservations");
   const kpiReservationsWeekEl = document.getElementById("kpi-reservations-week");
   const kpiSlotsEl = document.getElementById("kpi-slots");
@@ -34,15 +36,128 @@
     return `${date.getMonth() + 1}/${date.getDate()}（${weekdays[date.getDay()]}）`;
   }
 
-  function renderTodayShifts(slots, reservations) {
+  const LABELS = {
+    attending: "\u51fa\u52e4",
+    dayOff: "\u4f11\u65e5",
+    staffPrefix: "\u30b9\u30bf\u30c3\u30d5",
+    uncategorized: "\u672a\u8a2d\u5b9a",
+    commonQuestions: "\u5171\u901a\u8cea\u554f\uff081\uff5e5\uff09",
+    branchQuestions: "\u5206\u5c90\u8cea\u554f\uff086\uff5e7\uff09",
+    finalQuestion: "\u6700\u7d42\u8cea\u554f",
+    finishCorrection: "\u4ed5\u4e0a\u3052\u88dc\u6b63"
+  };
+
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "\"": "&quot;",
+      "'": "&#039;"
+    }[char]));
+  }
+
+  function readSettingValue(settingsRows, key) {
+    const row = (settingsRows || []).find((entry) => entry.setting_key === key);
+    const value = row?.setting_value;
+    if (typeof value !== "string") return value;
+    try {
+      return JSON.parse(value);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function normalizeName(value) {
+    return String(value || "").trim();
+  }
+
+  function normalizeStaff(row, index = 0) {
+    const staffName = normalizeName(row.staffName || row.staff_name || row.name) || `${LABELS.staffPrefix}${index + 1}`;
+    return {
+      id: normalizeName(row.id || row.staffId || row.staff_id || staffName || index),
+      staffName,
+      weeklyPattern: row.weeklyPattern || row.weekly_pattern || {}
+    };
+  }
+
+  function normalizeShiftOverride(row) {
+    return {
+      staffId: normalizeName(row.staffId || row.staff_id),
+      date: normalizeName(row.date),
+      isWorking: row.isWorking !== false && row.is_working !== false
+    };
+  }
+
+  function getDashboardStaffRows(slots, settingsRows) {
+    const storedStaff = readSettingValue(settingsRows, STAFF_SETTING_KEY);
+    if (Array.isArray(storedStaff) && storedStaff.length) {
+      return storedStaff.map(normalizeStaff);
+    }
+    const derivedNames = Array.from(new Set(
+      slots.map((row) => normalizeName(row.instructor_name)).filter(Boolean)
+    ));
+    return derivedNames.map((staffName, index) => normalizeStaff({ staffName }, index));
+  }
+
+  function getShiftOverrides(settingsRows) {
+    const storedOverrides = readSettingValue(settingsRows, SHIFT_SETTING_KEY);
+    return Array.isArray(storedOverrides) ? storedOverrides.map(normalizeShiftOverride) : [];
+  }
+
+  function isStaffWorkingOnDate(staff, dateKey, shiftOverrides) {
+    const override = shiftOverrides.find((row) => row.staffId === staff.id && row.date === dateKey);
+    if (override) return override.isWorking;
+    const date = new Date(`${dateKey}T00:00:00`);
+    const pattern = staff.weeklyPattern?.[String(date.getDay())] || {};
+    return pattern.isWorking !== false && pattern.is_working !== false;
+  }
+
+  function getSlotsForStaff(slots, staffName, startDateKey, endDateKey = startDateKey) {
+    const normalizedStaffName = normalizeName(staffName);
+    return slots.filter((row) => (
+      row.is_active !== false &&
+      row.slot_date >= startDateKey &&
+      row.slot_date <= endDateKey &&
+      normalizeName(row.instructor_name) === normalizedStaffName
+    ));
+  }
+
+  function createReservationCountMap(reservations) {
+    return reservations.reduce((acc, row) => {
+      if (!row.slot_id) return acc;
+      acc.set(row.slot_id, (acc.get(row.slot_id) || 0) + 1);
+      return acc;
+    }, new Map());
+  }
+
+  function countReservationsForSlots(slots, reservationMap) {
+    return slots.reduce((total, slot) => total + (reservationMap.get(slot.id) || 0), 0);
+  }
+
+  function renderTodayShifts(slots, reservations, staffRows = [], shiftOverrides = []) {
     const todayKey = formatDateKey(new Date());
     const todaySlots = slots.filter((row) => row.slot_date === todayKey && row.is_active !== false);
-    const reservationMap = new Map(reservations.map((row) => [row.slot_id, row]));
+    const reservationMap = createReservationCountMap(reservations);
+    if (staffRows.length) {
+      todayShiftsEl.innerHTML = staffRows.map((staff) => {
+        const staffSlots = getSlotsForStaff(slots, staff.staffName, todayKey);
+        const isWorking = isStaffWorkingOnDate(staff, todayKey, shiftOverrides);
+        return `
+          <article class="portal-dashboard-row portal-dashboard-row--today ${isWorking ? "" : "is-off"}">
+            <span>${escapeHtml(staff.staffName)}</span>
+            <span>${isWorking ? LABELS.attending : LABELS.dayOff}</span>
+            <strong>${isWorking ? countReservationsForSlots(staffSlots, reservationMap) : "/"}</strong>
+          </article>
+        `;
+      }).join("");
+      return;
+    }
     const groups = todaySlots.reduce((acc, slot) => {
       const staffName = slot.instructor_name || "未設定";
       const bucket = acc.get(staffName) || { staffName, slots: 0, reservations: 0 };
       bucket.slots += 1;
-      if (reservationMap.get(slot.id)) bucket.reservations += 1;
+      bucket.reservations += reservationMap.get(slot.id) || 0;
       acc.set(staffName, bucket);
       return acc;
     }, new Map());
@@ -53,16 +168,10 @@
     }
 
     todayShiftsEl.innerHTML = Array.from(groups.values()).map((group) => `
-      <article class="admin-item-card">
-        <div class="admin-item-head">
-          <div>
-            <p class="admin-item-code">today</p>
-            <h3>${group.staffName}</h3>
-          </div>
-          <span class="admin-status-pill is-active">出勤中</span>
-        </div>
-        <div class="admin-meta-row"><span>予約枠</span><strong>${group.slots}</strong></div>
-        <div class="admin-meta-row"><span>予約件数</span><strong>${group.reservations}</strong></div>
+      <article class="portal-dashboard-row portal-dashboard-row--today">
+        <span>${escapeHtml(group.staffName)}</span>
+        <span>${LABELS.attending}</span>
+        <strong>${group.reservations}</strong>
       </article>
     `).join("");
   }
@@ -77,9 +186,21 @@
     }, new Map());
   }
 
-  function renderCoverage(slots) {
+  function renderCoverage(slots, staffRows = []) {
     const today = formatDateKey(new Date());
     const twoWeekLimit = formatDateKey(addDays(createLocalDate(new Date()), 13));
+    if (staffRows.length) {
+      coverageEl.innerHTML = staffRows.map((staff) => {
+        const staffSlots = getSlotsForStaff(slots, staff.staffName, today, twoWeekLimit);
+        return `
+          <article class="portal-dashboard-row portal-dashboard-row--coverage">
+            <span>${escapeHtml(staff.staffName)}</span>
+            <strong class="${staffSlots.length ? "portal-ok-text" : "portal-ng-text"}">${staffSlots.length ? "OK" : "NG"}</strong>
+          </article>
+        `;
+      }).join("");
+      return;
+    }
     const grouped = groupByStaff(slots.filter((row) => row.is_active !== false && row.slot_date >= today && row.slot_date <= twoWeekLimit));
 
     if (!grouped.size) {
@@ -88,18 +209,32 @@
     }
 
     coverageEl.innerHTML = Array.from(grouped.entries()).map(([staffName, staffSlots]) => `
-      <article class="admin-item-card">
-        <div class="admin-meta-row"><span>${staffName}</span><strong class="${staffSlots.length ? "portal-ok-text" : "portal-ng-text"}">${staffSlots.length ? "OK" : "NG"}</strong></div>
+      <article class="portal-dashboard-row portal-dashboard-row--coverage">
+        <span>${escapeHtml(staffName)}</span>
+        <strong class="${staffSlots.length ? "portal-ok-text" : "portal-ng-text"}">${staffSlots.length ? "OK" : "NG"}</strong>
       </article>
     `).join("");
   }
 
-  function renderNextWeekSummary(slots, reservations) {
+  function renderNextWeekSummary(slots, reservations, staffRows = []) {
     if (!nextWeekSummaryEl) return;
     const today = formatDateKey(new Date());
     const weekLimit = formatDateKey(addDays(createLocalDate(new Date()), 6));
     const grouped = groupByStaff(slots.filter((row) => row.is_active !== false && row.slot_date >= today && row.slot_date <= weekLimit));
-    const reservationMap = new Map(reservations.map((row) => [row.slot_id, row]));
+    const reservationMap = createReservationCountMap(reservations);
+    if (staffRows.length) {
+      nextWeekSummaryEl.innerHTML = staffRows.map((staff) => {
+        const staffSlots = getSlotsForStaff(slots, staff.staffName, today, weekLimit);
+        const reservationCount = countReservationsForSlots(staffSlots, reservationMap);
+        return `
+          <article class="portal-dashboard-row portal-dashboard-row--summary">
+            <span>${escapeHtml(staff.staffName)}</span>
+            <strong>${reservationCount}/${staffSlots.length}</strong>
+          </article>
+        `;
+      }).join("");
+      return;
+    }
 
     if (!grouped.size) {
       nextWeekSummaryEl.innerHTML = `<p class="admin-empty">翌週分のデータはありません。</p>`;
@@ -107,10 +242,11 @@
     }
 
     nextWeekSummaryEl.innerHTML = Array.from(grouped.entries()).map(([staffName, staffSlots]) => {
-      const reservationCount = staffSlots.filter((slot) => reservationMap.has(slot.id)).length;
+      const reservationCount = countReservationsForSlots(staffSlots, reservationMap);
       return `
-        <article class="admin-item-card">
-          <div class="admin-meta-row"><span>${staffName}</span><strong>${reservationCount}/${staffSlots.length}</strong></div>
+        <article class="portal-dashboard-row portal-dashboard-row--summary">
+          <span>${escapeHtml(staffName)}</span>
+          <strong>${reservationCount}/${staffSlots.length}</strong>
         </article>
       `;
     }).join("");
@@ -122,26 +258,27 @@
     const branchTemplates = Object.entries(config.branchTemplates || {}).slice(0, 3);
     if (scoringWeightSummaryEl) {
       scoringWeightSummaryEl.innerHTML = `
-        <article class="admin-item-card">
-          <div class="admin-meta-row"><span>共通質問（1〜5）</span><strong>${questionWeights.step1 ?? "-"}</strong></div>
+        <article class="portal-dashboard-row portal-dashboard-row--weight">
+          <span>${LABELS.commonQuestions}</span><strong>${questionWeights.step1 ?? "-"}</strong>
         </article>
-        <article class="admin-item-card">
-          <div class="admin-meta-row"><span>分岐質問（6〜7）</span><strong>${questionWeights.step2 ?? "-"}</strong></div>
+        <article class="portal-dashboard-row portal-dashboard-row--weight">
+          <span>${LABELS.branchQuestions}</span><strong>${questionWeights.step2 ?? "-"}</strong>
         </article>
-        <article class="admin-item-card">
-          <div class="admin-meta-row"><span>最終質問（8）</span><strong>${questionWeights.finish ?? "-"}</strong></div>
+        <article class="portal-dashboard-row portal-dashboard-row--weight">
+          <span>${LABELS.finalQuestion}</span><strong>${questionWeights.finish ?? "-"}</strong>
         </article>
-        <article class="admin-item-card">
-          <div class="admin-meta-row"><span>仕上げ補正</span><strong>${config.finishBlendRatio ?? "-"}</strong></div>
+        <article class="portal-dashboard-row portal-dashboard-row--weight">
+          <span>${LABELS.finishCorrection}</span><strong>${config.finishBlendRatio ?? "-"}</strong>
         </article>
       `;
     }
     scoringSummaryEl.innerHTML = `
       ${branchTemplates.map(([key, axes]) => `
-        <article class="admin-editor-card">
-          <h3>${key}</h3>
-          <div class="admin-chip-grid">
-            ${Object.entries(axes || {}).map(([axis, value]) => `<span class="admin-chip">${axis}: ${value}</span>`).join("")}
+        <article class="portal-dashboard-branch-card">
+          <h3>${escapeHtml(key)}</h3>
+          <div class="portal-dashboard-branch-grid">
+            <div>${Object.entries(axes || {}).map(([axis]) => `<span>${escapeHtml(axis)}</span>`).join("")}</div>
+            <div>${Object.entries(axes || {}).map(([, value]) => `<strong>${escapeHtml(value)}</strong>`).join("")}</div>
           </div>
         </article>
       `).join("")}
@@ -151,12 +288,15 @@
   function renderMaterialLinks(materials) {
     const activeMaterials = materials.filter((row) => row.is_active !== false);
     materialLinksEl.innerHTML = activeMaterials.length
-      ? activeMaterials.map((row) => `
-          <a class="admin-mini-card" href="${window.AdminAuth.appendRoleToHref(`admin-materials.html?focus=${encodeURIComponent(row.material_code)}`, "manager")}">
-            <h3>${row.material_name}</h3>
-            <p class="admin-note">${row.category || "未設定"} / ${row.material_code}</p>
-          </a>
-        `).join("")
+      ? activeMaterials.map((row) => {
+          const code = String(row.material_code || "");
+          return `
+            <a class="admin-mini-card" href="${window.AdminAuth.appendRoleToHref(`admin-materials.html?focus=${encodeURIComponent(code)}`, "manager")}">
+              <h3>${escapeHtml(row.material_name || code || "-")}</h3>
+              <p class="admin-note">${escapeHtml(row.category || LABELS.uncategorized)} / ${escapeHtml(code)}</p>
+            </a>
+          `;
+        }).join("")
       : `<p class="admin-empty">表示できる原料がありません。</p>`;
   }
 
@@ -174,13 +314,16 @@
       ]
     });
 
-    const [reservations, slots, scoringRows, materials] = await Promise.all([
+    const [reservations, slots, scoringRows, materials, settingsRows] = await Promise.all([
       window.AdminData.listRows("reservations", { orders: [{ column: "created_at", ascending: false }] }).catch(() => []),
       window.AdminData.listRows("reservation_slots", { filters: [{ operator: "in", column: "status", value: ["open", "recommended", "closed"] }] }).catch(() => []),
       window.AdminData.listRows("scoring_configs", { filters: [{ operator: "eq", column: "is_active", value: true }], limit: 1 }).catch(() => []),
-      window.AdminData.listRows("material_points").catch(() => [])
+      window.AdminData.listRows("material_points").catch(() => []),
+      window.AdminData.listRows("admin_settings", { filters: [{ operator: "in", column: "setting_key", value: [STAFF_SETTING_KEY, SHIFT_SETTING_KEY] }] }).catch(() => [])
     ]);
 
+    const staffRows = getDashboardStaffRows(slots, settingsRows);
+    const shiftOverrides = getShiftOverrides(settingsRows);
     const todayKey = formatDateKey(new Date());
     const slotMap = new Map(slots.map((row) => [row.id, row]));
     const todayReservations = reservations.filter((row) => slotMap.get(row.slot_id)?.slot_date === todayKey);
@@ -199,9 +342,9 @@
     kpiScoringEl.textContent = scoringRows[0]?.version ?? "-";
     kpiMaterialsEl.textContent = String(materials.length);
 
-    renderTodayShifts(slots, reservations);
-    renderNextWeekSummary(slots, reservations);
-    renderCoverage(slots);
+    renderTodayShifts(slots, reservations, staffRows, shiftOverrides);
+    renderNextWeekSummary(slots, reservations, staffRows);
+    renderCoverage(slots, staffRows);
     renderScoringSummary(scoringRows[0] || null);
     renderMaterialLinks(materials);
   }
