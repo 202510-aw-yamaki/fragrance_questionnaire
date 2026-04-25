@@ -23,7 +23,10 @@
   const resetButton = document.getElementById("material-reset");
   const applyTemplateButton = document.getElementById("material-template-apply");
   const createButton = document.getElementById("material-create-button");
-  const exportButton = document.getElementById("material-export-json");
+  const exportButtons = Array.from(new Set([
+    document.getElementById("material-export-json"),
+    ...document.querySelectorAll("[data-material-export-json]")
+  ].filter(Boolean)));
   const importTriggerButton = document.getElementById("material-import-trigger");
   const importInput = document.getElementById("material-import-file");
   let cachedRows = [];
@@ -57,14 +60,14 @@
 
   function renderFormTotal() {
     const total = getAxesTotal(getAxesInput());
-    formTotal.textContent = `現在の合計: ${total}`;
+    formTotal.textContent = String(total);
     formTotal.className = total === 100 ? "admin-note admin-note-success" : "admin-note admin-note-warning";
     return total;
   }
 
   function fillForm(row, options = {}) {
     const normalized = normalizeRow(row);
-    document.getElementById("material-modal-title").textContent = options.asNew ? "新規原料登録モーダル" : "原料編集モーダル";
+    document.getElementById("material-modal-title").textContent = "新規作成 / 編集";
     document.getElementById("material-id").value = options.asNew ? "" : row.id || "";
     document.getElementById("material-code").value = normalized.material_code || "";
     document.getElementById("material-name").value = normalized.material_name || "";
@@ -81,7 +84,7 @@
 
   function resetForm() {
     form.reset();
-    document.getElementById("material-modal-title").textContent = "新規原料登録モーダル";
+    document.getElementById("material-modal-title").textContent = "新規作成 / 編集";
     document.getElementById("material-id").value = "";
     document.getElementById("material-category").value = "Top";
     document.getElementById("material-active").checked = true;
@@ -111,9 +114,14 @@
     currentSortEl.textContent = sortModeEl.options[sortModeEl.selectedIndex]?.text || "登録順（正）";
   }
 
-  function createAxisBadges(axes) {
+  function createMaterialAxisCells(axes) {
     return AXIS_ORDER.map((axis) => {
-      return `<span class="admin-axis-badge"><small>${AXIS_LABELS[axis]}</small><strong>${Number(axes?.[axis] || 0)}</strong></span>`;
+      return `
+        <span class="portal-material-axis-cell">
+          <span>${AXIS_LABELS[axis]}</span>
+          <strong>${Number(axes?.[axis] || 0)}</strong>
+        </span>
+      `;
     }).join("");
   }
 
@@ -160,7 +168,12 @@
 
   function renderChipGrid(rows) {
     chipGridEl.innerHTML = rows.length
-      ? rows.map((row) => `<button class="admin-chip" type="button" data-focus-code="${row.material_code}">${row.material_name}</button>`).join("")
+      ? rows.map((row) => `
+          <button class="admin-chip portal-material-chip" type="button" data-focus-code="${row.material_code}">
+            <span class="portal-material-chip-name">${row.material_name}</span>
+            <span class="portal-material-chip-category">${row.category || "未設定"}</span>
+          </button>
+        `).join("")
       : `<span class="admin-chip">原料未登録</span>`;
     chipGridEl.querySelectorAll("[data-focus-code]").forEach((button) => {
       button.addEventListener("click", () => {
@@ -190,21 +203,16 @@
       article.className = "admin-item-card portal-material-card";
       article.dataset.materialCode = row.material_code || "";
       article.innerHTML = `
-        <div class="admin-item-head">
-          <div>
-            <p class="admin-item-code">${row.material_code || ""}</p>
-            <h3>${row.material_name || "名称未設定"}</h3>
+        <div class="portal-material-card-main">
+          <h3 class="portal-material-card-name">${row.material_name || "名称未設定"}</h3>
+          <div class="portal-material-axis-row">
+            ${createMaterialAxisCells(row.point_axes)}
+            <span class="portal-category-pill">${row.category || "未設定"}</span>
           </div>
-          <span class="admin-status-pill ${row.is_active !== false ? "is-active" : "is-paused"}">${row.is_active !== false ? "公開中" : "停止中"}</span>
         </div>
-        <div class="portal-material-meta">
-          <span class="portal-category-pill">${row.category || "未設定"}</span>
-          <strong>表示順 ${row.sort_order}</strong>
-        </div>
-        <div class="admin-axis-badge-row">${createAxisBadges(row.point_axes)}</div>
-        <p class="admin-note">${row.note || "メモ未設定"}</p>
-        <div class="admin-actions">
-          <button class="admin-btn secondary" data-edit-code="${row.material_code}" type="button">編集</button>
+        <div class="portal-material-card-foot">
+          <p class="admin-note">${row.note || "メモ未設定"}</p>
+          <button class="admin-btn primary" data-edit-code="${row.material_code}" type="button">編集</button>
         </div>
       `;
       rowsEl.appendChild(article);
@@ -308,7 +316,7 @@
     const target = getTemplates().find((row) => row.material_code === selectedCode);
     if (target) fillForm(target, { asNew: true });
   });
-  exportButton.addEventListener("click", () => {
+  exportButtons.forEach((exportButton) => exportButton.addEventListener("click", () => {
     const blob = new Blob([JSON.stringify(getFilteredRows(), null, 2)], { type: "application/json" });
     const url = window.URL.createObjectURL(blob);
     const anchor = document.createElement("a");
@@ -318,7 +326,7 @@
     window.URL.revokeObjectURL(url);
     seedStatus.className = "admin-note";
     seedStatus.textContent = "現在の原料一覧を Json ファイルとして保存しました。";
-  });
+  }));
   importTriggerButton.addEventListener("click", () => {
     importInput.click();
   });
