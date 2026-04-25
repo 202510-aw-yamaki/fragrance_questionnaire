@@ -76,7 +76,11 @@
               <h3>勤務設定</h3>
               <p class="admin-note">曜日ごとの基準出勤 / 退勤 / 休み設定</p>
             </div>
-            <div class="portal-settings-duty-table">
+            <div class="portal-settings-duty-tabs" id="staff-duty-tabs" hidden>
+              <button class="portal-settings-duty-tab is-active" type="button" data-duty-tab="basic" aria-selected="true">基本設定</button>
+              <button class="portal-settings-duty-tab" type="button" data-duty-tab="individual" aria-selected="false">個別設定</button>
+            </div>
+            <div class="portal-settings-duty-table portal-settings-duty-pane" data-duty-pane="basic">
               <div class="portal-settings-duty-head-row" aria-hidden="true">
                 <span>曜日</span>
                 <span>出勤</span>
@@ -84,6 +88,15 @@
                 <span>休み</span>
               </div>
               <div class="portal-week-pattern portal-settings-duty-body" id="staff-weekly-pattern"></div>
+            </div>
+            <div class="portal-settings-duty-table portal-settings-duty-pane" data-duty-pane="individual" hidden>
+              <div class="portal-settings-duty-head-row" aria-hidden="true">
+                <span>日付</span>
+                <span>出勤</span>
+                <span>退勤</span>
+                <span>休み</span>
+              </div>
+              <div class="portal-settings-date-pattern" id="staff-date-pattern"></div>
             </div>
           </section>
 
@@ -118,6 +131,10 @@
   const staffManageLabelEl = manageSelectEl?.closest(".portal-settings-select")?.querySelector("span") || null;
   const shiftManageLabelEl = shiftManageSelectEl?.closest(".portal-settings-select")?.querySelector("span") || null;
   const weeklyPatternEl = document.getElementById("staff-weekly-pattern");
+  const datePatternEl = document.getElementById("staff-date-pattern");
+  const dutyTabsEl = document.getElementById("staff-duty-tabs");
+  const dutyTabButtons = Array.from(staffModalEl?.querySelectorAll("[data-duty-tab]") || []);
+  const dutyPaneEls = Array.from(staffModalEl?.querySelectorAll("[data-duty-pane]") || []);
   const state = {
     settingRowMap: new Map(),
     staffDirectory: [],
@@ -126,7 +143,9 @@
     reservations: [],
     weekOffset: 0,
     selectedStaffId: "",
-    staffModalMode: "create"
+    staffModalMode: "create",
+    staffDutyTab: "basic",
+    staffDateOverridesDirty: false
   };
 
   if (staffManageLabelEl) staffManageLabelEl.textContent = "スタッフ登録編集";
@@ -370,7 +389,7 @@
     return state.slots.filter((row) => row.is_active !== false && row.slot_date === dateKey && normalizeName(row.instructor_name) === normalizeName(staffName));
   }
 
-  function getShiftForDate(staff, dateKey) {
+  function getBaseShiftForDate(staff, dateKey) {
     const date = new Date(`${dateKey}T00:00:00`);
     const pattern = staff.weeklyPattern[String(date.getDay())] || {};
     return {
@@ -380,6 +399,11 @@
       startTime: normalizeTime(pattern.startTime, staff.defaultStart),
       endTime: normalizeTime(pattern.endTime, staff.defaultEnd)
     };
+  }
+
+  function getShiftForDate(staff, dateKey) {
+    const override = state.shiftOverrides.find((row) => row.staffId === staff.id && row.date === dateKey);
+    return override || getBaseShiftForDate(staff, dateKey);
   }
 
   function setControlNote(message, isError) {
@@ -426,6 +450,17 @@
     });
   }
 
+  function syncDatePatternState() {
+    if (!datePatternEl) return;
+    datePatternEl.querySelectorAll("[data-date-row]").forEach((row) => {
+      const isOff = row.querySelector("[data-date-off]")?.checked === true;
+      row.classList.toggle("is-off", isOff);
+      row.querySelectorAll('input[type="time"]').forEach((input) => {
+        input.disabled = isOff;
+      });
+    });
+  }
+
   function deriveDefaultTimesFromModal() {
     const firstWorkingRow = Array.from({ length: 7 }, (_, dayIndex) => {
       return {
@@ -454,6 +489,75 @@
       acc[day] = value;
       return acc;
     }, {});
+  }
+
+  function buildDutyStaffFromModal() {
+    const { defaultStart, defaultEnd } = deriveDefaultTimesFromModal();
+    return normalizeStaff({
+      id: staffIdEl.value || state.selectedStaffId,
+      staffCode: staffCodeEl.value,
+      staffName: staffNameEl.value,
+      role: staffRoleEl.value,
+      staffPassword: staffPasswordEl.value,
+      managerCode: managerCodeEl.value,
+      managerPassword: managerPasswordEl.value,
+      email: staffEmailEl.value,
+      phone: staffPhoneEl.value,
+      color: staffColorEl.value,
+      defaultStart,
+      defaultEnd,
+      weeklyPattern: readWeeklyPatternFromModal(defaultStart, defaultEnd)
+    });
+  }
+
+  function isSameShiftAsBase(shift, base) {
+    return shift.isWorking === base.isWorking
+      && normalizeTime(shift.startTime, base.startTime) === base.startTime
+      && normalizeTime(shift.endTime, base.endTime) === base.endTime;
+  }
+
+  function renderStaffDateOverrides(staff) {
+    if (!datePatternEl || !staff?.id) return;
+    const dates = getWeekDates(14);
+    datePatternEl.innerHTML = dates.map((date) => {
+      const dateKey = formatDateKey(date);
+      const shift = getShiftForDate(staff, dateKey);
+      return `
+        <article class="portal-settings-duty-row portal-settings-date-duty-row" data-date-row="${dateKey}">
+          <strong class="portal-settings-duty-day">
+            ${formatMonthDay(date)}
+            <small>${WEEKDAY_LABELS[date.getDay()]}</small>
+          </strong>
+          <div class="portal-settings-duty-time">
+            <input type="time" data-date-start="${dateKey}" value="${shift.startTime}">
+          </div>
+          <div class="portal-settings-duty-time">
+            <input type="time" data-date-end="${dateKey}" value="${shift.endTime}">
+          </div>
+          <label class="portal-settings-duty-off">
+            <input type="checkbox" data-date-off="${dateKey}" ${shift.isWorking === false ? "checked" : ""}>
+          </label>
+        </article>
+      `;
+    }).join("");
+    syncDatePatternState();
+    state.staffDateOverridesDirty = false;
+  }
+
+  function readDateOverridesFromModal(staff) {
+    if (!datePatternEl || !staff?.id) return [];
+    return Array.from(datePatternEl.querySelectorAll("[data-date-row]")).map((row) => {
+      const dateKey = row.dataset.dateRow;
+      const base = getBaseShiftForDate(staff, dateKey);
+      const value = {
+        staffId: staff.id,
+        date: dateKey,
+        isWorking: row.querySelector(`[data-date-off="${dateKey}"]`)?.checked !== true,
+        startTime: normalizeTime(row.querySelector(`[data-date-start="${dateKey}"]`)?.value, base.startTime),
+        endTime: normalizeTime(row.querySelector(`[data-date-end="${dateKey}"]`)?.value, base.endTime)
+      };
+      return isSameShiftAsBase(value, base) ? null : stripOverrideForSave(value);
+    }).filter(Boolean);
   }
 
   function renderWeeklyPatternInputs(staff) {
@@ -494,6 +598,22 @@
     });
   }
 
+  function setDutyTab(tab) {
+    const nextTab = state.staffModalMode === "duty" && tab === "individual" ? "individual" : "basic";
+    state.staffDutyTab = nextTab;
+    if (nextTab === "individual" && !state.staffDateOverridesDirty) {
+      renderStaffDateOverrides(buildDutyStaffFromModal());
+    }
+    dutyTabButtons.forEach((button) => {
+      const isActive = button.dataset.dutyTab === nextTab;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-selected", String(isActive));
+    });
+    dutyPaneEls.forEach((pane) => {
+      pane.hidden = pane.dataset.dutyPane !== nextTab;
+    });
+  }
+
   function setStaffModalMode(mode, staff, isTemporary = false) {
     state.staffModalMode = mode;
     if (staffModalEl) staffModalEl.dataset.mode = mode;
@@ -503,12 +623,16 @@
       staffDutyNameEl.hidden = mode !== "duty";
       staffDutyNameEl.textContent = staff?.staffName || "";
     }
+    if (dutyTabsEl) dutyTabsEl.hidden = mode !== "duty";
+    state.staffDateOverridesDirty = false;
+    if (datePatternEl && mode !== "duty") datePatternEl.innerHTML = "";
     if (mode === "duty") {
       setCredentialFieldsDisabled(true);
     } else {
       setCredentialFieldsDisabled(false);
       syncRoleFields();
     }
+    setDutyTab("basic");
     if (staffDeleteButtonEl) {
       const canDelete = mode === "edit" && staff && !isTemporary;
       staffDeleteButtonEl.hidden = !canDelete;
@@ -773,7 +897,14 @@
       });
       const index = state.staffDirectory.findIndex((row) => row.id === payload.id);
       if (index >= 0) state.staffDirectory[index] = payload;
-      state.shiftOverrides = state.shiftOverrides.filter((row) => row.staffId !== payload.id);
+      if (state.staffDateOverridesDirty) {
+        const visibleDateKeys = new Set(
+          Array.from(datePatternEl?.querySelectorAll("[data-date-row]") || []).map((row) => row.dataset.dateRow)
+        );
+        state.shiftOverrides = state.shiftOverrides
+          .filter((row) => row.staffId !== payload.id || !visibleDateKeys.has(row.date))
+          .concat(readDateOverridesFromModal(payload));
+      }
       await saveSetting(STAFF_SETTING_KEY, state.staffDirectory.map(stripStaffForSave));
       await saveSetting(SHIFT_SETTING_KEY, state.shiftOverrides.map(stripOverrideForSave));
       closeModal(staffModalEl);
@@ -874,6 +1005,28 @@
       syncWeeklyPatternState();
     }
   });
+
+  dutyTabButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setDutyTab(button.dataset.dutyTab);
+    });
+  });
+
+  if (datePatternEl) {
+    datePatternEl.addEventListener("change", (event) => {
+      if (event.target instanceof HTMLInputElement && event.target.matches("[data-date-off]")) {
+        syncDatePatternState();
+      }
+      if (event.target instanceof HTMLInputElement) {
+        state.staffDateOverridesDirty = true;
+      }
+    });
+    datePatternEl.addEventListener("input", (event) => {
+      if (event.target instanceof HTMLInputElement) {
+        state.staffDateOverridesDirty = true;
+      }
+    });
+  }
 
   document.querySelectorAll("[data-toggle-password]").forEach((button) => {
     button.addEventListener("click", () => {

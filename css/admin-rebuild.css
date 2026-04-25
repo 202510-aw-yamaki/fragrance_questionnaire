@@ -837,6 +837,39 @@
   display: none !important;
 }
 
+.portal-settings-duty-tabs {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  align-self: flex-start;
+  padding: 0.35rem;
+  border: 1px solid rgba(140, 107, 74, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.portal-settings-duty-tabs[hidden],
+.portal-settings-duty-pane[hidden] {
+  display: none !important;
+}
+
+.portal-settings-duty-tab {
+  min-height: 2.6rem;
+  padding: 0.35rem 1.2rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--portal-text-soft);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
+.portal-settings-duty-tab.is-active {
+  background: var(--portal-accent);
+  color: #fff;
+}
+
 .portal-settings-modal-title {
   margin: 0 0 0.5rem;
 }
@@ -897,9 +930,26 @@
   border-bottom: 0;
 }
 
+.portal-settings-date-pattern {
+  display: grid;
+  max-height: 54vh;
+  overflow-y: auto;
+}
+
 .portal-settings-duty-day {
   font-size: 1.1rem;
   text-align: center;
+}
+
+.portal-settings-date-duty-row .portal-settings-duty-day {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.portal-settings-date-duty-row .portal-settings-duty-day small {
+  color: var(--portal-text-soft);
+  font-size: 0.85rem;
+  font-weight: 700;
 }
 
 .portal-settings-duty-off {
