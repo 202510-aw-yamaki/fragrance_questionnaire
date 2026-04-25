@@ -5002,6 +5002,27 @@
   line-height: 27.2px;
 }
 
+.portal-admin-scoring-page .portal-scoring-basic-card label {
+  min-height: 72px;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
+  gap: 6px;
+  align-content: space-between;
+  justify-items: center;
+  padding: 4px 0;
+  text-align: center;
+}
+
+.portal-admin-scoring-page .portal-scoring-basic-label {
+  display: block;
+  line-height: 1.35;
+}
+
+.portal-admin-scoring-page .portal-scoring-basic-card .portal-scoring-number-stepper {
+  max-width: 118px;
+  justify-self: center;
+}
+
 .portal-admin-scoring-page .portal-scoring-branch-card label {
   grid-template-columns: minmax(0, 1fr) 118px;
   width: 100%;
@@ -5174,34 +5195,47 @@
 
 .portal-admin-scoring-page .portal-scoring-finish-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(360px, 0.9fr);
+  grid-template-columns: 1fr;
   gap: 10px;
   align-items: stretch;
 }
 
-.portal-admin-scoring-page .portal-scoring-explanation {
+.portal-admin-scoring-page #scoring-finish-section {
   display: grid;
-  align-content: start;
   gap: 10px;
   min-width: 0;
-  padding: 10px;
+}
+
+.portal-admin-scoring-page #scoring-finish-section > .portal-scoring-panel-card {
+  display: grid;
+  gap: 14px;
+}
+
+.portal-admin-scoring-page .portal-scoring-explanation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 0.7fr);
+  align-content: start;
+  gap: 16px;
+  min-width: 0;
+  padding: 14px;
   border: 1px solid rgba(216, 203, 191, 0.4);
   border-radius: 12px;
   background: #fff;
   box-shadow: none;
 }
 
-.portal-admin-scoring-page .portal-scoring-explanation h2,
-.portal-admin-scoring-page .portal-scoring-explanation p {
+.portal-admin-scoring-page .portal-scoring-explanation-copy {
   margin: 0;
   color: #000;
   font-size: 15.3px;
   font-weight: 700;
   line-height: 27.2px;
+  white-space: pre-line;
 }
 
 .portal-admin-scoring-page .portal-scoring-save-form {
   display: grid;
+  min-width: 0;
   gap: 10px;
 }
 
@@ -5499,6 +5533,10 @@
   .portal-admin-scoring-page .portal-scoring-branch-shell,
   .portal-admin-scoring-page .portal-scoring-columns,
   .portal-admin-scoring-page .portal-scoring-finish-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-admin-scoring-page .portal-scoring-explanation {
     grid-template-columns: 1fr;
   }
 

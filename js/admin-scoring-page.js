@@ -128,19 +128,19 @@
     if (legacyNote?.closest("label")) legacyNote.closest("label").classList.add("portal-scoring-hidden-note-field");
   }
 
-  function syncStaticScoringCopy() {
-    const explanation = document.querySelector(".portal-scoring-explanation");
+  function syncStaticScoringCopy(explanation = document.querySelector(".portal-scoring-explanation")) {
     if (!explanation) return;
-    const heading = explanation.querySelector("h2");
-    const paragraphs = explanation.querySelectorAll(":scope > p");
-    if (heading) heading.textContent = "finishTemplates は、";
-    const copy = [
+    const copyElement = explanation.querySelector(".portal-scoring-explanation-copy") || explanation.querySelector(":scope > p");
+    if (!copyElement) return;
+    copyElement.classList.add("portal-scoring-explanation-copy");
+    copyElement.textContent = [
+      "finishTemplates は、",
       "Q8 の回答ごとに用意された「仕上がりの理想プロファイル」です。",
       "A「軽やか」→ Fresh 高め / B「やわらか」→ Floral / Sweet 高め / C「印象」→ Woody / Spicy / Sweet 高めという 5軸の目標形が定義されています。",
       "最終軸 = Q8 delta反映後の値 × （1-finish値） + finishTemplate × fnish値 となります。これは「Q8で選ばれた“仕上がり印象”の目標形」を「印象付けたい方向へと補正」するための値です。"
-    ];
-    paragraphs.forEach((paragraph, index) => {
-      if (copy[index]) paragraph.textContent = copy[index];
+    ].join("\n");
+    explanation.querySelectorAll(":scope > h2, :scope > p:not(.portal-scoring-explanation-copy)").forEach((node) => {
+      node.remove();
     });
   }
 
@@ -293,10 +293,10 @@
           </div>
         </div>
         <div class="admin-grid cols-4">
-          <label>STEP1 重み${renderNumberStepper(`<input data-config-field="questionWeights.step1" type="number" step="0.1" value="${Number(workingConfig.questionWeights?.step1 || 1)}">`)}</label>
-          <label>STEP2 重み${renderNumberStepper(`<input data-config-field="questionWeights.step2" type="number" step="0.1" value="${Number(workingConfig.questionWeights?.step2 || 2)}">`)}</label>
-          <label>STEP3 重み${renderNumberStepper(`<input data-config-field="questionWeights.finish" type="number" step="0.1" value="${Number(workingConfig.questionWeights?.finish || 3)}">`)}</label>
-          <label>finish ブレンド比率${renderNumberStepper(`<input data-config-field="finishBlendRatio" type="number" step="0.01" min="0" max="1" value="${Number(workingConfig.finishBlendRatio || 0.25)}">`)}</label>
+          <label class="portal-scoring-basic-field"><span class="portal-scoring-basic-label">STEP1</span>${renderNumberStepper(`<input data-config-field="questionWeights.step1" type="number" step="0.1" value="${Number(workingConfig.questionWeights?.step1 || 1)}">`)}</label>
+          <label class="portal-scoring-basic-field"><span class="portal-scoring-basic-label">STEP2</span>${renderNumberStepper(`<input data-config-field="questionWeights.step2" type="number" step="0.1" value="${Number(workingConfig.questionWeights?.step2 || 2)}">`)}</label>
+          <label class="portal-scoring-basic-field"><span class="portal-scoring-basic-label">STEP3</span>${renderNumberStepper(`<input data-config-field="questionWeights.finish" type="number" step="0.1" value="${Number(workingConfig.questionWeights?.finish || 3)}">`)}</label>
+          <label class="portal-scoring-basic-field"><span class="portal-scoring-basic-label">finish</span>${renderNumberStepper(`<input data-config-field="finishBlendRatio" type="number" step="0.01" min="0" max="1" value="${Number(workingConfig.finishBlendRatio || 0.25)}">`)}</label>
         </div>
       </section>
     `;
@@ -495,7 +495,11 @@
 
   function renderFinishArea() {
     if (!finishMount) return;
+    const explanation = document.querySelector(".portal-scoring-explanation");
+    syncStaticScoringCopy(explanation);
     finishMount.innerHTML = renderFinishTemplateCard();
+    const finishCard = finishMount.querySelector(".portal-scoring-panel-card");
+    if (finishCard && explanation) finishCard.appendChild(explanation);
   }
 
   function renderEditor() {

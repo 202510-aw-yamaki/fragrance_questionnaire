@@ -97,10 +97,10 @@
         </div>
 
         <div class="portal-scoring-explanation">
-          <h2>finishTemplates は、</h2>
-          <p>Q8 の回答ごとに用意された「仕上がりの理想プロファイル」です。</p>
-          <p>A 「軽やか」 は Fresh 高め、B 「やわらか」 は Floral / Sweet 高め、C 「印象」 は Woody / Spicy / Sweet 高めの想定です。</p>
-          <p>最終軸は Q8 delta 反映後の値と finishTemplate を blend した結果になります。</p>
+          <p class="portal-scoring-explanation-copy">finishTemplates は、
+Q8 の回答ごとに用意された「仕上がりの理想プロファイル」です。
+A「軽やか」→ Fresh 高め / B「やわらか」→ Floral / Sweet 高め / C「印象」→ Woody / Spicy / Sweet 高めという 5軸の目標形が定義されています。
+最終軸 = Q8 delta反映後の値 × （1-finish値） + finishTemplate × fnish値 となります。これは「Q8で選ばれた“仕上がり印象”の目標形」を「印象付けたい方向へと補正」するための値です。</p>
           <form class="admin-form portal-scoring-save-form" id="scoring-form">
             <label>version メモ
               <input id="scoring-note" type="text" placeholder="例: spring update">
