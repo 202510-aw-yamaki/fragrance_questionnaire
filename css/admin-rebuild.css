@@ -1086,10 +1086,10 @@
   display: none;
 }
 
-.portal-admin-materials-page .portal-material-chip-grid {
+.portal-admin-materials-page .admin-chip-grid.portal-material-chip-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 16px 8px;
+  gap: 0.3rem;
   margin: 0;
 }
 
