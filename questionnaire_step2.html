@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ja">
 
 <head>
@@ -329,6 +329,29 @@
     }
 
     function cloneValue(value) { return JSON.parse(JSON.stringify(value)); }
+    function getQuestionTextOverride(config, question, branchKey) {
+      const root = config?.questionTextOverrides || config?.questionOverrides || {};
+      if (question.id === "Q8") return root.q8?.[question.id] || root.q8 || null;
+      return root.step2?.[branchKey]?.[question.id] || root.step2?.[question.id] || null;
+    }
+    function applyQuestionTextOverride(question, override) {
+      if (!override) return;
+      if (typeof override.title === "string" && override.title.trim()) question.title = override.title;
+      Object.entries(override.answers || {}).forEach(([answerKey, label]) => {
+        if (typeof label !== "string" || !label.trim()) return;
+        const option = question.options.find((item) => item.key === answerKey);
+        if (option) option.title = label;
+        if (answerKey === "ALL" && question.subOptions?.[0]) question.subOptions[0] = label;
+        if (answerKey === "NONE" && question.subOptions?.[1]) question.subOptions[1] = label;
+      });
+    }
+    function applyQuestionTextOverrides(config) {
+      Object.entries(questionBanks).forEach(([branchKey, questions]) => {
+        questions.forEach((question) => {
+          applyQuestionTextOverride(question, getQuestionTextOverride(config, question, branchKey));
+        });
+      });
+    }
     function clampValue(value, min = 0, max = 100) { return Math.min(max, Math.max(min, Math.round(value))); }
     function clampAxes(axes, config) {
       const nextAxes = {};
@@ -643,6 +666,7 @@
     syncRetryBtn.addEventListener("click", retryQuestionnaireSync);
     syncContinueBtn.addEventListener("click", continueWithoutQuestionnaireSync);
     activeBranchKey = getActiveBranchKey();
+    applyQuestionTextOverrides(getScoringConfig());
     render();
   </script>
 </body>

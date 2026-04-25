@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ja">
 
 <head>
@@ -343,6 +343,31 @@
       return JSON.parse(JSON.stringify(config));
     }
 
+    function getQuestionTextOverride(config, questionId) {
+      const root = config?.questionTextOverrides || config?.questionOverrides || {};
+      return root.step1?.[questionId] || root[questionId] || null;
+    }
+
+    function applyQuestionTextOverride(question, override) {
+      if (!override) return;
+      if (typeof override.title === "string" && override.title.trim()) {
+        question.title = override.title;
+      }
+      Object.entries(override.answers || {}).forEach(([answerKey, label]) => {
+        if (typeof label !== "string" || !label.trim()) return;
+        const option = question.options.find((item) => item.key === answerKey);
+        if (option) option.title = label;
+        if (answerKey === "ALL" && question.subOptions?.[0]) question.subOptions[0] = label;
+        if (answerKey === "NONE" && question.subOptions?.[1]) question.subOptions[1] = label;
+      });
+    }
+
+    function applyQuestionTextOverrides(config) {
+      questions.forEach((question) => {
+        applyQuestionTextOverride(question, getQuestionTextOverride(config, question.id));
+      });
+    }
+
     function isExpectedScoringConfig(config) {
       return Boolean(
         config &&
@@ -514,7 +539,9 @@
 
     async function initializeScoringConfig() {
       const remoteConfig = await window.FragrancePublicData?.loadActiveScoringConfig?.();
-      persistScoringConfig(isExpectedScoringConfig(remoteConfig) ? remoteConfig : cloneConfig(MASTER_SCORING_CONFIG));
+      const config = isExpectedScoringConfig(remoteConfig) ? remoteConfig : cloneConfig(MASTER_SCORING_CONFIG);
+      persistScoringConfig(config);
+      applyQuestionTextOverrides(config);
     }
 
     function persistStep1Answers() {
