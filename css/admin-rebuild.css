@@ -331,7 +331,7 @@
 .admin-form-stack input,
 .admin-form-stack select,
 .admin-form-stack textarea,
-#material-json-preview,
+#material-save-note,
 #scoring-json {
   min-height: 4.4rem;
   padding: 1rem 1.25rem;
@@ -346,7 +346,7 @@
 
 .admin-form textarea,
 .admin-form-stack textarea,
-#material-json-preview,
+#material-save-note,
 #scoring-json {
   min-height: 10rem;
 }
@@ -1275,7 +1275,7 @@
   display: block;
 }
 
-.portal-admin-materials-page #material-json-preview {
+.portal-admin-materials-page #material-save-note {
   width: 100%;
   min-height: 124px;
   padding: 18px 24px;

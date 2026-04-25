@@ -2,6 +2,7 @@
   const AXIS_ORDER = window.FragranceMasterData.AXIS_ORDER;
   const AXIS_LABELS = window.FragranceMasterData.AXIS_LABELS;
   const CATEGORY_ORDER = { Top: 0, Middle: 1, Last: 2 };
+  const MATERIAL_SAVE_NOTE_KEY = "material_points_save_note";
   const collator = new Intl.Collator("ja", { sensitivity: "base", numeric: true });
   const rowsEl = document.getElementById("material-rows");
   const form = document.getElementById("material-form");
@@ -17,9 +18,13 @@
   const activeKpi = document.getElementById("materials-kpi-active");
   const templateKpi = document.getElementById("materials-kpi-template");
   const currentSortEl = document.getElementById("material-current-sort");
-  const previewEl = document.getElementById("material-json-preview");
+  const saveNoteEl = document.getElementById("material-save-note");
   const chipGridEl = document.getElementById("material-chip-grid");
   const seedButton = document.getElementById("material-seed-btn");
+  const saveDbButtons = Array.from(new Set([
+    seedButton,
+    ...document.querySelectorAll("[data-material-save-db]")
+  ].filter(Boolean)));
   const resetButton = document.getElementById("material-reset");
   const applyTemplateButton = document.getElementById("material-template-apply");
   const createButton = document.getElementById("material-create-button");
@@ -103,7 +108,8 @@
         { column: "material_code", ascending: true }
       ]
     }).catch(() => []);
-    cachedRows = (rows || []).map(normalizeRow);
+    const sourceRows = rows?.length ? rows : getTemplates();
+    cachedRows = sourceRows.map(normalizeRow);
     return cachedRows;
   }
 
@@ -162,10 +168,6 @@
     return getSortedRows(filtered);
   }
 
-  function renderPreview(rows) {
-    previewEl.value = JSON.stringify(rows, null, 2);
-  }
-
   function renderChipGrid(rows) {
     chipGridEl.innerHTML = rows.length
       ? rows.map((row) => `
@@ -190,7 +192,6 @@
   function renderRows() {
     const rows = getFilteredRows();
     renderKpis(cachedRows);
-    renderPreview(rows);
     renderChipGrid(rows);
     summaryCount.textContent = `${rows.length}件を表示中`;
     rowsEl.innerHTML = "";
@@ -242,14 +243,49 @@
     }).join("")}`;
   }
 
-  async function seedTemplates() {
-    const payload = getTemplates().map((row) => ({
-      ...normalizeRow(row),
-      updated_at: new Date().toISOString()
-    }));
-    await window.AdminData.upsertRow("material_points", payload, "material_code").catch(console.error);
+  async function loadMaterialSaveNote() {
+    if (!saveNoteEl) return;
+    const rows = await window.AdminData.listRows("admin_settings", {
+      filters: [{ operator: "eq", column: "setting_key", value: MATERIAL_SAVE_NOTE_KEY }],
+      limit: 1
+    }).catch(() => []);
+    const value = rows?.[0]?.setting_value;
+    if (!value) return;
+    saveNoteEl.value = typeof value === "string" ? value : (value.note || "");
+  }
+
+  async function saveMaterialSaveNote(savedAt) {
+    if (!saveNoteEl) return;
+    await window.AdminData.upsertRow("admin_settings", {
+      setting_key: MATERIAL_SAVE_NOTE_KEY,
+      setting_value: {
+        note: saveNoteEl.value.trim(),
+        saved_at: savedAt
+      },
+      updated_at: savedAt
+    }, "setting_key");
+  }
+
+  async function saveMaterialsToDatabase() {
+    const savedAt = new Date().toISOString();
+    const payload = (cachedRows.length ? cachedRows : getTemplates()).map((row, index) => {
+      const normalized = normalizeRow(row);
+      return {
+        ...normalized,
+        sort_order: Number(normalized.sort_order || ((index + 1) * 10)),
+        updated_at: savedAt
+      };
+    });
+    try {
+      await window.AdminData.upsertRow("material_points", payload, "material_code");
+      await saveMaterialSaveNote(savedAt);
+    } catch (error) {
+      seedStatus.className = "admin-error";
+      seedStatus.textContent = error?.message || "データベース保存に失敗しました。";
+      return;
+    }
     seedStatus.className = "admin-note";
-    seedStatus.textContent = `${payload.length}件の初期テンプレートを反映しました。`;
+    seedStatus.textContent = `${payload.length}件をデータベースに保存しました。`;
     await getAllMaterials();
     renderRows();
   }
@@ -306,7 +342,9 @@
   resetButton.addEventListener("click", () => {
     resetForm();
   });
-  seedButton.addEventListener("click", seedTemplates);
+  saveDbButtons.forEach((button) => {
+    button.addEventListener("click", saveMaterialsToDatabase);
+  });
   createButton.addEventListener("click", () => {
     resetForm();
     openModal();
@@ -376,6 +414,7 @@
     if (focusCode) searchInput.value = focusCode;
     renderTemplateOptions();
     resetForm();
+    await loadMaterialSaveNote();
     await getAllMaterials();
     renderRows();
   }

@@ -54,6 +54,8 @@
 
 - `admin-materials.html` は一覧カードと数値入力で管理できる
 - `deep-research-report.md` 基準の 16 原料テンプレートを一括反映できる
+- 2026-04-25 追記: `admin-materials.html` は上部 / 下部の DB 保存ボタンから、現在表示中の原料一覧を `material_points` に保存できる
+- 2026-04-25 追記: `Json メモ` は JSON 本文ではなく保存データの補足メモとして扱い、`admin_settings` に保存できる
 - `material_points` を公開側が読める
 - `fragrance-graph.html` は `material_points` を参照し、五軸に近い候補素材を予約 draft に保持できる
 

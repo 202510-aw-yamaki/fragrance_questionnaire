@@ -21,7 +21,7 @@
         </div>
         <p class="portal-hero-copy portal-hero-copy--align-end">原料のポイントを編集できます。新規作成/素材の編集でモーダル画面が開き、その中の数値やテキストを編集してください。最後に必ず保存をしてください</p>
         <div class="portal-materials-save-actions">
-          <button class="admin-btn primary" id="material-seed-btn" type="button">16原料テンプレートを一括反映</button>
+          <button class="admin-btn primary" id="material-seed-btn" type="button">データベースに保存</button>
           <button class="admin-btn primary" id="material-export-json" type="button">Jsonファイルとしてローカル保存</button>
         </div>
       </div>
@@ -84,14 +84,15 @@
       <div class="portal-material-json-head">
         <div>
           <h2>保存内容の確認</h2>
-          <p class="admin-note">Jsonファイルはローカルで保存できます。</p>
+          <p class="admin-note">データベース保存とJsonファイルのローカル保存ができます。</p>
         </div>
         <div class="portal-material-json-actions">
+          <button class="admin-btn primary" data-material-save-db type="button">データベースに保存</button>
           <button class="admin-btn primary" data-material-export-json type="button">Jsonファイルとしてローカル保存</button>
         </div>
       </div>
-      <label class="portal-material-json-field">Json メモ</label>
-      <textarea id="material-json-preview" rows="14" readonly></textarea>
+      <label class="portal-material-json-field" for="material-save-note">Json メモ</label>
+      <textarea id="material-save-note" rows="4" placeholder="例: 2026年春仕様の原料ポイント。調整内容や保存日の補足を残してください。"></textarea>
     </section>
   </main>
 
