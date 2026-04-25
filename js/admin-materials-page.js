@@ -406,8 +406,7 @@
       session,
       links: [
         { href: "admin-settings.html", label: "スタッフ登録/管理", key: "settings" },
-        { href: "admin-scoring.html", label: "配点ロジック", key: "scoring" },
-        { href: "admin-materials.html", label: "原料ポイント", key: "materials" }
+        { href: "admin-scoring.html", label: "配点ロジック", key: "scoring" }
       ]
     });
     const focusCode = new URLSearchParams(window.location.search).get("focus");

@@ -1012,7 +1012,7 @@
 
 .portal-admin-materials-page .portal-materials-stat strong {
   color: #6b4b34;
-  font-size: 30px;
+  font-size: 20px;
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: 0.02em;
@@ -1041,6 +1041,7 @@
 
 .portal-admin-materials-page .portal-materials-entry-actions {
   display: flex;
+  align-items: flex-end;
   gap: 16px;
   justify-content: flex-end;
 }
