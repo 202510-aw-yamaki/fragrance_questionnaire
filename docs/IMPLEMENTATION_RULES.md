@@ -12,6 +12,29 @@
 - 実装状況の変化で更新するのは主に `COMPLETED` と `UNMET`
 - 要件そのものが変わったときに更新するのは `SPEC`、`SURVEY_SCORING_LOGIC`、`MATERIAL_POINTS`
 
+## 現行ファイル配置ルール
+
+- 顧客向けページは `index.html` と `customer/` 配下を正とする
+  - `customer/questionnaire.html`
+  - `customer/questionnaire_step2.html`
+  - `customer/fragrance-graph.html`
+  - `customer/reservation.html`
+  - `customer/reservation-complete.html`
+  - `customer/product-reservation.html`
+- スタッフ / 管理者の共通ログインは `admin-login.html`
+- スタッフ向けページは `staff/` 配下を正とする
+  - `staff/staff-dashboard.html`
+  - `staff/staff-customer-detail.html`
+  - `staff/staff-slots.html`
+  - `staff/staff-reservations.html`
+- 管理者向けページは `admin/` 配下を正とする
+  - `admin/admin-dashboard.html`
+  - `admin/admin-settings.html`
+  - `admin/admin-scoring.html`
+  - `admin/admin-materials.html`
+- `admin-login.html` はスタッフ / 管理者用ページのため、`index.html` からリンクしない前提を正とする
+- 現段階のスタイル管理は各HTML内のインラインスタイルを正とし、同一スタイルの共通化は将来対応とする
+
 ## 判断優先順位
 
 1. 最新のユーザー指示
@@ -32,12 +55,14 @@
 ## 顧客側 UI ルール
 
 - 現在の FrontPage 群の見た目と導線を大きく崩さない
+- 顧客向け導線は `index.html` と `customer/` 配下の構成を維持する
 - 公開ページは匿名利用前提でよい
 - 顧客が入力した回答や五軸は、後続の予約と店舗対応に引き継げること
 
 ## 店舗スタッフ / 管理者 UI ルール
 
 - IT リテラシーが高くなくても使える粒度にする
+- ログイン導線は `admin-login.html` を共通入口とし、スタッフ画面は `staff/`、管理者画面は `admin/` へ分ける
 - JSON 直接編集を前提にしない
 - 数値調整はスピンボタンや明示的な入力欄で扱う
 - 必要なページは役割単位で明確に分ける
@@ -91,6 +116,6 @@
 - このルールは、2026-04-14 の「レイアウト調整や非エンジニアにもわかりやすいUI部分は未達として扱い、勝手に進めないことを明記したい」という要望に基づく追記である
 ## 追記 2026-04-20 スタッフ登録/管理ページの仮データ
 
-- `admin-settings.html` / `js/admin-settings-page.js` の「本日（04/20）の出勤者」は、3カラム2ロウの見え方確認のため、登録済みスタッフが 6 人未満の場合のみ仮スタッフ表示で不足分を補完している
+- `admin/admin-settings.html` / `js/admin-settings-page.js` の「本日（04/20）の出勤者」は、3カラム2ロウの見え方確認のため、登録済みスタッフが 6 人未満の場合のみ仮スタッフ表示で不足分を補完している
 - この仮データは画面確認用の一時対応であり、実スタッフデータの登録後、または最終調整時に削除する前提とする
 - 2026-04-20 の要望「本日（04/20）の出勤者部分は仮データでもよいので 3カラム2ロウ確認用に入れ、最後に消すデータであることが分かるように記述」に対応して追記

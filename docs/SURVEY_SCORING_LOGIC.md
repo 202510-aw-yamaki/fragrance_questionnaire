@@ -3,6 +3,15 @@
 本書は `deep-research-report.md` を基準にした、目標スコアリング仕様書です。  
 現行コードの数値と差がある場合は、本書側を正とします。
 
+## 現行画面との対応
+
+- 配点フォールバック定義の保持先は `customer/questionnaire.html`
+- STEP2 の反映先は `customer/questionnaire_step2.html`
+- 5軸の可視化と微調整は `customer/fragrance-graph.html`
+- 予約文言への反映は `customer/reservation.html`
+- 管理者向けの配点編集画面は `admin/admin-scoring.html`
+- `admin-login.html` はスタッフ / 管理者共通ログインであり、顧客トップ `index.html` からは直接紐づけない
+
 ## ロジックの前提
 
 - 五軸は `floral` / `fresh` / `woody` / `spicy` / `sweet`
@@ -183,4 +192,4 @@ tie-break は `floral -> fresh -> woody` とする。
 - 配点数値の入力 UI はスピンボタンなどで上下調整できる数値入力を基本とする
 - 保存先は DB を基本としつつ、ローカル保存用 JSON の書き出しと JSON 読込も扱えること
 - STEP1 / STEP2 / Q8 の設問文と回答文は、現状では別ページへ分けず、このページ内で変更可能とする
-- 管理スタッフ確認ページの「アンケート編集」は、本ページへの導線として扱う
+- 管理スタッフ確認ページ `admin/admin-dashboard.html` の「アンケート編集」は、本ページへの導線として扱う

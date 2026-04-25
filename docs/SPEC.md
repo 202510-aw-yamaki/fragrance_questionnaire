@@ -21,6 +21,30 @@
 - バックエンドは Supabase を使用すること
 - 再注文時に過去レシピと五軸グラフを参照でき、蓄積結果を将来のおすすめテンプレートへ反映できること
 
+## 現行サイト構成
+
+- 顧客向け入口は `index.html`
+- 顧客向けページは `customer/` 配下に置く
+  - `customer/questionnaire.html`
+  - `customer/questionnaire_step2.html`
+  - `customer/fragrance-graph.html`
+  - `customer/reservation.html`
+  - `customer/reservation-complete.html`
+  - `customer/product-reservation.html`
+- スタッフ / 管理者の共通ログインは `admin-login.html`
+- スタッフ向けページは `staff/` 配下に置く
+  - `staff/staff-dashboard.html`
+  - `staff/staff-customer-detail.html`
+  - `staff/staff-slots.html`
+  - `staff/staff-reservations.html`
+- 管理者向けページは `admin/` 配下に置く
+  - `admin/admin-dashboard.html`
+  - `admin/admin-settings.html`
+  - `admin/admin-scoring.html`
+  - `admin/admin-materials.html`
+- `admin-login.html` はスタッフ / 管理者専用のため、現状は `index.html` から紐づけない
+- スタイル管理は現段階では各HTML内のインラインスタイルを正とし、共通CSS整理は将来対応とする
+
 ## 役割
 
 ### A. 顧客側
@@ -28,11 +52,12 @@
 - 現状の FrontPage 群をそのまま使う
 - 対象ページ
   - `index.html`
-  - `questionnaire.html`
-  - `questionnaire_step2.html`
-  - `fragrance-graph.html`
-  - `reservation.html`
-  - `reservation-complete.html`
+  - `customer/questionnaire.html`
+  - `customer/questionnaire_step2.html`
+  - `customer/fragrance-graph.html`
+  - `customer/reservation.html`
+  - `customer/reservation-complete.html`
+  - `customer/product-reservation.html`
 - 取得したい情報
   - アンケート回答
   - アンケート計算後の五軸
@@ -42,7 +67,12 @@
 
 ### B. 店舗スタッフ側
 
-- 管理画面ログイン
+- 共通ログインページ `admin-login.html` から入る
+- 現行の対象ページ
+  - `staff/staff-dashboard.html`
+  - `staff/staff-reservations.html`
+  - `staff/staff-slots.html`
+  - `staff/staff-customer-detail.html`
 - 出勤シフトに応じた予約枠作成
 - 予約状況確認
 - 来店前の顧客情報確認
@@ -59,6 +89,12 @@
 
 ### C. 店舗管理者側
 
+- 共通ログインページ `admin-login.html` から入る
+- 現行の対象ページ
+  - `admin/admin-dashboard.html`
+  - `admin/admin-settings.html`
+  - `admin/admin-scoring.html`
+  - `admin/admin-materials.html`
 - 管理者画面への登録権限 / 編集
 - 店舗スタッフ権限の登録 / 編集
 - 基剤登録 / 編集
@@ -69,6 +105,7 @@
 
 - UI 上は「店舗スタッフ向け機能」と「店舗管理者向け機能」を分ける
 - ただしログイン導線は共通管理ログインでよい
+- ファイル配置は `staff/` と `admin/` を分け、共通ログインのみルートの `admin-login.html` に置く
 - 権限はロールで分ける
   - `staff`
   - `manager`

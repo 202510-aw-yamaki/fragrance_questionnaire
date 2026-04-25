@@ -751,3 +751,30 @@ Supabase が未設定・未接続でも、画面は壊さないこと。
 まず README.md と既存HTML/CSS を読み、
 現在の UI と導線を維持しながら、
 Supabase 前提 + 管理画面追加の実装を進めてください。
+
+==================================================
+14. 追記: 2026-04-26 現行サイト構成への読み替え
+==================================================
+
+このメモは元の移行指示を残したまま、現行のファイル配置に合わせて参照先を補正するための追記です。
+
+- 顧客向けページはルート直下ではなく `customer/` 配下を正とする
+  - `customer/questionnaire.html`
+  - `customer/questionnaire_step2.html`
+  - `customer/fragrance-graph.html`
+  - `customer/reservation.html`
+  - `customer/reservation-complete.html`
+  - `customer/product-reservation.html`
+- スタッフ向けページは `staff/` 配下を正とする
+  - `staff/staff-dashboard.html`
+  - `staff/staff-customer-detail.html`
+  - `staff/staff-slots.html`
+  - `staff/staff-reservations.html`
+- 管理者向けページは `admin/` 配下を正とする
+  - `admin/admin-dashboard.html`
+  - `admin/admin-settings.html`
+  - `admin/admin-scoring.html`
+  - `admin/admin-materials.html`
+- 共通ログインのみ `admin-login.html` としてルート直下に置く
+- `admin-login.html` はスタッフ / 管理者専用ページのため、現状は `index.html` から紐づけない
+- スタイル管理は共通CSS整理よりも現行のインラインスタイル維持を優先し、将来整理を前提とする
