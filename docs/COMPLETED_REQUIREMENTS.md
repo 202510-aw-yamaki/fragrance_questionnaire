@@ -10,6 +10,8 @@
 - アンケート回答から五軸グラフ、予約、予約完了までの保存導線がある
 - `customer/questionnaire.html` と `customer/questionnaire_step2.html` は `deep-research-report.md` 基準の配点ロジックへ揃えてある
 - `customer/fragrance-graph.html` と `customer/reservation.html` は `deep-research-report.md` 基準の五軸を前提に引き継ぐ
+- `customer/reservation.html` は Supabase 経由の予約枠取得 / 予約保存を優先し、失敗時は demo slots や `sessionStorage` で継続できる
+- `customer/reservation-complete.html` は `sessionStorage` を優先し、欠損時は Supabase の `reservations` から `reservationCode` で復元できる
 
 ## Supabase 基盤
 

@@ -84,7 +84,7 @@ index.html
 
 - JavaScript は各HTML末尾のインライン script と共有JSを併用しています。
 - ページ間の一時データ受け渡しには `sessionStorage` を使用しています。
-- 現在の予約ページと予約完了ページは、バックエンドAPIに依存せずフロント単体で動作する構成です。
+- 現在の予約ページと予約完了ページは、Supabase を主経路として利用しつつ、保存・取得失敗時は `sessionStorage` や demo data で継続できる構成です。
 - `admin-login.html` はスタッフおよび管理者用ページであり、現状はトップページからリンクしていません。
 
 ## 配点調整ポイント
@@ -210,10 +210,10 @@ index.html
 3. `customer/fragrance-graph.html`
    - スライダー調整後の axes を debounce 付きで `questionnaire_results.adjusted_axes` に反映
 4. `customer/reservation.html`
-   - `reservation_slots` を取得
-   - 予約確定時に `reservations` へ保存
+   - `reservation_slots` は Supabase 取得を優先し、失敗時のみ demo slots を使う
+   - 予約確定時は `reservations` への保存を優先し、完了画面用の `sessionStorage` も保持する
 5. `customer/reservation-complete.html`
-   - `sessionStorage` がなければ `reservationCode` で `reservations` から復元
+   - まず `sessionStorage` を参照し、欠損時のみ `reservationCode` で `reservations` から復元
 
 ### 配点調整ポイントの更新
 - fallback の主編集箇所は引き続き `customer/questionnaire.html`
@@ -232,5 +232,6 @@ index.html
 - 優先順は `Supabase -> sessionStorage -> fallback 定数 / demo data`
 - 公開ページは Supabase 未設定でも遷移を止めない
 - `customer/reservation.html` は slot 取得失敗時のみ demo slots を使う
+- `customer/reservation-complete.html` は `sessionStorage` を優先し、不足時のみ Supabase 参照へ切り替える
 - 管理ページは Supabase 未設定時にログインできないことを明示する
 - `admin-login.html` はスタッフ / 管理者専用のため、引き続き `index.html` からは直接遷移させない
