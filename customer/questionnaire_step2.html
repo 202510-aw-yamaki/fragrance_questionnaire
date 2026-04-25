@@ -1227,18 +1227,18 @@ img {
 }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-config.js"></script>
-  <script src="js/supabase-client.js"></script>
-  <script src="js/public-data.js"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/public-data.js"></script>
 </head>
 
 <body class="page-canvas">
   <header class="site-header">
     <div class="header-inner page-header-inner site-container">
-      <a class="brand" id="brand-link" href="index.html" aria-label="トップへ戻る">
+      <a class="brand" id="brand-link" href="../index.html" aria-label="トップへ戻る">
         <picture>
           <source media="(max-width: 47.9375em)" srcset="img/TOP/吟ロゴ.png">
-          <img src="img/TOP/roherarogo.png" alt="FRAGRANCE WORKSHOP">
+          <img src="../img/TOP/roherarogo.png" alt="FRAGRANCE WORKSHOP">
         </picture>
       </a>
       <nav class="main-nav" aria-label="ページメニュー">
@@ -1684,7 +1684,7 @@ img {
     function hasAnyAnswer() { return Object.keys(answers).length > 0; }
     function confirmReturnToTop() { return !hasAnyAnswer() || window.confirm("トップページへ戻ると、ここまでの回答は破棄されます。戻りますか？"); }
     function confirmReturnToStep1() { return window.confirm("STEP1 に戻ると、STEP2 の回答は破棄されます。戻りますか？"); }
-    function returnToTop() { if (confirmReturnToTop()) window.location.href = "index.html"; }
+    function returnToTop() { if (confirmReturnToTop()) window.location.href = "../index.html"; }
     function returnToStep1() { if (confirmReturnToStep1()) window.location.href = "questionnaire.html"; }
     function setSyncModalOpen(isOpen) {
       syncModal.classList.toggle("open", isOpen);

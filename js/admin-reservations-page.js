@@ -17,7 +17,7 @@
   };
 
   function getRole() {
-    return window.AdminAuth.readRoleFromLocation() || window.AdminAuth.readStoredRole() || "manager";
+    return "staff";
   }
 
   function formatShortDate(value) {
@@ -121,8 +121,7 @@
 
     filtered.forEach((row) => {
       const draftCustomer = readDraftCustomer(row);
-      const detailPage = getRole() === "staff" ? "staff-customer-detail.html" : "admin-workspace.html";
-      const detailHref = window.AdminAuth.appendRoleToHref(`${detailPage}?reservation=${encodeURIComponent(row.id)}`, getRole());
+      const detailHref = window.AdminAuth.appendRoleToHref(`staff-customer-detail.html?reservation=${encodeURIComponent(row.id)}`, "staff");
       const article = document.createElement("article");
       article.className = "portal-list-row portal-reservation-row";
       article.innerHTML = `
@@ -192,22 +191,17 @@
     });
 
   async function bootstrap() {
-    const role = getRole();
+    const role = "staff";
     const session = await window.AdminAuth.requireAdminSession();
     if (!session) return;
     window.AdminAuth.persistPortalRole(role);
     window.AdminAuth.renderAdminHeader("reservations", {
       role,
       session,
-      links: role === "staff"
-        ? [
-            { href: "staff-reservations.html", label: "予約確認", key: "reservations" },
-            { href: "admin-slots.html", label: "予約枠作成", key: "slots" }
-          ]
-        : [
-            { href: "admin-dashboard.html", label: "戻る", key: "dashboard" },
-            { href: "admin-slots.html", label: "予約枠作成", key: "slots" }
-          ]
+      links: [
+        { href: "staff-reservations.html", label: "予約確認", key: "reservations" },
+        { href: "staff-slots.html", label: "予約枠作成", key: "slots" }
+      ]
     });
     await loadBaseData();
     await renderRows();

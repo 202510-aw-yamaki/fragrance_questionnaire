@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>素材テンプレート管理 | Fragrance Workshop</title>
+  <title>管理ダッシュボード | Fragrance Workshop</title>
   <style>
     /* css/common.css */
 * {
@@ -3792,7 +3792,7 @@
   padding: 0 16px;
   border-radius: 999px;
   color: #5a4737;
-  font-size: 12px;
+  font-size: clamp(14px, 0.95vw, 20px);
   font-weight: 700;
   line-height: 1.7;
   white-space: nowrap;
@@ -9029,166 +9029,107 @@
 }
   </style>
 </head>
-<body class="page-canvas admin-page portal-admin-materials-page">
+<body class="page-canvas admin-page portal-admin-dashboard-page">
   <header class="admin-header" id="admin-header"></header>
   <main class="admin-main site-container portal-stack">
-    <section class="admin-panel portal-materials-overview-card">
-      <div class="portal-materials-title-strip">
-        <p class="portal-hero-label">MATERIAL POINTS</p>
+    <section class="admin-panel portal-hero">
+      <div class="portal-hero-copy-block">
+        <p class="portal-hero-label">DASHBOARD</p>
+        <h1>運用状況の確認</h1>
       </div>
-      <div class="portal-materials-hero-row">
-        <div class="portal-hero-copy-block">
-          <h1>原料管理</h1>
-        </div>
-        <p class="portal-hero-copy portal-hero-copy--align-end">原料のポイントを編集できます。新規作成/素材の編集でモーダル画面が開き、その中の数値やテキストを編集してください。最後に必ず保存をしてください</p>
-        <div class="portal-materials-save-actions">
-          <button class="admin-btn primary" id="material-seed-btn" type="button">データベースに保存</button>
-          <button class="admin-btn primary" id="material-export-json" type="button">Jsonファイルとしてローカル保存</button>
-        </div>
-      </div>
-
-      <div class="portal-materials-control-row">
-        <article class="portal-materials-stat">
-          <span>登録件数</span>
-          <strong id="materials-kpi-total">-</strong>
-        </article>
-        <article class="portal-materials-stat portal-materials-stat--wide">
-          <span>現在の並び順</span>
-          <strong id="material-current-sort">登録順（正）</strong>
-        </article>
-        <label class="portal-materials-select-field">並び替え
-          <select id="material-sort-mode">
-            <option value="register-asc">登録順（正）</option>
-            <option value="register-desc">登録順（逆）</option>
-            <option value="name-asc">50音順（正）</option>
-            <option value="name-desc">50音順（逆）</option>
-            <option value="category-asc">ノート順（正）</option>
-            <option value="category-desc">ノート順（逆）</option>
-          </select>
-        </label>
-        <label class="portal-materials-select-field">絞り込み
-          <select id="material-filter">
-            <option value="">すべて</option>
-            <option value="Top">Top</option>
-            <option value="Middle">Middle</option>
-            <option value="Last">Last</option>
-          </select>
-        </label>
-        <div class="portal-materials-entry-actions">
-          <button class="admin-btn primary" id="material-create-button" type="button">新規登録</button>
-          <button class="admin-btn primary" id="material-import-trigger" type="button">Json読込</button>
-          <input id="material-import-file" type="file" accept="application/json" hidden>
-        </div>
-      </div>
-
-      <div class="portal-materials-search-row">
-        <label>検索
-          <input id="material-search" type="text" placeholder="名称・code・分類で検索">
-        </label>
-        <p class="admin-note" id="material-seed-status">初期テンプレートを入れると、同じ code は上書きされます。</p>
-      </div>
-
-      <div class="portal-materials-hidden-kpis">
-        <strong id="materials-kpi-active">-</strong>
-        <strong id="materials-kpi-template">16</strong>
-        <p class="admin-note" id="material-count">0件を表示中</p>
-      </div>
-
-      <div class="admin-chip-grid portal-material-chip-grid" id="material-chip-grid"></div>
+      <p class="portal-hero-copy portal-hero-copy--align-end">予約数と公開予約枠の確認と各リンク先へのボタン</p>
     </section>
 
-    <section class="portal-material-list-panel">
-      <div class="portal-material-card-grid" id="material-rows"></div>
+    <section class="portal-manager-metric-grid">
+      <article class="admin-panel">
+        <div class="portal-section-head">
+          <div>
+            <h2>本日の出勤者　予約数</h2>
+            <p class="admin-note"><span id="kpi-reservations">-</span></p>
+          </div>
+        </div>
+        <div class="admin-card-list" id="manager-today-shifts"></div>
+      </article>
+
+      <article class="admin-panel">
+        <div class="portal-section-head">
+          <div>
+            <h2>翌週の予約数/枠数</h2>
+            <p class="admin-note"><span id="kpi-reservations-week">-</span> / <span id="kpi-slots">-</span></p>
+          </div>
+        </div>
+        <div class="admin-card-list" id="manager-next-week-summary"></div>
+      </article>
+
+      <article class="admin-panel">
+        <div class="portal-section-head">
+          <div>
+            <h2>向こう二週間予約枠確認</h2>
+            <p class="admin-note">スタッフ単位で確認します。</p>
+          </div>
+        </div>
+        <div class="admin-card-list" id="manager-slot-coverage"></div>
+      </article>
+
+      <article class="admin-panel">
+        <div class="portal-section-head">
+          <div>
+            <h2>配点ロジック重み</h2>
+            <p class="admin-note">active version <span id="kpi-scoring">-</span> / 原料 <span id="kpi-materials">-</span></p>
+          </div>
+        </div>
+        <div class="admin-card-list" id="manager-scoring-weight-summary"></div>
+      </article>
     </section>
 
-    <section class="admin-panel portal-material-json-card">
-      <div class="portal-material-json-head">
-        <div>
-          <h2>保存内容の確認</h2>
-          <p class="admin-note">データベース保存とJsonファイルのローカル保存ができます。</p>
+    <section class="portal-manager-link-grid">
+      <a class="admin-panel portal-action-card" href="admin-settings.html?role=manager">
+        <h3>スタッフ登録</h3>
+        <p class="admin-note">新しいスタッフを登録できます</p>
+      </a>
+      <a class="admin-panel portal-action-card" href="admin-scoring.html?role=manager">
+        <h3>アンケート編集</h3>
+        <p class="admin-note">アンケート文言の追加、及び編集ができます</p>
+      </a>
+      <a class="admin-panel portal-action-card" href="admin-scoring.html?role=manager">
+        <h3>配点ロジック</h3>
+        <p class="admin-note">配点ロジックの修正ができます</p>
+      </a>
+      <a class="admin-panel portal-action-card" href="admin-materials.html?role=manager">
+        <h3>原料ポイント</h3>
+        <p class="admin-note">原料の 5 軸に与えるポイントを編集できます</p>
+      </a>
+    </section>
+
+    <section class="portal-manager-bottom">
+      <article class="admin-panel">
+        <div class="portal-section-head">
+          <div>
+            <h2>分岐テンプレート</h2>
+            <p class="admin-note">現在の分岐テンプレートの数値です。</p>
+          </div>
         </div>
-        <div class="portal-material-json-actions">
-          <button class="admin-btn primary" data-material-save-db type="button">データベースに保存</button>
-          <button class="admin-btn primary" data-material-export-json type="button">Jsonファイルとしてローカル保存</button>
+        <div class="admin-card-list" id="manager-scoring-summary"></div>
+      </article>
+
+      <article class="admin-panel">
+        <div class="portal-section-head">
+          <div>
+            <h2>原料一覧ボタン</h2>
+            <p class="admin-note">現在登録してある原料ページの原料に直接飛べます。</p>
+          </div>
         </div>
-      </div>
-      <label class="portal-material-json-field" for="material-save-note">Json メモ</label>
-      <textarea id="material-save-note" rows="4" placeholder="例: 2026年春仕様の原料ポイント。調整内容や保存日の補足を残してください。"></textarea>
+        <div class="admin-link-grid" id="manager-material-links"></div>
+      </article>
     </section>
   </main>
-
-  <div class="portal-modal" id="material-modal" hidden>
-    <div class="portal-modal-backdrop" data-modal-close="material-modal"></div>
-    <div class="portal-modal-dialog portal-modal-dialog--material">
-      <form class="admin-form portal-material-modal-form" id="material-form">
-        <div class="portal-material-modal-head">
-          <h2 id="material-modal-title">新規作成 / 編集</h2>
-          <button class="admin-btn secondary portal-material-modal-close" type="button" data-modal-close="material-modal">閉じる</button>
-        </div>
-        <input id="material-id" type="hidden">
-        <div class="admin-grid cols-2 portal-material-template-tools">
-          <label>初期テンプレート
-            <select id="material-template-select"></select>
-          </label>
-          <div class="admin-actions admin-actions-inline">
-            <button class="admin-btn secondary" id="material-template-apply" type="button">フォームへ反映</button>
-          </div>
-        </div>
-        <div class="admin-grid cols-2 portal-material-code-grid">
-          <label>管理名
-            <input id="material-code" type="text" required placeholder="bergamot">
-          </label>
-        </div>
-        <div class="admin-grid cols-2 portal-material-name-grid">
-          <label>表示名
-            <input id="material-name" type="text" required placeholder="ベルガモット">
-          </label>
-          <label>分類
-            <select id="material-category">
-              <option value="Top">Top</option>
-              <option value="Middle">Middle</option>
-              <option value="Last">Last</option>
-            </select>
-          </label>
-        </div>
-        <p class="admin-note portal-material-name-note">表示名は 8 文字以内が好ましいです。</p>
-        <div class="admin-grid cols-2 portal-material-optional-row">
-          <label>表示順
-            <input id="material-sort" type="number" value="0" step="1">
-          </label>
-          <label class="portal-inline-checkbox">
-            <input id="material-active" type="checkbox" checked>
-            <span>公開する</span>
-          </label>
-        </div>
-        <div class="admin-axis-edit-grid portal-material-axis-input-grid">
-          <label>フローラル<input id="axis-floral" type="number" value="0" step="1"></label>
-          <label>フレッシュ<input id="axis-fresh" type="number" value="0" step="1"></label>
-          <label>ウッディ<input id="axis-woody" type="number" value="0" step="1"></label>
-          <label>スパイシー<input id="axis-spicy" type="number" value="0" step="1"></label>
-          <label>スウィート<input id="axis-sweet" type="number" value="0" step="1"></label>
-          <div class="portal-material-axis-total">
-            <span>合計値</span>
-            <strong id="material-total">0</strong>
-          </div>
-        </div>
-        <label>運用メモ
-          <textarea id="material-note" rows="4"></textarea>
-        </label>
-        <div class="admin-actions portal-material-modal-actions">
-          <button class="admin-btn primary" type="submit">保存</button>
-          <button class="admin-btn secondary" id="material-reset" type="button">入力をクリア</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-config.js"></script>
-  <script src="js/supabase-client.js"></script>
-  <script src="js/admin-auth.js"></script>
-  <script src="js/admin-data.js"></script>
-  <script src="js/fragrance-master-data.js"></script>
-  <script src="js/admin-materials-page.js"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/admin-auth.js"></script>
+  <script src="../js/admin-data.js"></script>
+  <script src="../js/fragrance-master-data.js"></script>
+  <script src="../js/admin-dashboard-page.js"></script>
 </body>
 </html>
+

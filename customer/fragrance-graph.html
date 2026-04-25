@@ -1,10 +1,11 @@
 <!doctype html>
 <html lang="ja">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>商品予約 | Fragrance Workshop</title>
-  <meta name="description" content="QRコードから遷移した香り商品の5軸情報を確認できるページです。">
+  <title>香りグラフ | 香りバランスの微調整</title>
+  <meta name="description" content="アンケート回答後の香りバランス確認ページです。5軸グラフとスライダーで微調整し、店頭での香りづくり準備につなげます。">
   <style>
     /* css/common.css */
 * {
@@ -1012,137 +1013,39 @@ input[type="range"] {
     grid-template-rows: none;
   }
 }
-
-    /* css/product-reservation.css */
-.product-reservation-page .product-header {
-  justify-content: space-between;
-}
-
-.product-reservation-page .product-brand {
-  color: #4c3a2d;
-  font-size: clamp(1.1rem, 1rem + 0.35vw, 1.4rem);
-  font-weight: 800;
-  text-decoration: none;
-  letter-spacing: 0.04em;
-}
-
-.product-reservation-page .product-layout {
-  grid-template-columns: minmax(0, 1.08fr) minmax(21rem, 0.92fr);
-  align-items: stretch;
-}
-
-.product-reservation-page .product-axis-stats {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  margin-top: 18px;
-}
-
-.product-reservation-page .product-axis-stat {
-  display: grid;
-  gap: 0.25rem;
-  justify-items: center;
-  padding: 12px 10px;
-  border: 1px solid rgba(105, 88, 71, 0.12);
-  border-radius: 14px;
-  background: rgba(255, 252, 247, 0.92);
-}
-
-.product-reservation-page .product-axis-stat span {
-  color: #8a7868;
-  font-size: 13px;
-}
-
-.product-reservation-page .product-axis-stat strong {
-  color: #6b4b34;
-  font-size: 15px;
-}
-
-.product-reservation-page .product-cta-card {
-  display: grid;
-  align-content: start;
-}
-
-.product-reservation-page .product-meta-list {
-  display: grid;
-  gap: 12px;
-  margin: 0 0 18px;
-}
-
-.product-reservation-page .product-meta-row {
-  display: grid;
-  gap: 0.2rem;
-  padding: 14px 16px;
-  border: 1px solid rgba(105, 88, 71, 0.1);
-  border-radius: 16px;
-  background: rgba(255, 252, 247, 0.92);
-}
-
-.product-reservation-page .product-meta-row span {
-  color: #8a7868;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.product-reservation-page .product-meta-row strong {
-  color: #4c3a2d;
-  font-size: 16px;
-}
-
-.product-reservation-page .product-cta-actions {
-  justify-content: flex-start;
-}
-
-.product-reservation-page .product-order-result {
-  margin-top: 8px;
-}
-
-.product-reservation-page .product-order-result[hidden] {
-  display: none !important;
-}
-
-@media (max-width: 60rem) {
-  .product-reservation-page .product-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .product-reservation-page .product-axis-stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 47.9375em) {
-  .product-reservation-page .product-axis-stats,
-  .product-reservation-page .product-cta-actions {
-    grid-template-columns: 1fr;
-  }
-
-  .product-reservation-page .product-cta-actions {
-    display: grid;
-  }
-}
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/fragrance-master-data.js"></script>
+  <script src="../js/public-data.js"></script>
 </head>
-<body class="page-canvas product-reservation-page">
+
+<body class="page-canvas">
   <header class="site-header">
-    <div class="header-inner page-header-inner site-container product-header">
-      <a class="product-brand" href="index.html">FRAGRANCE WORKSHOP</a>
-      <a class="btn btn-secondary" href="index.html">トップへ戻る</a>
+    <div class="header-inner page-header-inner site-container">
+      <a class="brand" id="brand-link" href="../index.html" aria-label="トップへ戻る">
+        <picture>
+          <source media="(max-width: 47.9375em)" srcset="img/TOP/吟ロゴ.png">
+          <img src="../img/TOP/roherarogo.png" alt="FRAGRANCE WORKSHOP">
+        </picture>
+      </a>
+      <a class="btn btn-primary header-cta" href="reservation.html">そのまま予約する</a>
     </div>
   </header>
 
   <main class="page-main">
-    <section class="page-section">
+    <section id="graph-adjustment" class="page-section">
       <div class="section-inner page-section-inner site-container">
-        <div class="graph-layout product-layout">
+        <h1 class="visually-hidden">香りバランスの確認と微調整</h1>
+        <div class="graph-layout">
           <article class="graph-card">
             <div class="section-header">
-              <span class="overline">Product QR</span>
-              <h1>この香りの商品情報</h1>
-              <p id="product-description">商品IDと5軸バランスを表示しています。原料配合は公開していません。</p>
+              <span class="overline">Radar Graph</span>
+              <h2>5軸で見える形にしました</h2>
             </div>
             <div class="graph-frame">
-              <svg id="radar-graph" viewBox="0 0 360 360" role="img" aria-label="商品の5軸グラフ">
+              <svg id="radar-graph" viewBox="0 0 360 360" role="img" aria-label="5軸の香りバランスを示すレーダーグラフ">
                 <g id="grid-polygons" fill="none" stroke="#d9cec1" stroke-width="1.2"></g>
                 <g id="axis-lines" stroke="#d9cec1" stroke-width="1.2"></g>
                 <g id="axis-labels" fill="#6f665f" font-size="13" text-anchor="middle"></g>
@@ -1150,43 +1053,243 @@ input[type="range"] {
                 <g id="vertex-dots" fill="#9c6740"></g>
               </svg>
             </div>
-            <div class="product-axis-stats" id="product-axis-stats"></div>
+            <p class="graph-caption">今の傾向を見える形にしたページです。細かく決めすぎず、今日の気分で少し動かすくらいがちょうどよい設計です。</p>
           </article>
 
-          <article class="graph-card product-cta-card">
+          <article class="graph-card slider-card" aria-labelledby="adjust-heading">
             <div class="section-header">
-              <span class="overline">Reservation</span>
-              <h2>商品を予約しますか？</h2>
-              <p>現在は5軸情報のみ公開しています。配合内容はスタッフ管理画面側で保持します。</p>
+              <span class="overline">Adjustment</span>
+              <h2 id="adjust-heading">気になる項目だけ微調整</h2>
+              <p>数字はその場で更新され、グラフにもすぐに反映されます。</p>
             </div>
-            <div class="product-meta-list">
-              <div class="product-meta-row">
-                <span>商品ID</span>
-                <strong id="product-id">-</strong>
-              </div>
-              <div class="product-meta-row">
-                <span>公開内容</span>
-                <strong>5軸グラフのみ</strong>
-              </div>
-              <div class="product-meta-row">
-                <span>配合情報</span>
-                <strong>非公開</strong>
-              </div>
-            </div>
-            <div class="cta-actions product-cta-actions">
-              <button class="btn btn-primary" id="product-order-yes" type="button">はい</button>
-              <a class="btn btn-secondary" href="index.html">いいえ</a>
-            </div>
-            <div class="reassure-card product-order-result" id="product-order-result" hidden>
-              <h3>予約導線は準備中です</h3>
-              <p id="product-order-copy">商品IDを控えて、スタッフへお問い合わせください。</p>
+            <div id="slider-list"></div>
+            <div class="slider-actions">
+              <button class="ghost-btn" type="button" id="reset-btn">初期値</button>
+              <button class="ghost-btn" type="button" data-preset="A">軽やか</button>
+              <button class="ghost-btn" type="button" data-preset="B">やわらか</button>
+              <button class="ghost-btn" type="button" data-preset="C">印象強め</button>
             </div>
           </article>
+
+          <div class="helper-grid">
+            <article class="reassure-card">
+              <h3>今の傾向を見える形にしてます</h3>
+              <p>これは診断結果を断定するためではなく、今の回答傾向を店頭で共有しやすい形に整えたページです。</p>
+            </article>
+            <article class="reassure-card">
+              <h3>今の気分で動かして大丈夫です</h3>
+              <p>少し軽くしたい、少し印象を残したい、といった感覚でスライダーを触るくらいが自然です。</p>
+            </article>
+            <article class="reassure-card">
+              <h3>最終決定は店頭で行います</h3>
+              <p>実際の香りは、当日の会話や試香を通してスタッフと一緒に仕上げていく前提を崩しません。</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="cta" class="page-section">
+      <div class="section-inner page-section-inner site-container">
+        <div class="cta-box">
+          <div class="cta-copy">
+            <span class="overline">Next Step</span>
+            <h2>このバランスで次の確認へ進みます</h2>
+            <p>ここでの調整は仮の下書きです。</p>
+            <div class="cta-actions">
+              <a class="btn btn-primary" id="reserve-link" href="reservation.html">この内容で予約へ進む</a>
+            </div>
+          </div>
+          <div class="reassure-card" aria-label="香水の瓶が並ぶイメージ">
+            <img class="graph-placeholder-image" src="../img/TOP/香水の瓶が並ぶ.png" alt="香水の瓶が並ぶ">
+          </div>
         </div>
       </div>
     </section>
   </main>
 
-  <script src="js/product-reservation-page.js"></script>
+  <footer class="site-footer">
+    <div class="footer-inner site-container">
+      <p>Fragrance Workshop Graph Page</p>
+      <p>最終的な香りは店頭でスタッフと一緒に仕上げます。</p>
+    </div>
+  </footer>
+
+  <script>
+    // ここで編集するのは graph 側の見せ方・preset 補助です。
+    // アンケート配点の主編集箇所は questionnaire.html の MASTER_SCORING_CONFIG です。
+    // README.md の「配点調整ポイント」も参照してください。
+    // fallback 用です。通常の配点編集は questionnaire.html の MASTER_SCORING_CONFIG を編集してください。
+    // README.md の「配点調整ポイント」も参照してください。
+    const SCORING_CONFIG_KEY = "fragranceScoringConfig";
+    const SCORE_STATE_KEY = "fragranceScoreState";
+    const DRAFT_KEY = "fragranceReservationDraft";
+    const AXIS_META = [
+      { id: "floral", label: "フローラル", description: "花のやわらかさや親しみやすさ" },
+      { id: "fresh", label: "フレッシュ", description: "透明感や軽さ、みずみずしさ" },
+      { id: "woody", label: "ウッディ", description: "木の落ち着きや深み" },
+      { id: "spicy", label: "スパイシー", description: "刺激や輪郭、アクセント" },
+      { id: "sweet", label: "スウィート", description: "甘さややわらかな余韻" }
+    ];
+    const FALLBACK_AXES = { floral: 55, fresh: 57, woody: 48, spicy: 35, sweet: 52 };
+    const FALLBACK_PRESETS = {
+      A: { floral: 45, fresh: 75, woody: 35, spicy: 25, sweet: 30 },
+      B: { floral: 65, fresh: 55, woody: 40, spicy: 25, sweet: 60 },
+      C: { floral: 55, fresh: 40, woody: 70, spicy: 55, sweet: 65 }
+    };
+    const gridPolygons = document.getElementById("grid-polygons");
+    const axisLines = document.getElementById("axis-lines");
+    const axisLabels = document.getElementById("axis-labels");
+    const radarShape = document.getElementById("radar-shape");
+    const vertexDots = document.getElementById("vertex-dots");
+    const sliderList = document.getElementById("slider-list");
+    const summaryList = document.getElementById("summary-list");
+    const resetBtn = document.getElementById("reset-btn");
+    const brandLink = document.getElementById("brand-link");
+    const reserveLink = document.getElementById("reserve-link");
+    const presetButtons = document.querySelectorAll("[data-preset]");
+    let activeMaterialRows = window.FragranceMasterData.createMaterialTemplates();
+    let syncTimerId = null;
+    function clampValue(value, min = 0, max = 100) { return Math.min(max, Math.max(min, Math.round(value))); }
+    function getScoreState() { try { return JSON.parse(sessionStorage.getItem(SCORE_STATE_KEY) || "{}") || {}; } catch (error) { return {}; } }
+    function getConfig() { try { return JSON.parse(sessionStorage.getItem(SCORING_CONFIG_KEY) || "null") || {}; } catch (error) { return {}; } }
+    function getDraft() { try { return JSON.parse(sessionStorage.getItem(DRAFT_KEY) || "null"); } catch (error) { return null; } }
+    function getPresets() { return getConfig().graphPresets || FALLBACK_PRESETS; }
+    function getProfileMap() { return getConfig().summaryProfiles || {}; }
+    function getCurrentAxes() {
+      const draft = getDraft();
+      const scoreState = getScoreState();
+      return draft?.axes || scoreState.finalAxes || FALLBACK_AXES;
+    }
+    function getResetAxes() {
+      const scoreState = getScoreState();
+      return scoreState.resetAxes || scoreState.finalAxes || FALLBACK_AXES;
+    }
+    async function loadActiveMaterialRows() {
+      const remoteRows = await window.FragrancePublicData?.loadActiveMaterialPoints?.();
+      if (Array.isArray(remoteRows) && remoteRows.length) {
+        activeMaterialRows = remoteRows;
+      }
+    }
+    function getRecommendedMaterials(axisPayload) {
+      return window.FragranceMasterData.rankMaterials(axisPayload, activeMaterialRows, 4).map((row) => ({
+        materialCode: row.material_code,
+        materialName: row.material_name,
+        category: row.category,
+        score: row.score
+      }));
+    }
+    function calculateNearestProfile(axes, profiles) {
+      let winnerKey = null; let winnerProfile = null; let bestDistance = Number.POSITIVE_INFINITY;
+      Object.entries(profiles || {}).forEach(([profileKey, profile]) => {
+        const distance = AXIS_META.reduce((sum, axis) => sum + Math.abs((axes[axis.id] || 0) - (profile.axes?.[axis.id] || 0)), 0);
+        if (distance < bestDistance) { bestDistance = distance; winnerKey = profileKey; winnerProfile = profile; }
+      });
+      return { profileKey: winnerKey, profile: winnerProfile };
+    }
+    const initialAxes = getCurrentAxes();
+    const axes = AXIS_META.map((axis) => ({ ...axis, value: clampValue(initialAxes[axis.id] ?? FALLBACK_AXES[axis.id]) }));
+    function persistReservationDraft() {
+      const axisPayload = Object.fromEntries(axes.map((axis) => [axis.id, clampValue(axis.value)]));
+      const config = getConfig();
+      const scoreState = getScoreState();
+      const nearestProfile = calculateNearestProfile(axisPayload, getProfileMap());
+      const recommendedMaterials = getRecommendedMaterials(axisPayload);
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify({
+        axes: axisPayload,
+        selectedFinish: scoreState.selectedFinish || null,
+        profileKey: nearestProfile.profileKey,
+        summaryHeadline: nearestProfile.profile?.headline || null,
+        summaryBody: nearestProfile.profile?.body || null,
+        recommendedMaterials,
+        updatedAt: new Date().toISOString()
+      }));
+      queueQuestionnaireResultSync(axisPayload, nearestProfile);
+    }
+    function queueQuestionnaireResultSync(axisPayload, nearestProfile) {
+      const scoreState = getScoreState();
+      const identifier = {
+        id: scoreState.questionnaireResultId,
+        resultCode: scoreState.questionnaireResultCode
+      };
+      if (!identifier.id && !identifier.resultCode) return;
+      if (syncTimerId) window.clearTimeout(syncTimerId);
+      syncTimerId = window.setTimeout(async () => {
+        await window.FragrancePublicData?.updateQuestionnaireResult?.(identifier, {
+          adjusted_axes: axisPayload,
+          profile_key: nearestProfile.profileKey || null,
+          summary_headline: nearestProfile.profile?.headline || null,
+          summary_body: nearestProfile.profile?.body || null,
+          updated_at: new Date().toISOString()
+        });
+      }, 400);
+    }
+    function returnToTop() {
+      if (!window.confirm("トップページへ戻ると、ここまでの調整内容は破棄されます。戻りますか？")) return;
+      sessionStorage.removeItem(DRAFT_KEY); window.location.href = "../index.html";
+    }
+    function polarToCartesian(centerX, centerY, radius, angle) { return { x: centerX + radius * Math.cos(angle), y: centerY + radius * Math.sin(angle) }; }
+    function createRadarPoints(scale = 1) {
+      const center = 180; const maxRadius = 108;
+      return axes.map((axis, index) => {
+        const angle = (-Math.PI / 2) + (index * Math.PI * 2 / axes.length);
+        return polarToCartesian(center, center, maxRadius * scale * (clampValue(axis.value) / 100), angle);
+      });
+    }
+    function renderGrid() {
+      const center = 180; const maxRadius = 108; gridPolygons.innerHTML = ""; axisLines.innerHTML = ""; axisLabels.innerHTML = "";
+      [0.25, 0.5, 0.75, 1].forEach((scale) => {
+        const points = axes.map((axis, index) => {
+          const angle = (-Math.PI / 2) + (index * Math.PI * 2 / axes.length);
+          const point = polarToCartesian(center, center, maxRadius * scale, angle);
+          return `${point.x},${point.y}`;
+        }).join(" ");
+        const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon"); polygon.setAttribute("points", points); gridPolygons.appendChild(polygon);
+      });
+      axes.forEach((axis, index) => {
+        const angle = (-Math.PI / 2) + (index * Math.PI * 2 / axes.length);
+        const point = polarToCartesian(center, center, maxRadius, angle);
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", center); line.setAttribute("y1", center); line.setAttribute("x2", point.x); line.setAttribute("y2", point.y); axisLines.appendChild(line);
+        const labelPoint = polarToCartesian(center, center, maxRadius + 20, angle);
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text"); text.setAttribute("x", labelPoint.x); text.setAttribute("y", labelPoint.y); text.textContent = axis.label; axisLabels.appendChild(text);
+      });
+    }
+    function renderShape() {
+      const points = createRadarPoints(); radarShape.setAttribute("points", points.map((point) => `${point.x},${point.y}`).join(" ")); vertexDots.innerHTML = "";
+      points.forEach((point) => { const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle"); dot.setAttribute("cx", point.x); dot.setAttribute("cy", point.y); dot.setAttribute("r", 5); vertexDots.appendChild(dot); });
+    }
+    function renderSummary() {
+      if (!summaryList) return;
+      summaryList.innerHTML = "";
+      axes.forEach((axis) => { const item = document.createElement("li"); item.innerHTML = `<span>${axis.label}</span><strong>${clampValue(axis.value)}</strong>`; summaryList.appendChild(item); });
+    }
+    function syncAxisValue(axisId, nextValue) {
+      const target = axes.find((axis) => axis.id === axisId); if (!target) return; target.value = clampValue(nextValue);
+      const input = document.getElementById(axisId); const output = document.getElementById(`${axisId}-value`); if (input) input.value = target.value; if (output) output.value = target.value;
+    }
+    function renderSliders() {
+      sliderList.innerHTML = "";
+      axes.forEach((axis) => {
+        const row = document.createElement("div"); row.className = "slider-row";
+        row.innerHTML = `<div class="slider-head"><div class="slider-title"><label for="${axis.id}">${axis.label}</label><p class="slider-detail">${axis.description}</p></div><output id="${axis.id}-value" for="${axis.id}">${axis.value}</output></div><input id="${axis.id}" name="${axis.id}" type="range" min="0" max="100" value="${axis.value}">`;
+        sliderList.appendChild(row);
+      });
+      axes.forEach((axis) => { document.getElementById(axis.id).addEventListener("input", (event) => { syncAxisValue(axis.id, Number(event.target.value)); renderShape(); renderSummary(); persistReservationDraft(); }); });
+    }
+    function setPreset(name) {
+      const preset = getPresets()[name] || FALLBACK_PRESETS[name];
+      AXIS_META.forEach((axis) => syncAxisValue(axis.id, preset?.[axis.id] ?? FALLBACK_AXES[axis.id]));
+      renderShape(); renderSummary(); persistReservationDraft();
+    }
+    resetBtn.addEventListener("click", () => { const resetAxes = getResetAxes(); AXIS_META.forEach((axis) => syncAxisValue(axis.id, resetAxes[axis.id] ?? FALLBACK_AXES[axis.id])); renderShape(); renderSummary(); persistReservationDraft(); });
+    presetButtons.forEach((button) => { button.addEventListener("click", () => setPreset(button.dataset.preset)); });
+    brandLink.addEventListener("click", (event) => { event.preventDefault(); returnToTop(); });
+    reserveLink.addEventListener("click", persistReservationDraft);
+    renderGrid(); renderSliders(); renderShape(); renderSummary(); persistReservationDraft();
+    loadActiveMaterialRows().then(persistReservationDraft);
+  </script>
 </body>
+
 </html>
+

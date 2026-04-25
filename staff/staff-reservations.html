@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>スタッフ登録 / 管理 | Fragrance Workshop</title>
+  <title>予約情報管理 | Fragrance Workshop</title>
   <style>
     /* css/common.css */
 * {
@@ -9029,141 +9029,61 @@
 }
   </style>
 </head>
-<body class="page-canvas admin-page portal-admin-settings-page">
+<body class="page-canvas admin-page portal-reservations-page">
   <header class="admin-header" id="admin-header"></header>
-  <main class="admin-main site-container portal-stack">
-    <section class="admin-panel portal-hero">
+  <main class="admin-main site-container portal-stack portal-reservations-stack">
+    <section class="admin-panel portal-hero portal-hero--stacked portal-reservations-hero">
       <div class="portal-hero-copy-block">
-        <p class="portal-hero-label">STAFF CONTROL</p>
-        <h1>スタッフ新規登録 / 管理</h1>
-      </div>
-      <p class="portal-hero-copy portal-hero-copy--align-end">本日の出勤者、登録済みスタッフ、向こう一週間のカレンダーを同じ画面で確認しながら管理します。</p>
-    </section>
-
-    <section class="portal-control-grid">
-      <article class="admin-panel portal-settings-today-panel">
-        <div class="portal-section-head">
-          <div>
-            <h2>本日（<span id="settings-today-label">--/--</span>）の出勤者</h2>
-          </div>
-        </div>
-        <div class="admin-card-list" id="settings-today-staff"></div>
-      </article>
-
-      <article class="admin-panel portal-side-stack portal-settings-side-card">
-        <div class="portal-section-head">
-          <div>
-            <h2>スタッフ登録 / 編集</h2>
-          </div>
-        </div>
-        <div class="portal-action-stack portal-settings-action-stack">
-          <button class="admin-btn primary" id="staff-create-button" type="button">スタッフ新規登録</button>
-          <label class="portal-settings-select">
-            <span>スタッフ登録編集</span>
-            <select id="staff-manage-select"></select>
+        <p class="portal-hero-label">RESERVATIONS</p>
+        <div class="portal-reservations-title-row">
+          <h1>予約情報一覧</h1>
+          <label class="portal-reservations-toggle">
+            <input id="filter-hide-completed" type="checkbox">
+            <span>接客完了情報を非表示にする</span>
           </label>
-          <div class="portal-settings-inline-control">
-            <button class="admin-btn secondary" id="staff-shift-button" type="button">スタッフ出勤管理</button>
-            <label class="portal-settings-select portal-settings-select--compact">
-              <span>スタッフ出勤管理</span>
-              <select id="shift-manage-select"></select>
-            </label>
-          </div>
-        </div>
-        <p class="admin-note portal-settings-control-note" id="settings-control-note" hidden></p>
-      </article>
-    </section>
-
-    <section class="admin-panel portal-settings-calendar-panel">
-      <div class="portal-section-head portal-settings-calendar-head">
-        <div class="portal-settings-calendar-copy">
-          <h2>スタッフカレンダー表</h2>
-          <p class="admin-note">向こう一週間分の出勤時間と、各スタッフの予約数 / 予約枠を表形式で表示されます。</p>
-        </div>
-        <div class="portal-settings-calendar-tools">
-          <p class="admin-note" id="settings-calendar-range">表示期間: 基本向こう一週間が表示される</p>
-          <div class="admin-actions portal-settings-week-actions">
-            <button class="admin-btn secondary" id="settings-week-prev" type="button">◀前の週に戻る</button>
-            <button class="admin-btn secondary" id="settings-week-next" type="button">次の週に送る▶</button>
-          </div>
         </div>
       </div>
-      <div class="portal-calendar-shell">
-        <table class="portal-calendar-table">
-          <thead id="settings-calendar-head"></thead>
-          <tbody id="settings-calendar-body"></tbody>
-        </table>
-      </div>
-    </section>
-  </main>
-
-  <div class="portal-modal" id="staff-modal" hidden>
-    <div class="portal-modal-backdrop" data-modal-close="staff-modal"></div>
-    <div class="portal-modal-dialog portal-modal-dialog--wide">
-      <div class="portal-section-head">
-        <div>
-          <p class="portal-hero-label portal-hero-label--muted">REGISTER</p>
-          <h2 id="staff-modal-title">スタッフ新規登録</h2>
-        </div>
-        <button class="admin-btn secondary" type="button" data-modal-close="staff-modal">閉じる</button>
-      </div>
-      <form class="admin-form" id="staff-form">
-        <input id="staff-id" type="hidden">
-        <div class="admin-grid cols-2">
-          <label>スタッフID
-            <input id="staff-code" type="text" required placeholder="staff-001">
-          </label>
-          <label>表示名
-            <input id="staff-name" type="text" required placeholder="香り 花子">
-          </label>
-        </div>
-        <div class="admin-grid cols-3">
-          <label>権限
-            <select id="staff-role">
-              <option value="staff">staff</option>
-              <option value="manager">manager</option>
-            </select>
-          </label>
-          <label>メールアドレス
-            <input id="staff-email" type="email" placeholder="staff@example.com">
-          </label>
-          <label>電話番号
-            <input id="staff-phone" type="text" placeholder="090-0000-0000">
-          </label>
-        </div>
-        <div class="admin-grid cols-3">
-          <label>カードカラー
-            <input id="staff-color" type="color" value="#c78862">
-          </label>
-          <label>標準出勤
-            <input id="staff-default-start" type="time" value="10:00">
-          </label>
-          <label>標準退勤
-            <input id="staff-default-end" type="time" value="18:00">
-          </label>
-        </div>
-        <section class="admin-panel admin-panel-soft">
-          <div class="portal-section-head">
-            <div>
-              <h3>曜日ごとの基本出勤</h3>
-              <p class="admin-note">スタッフ出勤管理で勤務設定を更新できます。</p>
-            </div>
-          </div>
-          <div class="portal-week-pattern" id="staff-weekly-pattern"></div>
-        </section>
-        <div class="admin-actions">
-          <button class="admin-btn primary" type="submit">保存</button>
-          <button class="admin-btn secondary" type="button" data-modal-close="staff-modal">キャンセル</button>
+      <form class="portal-filter-form" id="filter-form">
+        <label>日付
+          <input id="filter-date" type="date">
+        </label>
+        <label>予約情報
+          <select id="filter-status">
+            <option value="">すべて</option>
+            <option value="confirmed">予約受付</option>
+            <option value="canceled">キャンセル</option>
+            <option value="completed">接客完了</option>
+          </select>
+        </label>
+        <label>キーワード
+          <input id="filter-keyword" type="text" placeholder="お客様名・傾向など">
+        </label>
+        <div class="portal-filter-submit">
+          <button class="admin-btn primary" type="submit">絞り込む</button>
         </div>
       </form>
-    </div>
-  </div>
+    </section>
 
+    <section class="admin-panel portal-list-card portal-reservations-list-section">
+      <div class="portal-list-head portal-reservation-head portal-reservations-head-row">
+        <span>来店日時</span>
+        <span>お客様名</span>
+        <span>来店目的</span>
+        <span>人数</span>
+        <span>傾向</span>
+        <span>作成日時</span>
+        <span>予約情報</span>
+        <span>詳細</span>
+      </div>
+      <div id="reservation-rows" class="portal-list-body portal-reservations-list-body"></div>
+      <p class="admin-empty portal-reservations-empty" id="reservation-empty" hidden>該当する予約はありません。</p>
+    </section>
+  </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-config.js"></script>
-  <script src="js/supabase-client.js"></script>
-  <script src="js/admin-auth.js"></script>
-  <script src="js/admin-data.js"></script>
-  <script src="js/admin-settings-page.js"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/admin-auth.js"></script>
+  <script src="../js/admin-data.js"></script>
+  <script src="../js/admin-reservations-page.js"></script>
 </body>
 </html>

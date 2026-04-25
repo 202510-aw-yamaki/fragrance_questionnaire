@@ -140,7 +140,7 @@
   function buildEventMarkup(event, options = {}) {
     const actionHref = event.reservation
       ? window.AdminAuth.appendRoleToHref(`staff-customer-detail.html?reservation=${encodeURIComponent(event.reservation.id)}`, "staff")
-      : window.AdminAuth.appendRoleToHref("admin-slots.html", "staff");
+      : window.AdminAuth.appendRoleToHref("staff-slots.html", "staff");
     const actionLabel = event.reservation ? "詳細を開く" : "予約枠を開く";
     return `
       <article class="day-event ${event.color}">
@@ -265,7 +265,7 @@
       role: "staff",
       session,
       links: [
-        { href: "admin-slots.html", label: "予約枠作成", key: "slots" },
+        { href: "staff-slots.html", label: "予約枠作成", key: "slots" },
         { href: "staff-reservations.html", label: "予約情報一覧", key: "reservations" }
       ]
     });

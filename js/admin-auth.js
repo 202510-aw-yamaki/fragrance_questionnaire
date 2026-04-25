@@ -1,5 +1,11 @@
 (function () {
-  const LOGIN_PAGE = "admin-login.html";
+  function getPortalRootPrefix() {
+    const path = String(window.location.pathname || "").replace(/\\/g, "/");
+    return /\/(?:customer|staff|admin)\//.test(path) ? "../" : "";
+  }
+
+  const ROOT_PREFIX = getPortalRootPrefix();
+  const LOGIN_PAGE = `${ROOT_PREFIX}admin-login.html`;
   const ROLE_STORAGE_KEY = "fragrancePortalRole";
   const LOGIN_INDEX_STORAGE_KEY = "fragrancePortalLoginIndex";
   const AUTH_DOMAIN_BY_ROLE = {
@@ -7,8 +13,8 @@
     manager: "manager.portal.fragrance.local"
   };
   const HOME_BY_ROLE = {
-    staff: "staff-dashboard.html",
-    manager: "admin-dashboard.html"
+    staff: `${ROOT_PREFIX}staff/staff-dashboard.html`,
+    manager: `${ROOT_PREFIX}admin/admin-dashboard.html`
   };
 
   function isConfigured() {
@@ -117,7 +123,7 @@
     if (role === "staff" || role === "manager") {
       url.searchParams.set("role", role);
     }
-    return `${url.pathname.split("/").pop()}${url.search}${url.hash}`;
+    return url.toString();
   }
 
   function getStaffDisplayName(session) {
@@ -138,16 +144,13 @@
     if (role === "staff") {
       return [
         ["staff-dashboard.html", "\u4e88\u5b9a\u78ba\u8a8d", "staff-dashboard"],
-        ["admin-slots.html", "\u4e88\u7d04\u67a0\u4f5c\u6210", "slots"],
+        ["staff-slots.html", "\u4e88\u7d04\u67a0\u4f5c\u6210", "slots"],
         ["staff-reservations.html", "\u4e88\u7d04\u60c5\u5831\u4e00\u89a7", "reservations"]
       ];
     }
 
     return [
       ["admin-dashboard.html", "Dashboard", "dashboard"],
-      ["admin-workspace.html", "\u63a5\u5ba2\u5c0e\u7dda", "workspace"],
-      ["admin-reservations.html", "\u4e88\u7d04\u60c5\u5831", "reservations"],
-      ["admin-slots.html", "\u4e88\u7d04\u67a0", "slots"],
       ["admin-scoring.html", "\u914d\u70b9\u30ed\u30b8\u30c3\u30af", "scoring"],
       ["admin-materials.html", "\u539f\u6599\u30dd\u30a4\u30f3\u30c8", "materials"],
       ["admin-settings.html", "\u305d\u306e\u4ed6\u8a2d\u5b9a", "settings"]

@@ -25,7 +25,7 @@
   }
 
   function getSelectedRole() {
-    return window.AdminAuth.readRoleFromLocation() || window.AdminAuth.readStoredRole() || "manager";
+    return "staff";
   }
 
   function getDefaultInstructorName() {
@@ -338,7 +338,7 @@
   }
 
   async function bootstrap() {
-    const role = getSelectedRole();
+    const role = "staff";
     const session = await window.AdminAuth.requireAdminSession();
     if (!session) return;
     window.__adminSession = session;
@@ -347,15 +347,10 @@
     window.AdminAuth.renderAdminHeader("slots", {
       role,
       session,
-      links: role === "staff"
-        ? [
-            { href: "staff-reservations.html", label: "予約情報一覧", key: "reservations" },
-            { href: "admin-slots.html", label: "予約枠作成", key: "slots" }
-          ]
-        : [
-            { href: "admin-dashboard.html", label: "戻る", key: "dashboard" },
-            { href: "admin-reservations.html", label: "予約確認", key: "reservations" }
-          ]
+      links: [
+        { href: "staff-reservations.html", label: "予約情報一覧", key: "reservations" },
+        { href: "staff-slots.html", label: "予約枠作成", key: "slots" }
+      ]
     });
     reservations = await getAllReservations();
     renderPreview();

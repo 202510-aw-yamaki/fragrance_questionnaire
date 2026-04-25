@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>&#25509;&#23458;&#23566;&#32218; | Fragrance Workshop</title>
+  <title>配点ロジック管理 | Fragrance Workshop</title>
   <style>
     /* css/common.css */
 * {
@@ -9029,214 +9029,126 @@
 }
   </style>
 </head>
-<body class="page-canvas admin-page portal-workspace-detail-page">
+<body class="page-canvas admin-page portal-admin-scoring-page">
   <header class="admin-header" id="admin-header"></header>
-  <main class="admin-main site-container portal-stack portal-workspace-page portal-workspace-detail-main">
-    <section class="admin-panel portal-hero portal-workspace-hero">
-      <div class="portal-hero-copy-block">
-        <p class="portal-hero-label">STAFF WORKSPACE</p>
-        <h1>お客様詳細画面</h1>
-      </div>
-      <div class="portal-hero-side">
-        <p class="portal-hero-copy">お客様情報、アンケート回答、5軸グラフ、ヒアリング内容、最終原料登録を一画面で扱える自己完結版です。</p>
-        <div class="portal-legend">
-          <span class="portal-legend-item"><i class="portal-dot portal-dot--survey"></i>アンケート回答時</span>
-          <span class="portal-legend-item"><i class="portal-dot portal-dot--reservation"></i>予約時</span>
-          <span class="portal-legend-item"><i class="portal-dot portal-dot--final"></i>最終提案</span>
+  <main class="admin-main site-container portal-stack">
+    <section class="admin-panel portal-scoring-hero-card">
+      <div class="portal-scoring-hero-grid">
+        <div class="portal-hero-copy-block">
+          <p class="portal-hero-label">SCORING LOGIC</p>
+          <h1>配点ロジック</h1>
+        </div>
+        <div class="portal-scoring-top-actions">
+          <button class="admin-btn primary" form="scoring-form" type="submit">新 version をデータベースに保存</button>
+          <button class="admin-btn primary" data-scoring-export type="button">Jsonファイルとしてローカル保存</button>
         </div>
       </div>
+      <div class="portal-scoring-hero-bottom">
+        <p class="portal-hero-copy">配点・分岐・アンケートの数値、文言の変更をできます。active version <strong id="active-version">-</strong> / note <strong id="active-note">-</strong> / updated <strong id="active-updated">-</strong></p>
+        <div class="admin-actions">
+          <button class="admin-btn secondary" id="scoring-load-template" type="button">研究レポート初期テンプレートを読込</button>
+          <button class="admin-btn secondary" id="scoring-load-active" type="button">active 設定へ戻す</button>
+          <button class="admin-btn primary portal-scoring-import-button" data-scoring-import-trigger type="button">Json読込</button>
+        </div>
+      </div>
+      <p class="admin-note" id="scoring-status">読み込み中です。</p>
+      <input id="scoring-import-json" type="file" accept="application/json" hidden>
     </section>
 
-    <section class="admin-panel portal-workspace-detail-card">
+    <section class="admin-panel portal-scoring-branch-area">
       <div class="portal-section-head">
         <div>
-          <h2>お客様情報</h2>
-          <p class="admin-note">お客様名・メールアドレス・電話番号はモーダルで編集します。個人情報の同意にチェックを入れるまで保存できません。</p>
+          <h2>分岐設定エリア</h2>
         </div>
-        <button class="admin-btn primary" id="workspace-customer-open" type="button">お客様情報を入力</button>
+        <p class="admin-note">基本設定と3種の分岐設定、距離重みをひとまとまりで確認するエリア。</p>
       </div>
-      <div id="workspace-detail-summary"></div>
+      <div id="scoring-branch-settings"></div>
     </section>
 
-    <section class="admin-panel portal-workspace-question-card">
-      <div class="portal-section-head">
+    <section class="portal-scoring-columns">
+      <div class="portal-scoring-column">
+        <section class="admin-panel">
+          <div class="portal-section-head">
+            <div>
+              <h2>STEP1 配点</h2>
+              <p class="admin-note">最初の5問で使う質問ごとに調整できます。</p>
+            </div>
+          </div>
+          <div class="admin-form-stack" id="scoring-step1-section"></div>
+        </section>
+
+        <div class="portal-scoring-inline-actions">
+          <button class="admin-btn primary" form="scoring-form" type="submit">新 version をデータベースに保存</button>
+          <button class="admin-btn primary" data-scoring-export type="button">Jsonファイルとしてローカル保存</button>
+        </div>
+
+        <section class="admin-panel">
+          <div class="portal-section-head">
+            <div>
+              <h2>Q8 配点（今日の仕上がり回答に対応です。）</h2>
+            </div>
+          </div>
+          <div class="admin-form-stack" id="scoring-q8-section"></div>
+        </section>
+      </div>
+
+      <div class="portal-scoring-column">
+        <section class="admin-panel">
+          <div class="portal-section-head">
+            <div>
+              <h2>STEP2 配点</h2>
+              <p class="admin-note">STEP2の分岐質問3種を質問ごとに調整できます。</p>
+            </div>
+          </div>
+          <div class="admin-form-stack" id="scoring-step2-section"></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="admin-panel portal-scoring-finish-panel">
+      <div class="portal-scoring-finish-grid">
         <div>
-          <h2>アンケート回答</h2>
-          <p class="admin-note">回答は顧客ごとの回答データから入力されます。</p>
+          <div class="portal-section-head">
+            <div>
+              <h2>finish template</h2>
+              <p class="admin-note">Q8の回答に応じて仕上がりを寄せるテンプレートです。</p>
+            </div>
+          </div>
+          <div class="admin-form-stack" id="scoring-finish-section"></div>
+        </div>
+
+        <div class="portal-scoring-explanation">
+          <p class="portal-scoring-explanation-copy">finishTemplates は、
+Q8 の回答ごとに用意された「仕上がりの理想プロファイル」です。
+A「軽やか」→ Fresh 高め / B「やわらか」→ Floral / Sweet 高め / C「印象」→ Woody / Spicy / Sweet 高めという 5軸の目標形が定義されています。
+最終軸 = Q8 delta反映後の値 × （1-finish値） + finishTemplate × fnish値 となります。これは「Q8で選ばれた“仕上がり印象”の目標形」を「印象付けたい方向へと補正」するための値です。</p>
+          <form class="admin-form portal-scoring-save-form" id="scoring-form">
+            <label>version メモ
+              <input id="scoring-note" type="text" placeholder="例: spring update">
+            </label>
+            <details class="portal-scoring-json-details">
+              <summary>保存内容の確認</summary>
+              <label>保存される JSON
+                <textarea id="scoring-json" rows="14" readonly></textarea>
+              </label>
+              <div class="portal-config-grid" id="scoring-sections"></div>
+            </details>
+            <div class="admin-actions">
+              <button class="admin-btn primary portal-scoring-import-button" data-scoring-import-trigger type="button">Json読込</button>
+              <button class="admin-btn primary" type="submit">新 version をデータベースに保存</button>
+              <button class="admin-btn primary" data-scoring-export type="button">Jsonファイルとしてローカル保存</button>
+            </div>
+          </form>
         </div>
       </div>
-      <div id="workspace-question-summary"></div>
-      <div id="workspace-question-answers" class="portal-answer-grid"></div>
-    </section>
-
-    <section class="admin-panel portal-workspace-axis-section">
-      <div class="portal-section-head">
-        <div>
-          <h2>5軸グラフ比較</h2>
-          <p class="admin-note">アンケート回答時点の5軸グラフと、予約時に保存された5軸グラフを横並び 2 カラムで確認できます。</p>
-        </div>
-      </div>
-      <div id="workspace-axis-compare"></div>
-    </section>
-
-    <section class="portal-workspace-split portal-workspace-detail-split">
-      <section class="admin-panel portal-workspace-recommend-panel">
-        <div class="portal-section-head">
-          <div>
-            <h2>おすすめ原料エリア</h2>
-            <p class="admin-note">アンケート回答基準と予約時基準の 2 段で、それぞれおすすめ 3 種の原料と 5 軸プロファイルを表示します。</p>
-          </div>
-        </div>
-        <div class="admin-card-list" id="workspace-recommended-materials"></div>
-      </section>
-
-      <section class="admin-panel portal-workspace-entry-panel">
-        <div class="portal-section-head">
-          <div>
-            <h2>お客様ヒアリング入力</h2>
-            <p class="admin-note">スタッフが会話から得た印象やご要望を記録するエリアです。</p>
-          </div>
-        </div>
-        <form class="admin-form-stack" id="workspace-form">
-          <input id="workspace-record-id" type="hidden">
-          <input id="workspace-submit-mode" type="hidden" value="draft">
-
-          <div class="admin-grid cols-2">
-            <label>入力状態
-              <select id="workspace-session-status">
-                <option value="draft">draft</option>
-                <option value="ready">ready</option>
-                <option value="completed">completed</option>
-              </select>
-            </label>
-            <div class="admin-editor-card">
-              <strong>保存の考え方</strong>
-              <p class="admin-note">途中保存は準備メモとレシピの更新用です。接客完了で保存すると予約ステータスも completed に更新します。</p>
-            </div>
-          </div>
-
-          <div class="portal-note-split">
-            <label>来店前メモ
-              <textarea id="workspace-preparation-note" rows="6" placeholder="事前アンケートを見て準備したいことを記入"></textarea>
-            </label>
-
-            <label>スタッフ要約
-              <textarea id="workspace-staff-summary" rows="6" placeholder="スタッフがお客様のメモを要約するテキストメモ欄"></textarea>
-            </label>
-          </div>
-
-          <section class="admin-panel admin-panel-soft portal-final-section">
-            <div class="portal-section-head">
-              <div>
-                <h2>最終原料登録と最終5軸</h2>
-                <p class="admin-note">原料と割合を登録すると最終5軸グラフが自動更新されます。お客様の感想とあわせて最終登録できます。</p>
-              </div>
-            </div>
-
-            <div class="portal-final-grid">
-              <article class="admin-editor-card">
-                <div class="portal-section-head">
-                  <div>
-                    <h3>最終原料登録エリア</h3>
-                    <p class="admin-note">原料をプルダウン、割合を入力します。</p>
-                  </div>
-                  <button class="admin-btn secondary" id="workspace-add-recipe" type="button">行を追加</button>
-                </div>
-                <div class="admin-card-list" id="workspace-recipe-list"></div>
-                <div class="admin-actions">
-                  <button class="admin-btn secondary" id="workspace-normalize-axes" type="button">割合を100%に整える</button>
-                </div>
-              </article>
-
-              <article class="admin-editor-card">
-                <h3>最終5軸グラフ</h3>
-                <div class="admin-axis-edit-grid">
-                  <label>フローラル
-                    <input id="workspace-axis-floral" type="number" min="0" max="100" step="1" value="0">
-                  </label>
-                  <label>フレッシュ
-                    <input id="workspace-axis-fresh" type="number" min="0" max="100" step="1" value="0">
-                  </label>
-                  <label>ウッディ
-                    <input id="workspace-axis-woody" type="number" min="0" max="100" step="1" value="0">
-                  </label>
-                  <label>スパイシー
-                    <input id="workspace-axis-spicy" type="number" min="0" max="100" step="1" value="0">
-                  </label>
-                  <label>スウィート
-                    <input id="workspace-axis-sweet" type="number" min="0" max="100" step="1" value="0">
-                  </label>
-                </div>
-                <div class="admin-axis-summary">
-                  <strong id="workspace-axis-total">合計 0</strong>
-                </div>
-                <div id="workspace-final-axis-preview" class="portal-axis-preview"></div>
-              </article>
-            </div>
-
-            <div class="portal-feedback-grid">
-              <article class="admin-editor-card">
-                <h3>お客様の感想</h3>
-                <label>感想メモ
-                  <textarea id="workspace-customer-feedback" rows="7" placeholder="お客様の仕上がり品の感想をここに入力できる"></textarea>
-                </label>
-                <p class="admin-note" id="workspace-save-status">保存内容はここに表示されます。</p>
-              </article>
-
-              <article class="admin-editor-card">
-                <h3>QR表示</h3>
-                <div id="workspace-qr-preview" class="portal-qr-preview">QR コードがここに表示されます</div>
-                <div class="admin-actions">
-                  <button class="admin-btn secondary" id="workspace-save-draft" type="submit">途中保存</button>
-                  <button class="admin-btn primary" id="workspace-save-complete" type="submit">最終登録</button>
-                  <button class="admin-btn primary" id="workspace-generate-qr" type="button">QR表示</button>
-                </div>
-              </article>
-            </div>
-          </section>
-        </form>
-      </section>
     </section>
   </main>
-
-  <div class="portal-modal" id="workspace-customer-modal" hidden>
-    <div class="portal-modal-backdrop" data-customer-close></div>
-    <div class="portal-modal-dialog">
-      <div class="portal-section-head">
-        <div>
-          <h2>お客様情報入力</h2>
-          <p class="admin-note">現行スキーマ未拡張時は、この情報をブラウザ内の下書きとして保持します。</p>
-        </div>
-        <button class="admin-btn secondary" type="button" data-customer-close>閉じる</button>
-      </div>
-      <form class="admin-form" id="workspace-customer-form">
-        <label>お客様名
-          <input id="workspace-customer-name" type="text" maxlength="80">
-        </label>
-        <label>メールアドレス
-          <input id="workspace-customer-email" type="email" maxlength="120">
-        </label>
-        <label>電話番号（任意）
-          <input id="workspace-customer-phone" type="text" maxlength="40">
-        </label>
-        <label class="portal-checkbox">
-          <input id="workspace-customer-consent" type="checkbox">
-          <span>個人情報の保存について同意をいただきました。</span>
-        </label>
-        <div class="admin-actions">
-          <button class="admin-btn primary" type="submit">保存する</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="js/supabase-config.js"></script>
-  <script src="js/supabase-client.js"></script>
-  <script src="js/admin-auth.js"></script>
-  <script src="js/admin-data.js"></script>
-  <script src="js/fragrance-master-data.js"></script>
-  <script src="js/admin-workspace-page.js"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/admin-auth.js"></script>
+  <script src="../js/admin-data.js"></script>
+  <script src="../js/fragrance-master-data.js"></script>
+  <script src="../js/admin-scoring-page.js"></script>
 </body>
 </html>

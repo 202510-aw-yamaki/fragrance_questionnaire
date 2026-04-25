@@ -122,7 +122,7 @@
   }
 
   function getBackHref() {
-    return { href: "staff-reservations.html?role=staff", useHistory: false };
+    return { href: window.AdminAuth.appendRoleToHref("staff-reservations.html", "staff"), useHistory: false };
   }
 
   function renderHeader() {
@@ -133,7 +133,7 @@
       : "staff";
     headerEl.innerHTML = `
       <div class="staff-detail-header-inner staff-detail-header-inner-simple">
-        <a class="staff-detail-brand" href="staff-dashboard.html?role=staff">Fragrance STAFF_${escapeHtml(staffName)}</a>
+        <a class="staff-detail-brand" href="${escapeHtml(window.AdminAuth.appendRoleToHref("staff-dashboard.html", "staff"))}">Fragrance STAFF_${escapeHtml(staffName)}</a>
         <div class="staff-detail-header-actions">
           <a class="staff-detail-nav-link" id="staff-detail-back" href="${escapeHtml(back.href)}">戻る</a>
           <button class="staff-detail-logout" id="staff-detail-logout" type="button">ログアウト</button>
@@ -621,7 +621,7 @@
     const recipeSignature = buildRecipeSignature(recipeItems);
     const axisSignature = AXIS_ORDER.map((axis) => `${axis}:${Number(axes[axis] || 0)}`).join("|");
     const productId = `prd-${createStableHash(`${axisSignature}|${recipeSignature || "recipe:none"}`)}`;
-    const target = new URL("product-reservation.html", window.location.href);
+    const target = new URL("../customer/product-reservation.html", window.location.href);
     target.searchParams.set("product_id", productId);
     AXIS_ORDER.forEach((axis) => {
       target.searchParams.set(axis, String(Number(axes[axis] || 0)));
