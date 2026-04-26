@@ -386,6 +386,10 @@ svg {
   white-space: nowrap;
 }
 
+.header-actions .customer-login-link {
+  min-width: 86px;
+}
+
 .mobile-label-btn .label-default {
   display: inline;
 }
@@ -530,6 +534,17 @@ main section {
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 14px;
+}
+
+.cta-row .btn {
+  min-width: 128px;
+  min-height: 44px;
+  padding: 0 16px;
+  font-size: .92rem;
+}
+
+.cta-row .customer-return-link {
+  min-width: 156px;
 }
 
 .hero-points {
@@ -1325,6 +1340,36 @@ input[type="range"] {
   padding-top: 18px;
 }
 
+.footer-bottom-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+.staff-entrance {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid rgba(156, 103, 64, .22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .26);
+  color: rgba(111, 102, 95, .58);
+  font-size: .76rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-decoration: none;
+  transition: color .18s ease, border-color .18s ease, background .18s ease, opacity .18s ease;
+}
+
+.staff-entrance:hover,
+.staff-entrance:focus-visible {
+  border-color: rgba(156, 103, 64, .42);
+  background: rgba(255, 255, 255, .58);
+  color: rgba(80, 63, 48, .82);
+}
+
 .footer-info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1665,7 +1710,15 @@ input[type="range"] {
   }
 
   .header-actions .mobile-only {
-    display: inline-flex;
+    display: none;
+  }
+
+  .header-actions .customer-login-link {
+    display: none;
+  }
+
+  .header-actions .header-reserve-link {
+    display: none;
   }
 
   .mobile-label-btn {
@@ -1709,6 +1762,17 @@ input[type="range"] {
 
   .hero-copy h1 {
     font-size: clamp(2.15rem, 11vw, 3rem);
+  }
+
+  .hero .cta-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero .cta-row .btn {
+    width: 100%;
+    min-width: 0;
+    flex: 0 0 auto;
   }
 
   .hero-gallery {
@@ -1795,6 +1859,10 @@ input[type="range"] {
     gap: 10px;
   }
 
+  .footer-bottom-row {
+    justify-content: center;
+  }
+
   
 
   .footer-address-break {
@@ -1867,6 +1935,14 @@ input[type="range"] {
     line-height: 1;
   }
 
+  .header-actions .header-reserve-link .label-default {
+    display: none !important;
+  }
+
+  .header-actions .header-reserve-link .label-short {
+    display: block !important;
+  }
+
   .mobile-label-btn .label-default {
     display: none;
   }
@@ -1883,6 +1959,14 @@ input[type="range"] {
 
   .header-actions .mobile-label-btn .label-short {
     display: none !important;
+  }
+
+  .header-actions .header-reserve-link .label-default {
+    display: none !important;
+  }
+
+  .header-actions .header-reserve-link .label-short {
+    display: block !important;
   }
 }
 
@@ -1927,9 +2011,13 @@ input[type="range"] {
           <span class="label-default">回答する</span>
           <span class="label-short">回答</span>
         </a>
-        <a class="btn btn-primary mobile-label-btn" href="customer/reservation.html?source=direct" aria-label="予約する">
+        <a class="btn btn-primary mobile-label-btn header-reserve-link" href="customer/reservation.html?source=direct" aria-label="予約する">
           <span class="label-default">予約する</span>
           <span class="label-short">予約</span>
+        </a>
+        <a class="btn btn-secondary mobile-label-btn customer-login-link" href="customer/customer-login.html" aria-label="ログイン">
+          <span class="label-default">ログイン</span>
+          <span class="label-short">ログイン</span>
         </a>
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu" aria-label="メニューを開く">
           <span></span>
@@ -1949,6 +2037,7 @@ input[type="range"] {
             <p class="lead">8問・約1分で、今のあなたに合う香りバランスのベースをつくります。診断で決めきるのではなく、最後は当日スタッフと一緒に仕上げます。</p>
             <div class="cta-row">
               <a class="btn btn-primary" href="customer/questionnaire.html">8問からはじめる</a>
+              <a class="btn btn-secondary customer-return-link" href="customer/customer-login.html?mode=return">再来店の方はこちら</a>
             </div>
             <ul class="hero-points" aria-label="安心情報">
               <li>約1分</li>
@@ -2319,6 +2408,9 @@ input[type="range"] {
           <p><strong>電話：</strong>03-0000-0000</p>
           <p><strong><span class="footer-mail-desktop">Mail：</span><span class="footer-mail-mobile">メール：</span></strong>info@example.com</p>
         </div>
+      </div>
+      <div class="footer-bottom-row">
+        <a class="staff-entrance" href="admin-login.html">Staff Entrance</a>
       </div>
     </div>
   </footer>

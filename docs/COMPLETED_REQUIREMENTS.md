@@ -96,3 +96,13 @@
 - `js/admin-slots-bulk-page.js` に、既登録日が含まれる場合の「mm/dd は登録が既にしてあります」ポップアップ確認を追加した
 - `staff/staff-reservations.html` / `js/admin-reservations-page.js` を、予約情報一覧ページとして来店日時ベースの一覧表示と、予約顧客情報詳細ページへの導線付き表示へ更新した
 - `staff/staff-customer-detail.html` / `js/admin-workspace-page.js` に、予約顧客情報詳細ページ導線での直開き対応、5軸比較の表示順修正、最終5軸の合計100補正 UI を追加した
+
+## 追記: 2026-04-26 トップページのお客様導線初期実装
+
+この追記は、`index.html` にログイン / 再来店導線と Staff Entrance を追加する要望への対応分を記録する。
+
+- `index.html` のヘッダーに、お客様向け「ログイン」ボタンを追加した
+- `index.html` のファーストビュー CTA に、「再来店の方はこちら」ボタンを追加した
+- 「ログイン」と「再来店の方はこちら」は、仮のお客様入口ページ `customer/customer-login.html` へ遷移する
+- `customer/customer-login.html` を追加し、メールアドレスを初期 ID とするログイン / 初回パスワード設定の画面イメージと、原料割合を出さない最終軸グラフ表示イメージを配置した
+- `index.html` のフッターに薄い表示の `Staff Entrance` を追加し、`admin-login.html` へリンクした
