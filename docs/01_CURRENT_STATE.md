@@ -17,7 +17,7 @@ Codex は実装前にこのファイルを読み、既存機能を壊さず、�
   - 初回アンケート画面
   - 5問構成
 
-- `customer/questionnaire2.html`
+- `customer/questionnaire_step2.html`
   - 分岐後アンケート画面
   - 分岐2問＋共通1問
 

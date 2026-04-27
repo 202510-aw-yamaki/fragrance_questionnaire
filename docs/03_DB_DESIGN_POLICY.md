@@ -21,3 +21,26 @@ QRから来た第三者は customers に入れない。
 QR依頼は qr_product_requests として扱う。
 
 会員導線とQR商品導線を混ぜない。
+
+## QR依頼ステータス
+
+qr_product_requests.status は以下を想定する。
+
+- requested
+- available_email_sent
+- reminder_email_sent
+- expired
+- unavailable
+- shipping_pending
+- shipped
+
+## スタッフ成果の分離
+
+fragrance_products.created_by_staff_id
+→ ワークショップで香水を作成したスタッフ
+
+qr_product_requests.handled_by_staff_id
+→ QR依頼の在庫確認・発送対応をしたスタッフ
+
+成果Aは created_by_staff_id に紐づくQR依頼数。
+成果Bは created_by_staff_id に紐づく発送完了数。

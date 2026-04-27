@@ -45,18 +45,22 @@ UTF-8、BOMはつけてはいけない。
 最優先の目的は、アンケート結果・香りロジック・DB・スタッフ運用を安定させること。
 その上で、ワークショップで作成された香水をQR商品として第三者が作成依頼できる導線を追加する。
 
-## Source of Truth
+## 設計資料の優先順位
 
-設計思想の起点は以下の資料とする。
+Codex は作業前に、必ず以下を読むこと。
 
-- docs/presentation/fragrance_questionnaire_architecture_v5.pptx
-- docs/00_PROJECT_CORE.md
-- docs/02_TARGET_ARCHITECTURE.md
-- docs/03_DB_DESIGN_POLICY.md
-- docs/04_QR_PRODUCT_FLOW.md
-- docs/05_IMPLEMENTATION_ROADMAP.md
+1. AGENTS.md
+2. docs/00_PROJECT_CORE.md
+3. docs/01_CURRENT_STATE.md
+4. docs/02_TARGET_ARCHITECTURE.md
+5. docs/03_DB_DESIGN_POLICY.md
+6. docs/04_QR_PRODUCT_FLOW.md
+7. docs/05_IMPLEMENTATION_ROADMAP.md
+8. docs/06_OPEN_ISSUES.md
+9. docs/presentation/fragrance_questionnaire_architecture_v5.pptx
 
-実装前に必ず上記を確認すること。
+特に、DB・認証・QRコード関連の作業では、03_DB_DESIGN_POLICY.md と 05_IMPLEMENTATION_ROADMAP.md を必ず参照すること。
+そして、06_OPEN_ISSUES.md にある項目は、勝手に実装しないこと。
 
 ## Non-Negotiable Rules
 
