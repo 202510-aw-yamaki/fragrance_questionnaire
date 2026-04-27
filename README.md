@@ -234,4 +234,3 @@ index.html
 - `customer/reservation.html` は slot 取得失敗時のみ demo slots を使う
 - `customer/reservation-complete.html` は `sessionStorage` を優先し、不足時のみ Supabase 参照へ切り替える
 - 管理ページは Supabase 未設定時にログインできないことを明示する
-- `admin-login.html` はスタッフ / 管理者専用のため、引き続き `index.html` からは直接遷移させない
