@@ -35,6 +35,8 @@ qr_product_requests.status は以下を想定する。
 - shipped
 - auto_unavailable_overdue
 
+各ステータスの詳細な意味と遷移条件は、`docs/04_QR_PRODUCT_FLOW.md` の `QR Request Status` を参照する。
+
 ## スタッフ成果の分離
 
 fragrance_products.created_by_staff_id
