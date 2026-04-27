@@ -1,8 +1,65 @@
 # fragrance_questionnaire
 
-フレグランス体験向けのフロントエンド試作です。HTMLごとにページを分け、現段階では各ファイル内のインラインスタイルを中心に構成しています。
+香りワークショップ向けの、アンケート・予約・スタッフ管理・管理者設定・QR商品導線を扱う静的HTMLベースの試作リポジトリです。
 
-## サイトマップ
+このリポジトリでは、まずアンケート・スコアリングロジック・DB保存・スタッフ運用を安定させることを優先します。  
+その上で、ワークショップで完成した香水をQR商品として第三者が作成依頼できる導線を追加していきます。
+
+---
+
+## 現在の位置づけ
+
+現時点では、以下を中心に整理・実装しています。
+
+- アンケート回答
+- 香り5軸の算出
+- 来店予約
+- スタッフ画面での予約者確認
+- 管理者画面でのロジック調整
+- 原料ポイント調整
+- Supabase連携
+- 今後のQR商品導線に向けた設計整理
+
+このREADMEは概要のみを扱います。  
+詳細な仕様・設計・実装順序は `docs/` 配下の設計資料を参照してください。
+
+---
+
+## 重要な設計資料
+
+作業前に、以下を確認してください。
+
+- `AGENTS.md`
+  - Codex向けの作業ルール
+  - 文字化け対応、修正方針、参照すべき設計資料の優先順位
+
+- `docs/00_PROJECT_CORE.md`
+  - プロジェクトの芯
+
+- `docs/01_CURRENT_STATE.md`
+  - 現在の実装状況と課題
+
+- `docs/02_TARGET_ARCHITECTURE.md`
+  - 目指す全体構造
+
+- `docs/03_DB_DESIGN_POLICY.md`
+  - DB設計方針
+
+- `docs/04_QR_PRODUCT_FLOW.md`
+  - QR商品作成依頼導線
+
+- `docs/05_IMPLEMENTATION_ROADMAP.md`
+  - 実装順序
+
+- `docs/06_OPEN_ISSUES.md`
+  - 未確定事項・将来検討事項
+
+- `docs/presentation/fragrance_questionnaire_architecture_v5.pptx`
+  - 全体構想をまとめたPPTX資料
+
+---
+
+## 現在の主なページ
 
 ```text
 index.html
@@ -26,211 +83,68 @@ index.html
   └ admin-materials.html
 ```
 
-## ページ構成
+---
 
-- `index.html`
-  - トップページ
-  - 顧客向け導線のみを表示
-- `customer/questionnaire.html`
-  - アンケート STEP1
-  - 共通5問を表示
-- `customer/questionnaire_step2.html`
-  - アンケート STEP2
-  - STEP1 の回答傾向に応じて分岐3問を表示
-- `customer/fragrance-graph.html`
-  - 香りバランスの可視化ページ
-  - レーダーグラフとスライダーで調整
-- `customer/reservation.html`
-  - 予約ページ
-  - 香り傾向表示、予約枠選択、来店情報入力、メモ入力
-- `customer/reservation-complete.html`
-  - 予約完了ページ
-  - 予約内容確認、来店案内、地図導線を表示
-- `customer/product-reservation.html`
-  - 商品予約向けの顧客ページ
-  - 現行構成では `customer/` 配下に置く
-- `admin-login.html`
-  - スタッフ / 管理者共通ログイン
-  - 意図的に `index.html` からは紐づけていない
-- `staff/staff-dashboard.html`
-  - スタッフ用ダッシュボード
-  - 本日の予定、予約件数、予約枠導線を扱う
-- `staff/staff-reservations.html`
-  - スタッフ用予約一覧
-  - 絞り込みと顧客詳細導線を扱う
-- `staff/staff-slots.html`
-  - スタッフ用予約枠作成 / 管理
-  - 単件登録と一括作成を扱う
-- `staff/staff-customer-detail.html`
-  - スタッフ用顧客詳細
-  - 回答内容、5軸比較、接客記録を扱う
-- `admin/admin-dashboard.html`
-  - 管理者用ダッシュボード
-  - 出勤状況、予約枠状況、配点 / 原料導線を扱う
-- `admin/admin-settings.html`
-  - 管理者用設定 / スタッフ登録管理ページ
-- `admin/admin-scoring.html`
-  - 管理者用配点ロジック管理ページ
-- `admin/admin-materials.html`
-  - 管理者用原料ポイント管理ページ
+## 現在の主要課題
 
-## スタイル方針
+詳細は `docs/01_CURRENT_STATE.md` を参照してください。
 
-- 現在のHTMLは `index.html` を含めて各ファイル内のインラインスタイルで構成しています。
-- 共通化できるCSSはありますが、現段階では整理せず、現行のインラインスタイル構成を正とします。
-- 同一スタイルの統合は将来対応とし、今はページ単位で見た目を維持することを優先します。
+主な課題は以下です。
 
-## 補足
+- 会員登録のDB接続が未完了
+- 会員ページから再予約した際、前回完成品との差分表示がない
+- 商品予約ページが未作成
+- QR商品価格設定が管理者画面にない
+- スタッフ自動ログインと管理者ログインの整理が必要
+- `staff-customer-detail.html` に商品名入力・個人情報同意・第三者作成同意が未整備
+- QRコードと完成品データの紐づけを明確にする必要がある
 
-- JavaScript は各HTML末尾のインライン script と共有JSを併用しています。
-- ページ間の一時データ受け渡しには `sessionStorage` を使用しています。
-- 現在の予約ページと予約完了ページは、Supabase を主経路として利用しつつ、保存・取得失敗時は `sessionStorage` や demo data で継続できる構成です。
-- `admin-login.html` はスタッフおよび管理者用ページであり、現状はトップページからリンクしていません。
+---
 
-## 配点調整ポイント
+## Supabase設定
 
-### 主編集箇所
+Supabaseを利用する場合は、以下を設定します。
 
-- ファイル: `customer/questionnaire.html`
-- 検索文字列: `FRAGRANCE SCORING EDIT POINT: MASTER CONFIG START`
-- 通常はこのブロックだけを編集すればよい
+- `js/supabase-config.js`
+  - `url`
+  - `anonKey`
 
-### 変更できる内容
+DBスキーマは以下を参照してください。
 
-- 初期ポイント: `initialAxisScore`
-- 問題の重み: `questionWeights`
-- STEP1 の補助選択肢対象軸: `step1PrimaryAxes`
-- STEP1 の配点: `step1ScoreMap`
-- STEP2 分岐テンプレート: `branchTemplates`
-- 分岐距離の重み: `branchDistanceWeights`
-- STEP2 の補助選択肢対象軸: `step2PrimaryAxes`
-- STEP2 の配点: `step2ScoreMap`
-- Q8 の補助選択肢対象軸: `q8PrimaryAxes`
-- Q8 の配点: `q8ScoreMap`
-- Q8 から仕上がりテンプレートへの対応: `finishKeyByAnswer`
-- 仕上がりテンプレート: `finishTemplates`
-- Q8 のテンプレート寄せ率: `finishBlendRatio`
-- graph ボタンの preset 値: `graphPresets`
-- reservation の見出し・説明文テンプレート: `summaryProfiles`
-
-### 他ページの役割
-
-- `customer/questionnaire_step2.html`
-  - master config を読み、STEP2 の反映と最終確定を行う
-- `customer/fragrance-graph.html`
-  - アンケート結果を初期値にして可視化・微調整する
-- `customer/reservation.html`
-  - 5軸に最も近い profile を選んで文言表示する
-
-### 注意
-
-- fallback 定数が別ファイルにあっても、通常の編集は `customer/questionnaire.html` の master config を優先
-- `customer/questionnaire_step2.html` / `customer/fragrance-graph.html` / `customer/reservation.html` には主編集箇所への誘導コメントがある
-- `sessionStorage` を消して直接中間ページを開くと fallback が使われる場合がある
-- UI 文言を変えたくない場合は score key と配点定数だけ編集する
-
-## Supabase 前提の静的HTMLアプリ構成
-
-### 更新後サイトマップ
 ```text
-顧客向けページ
-- index.html
-- customer/questionnaire.html
-- customer/questionnaire_step2.html
-- customer/fragrance-graph.html
-- customer/reservation.html
-- customer/reservation-complete.html
-- customer/product-reservation.html
-
-スタッフ / 管理者共通ログイン
-- admin-login.html
-
-スタッフページ
-- staff/staff-dashboard.html
-- staff/staff-customer-detail.html
-- staff/staff-slots.html
-- staff/staff-reservations.html
-
-管理者ページ
-- admin/admin-dashboard.html
-- admin/admin-settings.html
-- admin/admin-scoring.html
-- admin/admin-materials.html
+supabase/schema.sql
 ```
 
-### スタイル構成
-- `index.html` を含む現行HTMLはすべてインラインスタイル主体で構成している
-- 共通CSSへの整理は将来対応とし、現段階では文書上もインラインスタイル構成を正として扱う
-- `admin-login.html` も同様に単体HTMLとしてスタイルを内包している
+client側では anon key のみを使用し、service role key は使用しません。
 
-### Supabase 設定方法
-- `js/supabase-config.js` に `url` と `anonKey` を設定する
-- client 側では anon key のみ使用し、service role key は使わない
-- `supabase/schema.sql` を Supabase SQL Editor で実行する
-- 管理画面ログインは Supabase Auth の email/password を使う
-- RLS は `schema.sql` に含めている
+---
 
-### 共有JS
-- `js/supabase-client.js`
-  - Supabase client 生成
-  - `getSupabaseClient()` / `isSupabaseConfigured()` を提供
-- `js/public-data.js`
-  - 公開ページ用の scoring config / questionnaire result / reservation slot / reservation 操作
-- `js/admin-auth.js`
-  - 管理画面のログイン確認、ヘッダー、ログアウト
-- `js/admin-data.js`
-  - 管理画面の共通 CRUD
+## 実装時の注意
 
-### テーブルと画面の対応
-- `questionnaire_results`
-  - `customer/questionnaire_step2.html` で insert
-  - `customer/fragrance-graph.html` で adjusted axes を update
-- `reservation_slots`
-  - `customer/reservation.html` で select
-  - `staff/staff-slots.html` で CRUD
-- `reservations`
-  - `customer/reservation.html` で insert
-  - `customer/reservation-complete.html` で reservation code から復元
-  - `staff/staff-reservations.html` で一覧確認
-  - `staff/staff-customer-detail.html` で詳細確認と記録更新
-- `scoring_configs`
-  - `customer/questionnaire.html` で active config を select
-  - `admin/admin-scoring.html` で version 追加と active 切替
-- `material_points`
-  - `admin/admin-materials.html` で CRUD
-- `admin_settings`
-  - `admin/admin-settings.html` で CRUD
+- UIだけを先に作らない
+- DB・認証・状態管理を優先する
+- QR商品導線と会員導線を混ぜない
+- QR経由の第三者を会員DBに入れない
+- QRコードは完成品に紐づける
+- 未確定事項は `docs/06_OPEN_ISSUES.md` を確認し、勝手に仕様化しない
+- 大きな仕様変更や全体置換は、作業前に確認する
 
-### public page のデータフロー
-1. `customer/questionnaire.html`
-   - active scoring config を Supabase から取得できれば優先
-   - 取得できない場合は `MASTER_SCORING_CONFIG` を fallback として使用
-2. `customer/questionnaire_step2.html`
-   - STEP2 完了時に `questionnaire_results` へ保存
-3. `customer/fragrance-graph.html`
-   - スライダー調整後の axes を debounce 付きで `questionnaire_results.adjusted_axes` に反映
-4. `customer/reservation.html`
-   - `reservation_slots` は Supabase 取得を優先し、失敗時のみ demo slots を使う
-   - 予約確定時は `reservations` への保存を優先し、完了画面用の `sessionStorage` も保持する
-5. `customer/reservation-complete.html`
-   - まず `sessionStorage` を参照し、欠損時のみ `reservationCode` で `reservations` から復元
+---
 
-### 配点調整ポイントの更新
-- fallback の主編集箇所は引き続き `customer/questionnaire.html`
-- 検索文字列は `FRAGRANCE SCORING EDIT POINT: MASTER CONFIG START`
-- 本番運用で active config を切り替える主画面は `admin/admin-scoring.html`
-- 実データとして保持するテーブルは `scoring_configs`
-- public page は `scoring_configs.is_active = true` の設定を優先し、取得失敗時のみ fallback を使う
-- `customer/questionnaire_step2.html` / `customer/fragrance-graph.html` / `customer/reservation.html` の誘導コメントはそのまま維持している
+## 詳細仕様について
 
-### material_points の位置づけ
-- `material_points` は将来の提案ロジック拡張用
-- 現段階では管理画面から CRUD できる土台までを実装
-- 公開ページの提案ロジックへはまだ直接組み込んでいない
+READMEには詳細仕様を載せません。
 
-### フォールバック方針
-- 優先順は `Supabase -> sessionStorage -> fallback 定数 / demo data`
-- 公開ページは Supabase 未設定でも遷移を止めない
-- `customer/reservation.html` は slot 取得失敗時のみ demo slots を使う
-- `customer/reservation-complete.html` は `sessionStorage` を優先し、不足時のみ Supabase 参照へ切り替える
-- 管理ページは Supabase 未設定時にログインできないことを明示する
+詳細は以下に分けて管理します。
+
+```text
+docs/00_PROJECT_CORE.md
+docs/01_CURRENT_STATE.md
+docs/02_TARGET_ARCHITECTURE.md
+docs/03_DB_DESIGN_POLICY.md
+docs/04_QR_PRODUCT_FLOW.md
+docs/05_IMPLEMENTATION_ROADMAP.md
+docs/06_OPEN_ISSUES.md
+```
+
+READMEは、リポジトリ全体の入口として扱います。
