@@ -125,7 +125,7 @@ UI だけを先に盛る実装を避け、DB・認証・状態管理を先に安
 ### 対応内容
 
 - アンケート回答保存の安定化
-- questionnaire.html と questionnaire2.html の流れ確認
+- questionnaire.html と questionnaire_step2.html の流れ確認
 - スコアリングロジックの保存・読込
 - 香り5軸算出処理の確認
 - 原料ポイント調整の保存・読込

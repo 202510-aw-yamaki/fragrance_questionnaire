@@ -828,6 +828,3 @@ Codex は QR 関連実装時に以下を守ってください。
 - 無効化 QR へのアクセスは記録する
 - 未確定事項は `06_OPEN_ISSUES.md` を確認し、勝手に実装しない
 
-## 参考イメージ画像:
-`レイアウトimg/QRpage-reference.png`
-タイトル部分（月夜の余韻）は仮。実際はお客様との対話で考え、staff-customer-detail.html内の商品名に記入。

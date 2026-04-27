@@ -62,6 +62,14 @@ Codex は作業前に、必ず以下を読むこと。
 特に、DB・認証・QRコード関連の作業では、03_DB_DESIGN_POLICY.md と 05_IMPLEMENTATION_ROADMAP.md を必ず参照すること。
 そして、06_OPEN_ISSUES.md にある項目は、勝手に実装しないこと。
 
+## 仕様資料の扱い
+
+既存の `docs/SPEC.md`、`docs/SURVEY_SCORING_LOGIC.md`、`docs/MATERIAL_POINTS.md` は、既存仕様や個別ロジックの参照資料として扱う。
+
+ただし、今後の全体設計・実装順序・DB/QR方針については、以下の `00`〜`06` の設計資料を優先する。
+
+特に QR 商品導線、DB設計、認証・権限、実装順序については、`docs/00_PROJECT_CORE.md` 〜 `docs/06_OPEN_ISSUES.md` を優先する。
+
 ## Non-Negotiable Rules
 
 1. UIだけを先に作って、DB・認証・状態管理を後回しにしない。

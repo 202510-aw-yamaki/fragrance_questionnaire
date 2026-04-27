@@ -33,6 +33,7 @@ qr_product_requests.status は以下を想定する。
 - unavailable
 - shipping_pending
 - shipped
+- auto_unavailable_overdue
 
 ## スタッフ成果の分離
 
