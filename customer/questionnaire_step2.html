@@ -1229,6 +1229,7 @@ img {
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabase-config.js"></script>
   <script src="../js/supabase-client.js"></script>
+  <script src="../js/fragrance-master-data.js"></script>
   <script src="../js/public-data.js"></script>
 </head>
 
@@ -1532,6 +1533,9 @@ img {
     let completionInProgress = false;
 
     function isExpectedScoringConfig(config) {
+      if (window.FragranceMasterData?.isExpectedScoringConfig) {
+        return window.FragranceMasterData.isExpectedScoringConfig(config);
+      }
       return Boolean(
         config &&
         config.logicSource === SCORING_LOGIC_SOURCE &&
@@ -1543,6 +1547,9 @@ img {
     }
 
     function cloneValue(value) { return JSON.parse(JSON.stringify(value)); }
+    function getDefaultScoringConfig() {
+      return window.FragranceMasterData?.createDefaultScoringConfig?.() || cloneValue(FALLBACK_SCORING_CONFIG);
+    }
     function getQuestionTextOverride(config, question, branchKey) {
       const root = config?.questionTextOverrides || config?.questionOverrides || {};
       if (question.id === "Q8") return root.q8?.[question.id] || root.q8 || null;
@@ -1619,9 +1626,9 @@ img {
     function getScoringConfig() {
       try {
         const parsed = JSON.parse(sessionStorage.getItem(SCORING_CONFIG_KEY) || "null");
-        return isExpectedScoringConfig(parsed) ? cloneValue(parsed) : cloneValue(FALLBACK_SCORING_CONFIG);
+        return isExpectedScoringConfig(parsed) ? cloneValue(parsed) : getDefaultScoringConfig();
       } catch (error) {
-        return cloneValue(FALLBACK_SCORING_CONFIG);
+        return getDefaultScoringConfig();
       }
     }
     function getScoreState() {

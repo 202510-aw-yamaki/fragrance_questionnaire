@@ -1173,6 +1173,7 @@ img {
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabase-config.js"></script>
   <script src="../js/supabase-client.js"></script>
+  <script src="../js/fragrance-master-data.js"></script>
   <script src="../js/public-data.js"></script>
 </head>
 
@@ -1501,6 +1502,10 @@ img {
       return JSON.parse(JSON.stringify(config));
     }
 
+    function getDefaultScoringConfig() {
+      return window.FragranceMasterData?.createDefaultScoringConfig?.() || cloneConfig(MASTER_SCORING_CONFIG);
+    }
+
     function getQuestionTextOverride(config, questionId) {
       const root = config?.questionTextOverrides || config?.questionOverrides || {};
       return root.step1?.[questionId] || root[questionId] || null;
@@ -1527,6 +1532,9 @@ img {
     }
 
     function isExpectedScoringConfig(config) {
+      if (window.FragranceMasterData?.isExpectedScoringConfig) {
+        return window.FragranceMasterData.isExpectedScoringConfig(config);
+      }
       return Boolean(
         config &&
         config.logicSource === SCORING_LOGIC_SOURCE &&
@@ -1535,6 +1543,14 @@ img {
         config.q8ScoreMap?.ALL &&
         Object.prototype.hasOwnProperty.call(config.finishTemplates || {}, "A")
       );
+    }
+
+    function getConfigAxisOrder(config) {
+      return config?.axisOrder || MASTER_SCORING_CONFIG.axisOrder;
+    }
+
+    function getConfigInitialAxisScore(config) {
+      return config?.initialAxisScore ?? MASTER_SCORING_CONFIG.initialAxisScore;
     }
 
     function createInitialAxes(config) {
@@ -1549,46 +1565,46 @@ img {
       return Math.min(max, Math.max(min, Math.round(value)));
     }
 
-    function clampAxes(axes) {
+    function clampAxes(axes, config = getDefaultScoringConfig()) {
       const nextAxes = {};
-      MASTER_SCORING_CONFIG.axisOrder.forEach((axis) => {
-        nextAxes[axis] = clampValue(axes[axis] ?? MASTER_SCORING_CONFIG.initialAxisScore);
+      getConfigAxisOrder(config).forEach((axis) => {
+        nextAxes[axis] = clampValue(axes[axis] ?? getConfigInitialAxisScore(config));
       });
       return nextAxes;
     }
 
-    function applyDelta(axes, delta, weight = 1) {
-      if (!delta) return clampAxes(axes);
+    function applyDelta(axes, delta, weight = 1, config = getDefaultScoringConfig()) {
+      if (!delta) return clampAxes(axes, config);
       const nextAxes = cloneAxes(axes);
       Object.entries(delta).forEach(([axis, value]) => {
-        nextAxes[axis] = (nextAxes[axis] ?? MASTER_SCORING_CONFIG.initialAxisScore) + (value * weight);
+        nextAxes[axis] = (nextAxes[axis] ?? getConfigInitialAxisScore(config)) + (value * weight);
       });
-      return clampAxes(nextAxes);
+      return clampAxes(nextAxes, config);
     }
 
-    function applySubOptionAdjustment(axes, primaryAxes, answerKey, weight = 1) {
-      if (answerKey !== "ALL" && answerKey !== "NONE") return clampAxes(axes);
+    function applySubOptionAdjustment(axes, primaryAxes, answerKey, weight = 1, config = getDefaultScoringConfig()) {
+      if (answerKey !== "ALL" && answerKey !== "NONE") return clampAxes(axes, config);
       const nextAxes = cloneAxes(axes);
-      MASTER_SCORING_CONFIG.axisOrder.forEach((axis) => {
+      getConfigAxisOrder(config).forEach((axis) => {
         const isPrimary = primaryAxes.includes(axis);
         if (answerKey === "ALL" && isPrimary) nextAxes[axis] += 1 * weight;
         if (answerKey === "NONE") nextAxes[axis] += (isPrimary ? -1 : 1) * weight;
       });
-      return clampAxes(nextAxes);
+      return clampAxes(nextAxes, config);
     }
 
-    function scoreQuestionAnswer(axes, answerKey, deltaMap, primaryAxes, weight = 1) {
+    function scoreQuestionAnswer(axes, answerKey, deltaMap, primaryAxes, weight = 1, config = getDefaultScoringConfig()) {
       if (deltaMap?.[answerKey]) {
-        return applyDelta(axes, deltaMap[answerKey], weight);
+        return applyDelta(axes, deltaMap[answerKey], weight, config);
       }
       if (answerKey === "ALL" || answerKey === "NONE") {
-        return applySubOptionAdjustment(axes, primaryAxes, answerKey, weight);
+        return applySubOptionAdjustment(axes, primaryAxes, answerKey, weight, config);
       }
-      return applyDelta(axes, deltaMap?.[answerKey], weight);
+      return applyDelta(axes, deltaMap?.[answerKey], weight, config);
     }
 
-    function calculateWeightedDistance(a, b, weights) {
-      return MASTER_SCORING_CONFIG.axisOrder.reduce((total, axis) => {
+    function calculateWeightedDistance(a, b, weights, config = getDefaultScoringConfig()) {
+      return getConfigAxisOrder(config).reduce((total, axis) => {
         const weight = weights?.[axis] ?? 1;
         return total + (Math.abs((a[axis] ?? 0) - (b[axis] ?? 0)) * weight);
       }, 0);
@@ -1599,7 +1615,7 @@ img {
       let winner = "floral";
       let bestDistance = Number.POSITIVE_INFINITY;
       branchOrder.forEach((branchKey) => {
-        const distance = calculateWeightedDistance(axes, config.branchTemplates[branchKey], config.branchDistanceWeights);
+        const distance = calculateWeightedDistance(axes, config.branchTemplates[branchKey], config.branchDistanceWeights, config);
         if (distance < bestDistance) {
           bestDistance = distance;
           winner = branchKey;
@@ -1608,12 +1624,12 @@ img {
       return winner;
     }
 
-    function calculateNearestProfile(axes, profiles) {
+    function calculateNearestProfile(axes, profiles, config = getDefaultScoringConfig()) {
       let winnerKey = null;
       let winnerProfile = null;
       let bestDistance = Number.POSITIVE_INFINITY;
       Object.entries(profiles).forEach(([profileKey, profile]) => {
-        const distance = calculateWeightedDistance(axes, profile.axes, null);
+        const distance = calculateWeightedDistance(axes, profile.axes, null, config);
         if (distance < bestDistance) {
           bestDistance = distance;
           winnerKey = profileKey;
@@ -1633,10 +1649,11 @@ img {
           answerKey,
           config.step1ScoreMap[question.id],
           config.step1PrimaryAxes[question.id] || [],
-          config.questionWeights.step1
+          config.questionWeights.step1,
+          config
         );
       });
-      return clampAxes(axes);
+      return clampAxes(axes, config);
     }
 
     function persistScoringConfig(config) {
@@ -1663,7 +1680,7 @@ img {
       const config = getCurrentScoringConfig();
       const axesAfterStep1 = scoreStep1Answers(answerKeys, config);
       const branchKey = calculateBranchKey(axesAfterStep1, config);
-      const nearestProfile = calculateNearestProfile(axesAfterStep1, config.summaryProfiles);
+      const nearestProfile = calculateNearestProfile(axesAfterStep1, config.summaryProfiles, config);
       persistScoringConfig(config);
       persistScoreState({
         step1Answers: { ...answers },
@@ -1692,12 +1709,12 @@ img {
       } catch (error) {
         console.error("Failed to read scoring config from sessionStorage.", error);
       }
-      return cloneConfig(MASTER_SCORING_CONFIG);
+      return getDefaultScoringConfig();
     }
 
     async function initializeScoringConfig() {
       const remoteConfig = await window.FragrancePublicData?.loadActiveScoringConfig?.();
-      const config = isExpectedScoringConfig(remoteConfig) ? remoteConfig : cloneConfig(MASTER_SCORING_CONFIG);
+      const config = isExpectedScoringConfig(remoteConfig) ? remoteConfig : getDefaultScoringConfig();
       persistScoringConfig(config);
       applyQuestionTextOverrides(config);
     }

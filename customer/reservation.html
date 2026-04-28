@@ -1282,6 +1282,7 @@ button {
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabase-config.js"></script>
   <script src="../js/supabase-client.js"></script>
+  <script src="../js/fragrance-master-data.js"></script>
   <script src="../js/public-data.js"></script>
 </head>
 
@@ -1507,9 +1508,11 @@ button {
 
     function getScoringConfig() {
       try {
-        return JSON.parse(window.sessionStorage.getItem(SCORING_CONFIG_KEY) || "null") || {};
+        return JSON.parse(window.sessionStorage.getItem(SCORING_CONFIG_KEY) || "null")
+          || window.FragranceMasterData?.createDefaultScoringConfig?.()
+          || {};
       } catch (error) {
-        return {};
+        return window.FragranceMasterData?.createDefaultScoringConfig?.() || {};
       }
     }
 
