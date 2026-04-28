@@ -21,6 +21,18 @@
 - 管理者向けの配点編集画面は `admin/admin-scoring.html`
 - `admin-login.html` はスタッフ / 管理者共通ログインであり、顧客トップ `index.html` からは直接紐づけない
 
+## 追記: 2026-04-28 Phase 2 共通配点参照
+
+ユーザー要望により、Markdown / PPTX 資料の実装順序に戻して Phase 2 の安定化を進める。
+
+今回の実装では、`customer/questionnaire.html`、`customer/questionnaire_step2.html`、`customer/reservation.html` が `js/fragrance-master-data.js` を読み込むようにした。
+
+- 通常の配点編集は `admin/admin-scoring.html` から `scoring_configs` に保存する
+- 公開アンケートは active な `scoring_configs` を優先する
+- `sessionStorage` や DB 読込が使えない場合は、`js/fragrance-master-data.js` の共通初期値を fallback とする
+- `fragrance-graph.html` は既に `material_points` を読み込み、未登録時は `js/fragrance-master-data.js` の原料テンプレートを使う
+- 旧来の `customer/questionnaire.html` 内 fallback 定義は、互換用として残す
+
 ## ロジックの前提
 
 - 五軸は `floral` / `fresh` / `woody` / `spicy` / `sweet`
