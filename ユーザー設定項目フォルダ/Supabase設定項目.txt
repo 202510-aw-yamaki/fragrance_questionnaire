@@ -14,6 +14,7 @@ Supabase設定項目
 4) supabase/migrations/20260428123000_questionnaire_result_token_guard.sql
 5) supabase/migrations/20260428124500_email_events_foundation.sql
 6) supabase/migrations/20260429103000_qr_request_public_guard.sql
+7) supabase/migrations/20260429113000_auth_role_app_metadata_only.sql
 
 新規の空プロジェクトにまとめて作る場合だけ、supabase/schema.sql を使ってください。
 既存プロジェクトに schema.sql と migrations を両方そのまま流すと、重複や意図しない上書き確認が増えるため避けてください。
@@ -86,7 +87,9 @@ Authユーザー作成後、以下のどちらかにロールを設定してく�
 - app_metadata.portal_role = "staff" または "manager"
 - app_metadata.role = "staff" または "manager"
 
-user_metadata.portal_role / user_metadata.role もコード上は参照しますが、正式運用では app_metadata を優先してください。
+2026-04-29追記:
+権限判定では user_metadata.portal_role / user_metadata.role を参照しない方針へ変更しました。
+スタッフ/管理者のロールは必ず app_metadata に設定してください。
 "admin" はコード側で "manager" に正規化されますが、新規作成時は "manager" を使ってください。
 
 ログインIDをメールアドレスではなくID形式で入力する運用では、現在のコードは次のメールに変換します。
@@ -108,6 +111,20 @@ public.staff_profiles に対応する行を作り、auth_user_id にSupabase Aut
 - is_active: true
 
 manager権限でスタッフ登録・編集する場合も、Authユーザーとstaff_profilesの紐づきが正しいか確認してください。
+
+4-2. 会員アカウント
+
+会員は customer/customer-login.html から Supabase Auth の signUp / signIn を使います。
+初回パスワード設定時、メール確認が不要なSupabase設定では customers 行も同時に作成します。
+メール確認が必要なSupabase設定では、確認後のログイン時に customers 行を作成します。
+
+確認すること:
+- Supabase Auth の Email provider が有効
+- メール確認を必須にするかどうかの運用
+- 確認メールの送信元/テンプレート
+- customers.auth_user_id が Auth user id と一致している
+
+QR第三者は会員ではないため、customer/customer-login.html へ誘導しないでください。
 
 5. 公開設定 admin_settings
 
@@ -180,7 +197,7 @@ service_role key、SMTPキー、メールAPIキー、管理者用の秘密値は
 - 古いSQLやarchive内SQLを実行していない
 - anonに広い権限を付けていない
 - Authにスタッフ/管理者ユーザーを作成した
-- Authユーザーに portal_role / role を設定した
+- Authユーザーの app_metadata に portal_role / role を設定した
 - staff_profiles.auth_user_id をAuthユーザーIDに紐づけた
 - 既存 admin_settings.staff_directory に staffPassword / managerPassword が残っていない
 - qr_product_public_settings を確認した

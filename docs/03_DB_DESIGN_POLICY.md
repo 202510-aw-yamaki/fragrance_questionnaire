@@ -89,6 +89,7 @@ qr_product_requests.handled_by_staff_id
 - 管理者設定画面からのスタッフ保存は、Auth user 作成や `staff_profiles.auth_user_id` 紐づけを自動実行しない
 - 正式ログイン・権限判定は Supabase Auth metadata と `staff_profiles` を正本とする
 - `fragrancePortalLoginIndex` のようなlocalStorage上のログインID一覧は、ログイン可否判定に使わない
+- スタッフ/管理者ロールは `app_metadata` だけを参照し、ユーザー自身が編集できる `user_metadata` は権限根拠にしない
 
 ## 2026-04-28 Phase 4 implementation note
 
@@ -106,3 +107,13 @@ qr_product_requests.handled_by_staff_id
 - `qr_product_public_max_volume_ml()` で公開設定 `qr_product_public_settings.max_volume_ml` をDB側から参照する
 - `qr_product_requests` の公開insertは、メール形式、依頼容量、QR有効期限、QR公開状態、完成品公開状態をRLSで検証する
 - 最大容量設定が未登録または数値でない場合は、DB側の既定値を100mlとする
+
+## 2026-04-29 customer auth connection note
+
+会員ログインページは、Supabase Auth と `customers` を接続する入口として扱う。
+
+- 初回パスワード設定は Supabase Auth signUp を呼び、メール確認不要の設定ではその場で `customers.auth_user_id` を作成する
+- メール確認が必要なSupabase設定では、確認後のログイン時に `customers` 行を作成する
+- 会員ロールは `user_metadata` ではなく、`customers.auth_user_id` の存在で判定する
+- 会員本人の制作履歴表示、過去完成品との比較、再予約導線は後続フェーズで扱う
+- QR第三者はこの導線に入れず、引き続き `qr_product_requests` だけに保存する

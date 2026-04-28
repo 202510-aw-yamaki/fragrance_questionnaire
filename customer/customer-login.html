@@ -578,6 +578,10 @@
     </div>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/public-data.js"></script>
   <script>
     (function () {
       var params = new URLSearchParams(window.location.search);
@@ -596,13 +600,64 @@
         status.hidden = false;
       }
 
-      form?.addEventListener("submit", function (event) {
+      function readCredentials() {
+        var formData = new FormData(form);
+        return {
+          email: String(formData.get("email") || "").trim(),
+          password: String(formData.get("password") || "")
+        };
+      }
+
+      function setBusy(isBusy) {
+        form?.querySelectorAll("input, button").forEach(function (element) {
+          element.disabled = isBusy;
+        });
+      }
+
+      form?.addEventListener("submit", async function (event) {
         event.preventDefault();
-        showStatus("お客様ページの認証機能は準備中です。現在は画面イメージのみ確認できます。");
+        var credentials = readCredentials();
+        if (!window.FragrancePublicData?.signInCustomer) {
+          showStatus("Supabase接続が未設定のため、ログインできません。");
+          return;
+        }
+        setBusy(true);
+        showStatus("ログインしています。");
+        try {
+          var result = await window.FragrancePublicData.signInCustomer(credentials.email, credentials.password);
+          var displayName = result.customer?.display_name || credentials.email;
+          showStatus(displayName + " としてログインしました。会員情報をDBに接続済みです。");
+        } catch (error) {
+          showStatus(error?.message || "ログインに失敗しました。");
+        } finally {
+          setBusy(false);
+        }
       });
 
-      setupButton?.addEventListener("click", function () {
-        showStatus("初回パスワード設定機能は、メールアドレス保存と顧客ID連携の実装後に有効化します。");
+      setupButton?.addEventListener("click", async function () {
+        var credentials = readCredentials();
+        if (!credentials.email || !credentials.password) {
+          showStatus("メールアドレスとパスワードを入力してください。");
+          return;
+        }
+        if (!window.FragrancePublicData?.signUpCustomer) {
+          showStatus("Supabase接続が未設定のため、初回設定できません。");
+          return;
+        }
+        setBusy(true);
+        showStatus("会員アカウントを作成しています。");
+        try {
+          var result = await window.FragrancePublicData.signUpCustomer(credentials.email, credentials.password);
+          if (result.needsEmailConfirmation) {
+            showStatus("確認メールを送信しました。メール確認後にログインしてください。");
+            return;
+          }
+          showStatus("会員アカウントを作成し、customersに紐づけました。");
+        } catch (error) {
+          showStatus(error?.message || "初回設定に失敗しました。");
+        } finally {
+          setBusy(false);
+        }
       });
     })();
   </script>

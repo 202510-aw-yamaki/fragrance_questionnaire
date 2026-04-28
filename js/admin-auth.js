@@ -59,9 +59,7 @@
   }
 
   function getSessionPortalRole(session) {
-    const appRole = normalizePortalRole(session?.user?.app_metadata?.portal_role || session?.user?.app_metadata?.role);
-    if (appRole) return appRole;
-    return normalizePortalRole(session?.user?.user_metadata?.portal_role || session?.user?.user_metadata?.role);
+    return normalizePortalRole(session?.user?.app_metadata?.portal_role || session?.user?.app_metadata?.role);
   }
 
   function isRoleAllowedForPortal(actualRole, requestedRole) {

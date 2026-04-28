@@ -306,9 +306,7 @@ stable
 as $$
   select coalesce(
     nullif(auth.jwt() -> 'app_metadata' ->> 'portal_role', ''),
-    nullif(auth.jwt() -> 'app_metadata' ->> 'role', ''),
-    nullif(auth.jwt() -> 'user_metadata' ->> 'portal_role', ''),
-    nullif(auth.jwt() -> 'user_metadata' ->> 'role', '')
+    nullif(auth.jwt() -> 'app_metadata' ->> 'role', '')
   );
 $$;
 

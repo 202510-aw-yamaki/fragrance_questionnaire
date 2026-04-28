@@ -325,6 +325,75 @@
     }
   }
 
+  function normalizeCustomerEmail(email) {
+    return String(email || "").trim().toLowerCase();
+  }
+
+  function buildCustomerDisplayName(user, email) {
+    const metadataName = String(user?.user_metadata?.display_name || user?.user_metadata?.name || "").trim();
+    if (metadataName) return metadataName;
+    const normalizedEmail = normalizeCustomerEmail(email || user?.email);
+    return normalizedEmail.includes("@") ? normalizedEmail.split("@")[0] : normalizedEmail;
+  }
+
+  async function ensureCustomerProfile(user) {
+    const client = window.getSupabaseClient?.();
+    if (!client || !user?.id) return null;
+    const { data: existing, error: selectError } = await client
+      .from("customers")
+      .select("id, customer_code, email, display_name, status")
+      .eq("auth_user_id", user.id)
+      .maybeSingle();
+    if (selectError) throw selectError;
+    if (existing) return existing;
+    const { data: inserted, error: insertError } = await client
+      .from("customers")
+      .insert([{
+        auth_user_id: user.id,
+        email: normalizeCustomerEmail(user.email),
+        display_name: buildCustomerDisplayName(user, user.email),
+        status: "active"
+      }])
+      .select("id, customer_code, email, display_name, status")
+      .maybeSingle();
+    if (insertError) throw insertError;
+    return inserted || null;
+  }
+
+  async function signInCustomer(email, password) {
+    const client = window.getSupabaseClient?.();
+    if (!client) throw new Error("Supabase is not configured.");
+    const { data, error } = await client.auth.signInWithPassword({
+      email: normalizeCustomerEmail(email),
+      password
+    });
+    if (error) throw error;
+    const customer = await ensureCustomerProfile(data?.user);
+    return { session: data?.session || null, customer };
+  }
+
+  async function signUpCustomer(email, password) {
+    const client = window.getSupabaseClient?.();
+    if (!client) throw new Error("Supabase is not configured.");
+    const normalizedEmail = normalizeCustomerEmail(email);
+    const { data, error } = await client.auth.signUp({
+      email: normalizedEmail,
+      password,
+      options: {
+        data: {
+          display_name: buildCustomerDisplayName(null, normalizedEmail)
+        }
+      }
+    });
+    if (error) throw error;
+    const customer = data?.session ? await ensureCustomerProfile(data.user) : null;
+    return {
+      session: data?.session || null,
+      customer,
+      needsEmailConfirmation: Boolean(data?.user && !data?.session)
+    };
+  }
+
   function toFiniteNumber(value) {
     const number = Number(value);
     return Number.isFinite(number) ? number : undefined;
@@ -446,6 +515,9 @@
     fetchPublicReservationSlots,
     createReservation,
     fetchReservationByCode,
+    signInCustomer,
+    signUpCustomer,
+    ensureCustomerProfile,
     loadQrProductPublicSettings,
     fetchQrProductPageData,
     createQrProductRequest
