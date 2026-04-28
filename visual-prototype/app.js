@@ -212,11 +212,163 @@
     `;
   }
 
+  function renderAdminRows(rows) {
+    return rows.map((row) => `
+      <article class="admin-row">
+        <span>${row[0]}</span>
+        <span>${row[1]}</span>
+        <strong>${row[2]}</strong>
+      </article>
+    `).join("");
+  }
+
+  function renderStaffDashboard() {
+    const hours = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"];
+    return `
+      <section class="canvas admin-canvas staff-theme">
+        <header class="admin-head"><strong>Fragrance STAFF</strong><nav><a>予定確認</a><a>予約枠作成</a><a>予約一覧</a></nav></header>
+        <main class="staff-grid">
+          <section class="admin-hero-card">
+            <p>DASHBOARD</p>
+            <h1>本日【04/28（火）】の予定確認ページ</h1>
+            <div class="metric-pill"><span>本日の予約件数</span><strong>4</strong></div>
+          </section>
+          <article class="admin-panel-large">
+            <div class="panel-head"><h2>本日の予定</h2><div><button>前日</button><button>翌日</button></div></div>
+            <div class="timeline">
+              ${hours.map((hour, index) => `
+                <div class="timeline-row">
+                  <time>${hour}</time>
+                  ${index === 1 || index === 3 || index === 5 ? `<article class="event-card"><strong>香り診断ワークショップ</strong><span>${hour}-${String(Number(hour.slice(0, 2)) + 1).padStart(2, "0")}:00 / 2名</span></article>` : "<span></span>"}
+                </div>
+              `).join("")}
+            </div>
+          </article>
+          <aside class="admin-side-stack">
+            <article><span>向こう1週間の予約件数 / 枠数</span><strong>11/18</strong></article>
+            <article><span>未対応QR商品依頼</span><strong>3</strong><i>月夜の余韻 / 50ml</i><i>朝の白檀 / 30ml</i></article>
+            <article class="link-card"><strong>予約枠作成ページへ</strong></article>
+            <article class="link-card"><strong>予約情報一覧ページへ</strong></article>
+          </aside>
+        </main>
+      </section>
+    `;
+  }
+
+  function renderStaffTable() {
+    return `
+      <section class="canvas admin-canvas staff-theme">
+        <header class="admin-head"><strong>予約情報一覧</strong><nav><a>今日</a><a>今週</a><a>すべて</a></nav></header>
+        <main class="admin-page-stack">
+          <section class="admin-hero-card compact"><p>RESERVATIONS</p><h1>予約確認と接客準備</h1></section>
+          <section class="admin-table-card">
+            <div class="filter-bar"><input value="2026-04-28"><select><option>すべての状態</option></select><button>検索</button></div>
+            ${renderAdminRows([
+              ["10:00", "香り診断 / 2名", "詳細"],
+              ["11:30", "会員再予約 / 1名", "詳細"],
+              ["14:00", "アンケート未保存 / 2名", "確認"],
+              ["16:00", "QR依頼対応 / 1件", "対応"]
+            ])}
+          </section>
+        </main>
+      </section>
+    `;
+  }
+
+  function renderStaffSlots() {
+    return `
+      <section class="canvas admin-canvas staff-theme">
+        <header class="admin-head"><strong>予約枠作成</strong><nav><a>単日作成</a><a>一括作成</a></nav></header>
+        <main class="admin-two-col">
+          <section class="admin-panel-large">
+            <div class="panel-head"><h1>予約枠を作成</h1><button>保存</button></div>
+            <div class="form-grid">
+              <label>日付<input value="2026-04-28"></label>
+              <label>開始時刻<input value="10:00"></label>
+              <label>担当スタッフ<select><option>スタッフA</option></select></label>
+              <label>状態<select><option>公開</option></select></label>
+            </div>
+            <div class="calendar-strip">${["10:00", "11:30", "13:00", "14:30", "16:00"].map((time) => `<button>${time}</button>`).join("")}</div>
+          </section>
+          <aside class="admin-panel-large muted-panel"><h2>プレビュー</h2>${renderAdminRows([["4/28", "10:00", "公開"], ["4/28", "11:30", "公開"], ["4/28", "14:30", "準備"]])}</aside>
+        </main>
+      </section>
+    `;
+  }
+
+  function renderStaffDetail() {
+    return `
+      <section class="canvas admin-canvas staff-theme">
+        <header class="admin-head"><strong>スタッフ専用詳細</strong><nav><a>予約一覧へ</a><a>保存</a></nav></header>
+        <main class="admin-two-col wide-left">
+          <section class="admin-panel-large">
+            <div class="customer-summary"><h1>お客様詳細</h1><div><span>商品名</span><strong>月夜の余韻</strong></div><div><span>同意</span><strong>取得済み</strong></div></div>
+            <div class="axis-compare"><div class="radar-mock"></div><div class="radar-mock"></div></div>
+            <h2>最終レシピ</h2>
+            ${renderAdminRows([["トップ", "ベルガモット", "24%"], ["ミドル", "ローズ", "32%"], ["ベース", "サンダルウッド", "44%"]])}
+          </section>
+          <aside class="admin-panel-large"><h2>QR表示</h2><div class="qr-box">QR</div><button class="rose-button full">接客完了として保存</button></aside>
+        </main>
+      </section>
+    `;
+  }
+
+  function renderAdminDashboard() {
+    return `
+      <section class="canvas admin-canvas manager-theme">
+        <header class="admin-head"><strong>Fragrance ADMIN</strong><nav><a>設定</a><a>配点</a><a>原料</a></nav></header>
+        <main class="admin-page-stack">
+          <section class="admin-hero-card compact"><p>DASHBOARD</p><h1>運用状況の確認</h1></section>
+          <section class="manager-grid">
+            <article><h2>本日の出勤者 予約数</h2>${renderAdminRows([["スタッフA", "出勤", "3"], ["スタッフB", "出勤", "1"], ["スタッフC", "休日", "/"]])}</article>
+            <article><h2>翌週の予約数/枠数</h2>${renderAdminRows([["スタッフA", "5/8", "OK"], ["スタッフB", "3/6", "OK"], ["スタッフC", "0/0", "NG"]])}</article>
+            <article><h2>QR関連通知</h2>${renderAdminRows([["月夜の余韻", "50ml", "4/30"], ["朝の白檀", "30ml", "5/1"]])}</article>
+            <article><h2>配点ロジック重み</h2>${renderAdminRows([["共通質問", "1〜5", "12"], ["分岐質問", "6〜7", "8"], ["仕上げ補正", "finish", "0.35"]])}</article>
+          </section>
+        </main>
+      </section>
+    `;
+  }
+
+  function renderAdminConfig(screen) {
+    const titleMap = {
+      "admin-settings": "基本設定・店舗情報",
+      "admin-scoring": "配点ロジック調整",
+      "admin-materials": "原料ポイント編集",
+      "admin-qr-settings": "QR商品設定"
+    };
+    const title = titleMap[screen.slug] || screen.title;
+    return `
+      <section class="canvas admin-canvas manager-theme">
+        <header class="admin-head"><strong>${title}</strong><nav><a>保存</a><a>プレビュー</a></nav></header>
+        <main class="admin-two-col">
+          <section class="admin-panel-large">
+            <div class="panel-head"><h1>${title}</h1><button>保存</button></div>
+            <div class="form-grid">
+              <label>表示名<input value="${title}"></label>
+              <label>公開状態<select><option>公開</option></select></label>
+              <label>数値設定<input value="100"></label>
+              <label>メモ<textarea>参照画像に合わせた管理項目です。</textarea></label>
+            </div>
+            ${renderAdminRows([["10ml価格", "税込", "1,000円"], ["30ml価格", "税込", "2,860円"], ["最大容量", "QR依頼", "100ml"]])}
+          </section>
+          <aside class="admin-panel-large muted-panel"><h2>現在の公開値</h2><div class="setting-preview">QR商品ページ<br><strong>月夜の余韻</strong><span>最大100mlまで作成依頼できます</span></div></aside>
+        </main>
+      </section>
+    `;
+  }
+
   function renderScreenContent(screen) {
     if (screen.kind === "customer-top") return renderCustomerTop();
     if (screen.kind === "customer-login") return renderCustomerLogin();
     if (screen.kind === "questionnaire") return renderQuestionnaire();
     if (screen.kind === "product-request") return renderProductRequest();
+    if (screen.kind === "staff-dashboard") return renderStaffDashboard();
+    if (screen.kind === "staff-table") return renderStaffTable();
+    if (screen.kind === "staff-slots") return renderStaffSlots();
+    if (screen.kind === "staff-detail" || screen.kind === "staff-modal") return renderStaffDetail();
+    if (screen.kind === "admin-dashboard") return renderAdminDashboard();
+    if (screen.kind && screen.kind.startsWith("admin")) return renderAdminConfig(screen);
     return renderPlaceholder(screen);
   }
 

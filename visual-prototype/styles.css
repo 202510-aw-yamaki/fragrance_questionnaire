@@ -747,6 +747,423 @@ a {
   font-weight: 700;
 }
 
+.admin-canvas {
+  min-height: calc(100vh - 108px);
+  background:
+    linear-gradient(145deg, rgba(255, 251, 247, 0.92), rgba(246, 239, 231, 0.95)),
+    url("../img/TOP/香水の瓶が並ぶ.png") center / cover no-repeat;
+}
+
+.staff-theme {
+  --admin-accent: #77907a;
+  --admin-accent-deep: #506e57;
+}
+
+.manager-theme {
+  --admin-accent: #a97a4e;
+  --admin-accent-deep: #7d5432;
+}
+
+.admin-head {
+  height: 72px;
+  padding: 0 38px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(119, 92, 68, 0.14);
+  background: rgba(255, 252, 248, 0.93);
+}
+
+.admin-head strong {
+  color: var(--admin-accent-deep);
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+}
+
+.admin-head nav {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  color: #725f53;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.staff-grid {
+  padding: 34px;
+  display: grid;
+  grid-template-columns: minmax(240px, 0.78fr) minmax(380px, 1.45fr) minmax(260px, 0.82fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.admin-page-stack {
+  padding: 34px;
+  display: grid;
+  gap: 22px;
+}
+
+.admin-two-col {
+  padding: 34px;
+  display: grid;
+  grid-template-columns: minmax(420px, 1.35fr) minmax(300px, 0.78fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.admin-two-col.wide-left {
+  grid-template-columns: minmax(520px, 1.45fr) minmax(300px, 0.65fr);
+}
+
+.admin-hero-card,
+.admin-panel-large,
+.admin-side-stack > article,
+.admin-table-card,
+.manager-grid > article {
+  border: 1px solid rgba(124, 97, 74, 0.16);
+  border-radius: 18px;
+  background: rgba(255, 253, 249, 0.9);
+  box-shadow: var(--shadow-card);
+}
+
+.admin-hero-card {
+  min-height: 244px;
+  padding: 28px;
+  display: grid;
+  align-content: space-between;
+  background:
+    linear-gradient(145deg, rgba(255, 253, 249, 0.96), rgba(246, 236, 226, 0.82)),
+    url("../img/TOP/香水対比.png") right bottom / 58% auto no-repeat;
+}
+
+.admin-hero-card.compact {
+  min-height: 156px;
+  background:
+    linear-gradient(90deg, rgba(255, 253, 249, 0.98), rgba(248, 237, 224, 0.72)),
+    url("../img/TOP/香水2つ.png") right center / auto 126% no-repeat;
+}
+
+.admin-hero-card p {
+  margin: 0;
+  color: var(--admin-accent);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.admin-hero-card h1 {
+  max-width: 540px;
+  margin: 12px 0;
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 3.7vw, 4rem);
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.metric-pill {
+  width: min(260px, 100%);
+  min-height: 64px;
+  padding: 10px 18px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(124, 97, 74, 0.13);
+}
+
+.metric-pill span {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.metric-pill strong {
+  color: var(--admin-accent-deep);
+  font-size: 2rem;
+}
+
+.admin-panel-large,
+.admin-table-card,
+.manager-grid > article {
+  padding: 24px;
+}
+
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.panel-head h1,
+.panel-head h2,
+.admin-panel-large h2,
+.manager-grid h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.panel-head button,
+.filter-bar button,
+.calendar-strip button {
+  min-height: 40px;
+  padding: 0 18px;
+  border: 1px solid rgba(126, 94, 70, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--admin-accent-deep);
+  font-weight: 800;
+}
+
+.timeline {
+  display: grid;
+  gap: 10px;
+}
+
+.timeline-row {
+  min-height: 56px;
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 12px;
+  align-items: stretch;
+}
+
+.timeline-row time {
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.timeline-row > span {
+  border: 1px dashed rgba(126, 94, 70, 0.15);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.46);
+}
+
+.event-card {
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: rgba(255, 252, 248, 0.96);
+  border-left: 5px solid var(--admin-accent);
+  box-shadow: 0 8px 18px rgba(76, 57, 40, 0.09);
+}
+
+.event-card strong,
+.event-card span {
+  display: block;
+}
+
+.event-card span {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.admin-side-stack {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-side-stack > article {
+  padding: 20px;
+}
+
+.admin-side-stack span,
+.admin-side-stack i {
+  display: block;
+  color: var(--muted);
+  font-style: normal;
+  font-size: 0.9rem;
+}
+
+.admin-side-stack strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--admin-accent-deep);
+  font-size: 2rem;
+}
+
+.admin-side-stack .link-card {
+  min-height: 82px;
+  display: grid;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(255, 253, 249, 0.96), rgba(232, 220, 203, 0.76));
+}
+
+.admin-side-stack .link-card strong {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.filter-bar {
+  margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: minmax(160px, 220px) minmax(160px, 220px) auto;
+  gap: 12px;
+}
+
+.filter-bar input,
+.filter-bar select,
+.form-grid input,
+.form-grid select,
+.form-grid textarea {
+  min-height: 44px;
+  width: 100%;
+  padding: 0 14px;
+  border: 1px solid rgba(126, 94, 70, 0.22);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--ink);
+}
+
+.form-grid textarea {
+  min-height: 112px;
+  padding: 12px 14px;
+  resize: vertical;
+}
+
+.admin-row {
+  min-height: 56px;
+  margin-top: 10px;
+  padding: 12px 16px;
+  display: grid;
+  grid-template-columns: minmax(86px, 0.8fr) minmax(160px, 1.6fr) minmax(70px, 0.55fr);
+  gap: 12px;
+  align-items: center;
+  border: 1px solid rgba(126, 94, 70, 0.14);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.admin-row span {
+  min-width: 0;
+}
+
+.admin-row strong {
+  color: var(--admin-accent-deep);
+  text-align: right;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.form-grid label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.calendar-strip {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.muted-panel {
+  background: rgba(250, 244, 237, 0.9);
+}
+
+.customer-summary {
+  margin-bottom: 22px;
+  display: grid;
+  gap: 12px;
+}
+
+.customer-summary h1 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-weight: 500;
+}
+
+.customer-summary div {
+  min-height: 48px;
+  padding: 10px 14px;
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 14px;
+  align-items: center;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(126, 94, 70, 0.12);
+}
+
+.customer-summary span {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.axis-compare {
+  margin: 12px 0 24px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 18px;
+}
+
+.qr-box {
+  width: min(240px, 100%);
+  aspect-ratio: 1;
+  margin: 22px auto;
+  display: grid;
+  place-items: center;
+  border: 10px solid #fff;
+  outline: 1px solid rgba(126, 94, 70, 0.2);
+  background:
+    linear-gradient(90deg, #332822 12px, transparent 12px) 0 0 / 30px 30px,
+    linear-gradient(#332822 12px, transparent 12px) 0 0 / 30px 30px,
+    #fff;
+  color: #fff;
+  font-weight: 900;
+  box-shadow: var(--shadow-card);
+}
+
+.manager-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.manager-grid > article {
+  min-height: 260px;
+}
+
+.manager-grid h2 {
+  margin-bottom: 16px;
+}
+
+.setting-preview {
+  min-height: 240px;
+  padding: 24px;
+  display: grid;
+  align-content: center;
+  gap: 10px;
+  border-radius: 18px;
+  background:
+    linear-gradient(145deg, rgba(255, 253, 249, 0.95), rgba(255, 244, 235, 0.82)),
+    url("../img/TOP/香水対比.png") right bottom / 62% auto no-repeat;
+  color: var(--muted);
+}
+
+.setting-preview strong,
+.setting-preview span {
+  display: block;
+}
+
+.setting-preview strong {
+  color: var(--admin-accent-deep);
+  font-family: var(--font-serif);
+  font-size: 2rem;
+}
+
 @media (max-width: 920px) {
   .prototype-shell {
     grid-template-columns: 1fr;
@@ -784,5 +1201,35 @@ a {
   .home-hero,
   .question-layout {
     padding: 36px 22px;
+  }
+
+  .admin-head {
+    height: auto;
+    padding: 18px 22px;
+    display: grid;
+    gap: 12px;
+  }
+
+  .admin-head nav {
+    flex-wrap: wrap;
+  }
+
+  .staff-grid,
+  .admin-two-col,
+  .admin-two-col.wide-left,
+  .manager-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .staff-grid,
+  .admin-page-stack,
+  .admin-two-col {
+    padding: 22px;
+  }
+
+  .filter-bar,
+  .form-grid,
+  .axis-compare {
+    grid-template-columns: 1fr;
   }
 }
