@@ -299,7 +299,7 @@
         updated_at: new Date().toISOString()
       };
     });
-    await window.AdminData.upsertRow("material_points", payload, "material_code").catch(console.error);
+    await window.AdminData.upsertRow("material_points", payload, "material_code");
     seedStatus.className = "admin-note";
     seedStatus.textContent = `${payload.length}件を Json から反映しました。`;
     await getAllMaterials();
@@ -326,10 +326,16 @@
       updated_at: new Date().toISOString()
     };
     const id = document.getElementById("material-id").value;
-    if (id) {
-      await window.AdminData.updateRow("material_points", id, payload).catch(console.error);
-    } else {
-      await window.AdminData.insertRow("material_points", payload).catch(console.error);
+    try {
+      if (id) {
+        await window.AdminData.updateRow("material_points", id, payload);
+      } else {
+        await window.AdminData.insertRow("material_points", payload);
+      }
+    } catch (error) {
+      seedStatus.className = "admin-error";
+      seedStatus.textContent = error?.message || "Save failed.";
+      return;
     }
     seedStatus.className = "admin-note";
     seedStatus.textContent = "保存しました。";
