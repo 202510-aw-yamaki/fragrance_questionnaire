@@ -1,5 +1,14 @@
 # QR Product Flow
 
+## 2026-04-28 staff product registration note
+
+ユーザー要望により、`staff-customer-detail.html` から QR 商品導線の前提になる完成品情報を `fragrance_products` に保存する導線を追加した。
+
+- 商品名、最終5軸、レシピ、個人情報同意、第三者作成同意を `fragrance_products` に保存する
+- 途中保存では未入力を許容し、最終登録では商品名・最終原料・最終5軸・個人情報同意・第三者作成同意を必須にする
+- 同意が揃った最終登録済み商品は `published`、不足がある保存は `draft` として扱う
+- 旧 `customer/product-reservation.html` へのQR表示はまだ互換表示であり、正規QR導線は後続フェーズで `product_qr_codes` と接続する
+
 ## Purpose
 
 このファイルは、QRコードから開く商品作成依頼ページと、その裏側の運用・DB・通知・期限管理の方針を整理するものです。

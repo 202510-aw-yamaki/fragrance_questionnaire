@@ -49,6 +49,9 @@
   const saveDraftEl = document.getElementById("save-draft");
   const saveCompleteEl = document.getElementById("save-complete");
   const generateQrEl = document.getElementById("generate-qr");
+  const productNameEl = document.getElementById("product-name");
+  const personalInfoConsentEl = document.getElementById("personal-info-consent");
+  const thirdPartyOrderConsentEl = document.getElementById("third-party-order-consent");
   const customerModalEl = document.getElementById("customer-modal");
   const customerFormEl = document.getElementById("customer-form");
   const customerEditOpenEl = document.getElementById("customer-edit-open");
@@ -63,6 +66,7 @@
   let slot = null;
   let questionnaire = null;
   let workshop = null;
+  let fragranceProduct = null;
   let materialRows = [];
   let materialDataReady = false;
   let customerDraft = null;
@@ -263,6 +267,11 @@
     const email = customerDraft?.email || "未入力";
     const phone = customerDraft?.phone || "任意";
     const consent = customerDraft?.consent ? "同意済み" : "未取得";
+    const productName = fragranceProduct?.product_name || getProductName() || "未登録";
+    const thirdPartyConsent = fragranceProduct?.third_party_order_consent ? "同意済み" : "未取得";
+    const productConsentState = getProductConsentState();
+    const personalInfoConsentLabel = productConsentState.personalInfoConsent ? "同意済み" : "未取得";
+    const thirdPartyConsentLabel = productConsentState.thirdPartyOrderConsent ? "同意済み" : "未取得";
     profileEl.innerHTML = `
       <div class="staff-profile-card">
         <div class="staff-profile-top staff-profile-top-compact">
@@ -271,9 +280,11 @@
             <h3 class="staff-profile-name">${escapeHtml(name)}</h3>
           </div>
           <div class="staff-profile-chip-row">
-            <span class="staff-profile-chip">個人情報同意: <strong>${escapeHtml(consent)}</strong></span>
+            <span class="staff-profile-chip">個人情報同意: <strong>${escapeHtml(personalInfoConsentLabel)}</strong></span>
             <span class="staff-profile-chip">メール: <strong>${escapeHtml(email)}</strong></span>
             <span class="staff-profile-chip">電話: <strong>${escapeHtml(phone)}</strong></span>
+            <span class="staff-profile-chip">商品名: <strong>${escapeHtml(productName)}</strong></span>
+            <span class="staff-profile-chip">第三者作成同意: <strong>${escapeHtml(thirdPartyConsentLabel)}</strong></span>
             <span class="staff-profile-chip">予約枠: <strong>${escapeHtml(getSlotLabel())}</strong></span>
             <span class="staff-profile-chip">来店目的: <strong>${escapeHtml(formatVisitType(reservation?.visit_type))}</strong></span>
           </div>
@@ -537,6 +548,48 @@
       .filter((item) => item.material_code);
   }
 
+  function getProductName() {
+    return String(productNameEl?.value || "").trim();
+  }
+
+  function getProductConsentState() {
+    return {
+      personalInfoConsent: Boolean(personalInfoConsentEl?.checked),
+      thirdPartyOrderConsent: Boolean(thirdPartyOrderConsentEl?.checked)
+    };
+  }
+
+  function getProductReadiness() {
+    const productName = getProductName();
+    const recipeItems = collectRecipeItems();
+    const axes = normalizeAxes(getCurrentFinalAxes());
+    const consents = getProductConsentState();
+    return {
+      productName,
+      recipeItems,
+      axes,
+      hasFinalAxes: hasAxisValue(axes),
+      hasRecipe: recipeItems.length > 0,
+      hasConsents: consents.personalInfoConsent && consents.thirdPartyOrderConsent,
+      ...consents
+    };
+  }
+
+  function validateCompleteRegistration() {
+    const readiness = getProductReadiness();
+    const missing = [];
+    if (!readiness.productName) missing.push("商品名");
+    if (!readiness.hasRecipe) missing.push("最終原料");
+    if (!readiness.hasFinalAxes) missing.push("最終5軸");
+    if (!readiness.personalInfoConsent) missing.push("個人情報同意");
+    if (!readiness.thirdPartyOrderConsent) missing.push("第三者作成同意");
+    return {
+      isReady: missing.length === 0,
+      missing,
+      readiness
+    };
+  }
+
   function calculateRecipeDerivedAxes() {
     const items = collectRecipeItems();
     const totalAmount = items.reduce((sum, item) => sum + Math.max(0, Number(item.amount || 0)), 0);
@@ -590,6 +643,13 @@
     sessionStatusEl.value = workshop?.status || "draft";
     preparationNoteEl.value = workshop?.preparation_note || reservation?.staff_memo || "";
     staffSummaryEl.value = workshop?.staff_summary || "";
+    if (productNameEl) productNameEl.value = fragranceProduct?.product_name || "";
+    if (personalInfoConsentEl) {
+      personalInfoConsentEl.checked = Boolean(fragranceProduct?.personal_info_consent || customerDraft?.consent);
+    }
+    if (thirdPartyOrderConsentEl) {
+      thirdPartyOrderConsentEl.checked = Boolean(fragranceProduct?.third_party_order_consent);
+    }
     customerFeedbackEl.value = getFeedbackKey() ? window.sessionStorage.getItem(getFeedbackKey()) || "" : "";
     if (hearingNoteEl) {
       hearingNoteEl.value = getHearingMemoKey() ? window.sessionStorage.getItem(getHearingMemoKey()) || "" : "";
@@ -617,11 +677,12 @@
   }
 
   function buildProductSnapshot() {
-    const axes = normalizeAxes(getCurrentFinalAxes());
-    const recipeItems = collectRecipeItems();
+    const readiness = getProductReadiness();
+    const axes = readiness.axes;
+    const recipeItems = readiness.recipeItems;
     const recipeSignature = buildRecipeSignature(recipeItems);
     const axisSignature = AXIS_ORDER.map((axis) => `${axis}:${Number(axes[axis] || 0)}`).join("|");
-    const productId = `prd-${createStableHash(`${axisSignature}|${recipeSignature || "recipe:none"}`)}`;
+    const productId = fragranceProduct?.product_code || `prd-${createStableHash(`${readiness.productName || "name:none"}|${axisSignature}|${recipeSignature || "recipe:none"}`)}`;
     const target = new URL("../customer/product-reservation.html", window.location.href);
     target.searchParams.set("product_id", productId);
     AXIS_ORDER.forEach((axis) => {
@@ -630,7 +691,7 @@
     return {
       productId,
       url: target.toString(),
-      isReady: hasAxisValue(axes) && recipeItems.length > 0
+      isReady: Boolean(readiness.productName && readiness.hasFinalAxes && readiness.hasRecipe && readiness.hasConsents)
     };
   }
 
@@ -662,8 +723,44 @@
     });
   }
 
+  async function saveFragranceProduct(workshopId, workshopPayload) {
+    const readiness = getProductReadiness();
+    if (!readiness.productName && !fragranceProduct?.id) return null;
+    const isPublished = workshopPayload.status === "completed" && readiness.hasConsents && readiness.hasRecipe && readiness.hasFinalAxes;
+    const consentedAt = readiness.hasConsents
+      ? (fragranceProduct?.consented_at || new Date().toISOString())
+      : null;
+    const payload = {
+      workshop_session_id: workshopId || null,
+      reservation_id: reservation.id,
+      questionnaire_result_id: reservation.questionnaire_result_id || null,
+      product_name: readiness.productName || fragranceProduct?.product_name,
+      final_axes: readiness.axes,
+      recipe_items: readiness.recipeItems,
+      created_by_staff_id: staffProfile?.id || fragranceProduct?.created_by_staff_id || null,
+      personal_info_consent: readiness.personalInfoConsent,
+      third_party_order_consent: readiness.thirdPartyOrderConsent,
+      consented_at: consentedAt,
+      consented_by_staff_id: consentedAt ? (staffProfile?.id || fragranceProduct?.consented_by_staff_id || null) : null,
+      status: isPublished ? "published" : "draft",
+      updated_at: new Date().toISOString()
+    };
+    const saved = fragranceProduct?.id
+      ? await window.AdminData.updateRow("fragrance_products", fragranceProduct.id, payload)
+      : await window.AdminData.insertRow("fragrance_products", payload);
+    fragranceProduct = saved?.[0] || fragranceProduct;
+    return fragranceProduct;
+  }
+
   async function saveWorkshop() {
     if (!reservation) return;
+    if (submitModeEl.value === "complete") {
+      const validation = validateCompleteRegistration();
+      if (!validation.isReady) {
+        setStatus(`最終登録に必要な項目が不足しています: ${validation.missing.join(" / ")}`, "error");
+        return;
+      }
+    }
     const payload = {
       reservation_id: reservation.id,
       questionnaire_result_id: reservation.questionnaire_result_id || null,
@@ -690,6 +787,7 @@
         updated_at: new Date().toISOString()
       });
       recordIdEl.value = saved?.[0]?.id || recordId || "";
+      await saveFragranceProduct(recordIdEl.value, payload);
       if (getFeedbackKey()) {
         window.sessionStorage.setItem(getFeedbackKey(), customerFeedbackEl.value.trim());
       }
@@ -751,6 +849,16 @@
     slot = slotRows[0] || null;
     questionnaire = questionnaireRows[0] || null;
     workshop = workshopRows[0] || null;
+    const productRows = workshop?.id
+      ? await window.AdminData.listRows("fragrance_products", {
+          filters: [{ operator: "eq", column: "workshop_session_id", value: workshop.id }],
+          limit: 1
+        }).catch(() => [])
+      : await window.AdminData.listRows("fragrance_products", {
+          filters: [{ operator: "eq", column: "reservation_id", value: reservation.id }],
+          limit: 1
+        }).catch(() => []);
+    fragranceProduct = productRows[0] || null;
     const defaults = window.FragranceMasterData?.createMaterialTemplates?.() || [];
     materialDataReady = materialPointRows.length > 0;
     materialRows = (materialPointRows.length ? materialPointRows : defaults)
@@ -789,6 +897,9 @@
         consent: customerConsentEl.checked
       };
       persistCustomerDraft(customerDraft);
+      if (personalInfoConsentEl) {
+        personalInfoConsentEl.checked = Boolean(customerDraft.consent);
+      }
       customerModalEl.hidden = true;
       renderCustomerProfile();
       setStatus("お客様情報をこの端末の下書きとして保存しました。");
@@ -798,6 +909,13 @@
     normalizeRecipeEl?.addEventListener("click", normalizeRecipeAmounts);
     AXIS_ORDER.forEach((axis) => {
       document.getElementById(`axis-${axis}`)?.addEventListener("input", updateAxisTotal);
+    });
+    [productNameEl, personalInfoConsentEl, thirdPartyOrderConsentEl].forEach((element) => {
+      element?.addEventListener("input", () => renderQr(false));
+      element?.addEventListener("change", () => {
+        renderCustomerProfile();
+        renderQr(false);
+      });
     });
     saveDraftEl?.addEventListener("click", () => {
       submitModeEl.value = "draft";

@@ -3375,6 +3375,32 @@
   min-height: 1.6rem;
 }
 
+.staff-product-meta-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  margin-bottom: 1.2rem;
+}
+
+.staff-consent-stack {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.staff-consent-stack .staff-checkbox {
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid rgba(140, 107, 74, 0.18);
+  border-radius: 16px;
+  background: rgba(255, 253, 249, 0.76);
+}
+
+.staff-consent-stack .staff-checkbox input {
+  margin-top: 0.2rem;
+  min-height: 1.25rem;
+}
+
 @media (max-width: 72rem) {
   .staff-customer-detail-page {
     --staff-detail-width: min(1120px, calc(100vw - 40px));
@@ -3384,6 +3410,7 @@
   .staff-axis-compare-grid,
   .staff-detail-split,
   .staff-final-grid,
+  .staff-product-meta-grid,
   .staff-feedback-grid,
   .staff-note-split {
     grid-template-columns: 1fr;
@@ -3557,6 +3584,34 @@
                 <h2>最終原料登録と最終5軸</h2>
                 <p class="admin-note">原料と割合を登録すると、最終5軸の確認とQR表示ができます。</p>
               </div>
+            </div>
+
+            <div class="staff-product-meta-grid">
+              <article class="staff-soft-card">
+                <h3>商品情報</h3>
+                <label>商品名
+                  <input id="product-name" type="text" maxlength="120" placeholder="例: 月夜の余韻">
+                </label>
+                <p class="admin-note">QR商品ページには商品名のみを表示します。</p>
+              </article>
+
+              <article class="staff-soft-card staff-consent-stack">
+                <h3>同意確認</h3>
+                <label class="staff-checkbox">
+                  <span class="staff-consent-copy">
+                    <strong>個人情報同意</strong>
+                    <span>お客様情報を接客記録として保存する同意を確認済み</span>
+                  </span>
+                  <input id="personal-info-consent" type="checkbox">
+                </label>
+                <label class="staff-checkbox">
+                  <span class="staff-consent-copy">
+                    <strong>第三者作成同意</strong>
+                    <span>完成品をQR経由で第三者が作成依頼できる同意を確認済み</span>
+                  </span>
+                  <input id="third-party-order-consent" type="checkbox">
+                </label>
+              </article>
             </div>
 
             <div class="staff-final-grid">
