@@ -361,6 +361,45 @@
     `;
   }
 
+  function renderStaffModal(screen) {
+    const content = {
+      "staff-balance-modal": `
+        <p class="mini-ornament">BALANCE ADJUST</p>
+        <h1>香りのバランス調整</h1>
+        <div class="slider-list">
+          ${[["フローラル", 82], ["ウッディ", 68], ["シトラス", 46], ["ムスク", 73]].map(([label, value]) => `
+            <label class="slider-row"><span>${label}</span><input type="range" value="${value}" min="0" max="100"><strong>${value}</strong></label>
+          `).join("")}
+        </div>
+      `,
+      "staff-product-modal": `
+        <p class="mini-ornament">PRODUCT NAME</p>
+        <h1>商品名を登録</h1>
+        <label class="modal-field">商品名<input value="月夜の余韻"></label>
+        <label class="modal-field">スタッフメモ<textarea>第三者作成依頼に表示する公開商品名です。</textarea></label>
+      `,
+      "staff-consent-modal": `
+        <p class="mini-ornament">CONSENT</p>
+        <h1>同意確認</h1>
+        <div class="consent-list">
+          <label><input type="checkbox" checked> 個人情報の取り扱いに同意済み</label>
+          <label><input type="checkbox" checked> 完成品を第三者が作成依頼できることに同意済み</label>
+          <label><input type="checkbox"> QR公開前にお客様へ最終確認する</label>
+        </div>
+      `
+    };
+    return `
+      <section class="canvas modal-canvas admin-canvas staff-theme">
+        <div class="modal-backdrop"></div>
+        <article class="modal-sheet staff-modal-sheet">
+          <button class="modal-close">×</button>
+          ${content[screen.slug] || content["staff-balance-modal"]}
+          <div class="modal-action-row"><button class="outline-button">キャンセル</button><button class="rose-button">保存する</button></div>
+        </article>
+      </section>
+    `;
+  }
+
   function renderProductRequest() {
     return `
       <section class="canvas product-request-canvas">
@@ -534,6 +573,23 @@
     `;
   }
 
+  function renderAdminQrModal() {
+    return `
+      <section class="canvas modal-canvas admin-canvas manager-theme">
+        <div class="modal-backdrop"></div>
+        <article class="modal-sheet qr-notice-sheet">
+          <button class="modal-close">×</button>
+          <p class="mini-ornament">QR REQUEST NOTICE</p>
+          <h1>QR関連通知詳細</h1>
+          <div class="qr-detail-list">
+            ${renderAdminRows([["商品名", "月夜の余韻", "公開中"], ["依頼量", "10ml x2 / 30ml x1", "50ml"], ["期限", "2026.05.01", "未対応"], ["通知", "スタッフ未判定", "要確認"]])}
+          </div>
+          <div class="modal-action-row"><button class="outline-button">スタッフへ確認</button><button class="rose-button">対応済みにする</button></div>
+        </article>
+      </section>
+    `;
+  }
+
   function renderScreenContent(screen) {
     if (screen.kind === "customer-top") return renderCustomerTop();
     if (screen.kind === "customer-login") return renderCustomerLogin();
@@ -549,8 +605,10 @@
     if (screen.kind === "staff-dashboard") return renderStaffDashboard();
     if (screen.kind === "staff-table") return renderStaffTable();
     if (screen.kind === "staff-slots") return renderStaffSlots();
-    if (screen.kind === "staff-detail" || screen.kind === "staff-modal") return renderStaffDetail();
+    if (screen.kind === "staff-detail") return renderStaffDetail();
+    if (screen.kind === "staff-modal") return renderStaffModal(screen);
     if (screen.kind === "admin-dashboard") return renderAdminDashboard();
+    if (screen.kind === "admin-modal") return renderAdminQrModal();
     if (screen.kind && screen.kind.startsWith("admin")) return renderAdminConfig(screen);
     return renderPlaceholder(screen);
   }
