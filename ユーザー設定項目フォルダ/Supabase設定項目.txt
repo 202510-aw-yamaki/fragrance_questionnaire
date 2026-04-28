@@ -55,6 +55,32 @@ anonに許可しない範囲:
 スタッフ/管理者はSupabase Authで正式に作成してください。
 フロント側の管理者設定画面に残るスタッフID/パスワード保存は、現時点では運用補助・旧互換の要素が残るため、正式な認証情報の正本にしないでください。
 
+2026-04-29追記:
+管理者設定画面では、スタッフ/管理者パスワードを admin_settings.staff_directory に保存しない方針へ変更しました。
+既存Supabaseに過去データとして staffPassword / managerPassword が残っている場合は、SQL Editorで以下を実行して削除してください。
+
+update public.admin_settings
+set
+  setting_value = coalesce(
+    (
+      select jsonb_agg(
+        item
+          - 'staffPassword'
+          - 'staff_password'
+          - 'managerPassword'
+          - 'manager_password'
+      )
+      from jsonb_array_elements(setting_value) as item
+    ),
+    '[]'::jsonb
+  ),
+  updated_at = now()
+where setting_key = 'staff_directory'
+  and jsonb_typeof(setting_value) = 'array';
+
+このSQLはAuthユーザーやstaff_profilesは作成しません。
+スタッフ/管理者アカウントは、引き続きSupabase Auth側で作成してください。
+
 Authユーザー作成後、以下のどちらかにロールを設定してください。
 - app_metadata.portal_role = "staff" または "manager"
 - app_metadata.role = "staff" または "manager"
@@ -155,6 +181,7 @@ service_role key、SMTPキー、メールAPIキー、管理者用の秘密値は
 - Authにスタッフ/管理者ユーザーを作成した
 - Authユーザーに portal_role / role を設定した
 - staff_profiles.auth_user_id をAuthユーザーIDに紐づけた
+- 既存 admin_settings.staff_directory に staffPassword / managerPassword が残っていない
 - qr_product_public_settings を確認した
 - js/supabase-config.js に公開URLとanon keyだけを設定した
 - service_role keyやメールAPIキーをフロントに置いていない

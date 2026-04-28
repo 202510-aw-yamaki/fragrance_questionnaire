@@ -65,9 +65,9 @@
                 <input id="staff-code" type="text" required autocomplete="username" placeholder="staff_a">
               </label>
               <label class="portal-settings-field portal-settings-password-field">
-                <span>パスワード</span>
+                <span>Authパスワード</span>
                 <span class="portal-settings-password-wrap">
-                  <input id="staff-password" type="password" required autocomplete="new-password" placeholder="password123">
+                  <input id="staff-password" type="password" autocomplete="new-password" placeholder="Supabase Authで設定（保存しません）">
                   <button class="admin-btn secondary portal-settings-visibility-toggle" type="button" data-toggle-password="staff-password">表示</button>
                 </span>
               </label>
@@ -76,9 +76,9 @@
                 <input id="manager-code" type="text" autocomplete="username" placeholder="staff_a">
               </label>
               <label class="portal-settings-field portal-settings-password-field" data-manager-auth-row hidden>
-                <span>管理者パス</span>
+                <span>管理者Authパス</span>
                 <span class="portal-settings-password-wrap">
-                  <input id="manager-password" type="password" autocomplete="new-password" placeholder="password123">
+                  <input id="manager-password" type="password" autocomplete="new-password" placeholder="Supabase Authで設定（保存しません）">
                   <button class="admin-btn secondary portal-settings-visibility-toggle" type="button" data-toggle-password="manager-password">表示</button>
                 </span>
               </label>
@@ -260,9 +260,9 @@
       role,
       isTemporary: row.isTemporary === true || row.is_temporary === true,
       todayShiftLabel: String(row.todayShiftLabel || row.today_shift_label || "").trim(),
-      staffPassword: String(row.staffPassword || row.staff_password || "").trim(),
+      staffPassword: "",
       managerCode: normalizeLoginId(row.managerCode || row.manager_code || (role === "manager" ? staffCode : "")),
-      managerPassword: String(row.managerPassword || row.manager_password || "").trim(),
+      managerPassword: "",
       email: String(row.email || "").trim(),
       phone: String(row.phone || "").trim(),
       color: String(row.color || "#c78862"),
@@ -288,9 +288,7 @@
       staffCode: staff.staffCode,
       staffName: staff.staffName,
       role: staff.role,
-      staffPassword: staff.staffPassword,
       managerCode: staff.managerCode,
-      managerPassword: staff.managerPassword,
       email: staff.email,
       phone: staff.phone,
       color: staff.color,
@@ -344,13 +342,12 @@
     const payload = {
       staff: Array.from(new Set(
         state.staffDirectory
-          .filter((row) => String(row.staffPassword || "").trim())
           .map((row) => normalizeLoginId(row.staffCode))
           .filter(Boolean)
       )),
       manager: Array.from(new Set(
         state.staffDirectory
-          .filter((row) => row.role === "manager" && String(row.managerPassword || "").trim())
+          .filter((row) => row.role === "manager")
           .map((row) => normalizeLoginId(row.managerCode))
           .filter(Boolean)
       ))
@@ -444,14 +441,12 @@
       row.style.display = isManager ? "" : "none";
     });
     managerCodeEl.required = isManager;
-    managerPasswordEl.required = isManager;
+    managerPasswordEl.required = false;
     managerCodeEl.disabled = !isManager;
     managerPasswordEl.disabled = !isManager;
     if (isManager) {
       if (!managerCodeEl.value.trim()) managerCodeEl.value = staffCodeEl.value.trim();
-      if (!managerPasswordEl.value.trim() && staffPasswordEl.value.trim()) {
-        managerPasswordEl.value = staffPasswordEl.value.trim();
-      }
+      if (!managerPasswordEl.value.trim()) managerPasswordEl.value = "";
     }
   }
 
@@ -513,9 +508,7 @@
       staffCode: staffCodeEl.value,
       staffName: staffNameEl.value,
       role: staffRoleEl.value,
-      staffPassword: staffPasswordEl.value,
       managerCode: managerCodeEl.value,
-      managerPassword: managerPasswordEl.value,
       email: staffEmailEl.value,
       phone: staffPhoneEl.value,
       color: staffColorEl.value,
@@ -712,9 +705,9 @@
     staffCodeEl.value = isTemporary ? "" : (staff?.staffCode || "");
     staffNameEl.value = target.staffName || "";
     staffRoleEl.value = target.role || "staff";
-    staffPasswordEl.value = isTemporary ? "" : (staff?.staffPassword || "");
+    staffPasswordEl.value = "";
     managerCodeEl.value = isTemporary ? "" : (staff?.managerCode || "");
-    managerPasswordEl.value = isTemporary ? "" : (staff?.managerPassword || "");
+    managerPasswordEl.value = "";
     staffEmailEl.value = isTemporary ? "" : (staff?.email || "");
     staffPhoneEl.value = isTemporary ? "" : (staff?.phone || "");
     staffColorEl.value = target.color || "#c78862";
@@ -850,12 +843,14 @@
     }
     const existing = state.settingRowMap.get(key);
     if (existing?.id) {
-      const rows = await window.AdminData.updateRow("admin_settings", existing.id, payload).catch(() => []);
+      const rows = await window.AdminData.updateRow("admin_settings", existing.id, payload);
       if (rows[0]) state.settingRowMap.set(key, rows[0]);
+      if (!rows[0]) throw new Error("管理者設定を保存できませんでした。");
       return;
     }
-    const rows = await window.AdminData.insertRow("admin_settings", payload).catch(() => []);
+    const rows = await window.AdminData.insertRow("admin_settings", payload);
     if (rows[0]) state.settingRowMap.set(key, rows[0]);
+    if (!rows[0]) throw new Error("管理者設定を保存できませんでした。");
   }
 
   function readSettingValue(key) {
@@ -961,11 +956,15 @@
           .filter((row) => row.staffId !== payload.id || !visibleDateKeys.has(row.date))
           .concat(readDateOverridesFromModal(payload));
       }
-      await saveSetting(STAFF_SETTING_KEY, state.staffDirectory.map(stripStaffForSave));
-      await saveSetting(SHIFT_SETTING_KEY, state.shiftOverrides.map(stripOverrideForSave));
-      closeModal(staffModalEl);
-      setControlNote(`${payload.staffName} の勤務設定を保存しました。`, false);
-      renderPage();
+      try {
+        await saveSetting(STAFF_SETTING_KEY, state.staffDirectory.map(stripStaffForSave));
+        await saveSetting(SHIFT_SETTING_KEY, state.shiftOverrides.map(stripOverrideForSave));
+        closeModal(staffModalEl);
+        setControlNote(`${payload.staffName} の勤務設定を保存しました。`, false);
+        renderPage();
+      } catch (error) {
+        setControlNote(error?.message || "勤務設定の保存に失敗しました。", true);
+      }
       return;
     }
     if (!staffNameEl.value.trim()) {
@@ -976,16 +975,8 @@
       setControlNote("スタッフIDは半角英数字 / . / _ / - のみで入力してください。", true);
       return;
     }
-    if (!staffPasswordEl.value.trim()) {
-      setControlNote("スタッフ用のパスワードを入力してください。", true);
-      return;
-    }
     if (role === "manager" && !isValidLoginId(managerCode)) {
       setControlNote("管理者IDは半角英数字 / . / _ / - のみで入力してください。", true);
-      return;
-    }
-    if (role === "manager" && !managerPasswordEl.value.trim()) {
-      setControlNote("管理者用のパスワードを入力してください。", true);
       return;
     }
     const hasDuplicateStaffId = state.staffDirectory.some((row) => row.id !== editingId && normalizeLoginId(row.staffCode) === staffCode);
@@ -1012,9 +1003,7 @@
       staffCode,
       staffName: staffNameEl.value.trim(),
       role,
-      staffPassword: staffPasswordEl.value.trim(),
       managerCode: role === "manager" ? managerCode : "",
-      managerPassword: role === "manager" ? managerPasswordEl.value.trim() : "",
       email: staffEmailEl.value.trim(),
       phone: staffPhoneEl.value.trim(),
       color: staffColorEl.value,
@@ -1029,11 +1018,15 @@
       state.staffDirectory.push(payload);
     }
     state.selectedStaffId = payload.id;
-    await saveSetting(STAFF_SETTING_KEY, state.staffDirectory.map(stripStaffForSave));
-    syncLoginIndexStorage();
-    closeModal(staffModalEl);
-    setControlNote(`${payload.staffName} を保存しました。`, false);
-    renderPage();
+    try {
+      await saveSetting(STAFF_SETTING_KEY, state.staffDirectory.map(stripStaffForSave));
+      syncLoginIndexStorage();
+      closeModal(staffModalEl);
+      setControlNote(`${payload.staffName} を保存しました。Supabase Authユーザーとstaff_profilesの紐づけは別途確認してください。`, false);
+      renderPage();
+    } catch (error) {
+      setControlNote(error?.message || "スタッフ設定の保存に失敗しました。", true);
+    }
   });
 
   if (staffRoleEl) {
@@ -1044,14 +1037,6 @@
     staffCodeEl.addEventListener("input", () => {
       if (staffRoleEl.value === "manager" && !managerCodeEl.value.trim()) {
         managerCodeEl.value = normalizeLoginId(staffCodeEl.value);
-      }
-    });
-  }
-
-  if (staffPasswordEl) {
-    staffPasswordEl.addEventListener("input", () => {
-      if (staffRoleEl.value === "manager" && !managerPasswordEl.value.trim()) {
-        managerPasswordEl.value = staffPasswordEl.value;
       }
     });
   }
@@ -1114,12 +1099,16 @@
       if (state.selectedStaffId === staffId) {
         state.selectedStaffId = state.staffDirectory[0]?.id || "";
       }
-      await saveSetting(STAFF_SETTING_KEY, state.staffDirectory.map(stripStaffForSave));
-      await saveSetting(SHIFT_SETTING_KEY, state.shiftOverrides.map(stripOverrideForSave));
-      syncLoginIndexStorage();
-      closeModal(staffModalEl);
-      setControlNote(`${target.staffName} を削除しました。`, false);
-      renderPage();
+      try {
+        await saveSetting(STAFF_SETTING_KEY, state.staffDirectory.map(stripStaffForSave));
+        await saveSetting(SHIFT_SETTING_KEY, state.shiftOverrides.map(stripOverrideForSave));
+        syncLoginIndexStorage();
+        closeModal(staffModalEl);
+        setControlNote(`${target.staffName} を削除しました。`, false);
+        renderPage();
+      } catch (error) {
+        setControlNote(error?.message || "スタッフ削除の保存に失敗しました。", true);
+      }
     });
   }
 
@@ -1191,9 +1180,13 @@
       setQrSettingsNote("価格と最大容量を確認してください。", true);
       return;
     }
-    await saveSetting(QR_PRODUCT_SETTING_KEY, settings, { isPublic: true });
-    fillQrSettingsForm();
-    setQrSettingsNote("QR公開設定を保存しました。", false);
+    try {
+      await saveSetting(QR_PRODUCT_SETTING_KEY, settings, { isPublic: true });
+      fillQrSettingsForm();
+      setQrSettingsNote("QR公開設定を保存しました。", false);
+    } catch (error) {
+      setQrSettingsNote(error?.message || "QR公開設定の保存に失敗しました。", true);
+    }
   });
 
   async function bootstrap() {

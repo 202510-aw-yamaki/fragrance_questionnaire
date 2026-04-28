@@ -80,6 +80,15 @@ qr_product_requests.handled_by_staff_id
 - 運用時は Auth user と `staff_profiles.auth_user_id` を紐づけ、スタッフ表示名・成果集計・予約枠の責任者を追えるようにする
 - `staff-customer-detail.html` の保存は、`staff_profiles.auth_user_id` から有効なスタッフプロフィールを取得できるアカウントだけ許可する
 
+## 2026-04-29 admin settings auth note
+
+ユーザー要望の「スタッフ/管理者アカウントを Supabase Auth で正式作成する運用」に合わせ、管理者設定画面のスタッフ登録データはログイン補助・勤務表示用に限定する。
+
+- `admin_settings.staff_directory` にはスタッフ/管理者パスワードを保存しない
+- 既存データに `staffPassword` / `managerPassword` が残っている場合は、`ユーザー設定項目フォルダ/Supabase設定項目.txt` のSQLで削除する
+- 管理者設定画面からのスタッフ保存は、Auth user 作成や `staff_profiles.auth_user_id` 紐づけを自動実行しない
+- 正式ログイン・権限判定は Supabase Auth metadata と `staff_profiles` を正本とする
+
 ## 2026-04-28 Phase 4 implementation note
 
 ユーザー要望のメール運用方針に合わせ、実送信前の送信イベント管理用に `email_events` を追加する。
