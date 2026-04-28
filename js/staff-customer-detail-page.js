@@ -744,11 +744,11 @@
       product_name: readiness.productName || fragranceProduct?.product_name,
       final_axes: readiness.axes,
       recipe_items: readiness.recipeItems,
-      created_by_staff_id: staffProfile?.id || fragranceProduct?.created_by_staff_id || null,
+      created_by_staff_id: fragranceProduct?.created_by_staff_id || staffProfile.id,
       personal_info_consent: readiness.personalInfoConsent,
       third_party_order_consent: readiness.thirdPartyOrderConsent,
       consented_at: consentedAt,
-      consented_by_staff_id: consentedAt ? (staffProfile?.id || fragranceProduct?.consented_by_staff_id || null) : null,
+      consented_by_staff_id: consentedAt ? (fragranceProduct?.consented_by_staff_id || staffProfile.id) : null,
       status: isPublished ? "published" : "draft",
       updated_at: new Date().toISOString()
     };
@@ -789,6 +789,10 @@
 
   async function saveWorkshop() {
     if (!reservation) return;
+    if (!staffProfile?.id) {
+      setStatus("スタッフプロフィールが未登録のため保存できません。管理者にスタッフ登録を確認してください。", "error");
+      return;
+    }
     if (submitModeEl.value === "complete") {
       const validation = validateCompleteRegistration();
       if (!validation.isReady) {
@@ -808,9 +812,7 @@
       status: submitModeEl.value === "complete" ? "completed" : (sessionStatusEl.value || "draft"),
       updated_at: new Date().toISOString()
     };
-    if (staffProfile?.id) {
-      payload.staff_profile_id = staffProfile.id;
-    }
+    payload.staff_profile_id = staffProfile.id;
     const recordId = recordIdEl.value;
     try {
       const saved = recordId
@@ -992,6 +994,10 @@
     staffProfile = await window.AdminAuth.getStaffProfile?.(session);
     window.AdminAuth.persistPortalRole("staff");
     renderHeader();
+    if (!staffProfile?.id) {
+      setStatus("スタッフプロフィールが未登録です。管理者に Supabase Auth ユーザーと staff_profiles の紐づけを依頼してください。", "error");
+      return;
+    }
     bindEvents();
     setStatus("読み込み中です。");
     const loaded = await loadDetailData();

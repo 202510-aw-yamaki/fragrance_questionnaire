@@ -78,3 +78,4 @@ qr_product_requests.handled_by_staff_id
 - 管理者画面は Auth metadata が `manager` または `admin` のアカウントだけ許可する
 - ログイン画面で選んだロールや localStorage の保存値は、画面遷移補助であり権限根拠にはしない
 - 運用時は Auth user と `staff_profiles.auth_user_id` を紐づけ、スタッフ表示名・成果集計・予約枠の責任者を追えるようにする
+- `staff-customer-detail.html` の保存は、`staff_profiles.auth_user_id` から有効なスタッフプロフィールを取得できるアカウントだけ許可する
