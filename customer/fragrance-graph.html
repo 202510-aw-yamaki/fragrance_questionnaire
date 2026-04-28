@@ -1117,10 +1117,8 @@ input[type="range"] {
 
   <script>
     // ここで編集するのは graph 側の見せ方・preset 補助です。
-    // アンケート配点の主編集箇所は questionnaire.html の MASTER_SCORING_CONFIG です。
-    // README.md の「配点調整ポイント」も参照してください。
-    // fallback 用です。通常の配点編集は questionnaire.html の MASTER_SCORING_CONFIG を編集してください。
-    // README.md の「配点調整ポイント」も参照してください。
+    // 通常の配点編集は admin-scoring.html から scoring_configs に保存します。
+    // 原料ポイントは admin-materials.html から material_points に保存します。
     const SCORING_CONFIG_KEY = "fragranceScoringConfig";
     const SCORE_STATE_KEY = "fragranceScoreState";
     const DRAFT_KEY = "fragranceReservationDraft";

@@ -1255,9 +1255,9 @@ img {
     const SCORING_LOGIC_SOURCE = "deep-research-report.md";
     const SCORING_LOGIC_VERSION = "2026-04-14";
     // === FRAGRANCE SCORING EDIT POINT: MASTER CONFIG START ===
-    // 配点・分岐・Q8・graph preset・reservation summary profile の主編集箇所です。
-    // 将来ポイント配分を変えたい場合は、README.md の「配点調整ポイント」を参照し、
-    // MASTER_SCORING_CONFIG の中身を編集してください。
+    // 配点・分岐・Q8・graph preset・reservation summary profile のfallback設定です。
+    // 通常の調整は admin-scoring.html から scoring_configs に保存し、
+    // 共通の初期値は js/fragrance-master-data.js を参照します。
     // questionnaire_step2.html / fragrance-graph.html / reservation.html は
     // この設定を sessionStorage から読む想定です。
     const MASTER_SCORING_CONFIG = {

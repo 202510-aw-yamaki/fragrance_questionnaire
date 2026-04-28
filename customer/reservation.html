@@ -1421,11 +1421,9 @@ button {
       sweet: 52
     };
 
-    // summary 文言の主編集箇所は questionnaire.html の MASTER_SCORING_CONFIG.summaryProfiles です。
-    // 配点本体の主編集箇所も questionnaire.html の MASTER_SCORING_CONFIG です。
-    // README.md の「配点調整ポイント」も参照してください。
-    // fallback 用です。通常の配点編集は questionnaire.html の MASTER_SCORING_CONFIG を編集してください。
-    // README.md の「配点調整ポイント」も参照してください。
+    // summary 文言は sessionStorage 上の scoring config を優先します。
+    // sessionStorage がない場合は js/fragrance-master-data.js の共通初期値へ戻します。
+    // 通常の配点編集は admin-scoring.html から scoring_configs に保存します。
     const SCORING_CONFIG_KEY = "fragranceScoringConfig";
     const SCORE_STATE_KEY = "fragranceScoreState";
 
