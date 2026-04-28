@@ -338,23 +338,6 @@
     };
   }
 
-  function syncLoginIndexStorage() {
-    const payload = {
-      staff: Array.from(new Set(
-        state.staffDirectory
-          .map((row) => normalizeLoginId(row.staffCode))
-          .filter(Boolean)
-      )),
-      manager: Array.from(new Set(
-        state.staffDirectory
-          .filter((row) => row.role === "manager")
-          .map((row) => normalizeLoginId(row.managerCode))
-          .filter(Boolean)
-      ))
-    };
-    window.localStorage.setItem("fragrancePortalLoginIndex", JSON.stringify(payload));
-  }
-
   function getWeekStartDate() {
     const today = createLocalDate(new Date());
     const day = today.getDay();
@@ -921,7 +904,6 @@
     if (!state.selectedStaffId && state.staffDirectory[0]) {
       state.selectedStaffId = state.staffDirectory[0].id;
     }
-    syncLoginIndexStorage();
     renderPage();
     fillQrSettingsForm();
   }
@@ -1020,7 +1002,6 @@
     state.selectedStaffId = payload.id;
     try {
       await saveSetting(STAFF_SETTING_KEY, state.staffDirectory.map(stripStaffForSave));
-      syncLoginIndexStorage();
       closeModal(staffModalEl);
       setControlNote(`${payload.staffName} を保存しました。Supabase Authユーザーとstaff_profilesの紐づけは別途確認してください。`, false);
       renderPage();
@@ -1102,7 +1083,6 @@
       try {
         await saveSetting(STAFF_SETTING_KEY, state.staffDirectory.map(stripStaffForSave));
         await saveSetting(SHIFT_SETTING_KEY, state.shiftOverrides.map(stripOverrideForSave));
-        syncLoginIndexStorage();
         closeModal(staffModalEl);
         setControlNote(`${target.staffName} を削除しました。`, false);
         renderPage();

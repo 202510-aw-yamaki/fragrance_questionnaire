@@ -88,6 +88,7 @@ qr_product_requests.handled_by_staff_id
 - 既存データに `staffPassword` / `managerPassword` が残っている場合は、`ユーザー設定項目フォルダ/Supabase設定項目.txt` のSQLで削除する
 - 管理者設定画面からのスタッフ保存は、Auth user 作成や `staff_profiles.auth_user_id` 紐づけを自動実行しない
 - 正式ログイン・権限判定は Supabase Auth metadata と `staff_profiles` を正本とする
+- `fragrancePortalLoginIndex` のようなlocalStorage上のログインID一覧は、ログイン可否判定に使わない
 
 ## 2026-04-28 Phase 4 implementation note
 
