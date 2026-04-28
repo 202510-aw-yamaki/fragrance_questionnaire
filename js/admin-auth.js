@@ -30,8 +30,17 @@
 
   async function requireAdminSession() {
     if (!isConfigured()) return null;
+    const client = window.getSupabaseClient?.();
     const session = await getSession();
     if (!session) {
+      window.location.replace(LOGIN_PAGE);
+      return null;
+    }
+    const requiredRole = getRequiredRoleFromPath();
+    const actualRole = getSessionPortalRole(session);
+    if (requiredRole && actualRole && !isRoleAllowedForPortal(actualRole, requiredRole)) {
+      await client?.auth.signOut();
+      window.localStorage.removeItem(ROLE_STORAGE_KEY);
       window.location.replace(LOGIN_PAGE);
       return null;
     }
@@ -40,6 +49,34 @@
 
   function normalizePortalLoginId(value) {
     return String(value || "").trim().toLowerCase();
+  }
+
+  function normalizePortalRole(value) {
+    const role = String(value || "").trim().toLowerCase();
+    if (role === "admin" || role === "manager") return "manager";
+    if (role === "staff") return "staff";
+    if (role === "customer" || role === "member") return "customer";
+    return null;
+  }
+
+  function getSessionPortalRole(session) {
+    const appRole = normalizePortalRole(session?.user?.app_metadata?.portal_role || session?.user?.app_metadata?.role);
+    if (appRole) return appRole;
+    return normalizePortalRole(session?.user?.user_metadata?.portal_role || session?.user?.user_metadata?.role);
+  }
+
+  function isRoleAllowedForPortal(actualRole, requestedRole) {
+    const actual = normalizePortalRole(actualRole);
+    const requested = normalizePortalRole(requestedRole);
+    if (!actual || !requested) return true;
+    return actual === requested;
+  }
+
+  function getRequiredRoleFromPath() {
+    const path = String(window.location.pathname || "").replace(/\\/g, "/");
+    if (/\/admin\//.test(path)) return "manager";
+    if (/\/staff\//.test(path)) return "staff";
+    return null;
   }
 
   function readPortalLoginIndex() {
@@ -79,6 +116,11 @@
     if (!email) throw new Error("ログインIDを入力してください。");
     const { data, error } = await client.auth.signInWithPassword({ email, password });
     if (error) throw error;
+    const actualRole = getSessionPortalRole(data?.session);
+    if (actualRole && !isRoleAllowedForPortal(actualRole, role)) {
+      await client.auth.signOut();
+      throw new Error("This account is not allowed for the selected portal.");
+    }
     return data;
   }
 
@@ -108,13 +150,11 @@
   }
 
   function resolvePortalRole(session, preferredRole) {
+    const sessionRole = getSessionPortalRole(session);
+    if (sessionRole === "staff" || sessionRole === "manager") return sessionRole;
     if (preferredRole === "staff" || preferredRole === "manager") return preferredRole;
     const locationRole = readRoleFromLocation();
     if (locationRole) return locationRole;
-    const appRole = session?.user?.app_metadata?.portal_role || session?.user?.app_metadata?.role;
-    if (appRole === "staff" || appRole === "manager") return appRole;
-    const userRole = session?.user?.user_metadata?.portal_role || session?.user?.user_metadata?.role;
-    if (userRole === "staff" || userRole === "manager") return userRole;
     return readStoredRole() || "manager";
   }
 
@@ -138,6 +178,23 @@
     if (resolved) return String(resolved).trim();
     const email = session?.user?.email || "";
     return email.includes("@") ? email.split("@")[0] : "staff";
+  }
+
+  async function getStaffProfile(session = null) {
+    const client = window.getSupabaseClient?.();
+    const userId = session?.user?.id;
+    if (!client || !userId) return null;
+    const { data, error } = await client
+      .from("staff_profiles")
+      .select("id, staff_name, display_name, role, is_active")
+      .eq("auth_user_id", userId)
+      .eq("is_active", true)
+      .maybeSingle();
+    if (error) {
+      console.error("Failed to load staff profile.", error);
+      return null;
+    }
+    return data || null;
   }
 
   function getHeaderLinks(role) {
@@ -259,6 +316,8 @@
     signInAdmin,
     signOutAdmin,
     normalizePortalLoginId,
+    normalizePortalRole,
+    getSessionPortalRole,
     readPortalLoginIndex,
     buildPortalAuthEmail,
     readStoredRole,
@@ -266,6 +325,7 @@
     readRoleFromLocation,
     resolvePortalRole,
     getStaffDisplayName,
+    getStaffProfile,
     appendRoleToHref,
     getHomePathByRole,
     redirectToRoleHome,

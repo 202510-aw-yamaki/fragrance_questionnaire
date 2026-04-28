@@ -299,6 +299,9 @@
       is_active: document.getElementById("slot-active").checked,
       updated_at: new Date().toISOString()
     };
+    if (window.__staffProfile?.id) {
+      payload.staff_profile_id = window.__staffProfile.id;
+    }
     if (id) {
       await window.AdminData.updateRow("reservation_slots", id, payload).catch(console.error);
     } else {
@@ -342,6 +345,7 @@
     const session = await window.AdminAuth.requireAdminSession();
     if (!session) return;
     window.__adminSession = session;
+    window.__staffProfile = await window.AdminAuth.getStaffProfile?.(session);
     window.AdminAuth.persistPortalRole(role);
     syncDefaultInstructors();
     window.AdminAuth.renderAdminHeader("slots", {

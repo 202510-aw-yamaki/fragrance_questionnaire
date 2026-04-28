@@ -132,7 +132,7 @@
     while (cursor <= lastDate) {
       if (weekdays.includes(cursor.getDay())) {
         const dateKey = formatDateKey(cursor);
-        payloads.push({
+        const payload = {
           slot_code: `${prefix}-${dateKey.replace(/-/g, "")}-${timeKey.replace(":", "")}`,
           slot_date: dateKey,
           slot_time: formatTime(startMinutes),
@@ -143,7 +143,11 @@
           sort_order: sortOrder,
           is_active: true,
           updated_at: timestamp
-        });
+        };
+        if (window.__staffProfile?.id) {
+          payload.staff_profile_id = window.__staffProfile.id;
+        }
+        payloads.push(payload);
         sortOrder += 1;
       }
       cursor.setDate(cursor.getDate() + 1);

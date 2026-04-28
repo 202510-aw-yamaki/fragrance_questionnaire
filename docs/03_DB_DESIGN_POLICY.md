@@ -47,3 +47,17 @@ qr_product_requests.handled_by_staff_id
 
 成果Aは created_by_staff_id に紐づくQR依頼数。
 成果Bは created_by_staff_id に紐づく発送完了数。
+
+## 2026-04-28 Phase 1 implementation note
+
+ユーザー要望により、Phase 1 のDB・認証・QR基盤として `supabase/schema.sql` と `supabase/migrations/20260428073000_phase1_identity_qr.sql` に以下を追加した。
+
+- `customers`, `staff_profiles`, `fragrance_products`, `product_qr_codes`, `qr_product_requests`, `notification_events`
+- `questionnaire_results.customer_id`, `questionnaire_results.edit_token_hash`, `reservation_slots.staff_profile_id`, `reservations.customer_id`, `workshop_sessions.staff_profile_id`, `admin_settings.is_public`
+- Supabase Auth の `portal_role` / `role` と `staff_profiles` を参照する権限判定関数
+- 公開フォーム用RPC: `create_questionnaire_result`, `update_questionnaire_result_by_token`, `create_public_reservation`, `fetch_reservation_by_code`
+- anon は公開フォームに必要な限定操作に寄せ、管理者・スタッフ操作は `manager` / `staff` 判定に寄せる
+- QR第三者は `customers` に入れず、`qr_product_requests` に保存する
+- QR依頼者メール・発送先の保持/削除判定用に `email_retention_until`, `shipping_address_retention_until`, `pii_anonymized_at` を持たせる
+
+初期実装では、メール実送信・自動削除/匿名化・期限超過ジョブはまだ接続しない。後続フェーズで Edge Functions / メールAPI / 管理画面ログに接続する。

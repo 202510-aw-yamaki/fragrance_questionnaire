@@ -58,6 +58,7 @@
   const customerConsentEl = document.getElementById("customer-consent");
 
   let session = null;
+  let staffProfile = null;
   let reservation = null;
   let slot = null;
   let questionnaire = null;
@@ -675,6 +676,9 @@
       status: submitModeEl.value === "complete" ? "completed" : (sessionStatusEl.value || "draft"),
       updated_at: new Date().toISOString()
     };
+    if (staffProfile?.id) {
+      payload.staff_profile_id = staffProfile.id;
+    }
     const recordId = recordIdEl.value;
     try {
       const saved = recordId
@@ -811,6 +815,7 @@
   async function bootstrap() {
     session = await window.AdminAuth.requireAdminSession();
     if (!session) return;
+    staffProfile = await window.AdminAuth.getStaffProfile?.(session);
     window.AdminAuth.persistPortalRole("staff");
     renderHeader();
     bindEvents();
