@@ -38,11 +38,43 @@
     return `
       <section class="canvas placeholder-canvas">
         <div>
-          <p class="reference-note">Reference: レイアウトimg/${screen.reference}</p>
+          <p class="reference-note">未実装</p>
           <h2>${screen.title}</h2>
-          <p>この画面はこれから参照画像に合わせて実装します。</p>
-          <img class="reference-preview" src="../レイアウトimg/${screen.reference}" alt="${screen.title} の参照画像">
+          <p>完成イメージ画像は参照用にのみ扱い、画面内には差し込みません。</p>
         </div>
+      </section>
+    `;
+  }
+
+  function renderOverview(screen) {
+    const isDb = screen.slug === "db-map";
+    const customerNodes = ["TOP", "会員ログイン", "アンケート", "結果", "予約", "QR商品依頼"];
+    const staffNodes = ["スタッフログイン", "予約一覧", "予約枠", "顧客詳細", "接客記録"];
+    const adminNodes = ["管理者ログイン", "基本設定", "配点調整", "原料管理", "QR通知"];
+    const dbNodes = ["customers", "questionnaire_results", "reservations", "staff_users", "product_qr_codes", "qr_product_requests", "admin_settings"];
+    return `
+      <section class="canvas overview-canvas">
+        <main class="overview-board">
+          <section class="overview-title">
+            <p class="mini-ornament">${isDb ? "DATABASE MAP" : "SITE MAP"}</p>
+            <h1>${screen.title}</h1>
+            <p>完成イメージ画像を見ながら、HTML/CSSで再構成するためのプロトタイプ図です。</p>
+          </section>
+          ${isDb ? `
+            <section class="db-diagram">
+              <article class="db-cluster public"><h2>Public</h2>${dbNodes.slice(1, 3).map((item) => `<span>${item}</span>`).join("")}</article>
+              <article class="db-cluster identity"><h2>Identity</h2>${["Supabase Auth", "profiles", "roles"].map((item) => `<span>${item}</span>`).join("")}</article>
+              <article class="db-cluster qr"><h2>QR Product</h2>${dbNodes.slice(4, 6).map((item) => `<span>${item}</span>`).join("")}</article>
+              <article class="db-cluster admin"><h2>Admin</h2>${["staff_users", "admin_settings", "email_events"].map((item) => `<span>${item}</span>`).join("")}</article>
+            </section>
+          ` : `
+            <section class="site-map-grid">
+              <article><h2>Customer</h2>${customerNodes.map((item) => `<span>${item}</span>`).join("")}</article>
+              <article><h2>Staff</h2>${staffNodes.map((item) => `<span>${item}</span>`).join("")}</article>
+              <article><h2>Admin</h2>${adminNodes.map((item) => `<span>${item}</span>`).join("")}</article>
+            </section>
+          `}
+        </main>
       </section>
     `;
   }
@@ -591,6 +623,7 @@
   }
 
   function renderScreenContent(screen) {
+    if (screen.kind === "overview") return renderOverview(screen);
     if (screen.kind === "customer-top") return renderCustomerTop();
     if (screen.kind === "customer-login") return renderCustomerLogin();
     if (screen.kind === "customer-dashboard") return renderCustomerDashboard();
@@ -619,7 +652,7 @@
         <div class="screen-frame">
           <div class="screen-toolbar">
             <strong>${screen.title}</strong>
-            <span>参照: レイアウトimg/${screen.reference}</span>
+            <span>${screen.group} visual prototype</span>
           </div>
           ${renderScreenContent(screen)}
         </div>

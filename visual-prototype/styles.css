@@ -176,13 +176,6 @@ a {
   color: var(--muted);
 }
 
-.reference-preview {
-  width: min(760px, 100%);
-  margin-top: 28px;
-  border-radius: 18px;
-  box-shadow: var(--shadow-card);
-}
-
 .site-head {
   height: 72px;
   padding: 0 48px;
@@ -756,6 +749,99 @@ a {
   background:
     linear-gradient(145deg, rgba(255, 250, 245, 0.94), rgba(247, 235, 224, 0.9)),
     url("../img/TOP/香水の瓶が並ぶ.png") center / cover no-repeat;
+}
+
+.overview-canvas {
+  min-height: calc(100vh - 108px);
+  padding: 42px;
+  background:
+    linear-gradient(145deg, rgba(255, 250, 245, 0.95), rgba(246, 236, 226, 0.92)),
+    url("../img/TOP/中間イメージ.png") center / cover no-repeat;
+}
+
+.overview-board {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  gap: 26px;
+}
+
+.overview-title {
+  padding: 32px;
+  border: 1px solid rgba(126, 94, 70, 0.16);
+  border-radius: 22px;
+  background: rgba(255, 253, 249, 0.92);
+  box-shadow: var(--shadow-card);
+}
+
+.overview-title h1 {
+  margin: 8px 0 12px;
+  font-family: var(--font-serif);
+  font-size: clamp(2.4rem, 5vw, 4.6rem);
+  font-weight: 500;
+  line-height: 1.08;
+}
+
+.overview-title p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.site-map-grid,
+.db-diagram {
+  display: grid;
+  gap: 20px;
+}
+
+.site-map-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.site-map-grid article,
+.db-cluster {
+  padding: 24px;
+  border: 1px solid rgba(126, 94, 70, 0.16);
+  border-radius: 20px;
+  background: rgba(255, 253, 249, 0.9);
+  box-shadow: var(--shadow-card);
+}
+
+.site-map-grid h2,
+.db-cluster h2 {
+  margin: 0 0 16px;
+  color: var(--rose-deep);
+  font-family: var(--font-serif);
+  font-size: 1.7rem;
+}
+
+.site-map-grid span,
+.db-cluster span {
+  min-height: 46px;
+  margin-top: 10px;
+  padding: 10px 14px;
+  display: grid;
+  align-items: center;
+  border: 1px solid rgba(126, 94, 70, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.76);
+  color: #4b3b31;
+  font-weight: 800;
+}
+
+.db-diagram {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.db-cluster.identity {
+  background: rgba(250, 246, 255, 0.9);
+}
+
+.db-cluster.qr {
+  background: rgba(255, 247, 238, 0.92);
+}
+
+.db-cluster.admin {
+  background: rgba(244, 249, 244, 0.92);
 }
 
 .member-hero {
@@ -1716,6 +1802,8 @@ a {
   .home-lower-grid,
   .login-layout,
   .question-layout,
+  .site-map-grid,
+  .db-diagram,
   .member-hero,
   .member-grid,
   .result-grid,
