@@ -1928,9 +1928,12 @@ button {
         axes: requestPayload.axes,
         updated_at: new Date().toISOString()
       });
-      if (persistedReservation?.reservation_code) {
-        reservation.reservationCode = persistedReservation.reservation_code;
+      if (!persistedReservation?.reservation_code) {
+        selectedStatus.textContent = "予約保存に失敗しました。通信状態を確認してもう一度お試しください。";
+        confirmBtn.disabled = false;
+        return;
       }
+      reservation.reservationCode = persistedReservation.reservation_code;
       window.sessionStorage.setItem("fragranceReservationConfirmation", JSON.stringify(reservation));
       window.location.href = `reservation-complete.html?reservationCode=${encodeURIComponent(reservation.reservationCode)}`;
     }

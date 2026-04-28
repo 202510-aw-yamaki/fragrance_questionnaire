@@ -223,3 +223,11 @@ tie-break は `floral -> fresh -> woody` とする。
 - 新規アンケート結果は公開フォームから作成できる
 - 既存 `result_code` の再同期は、既存行の `edit_token_hash` が未設定、または呼び出し側の edit token が既存 hash と一致する場合だけ許可する
 - 一致しない場合は結果行を返さず、画面側は既存の `answered_unsaved` / `questionnaireSyncError` の失敗導線へ進む
+
+## 追記: 2026-04-28 Phase 2 予約保存失敗時の扱い
+
+公開サイト運用時に、DBへ保存されていない予約を完了扱いにしないため、`reservation.html` は `createReservation` が `reservation_code` を返した場合だけ完了画面へ進む。
+
+- Supabase未接続、RPC失敗、insert失敗の場合は完了画面へ遷移しない
+- 失敗時は予約ページ上に再試行案内を表示し、同じ選択内容で再送できる状態に戻す
+- アンケート結果の保存に失敗した場合は既存方針通り、予約自体は継続し `questionnaire_flow_status` / `questionnaire_sync_error` に残す
