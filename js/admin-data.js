@@ -44,6 +44,18 @@
     return data || [];
   }
 
+  async function updateRows(table, payload, filters = []) {
+    const client = getClient();
+    if (!client) throw new Error("Supabase is not configured.");
+    let query = client.from(table).update(payload);
+    filters.forEach((filter) => {
+      query = query[filter.operator](filter.column, filter.value);
+    });
+    const { data, error } = await query.select();
+    if (error) throw error;
+    return data || [];
+  }
+
   async function deleteRow(table, id) {
     const client = getClient();
     if (!client) throw new Error("Supabase is not configured.");
@@ -57,6 +69,7 @@
     upsertRow,
     insertRow,
     updateRow,
+    updateRows,
     deleteRow
   };
 })();

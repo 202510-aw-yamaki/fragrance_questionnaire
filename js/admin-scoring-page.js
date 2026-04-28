@@ -738,12 +738,10 @@
 
   async function saveScoringConfig(note) {
     const nextVersion = Number(activeConfigRow?.version || 0) + 1;
-    if (activeConfigRow?.id) {
-      await window.AdminData.updateRow("scoring_configs", activeConfigRow.id, {
-        is_active: false,
-        updated_at: new Date().toISOString()
-      }).catch(console.error);
-    }
+    await window.AdminData.updateRows("scoring_configs", {
+      is_active: false,
+      updated_at: new Date().toISOString()
+    }, [{ operator: "eq", column: "is_active", value: true }]);
     await window.AdminData.insertRow("scoring_configs", {
       config_key: `fragrance_master_v${nextVersion}`,
       version: nextVersion,

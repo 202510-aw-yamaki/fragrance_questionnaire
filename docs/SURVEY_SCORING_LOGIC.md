@@ -29,6 +29,7 @@
 
 - 通常の配点編集は `admin/admin-scoring.html` から `scoring_configs` に保存する
 - 公開アンケートは active な `scoring_configs` を優先する
+- active な `scoring_configs` は保存処理と DB 制約で 1 件に限定する
 - `sessionStorage` や DB 読込が使えない場合は、`js/fragrance-master-data.js` の共通初期値を fallback とする
 - `fragrance-graph.html` は既に `material_points` を読み込み、未登録時は `js/fragrance-master-data.js` の原料テンプレートを使う
 - 旧来の `customer/questionnaire.html` 内 fallback 定義は、互換用として残す
