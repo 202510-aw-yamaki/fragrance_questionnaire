@@ -57,10 +57,10 @@
 - `docs/presentation/fragrance_questionnaire_architecture_v5.pptx`
   - 全体構想をまとめたPPTX資料
 
-- `レイアウトimg`フォルダ`
+- `レイアウトimg`フォルダ
   - サイトマップ及びＤＢ関係図、ホームページレイアウトのイメージ画像
 
-- `presentation\fragrance_image_explanations_v1.pptx`
+- `docs/presentation/fragrance_image_explanations_v1.pptx`
   - 上記イメージ画像の説明PPTX資料
 
 ---

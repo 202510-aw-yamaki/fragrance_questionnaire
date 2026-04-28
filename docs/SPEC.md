@@ -43,8 +43,15 @@
   - `admin/admin-settings.html`
   - `admin/admin-scoring.html`
   - `admin/admin-materials.html`
-- `admin-login.html` はスタッフ / 管理者専用のため、現状は `index.html` から紐づけない
+- `admin-login.html` はスタッフ / 管理者専用のため、フッターに小さく導線を置く方針へ変更する
 - スタイル管理は現段階では各HTML内のインラインスタイルを正とし、共通CSS整理は将来対応とする
+
+### 追加予定:
+
+- customer/login.html
+- customer/index.html
+- customer/shipping-info.html
+- admin/admin-qr-settings.html
 
 ## 役割
 
