@@ -63,6 +63,49 @@
     return data || null;
   }
 
+  function hasQuestionnaireCompletionState(scoreState) {
+    return Boolean(
+      scoreState &&
+      scoreState.questionnaireResultCode &&
+      scoreState.finalAxes &&
+      scoreState.questionnaireCompletedAt
+    );
+  }
+
+  function buildQuestionnaireResultPayload(scoreState) {
+    if (!hasQuestionnaireCompletionState(scoreState)) return null;
+    return {
+      result_code: scoreState.questionnaireResultCode,
+      step1_answers_json: scoreState.step1Answers || {},
+      step1_answer_keys_json: scoreState.step1AnswerKeys || {},
+      step2_answers_json: scoreState.step2Answers || {},
+      step2_answer_keys_json: scoreState.step2AnswerKeys || {},
+      branch_key: scoreState.branchKey || null,
+      axes_after_step1: scoreState.axesAfterStep1 || null,
+      axes_after_step2: scoreState.axesAfterStep2 || null,
+      final_axes: scoreState.finalAxes || null,
+      adjusted_axes: scoreState.adjustedAxes || null,
+      reset_axes: scoreState.resetAxes || null,
+      selected_finish: scoreState.selectedFinish || null,
+      profile_key: scoreState.profileKey || null,
+      summary_headline: scoreState.summaryHeadline || null,
+      summary_body: scoreState.summaryBody || null,
+      updated_at: new Date().toISOString()
+    };
+  }
+
+  async function syncQuestionnaireResultFromState(scoreState) {
+    if (scoreState?.questionnaireResultId && scoreState?.questionnaireResultCode) {
+      return {
+        id: scoreState.questionnaireResultId,
+        result_code: scoreState.questionnaireResultCode
+      };
+    }
+    const payload = buildQuestionnaireResultPayload(scoreState);
+    if (!payload) return null;
+    return createQuestionnaireResult(payload);
+  }
+
   async function loadActiveScoringConfig() {
     const client = window.getSupabaseClient?.();
     if (!client) return null;
@@ -288,6 +331,7 @@
     loadActiveMaterialPoints,
     createQuestionnaireResult,
     updateQuestionnaireResult,
+    syncQuestionnaireResultFromState,
     fetchPublicReservationSlots,
     createReservation,
     fetchReservationByCode

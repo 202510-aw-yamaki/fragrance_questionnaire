@@ -1470,6 +1470,29 @@ button {
       }
     }
 
+    function persistScoreState(payload) {
+      const nextState = { ...getScoreState(), ...payload, updatedAt: new Date().toISOString() };
+      window.sessionStorage.setItem(SCORE_STATE_KEY, JSON.stringify(nextState));
+      return nextState;
+    }
+
+    async function ensureQuestionnaireResultBeforeReservation(scoreState) {
+      if (scoreState.questionnaireResultId || !scoreState.questionnaireCompletedAt) return scoreState;
+      const result = await window.FragrancePublicData?.syncQuestionnaireResultFromState?.(scoreState);
+      if (!result) {
+        return persistScoreState({
+          questionnaireFlowStatus: "answered_unsaved",
+          questionnaireSyncError: scoreState.questionnaireSyncError || "questionnaire_result_insert_failed"
+        });
+      }
+      return persistScoreState({
+        questionnaireResultId: result.id,
+        questionnaireResultCode: result.result_code,
+        questionnaireFlowStatus: "linked",
+        questionnaireSyncError: null
+      });
+    }
+
     function getQuestionnaireFlowStatus(scoreState) {
       if (scoreState.questionnaireResultId) return "linked";
       if (scoreState.questionnaireFlowStatus === "answered_unsaved") return "answered_unsaved";
@@ -1886,7 +1909,7 @@ button {
         axes: axes
       };
       const reservation = buildReservationPayload(requestPayload);
-      const scoreState = getScoreState();
+      const scoreState = await ensureQuestionnaireResultBeforeReservation(getScoreState());
       const questionnaireFlowStatus = getQuestionnaireFlowStatus(scoreState);
       const persistedReservation = await window.FragrancePublicData?.createReservation?.({
         reservation_code: reservation.reservationCode,

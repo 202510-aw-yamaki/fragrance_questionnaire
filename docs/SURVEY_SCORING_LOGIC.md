@@ -1,5 +1,14 @@
 # SURVEY_SCORING_LOGIC
 
+## 2026-04-28 DB sync note
+
+ユーザー要望により、アンケート結果は `questionnaire_results` へ保存し、予約前に再同期できる導線を追加した。
+
+- STEP2 完了時に保存できなかった場合は、`fragranceScoreState` に `answered_unsaved` と `questionnaireSyncError` を残す
+- `fragrance-graph.html` では、微調整保存前に未保存のアンケート結果を再作成する
+- `reservation.html` では、予約作成直前に未保存のアンケート結果を再作成し、成功した場合は `reservations.questionnaire_result_id` に紐づける
+- 再同期できない場合も予約自体は継続し、`questionnaire_flow_status` / `questionnaire_sync_error` でスタッフ側が判別できるようにする
+
 本書は `deep-research-report.md` を基準にした、目標スコアリング仕様書です。  
 現行コードの数値と差がある場合は、本書側を正とします。
 

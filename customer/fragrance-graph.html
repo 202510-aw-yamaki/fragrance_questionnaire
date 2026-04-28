@@ -1152,6 +1152,11 @@ input[type="range"] {
     let syncTimerId = null;
     function clampValue(value, min = 0, max = 100) { return Math.min(max, Math.max(min, Math.round(value))); }
     function getScoreState() { try { return JSON.parse(sessionStorage.getItem(SCORE_STATE_KEY) || "{}") || {}; } catch (error) { return {}; } }
+    function persistScoreState(payload) {
+      const nextState = { ...getScoreState(), ...payload, updatedAt: new Date().toISOString() };
+      sessionStorage.setItem(SCORE_STATE_KEY, JSON.stringify(nextState));
+      return nextState;
+    }
     function getConfig() { try { return JSON.parse(sessionStorage.getItem(SCORING_CONFIG_KEY) || "null") || {}; } catch (error) { return {}; } }
     function getDraft() { try { return JSON.parse(sessionStorage.getItem(DRAFT_KEY) || "null"); } catch (error) { return null; } }
     function getPresets() { return getConfig().graphPresets || FALLBACK_PRESETS; }
@@ -1204,23 +1209,64 @@ input[type="range"] {
         recommendedMaterials,
         updatedAt: new Date().toISOString()
       }));
+      persistScoreState({
+        adjustedAxes: axisPayload,
+        profileKey: nearestProfile.profileKey,
+        summaryHeadline: nearestProfile.profile?.headline || null,
+        summaryBody: nearestProfile.profile?.body || null
+      });
       queueQuestionnaireResultSync(axisPayload, nearestProfile);
+    }
+    async function ensureQuestionnaireResultSynced(scoreState) {
+      const result = await window.FragrancePublicData?.syncQuestionnaireResultFromState?.(scoreState);
+      if (!result) {
+        if (scoreState.questionnaireCompletedAt && !scoreState.questionnaireResultId) {
+          persistScoreState({
+            questionnaireFlowStatus: "answered_unsaved",
+            questionnaireSyncError: "questionnaire_result_insert_failed"
+          });
+        }
+        return scoreState;
+      }
+      return persistScoreState({
+        questionnaireResultId: result.id,
+        questionnaireResultCode: result.result_code,
+        questionnaireFlowStatus: "linked",
+        questionnaireSyncError: null
+      });
     }
     function queueQuestionnaireResultSync(axisPayload, nearestProfile) {
       const scoreState = getScoreState();
-      const identifier = {
-        id: scoreState.questionnaireResultId,
-        resultCode: scoreState.questionnaireResultCode
-      };
-      if (!identifier.id && !identifier.resultCode) return;
+      if (!scoreState.questionnaireResultId && !scoreState.questionnaireResultCode) return;
       if (syncTimerId) window.clearTimeout(syncTimerId);
       syncTimerId = window.setTimeout(async () => {
-        await window.FragrancePublicData?.updateQuestionnaireResult?.(identifier, {
+        const syncedScoreState = scoreState.questionnaireResultId
+          ? scoreState
+          : await ensureQuestionnaireResultSynced(scoreState);
+        const identifier = {
+          id: syncedScoreState.questionnaireResultId,
+          resultCode: syncedScoreState.questionnaireResultCode
+        };
+        if (!identifier.id && !identifier.resultCode) return;
+        const updateResult = await window.FragrancePublicData?.updateQuestionnaireResult?.(identifier, {
           adjusted_axes: axisPayload,
           profile_key: nearestProfile.profileKey || null,
           summary_headline: nearestProfile.profile?.headline || null,
           summary_body: nearestProfile.profile?.body || null,
           updated_at: new Date().toISOString()
+        });
+        const syncError = !syncedScoreState.questionnaireResultId && syncedScoreState.questionnaireFlowStatus === "answered_unsaved"
+          ? "questionnaire_result_insert_failed"
+          : "questionnaire_result_update_failed";
+        persistScoreState({
+          adjustedAxes: axisPayload,
+          profileKey: nearestProfile.profileKey,
+          summaryHeadline: nearestProfile.profile?.headline || null,
+          summaryBody: nearestProfile.profile?.body || null,
+          questionnaireResultId: updateResult?.id || syncedScoreState.questionnaireResultId || null,
+          questionnaireResultCode: updateResult?.result_code || syncedScoreState.questionnaireResultCode || null,
+          questionnaireFlowStatus: updateResult ? "linked" : syncedScoreState.questionnaireFlowStatus,
+          questionnaireSyncError: updateResult ? null : syncError
         });
       }, 400);
     }
