@@ -868,3 +868,12 @@ Codex は QR 関連実装時に以下を守ってください。
 - 無効化 QR へのアクセスは記録する
 - 未確定事項は `06_OPEN_ISSUES.md` を確認し、勝手に実装しない
 
+## 2026-04-28 Phase 4 implementation note
+
+ユーザー要望の「メール本文テンプレートと送信イベントだけ設計し、実送信は後で Edge Functions + メールAPI に接続する」方針に合わせ、QR作成依頼受付時に `email_events` へ送信イベントを記録する。
+
+- `qr_product_requests` insert 後、受付メール用の `qr_request_received_v1` イベントを `email_events` に `queued` として作成する
+- この段階ではメールを実送信しない
+- `email_events.retention_until` は QR依頼者メールの削除・匿名化判定に使う
+- 送信基盤接続後は Edge Functions 側で `email_events.status` / `sent_at` / `failed_at` / `failure_reason` を更新する
+

@@ -79,3 +79,12 @@ qr_product_requests.handled_by_staff_id
 - ログイン画面で選んだロールや localStorage の保存値は、画面遷移補助であり権限根拠にはしない
 - 運用時は Auth user と `staff_profiles.auth_user_id` を紐づけ、スタッフ表示名・成果集計・予約枠の責任者を追えるようにする
 - `staff-customer-detail.html` の保存は、`staff_profiles.auth_user_id` から有効なスタッフプロフィールを取得できるアカウントだけ許可する
+
+## 2026-04-28 Phase 4 implementation note
+
+ユーザー要望のメール運用方針に合わせ、実送信前の送信イベント管理用に `email_events` を追加する。
+
+- QR作成依頼受付時は `email_events` に `qr_request_received_v1` を `queued` として記録する
+- フロントからメールは直接送信しない
+- Edge Functions / メールAPI 接続までは `email_events` を mock / 管理画面ログ用のイベントとして扱う
+- `recipient_email` は個人情報として扱い、`retention_until` / `pii_anonymized_at` で削除・匿名化対象を判別できるようにする
