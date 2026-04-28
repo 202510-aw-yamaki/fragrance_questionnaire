@@ -1017,7 +1017,10 @@ using (auth_user_id = auth.uid());
 create policy "customer insert own profile"
 on public.customers for insert
 to authenticated
-with check (auth_user_id = auth.uid());
+with check (
+  auth_user_id = auth.uid()
+  and coalesce(public.portal_role_from_session(), 'customer') in ('customer', 'member')
+);
 create policy "staff select customers"
 on public.customers for select
 to authenticated

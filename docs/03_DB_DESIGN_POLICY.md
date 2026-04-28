@@ -85,7 +85,7 @@ qr_product_requests.handled_by_staff_id
 ユーザー要望の「スタッフ/管理者アカウントを Supabase Auth で正式作成する運用」に合わせ、管理者設定画面のスタッフ登録データはログイン補助・勤務表示用に限定する。
 
 - `admin_settings.staff_directory` にはスタッフ/管理者パスワードを保存しない
-- 既存データに `staffPassword` / `managerPassword` が残っている場合は、`ユーザー設定項目フォルダ/Supabase設定項目.txt` のSQLで削除する
+- 既存データに `staffPassword` / `managerPassword` が残っている場合は、`ユーザー設定フォルダ/Supabase設定項目.txt` のSQLで削除する
 - 管理者設定画面からのスタッフ保存は、Auth user 作成や `staff_profiles.auth_user_id` 紐づけを自動実行しない
 - 正式ログイン・権限判定は Supabase Auth metadata と `staff_profiles` を正本とする
 - `fragrancePortalLoginIndex` のようなlocalStorage上のログインID一覧は、ログイン可否判定に使わない
@@ -115,5 +115,6 @@ qr_product_requests.handled_by_staff_id
 - 初回パスワード設定は Supabase Auth signUp を呼び、メール確認不要の設定ではその場で `customers.auth_user_id` を作成する
 - メール確認が必要なSupabase設定では、確認後のログイン時に `customers` 行を作成する
 - 会員ロールは `user_metadata` ではなく、`customers.auth_user_id` の存在で判定する
+- スタッフ/管理者 `app_metadata` を持つAuthユーザーは、フロントとRLSの両方で会員 `customers` insert から除外する
 - 会員本人の制作履歴表示、過去完成品との比較、再予約導線は後続フェーズで扱う
 - QR第三者はこの導線に入れず、引き続き `qr_product_requests` だけに保存する

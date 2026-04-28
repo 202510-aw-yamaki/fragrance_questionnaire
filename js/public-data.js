@@ -336,9 +336,20 @@
     return normalizedEmail.includes("@") ? normalizedEmail.split("@")[0] : normalizedEmail;
   }
 
+  function getAuthAppRole(user) {
+    return String(user?.app_metadata?.portal_role || user?.app_metadata?.role || "").trim().toLowerCase();
+  }
+
+  function isStaffOrManagerAuthUser(user) {
+    return ["staff", "manager", "admin"].includes(getAuthAppRole(user));
+  }
+
   async function ensureCustomerProfile(user) {
     const client = window.getSupabaseClient?.();
     if (!client || !user?.id) return null;
+    if (isStaffOrManagerAuthUser(user)) {
+      throw new Error("スタッフ/管理者アカウントは会員ページでは利用できません。");
+    }
     const { data: existing, error: selectError } = await client
       .from("customers")
       .select("id, customer_code, email, display_name, status")
@@ -368,6 +379,10 @@
       password
     });
     if (error) throw error;
+    if (isStaffOrManagerAuthUser(data?.user)) {
+      await client.auth.signOut();
+      throw new Error("スタッフ/管理者アカウントは会員ページでは利用できません。");
+    }
     const customer = await ensureCustomerProfile(data?.user);
     return { session: data?.session || null, customer };
   }
