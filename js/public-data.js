@@ -325,6 +325,117 @@
     }
   }
 
+  function toFiniteNumber(value) {
+    const number = Number(value);
+    return Number.isFinite(number) ? number : undefined;
+  }
+
+  function normalizeQrProductSettings(value) {
+    const settings = value || {};
+    return {
+      price10ml: toFiniteNumber(settings.price10ml ?? settings.price_10ml),
+      price30ml: toFiniteNumber(settings.price30ml ?? settings.price_30ml),
+      maxVolumeMl: toFiniteNumber(settings.maxVolumeMl ?? settings.max_volume_ml),
+      shopPhone: settings.shopPhone || settings.shop_phone || settings.storePhone || settings.store_phone,
+      businessHours: settings.businessHours || settings.business_hours || settings.receptionHours || settings.reception_hours
+    };
+  }
+
+  function stripUndefinedValues(value) {
+    return Object.fromEntries(Object.entries(value || {}).filter(([, entryValue]) => entryValue !== undefined && entryValue !== null && entryValue !== ""));
+  }
+
+  async function loadQrProductPublicSettings() {
+    const client = window.getSupabaseClient?.();
+    if (!client) return {};
+    try {
+      const { data, error } = await client
+        .from("admin_settings")
+        .select("setting_key, setting_value")
+        .in("setting_key", ["qr_product_public_settings", "qr_product_settings", "store_public_info", "shop_public_info"])
+        .eq("is_public", true);
+      if (error) throw error;
+      const settingRows = data || [];
+      const qrSetting = settingRows.find((row) => row.setting_key === "qr_product_public_settings")
+        || settingRows.find((row) => row.setting_key === "qr_product_settings");
+      const shopSetting = settingRows.find((row) => row.setting_key === "store_public_info")
+        || settingRows.find((row) => row.setting_key === "shop_public_info");
+      return {
+        ...stripUndefinedValues(normalizeQrProductSettings(qrSetting?.setting_value)),
+        ...stripUndefinedValues(normalizeQrProductSettings(shopSetting?.setting_value))
+      };
+    } catch (error) {
+      console.error("Failed to load QR product public settings.", error);
+      return {};
+    }
+  }
+
+  async function fetchProductQrCodeByToken(token) {
+    const client = window.getSupabaseClient?.();
+    const qrToken = String(token || "").trim();
+    if (!client || !qrToken) return null;
+    const selectColumns = "id, fragrance_product_id, qr_code, public_token, status, expires_at, inactive_reason";
+    const findByColumn = async (column) => {
+      const { data, error } = await client
+        .from("product_qr_codes")
+        .select(selectColumns)
+        .eq(column, qrToken)
+        .maybeSingle();
+      if (error) throw error;
+      return data || null;
+    };
+    try {
+      return await findByColumn("public_token") || await findByColumn("qr_code");
+    } catch (error) {
+      console.error("Failed to fetch QR product code.", error);
+      return null;
+    }
+  }
+
+  async function fetchQrProductPageData(token) {
+    const client = window.getSupabaseClient?.();
+    if (!client) return null;
+    const qrCode = await fetchProductQrCodeByToken(token);
+    if (!qrCode?.fragrance_product_id) return null;
+    try {
+      const { data, error } = await client
+        .from("fragrance_products")
+        .select("id, product_name")
+        .eq("id", qrCode.fragrance_product_id)
+        .maybeSingle();
+      if (error) throw error;
+      return {
+        qrCode,
+        product: data || null
+      };
+    } catch (error) {
+      console.error("Failed to fetch QR fragrance product.", error);
+      return null;
+    }
+  }
+
+  async function createQrProductRequest(payload) {
+    const client = window.getSupabaseClient?.();
+    if (!client) return false;
+    try {
+      const { error } = await client
+        .from("qr_product_requests")
+        .insert([{
+          product_qr_code_id: payload.product_qr_code_id,
+          fragrance_product_id: payload.fragrance_product_id,
+          requester_email: payload.requester_email,
+          quantity_10ml: payload.quantity_10ml,
+          quantity_30ml: payload.quantity_30ml,
+          status: "requested"
+        }]);
+      if (error) throw error;
+      return true;
+    } catch (error) {
+      console.error("Failed to create QR product request.", error);
+      return false;
+    }
+  }
+
   window.FragrancePublicData = {
     createCode,
     loadActiveScoringConfig,
@@ -334,6 +445,9 @@
     syncQuestionnaireResultFromState,
     fetchPublicReservationSlots,
     createReservation,
-    fetchReservationByCode
+    fetchReservationByCode,
+    loadQrProductPublicSettings,
+    fetchQrProductPageData,
+    createQrProductRequest
   };
 })();

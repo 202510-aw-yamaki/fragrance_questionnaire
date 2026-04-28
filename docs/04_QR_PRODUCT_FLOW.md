@@ -9,6 +9,16 @@
 - 同意が揃った最終登録済み商品は `published`、不足がある保存は `draft` として扱う
 - 旧 `customer/product-reservation.html` へのQR表示はまだ互換表示であり、正規QR導線は後続フェーズで `product_qr_codes` と接続する
 
+## 2026-04-28 QR request page implementation note
+
+ユーザー要望により、旧 `customer/product-reservation.html` は `archived/legacy/customer-product-reservation.legacy.html` に隔離し、同じ公開URLを `product_qr_codes` と `fragrance_products` に紐づくQR商品作成依頼ページへリニューアルした。
+
+- QR商品ページは `token` / `public_token` / `qr` / `qr_code` で `product_qr_codes` を参照する
+- 表示する商品情報は `fragrance_products.product_name` のみとする
+- 依頼者は会員登録せず、`qr_product_requests` にメールアドレス、10ml数量、30ml数量だけを送信する
+- 旧 `product_id` と5軸パラメータのQRは互換表示に混ぜず、旧形式として新QR発行を促す
+- 受付メールの実送信はまだ行わず、送信イベント設計とスタッフ通知ログの整備を優先する
+
 ## Purpose
 
 このファイルは、QRコードから開く商品作成依頼ページと、その裏側の運用・DB・通知・期限管理の方針を整理するものです。
@@ -808,6 +818,9 @@ QR 商品ページの参考イメージ画像は以下です。
 ```text
 レイアウトimg/QRpage-reference.png
 ```
+
+2026-04-28 追記:
+上記の `レイアウトimg/QRpage-reference.png` は旧参照名で、実在する目標参照画像は `レイアウトimg/11. customer product-reservation.html QR商品作成依頼ページ.png` です。
 
 この画像は UI の方向性を示す参考です。
 

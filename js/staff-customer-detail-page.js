@@ -67,6 +67,7 @@
   let questionnaire = null;
   let workshop = null;
   let fragranceProduct = null;
+  let productQrCode = null;
   let materialRows = [];
   let materialDataReady = false;
   let customerDraft = null;
@@ -682,16 +683,22 @@
     const recipeItems = readiness.recipeItems;
     const recipeSignature = buildRecipeSignature(recipeItems);
     const axisSignature = AXIS_ORDER.map((axis) => `${axis}:${Number(axes[axis] || 0)}`).join("|");
-    const productId = fragranceProduct?.product_code || `prd-${createStableHash(`${readiness.productName || "name:none"}|${axisSignature}|${recipeSignature || "recipe:none"}`)}`;
+    const fallbackProductId = fragranceProduct?.product_code || `prd-${createStableHash(`${readiness.productName || "name:none"}|${axisSignature}|${recipeSignature || "recipe:none"}`)}`;
+    const publicToken = productQrCode?.public_token || productQrCode?.qr_code || "";
+    const productId = productQrCode?.qr_code || fallbackProductId;
     const target = new URL("../customer/product-reservation.html", window.location.href);
-    target.searchParams.set("product_id", productId);
-    AXIS_ORDER.forEach((axis) => {
-      target.searchParams.set(axis, String(Number(axes[axis] || 0)));
-    });
+    if (publicToken) {
+      target.searchParams.set("token", publicToken);
+    } else {
+      target.searchParams.set("product_id", productId);
+      AXIS_ORDER.forEach((axis) => {
+        target.searchParams.set(axis, String(Number(axes[axis] || 0)));
+      });
+    }
     return {
       productId,
       url: target.toString(),
-      isReady: Boolean(readiness.productName && readiness.hasFinalAxes && readiness.hasRecipe && readiness.hasConsents)
+      isReady: Boolean(publicToken && readiness.productName && readiness.hasFinalAxes && readiness.hasRecipe && readiness.hasConsents)
     };
   }
 
@@ -701,11 +708,11 @@
     if (!force) {
       qrPreviewEl.innerHTML = snapshot.isReady
         ? `<div>QR表示できます<br><span class="admin-note">商品ID: ${escapeHtml(snapshot.productId)}</span></div>`
-        : `<div>QRコードがここに表示されます。<br><span class="admin-note">原料配合を1行以上入力してください。</span></div>`;
+        : `<div>QRコードがここに表示されます。<br><span class="admin-note">商品名・同意・原料配合・接客完了登録を確認してください。</span></div>`;
       return;
     }
     if (!snapshot.isReady) {
-      qrPreviewEl.innerHTML = `<div>QRを生成できません。<br><span class="admin-note">最終5軸と原料配合を確認してください。</span></div>`;
+      qrPreviewEl.innerHTML = `<div>QRを生成できません。<br><span class="admin-note">商品名・同意・原料配合・接客完了登録を確認してください。</span></div>`;
       return;
     }
     if (!window.QRCode) {
@@ -752,6 +759,34 @@
     return fragranceProduct;
   }
 
+  async function syncProductQrCode() {
+    if (!fragranceProduct?.id) return null;
+    const isPublished = fragranceProduct.status === "published";
+    if (!isPublished) {
+      if (productQrCode?.id) {
+        const saved = await window.AdminData.updateRow("product_qr_codes", productQrCode.id, {
+          status: "draft",
+          is_public: false,
+          updated_at: new Date().toISOString()
+        });
+        productQrCode = saved?.[0] || productQrCode;
+      }
+      return productQrCode;
+    }
+    const payload = {
+      fragrance_product_id: fragranceProduct.id,
+      status: "active",
+      is_public: true,
+      issued_at: productQrCode?.issued_at || new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    const saved = productQrCode?.id
+      ? await window.AdminData.updateRow("product_qr_codes", productQrCode.id, payload)
+      : await window.AdminData.insertRow("product_qr_codes", payload);
+    productQrCode = saved?.[0] || productQrCode;
+    return productQrCode;
+  }
+
   async function saveWorkshop() {
     if (!reservation) return;
     if (submitModeEl.value === "complete") {
@@ -788,6 +823,7 @@
       });
       recordIdEl.value = saved?.[0]?.id || recordId || "";
       await saveFragranceProduct(recordIdEl.value, payload);
+      await syncProductQrCode();
       if (getFeedbackKey()) {
         window.sessionStorage.setItem(getFeedbackKey(), customerFeedbackEl.value.trim());
       }
@@ -859,6 +895,14 @@
           limit: 1
         }).catch(() => []);
     fragranceProduct = productRows[0] || null;
+    const productQrRows = fragranceProduct?.id
+      ? await window.AdminData.listRows("product_qr_codes", {
+          filters: [{ operator: "eq", column: "fragrance_product_id", value: fragranceProduct.id }],
+          orders: [{ column: "created_at", ascending: false }],
+          limit: 1
+        }).catch(() => [])
+      : [];
+    productQrCode = productQrRows[0] || null;
     const defaults = window.FragranceMasterData?.createMaterialTemplates?.() || [];
     materialDataReady = materialPointRows.length > 0;
     materialRows = (materialPointRows.length ? materialPointRows : defaults)
@@ -927,7 +971,19 @@
       event.preventDefault();
       await saveWorkshop();
     });
-    generateQrEl?.addEventListener("click", () => renderQr(true));
+    generateQrEl?.addEventListener("click", async () => {
+      if (!fragranceProduct?.id || fragranceProduct.status !== "published") {
+        setStatus("QR表示には接客完了登録が必要です。", "error");
+        renderQr(false);
+        return;
+      }
+      try {
+        await syncProductQrCode();
+        renderQr(true);
+      } catch (error) {
+        setStatus(error?.message || "QR発行に失敗しました。", "error");
+      }
+    });
   }
 
   async function bootstrap() {

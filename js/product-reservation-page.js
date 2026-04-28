@@ -1,133 +1,253 @@
 (function () {
-  const AXIS_META = [
-    { id: "floral", label: "フローラル" },
-    { id: "fresh", label: "フレッシュ" },
-    { id: "woody", label: "ウッディ" },
-    { id: "spicy", label: "スパイシー" },
-    { id: "sweet", label: "スウィート" }
-  ];
-  const FALLBACK_AXES = {
-    floral: 50,
-    fresh: 50,
-    woody: 50,
-    spicy: 50,
-    sweet: 50
+  const DEFAULT_SETTINGS = {
+    price10ml: 1000,
+    price30ml: 2860,
+    maxVolumeMl: 100,
+    shopPhone: "03-1234-5678",
+    businessHours: "11:00〜19:00"
   };
 
   const params = new URLSearchParams(window.location.search);
-  const productId = params.get("product_id") || "prd-preview";
-  const productIdEl = document.getElementById("product-id");
-  const productDescriptionEl = document.getElementById("product-description");
-  const productAxisStatsEl = document.getElementById("product-axis-stats");
-  const productOrderYesEl = document.getElementById("product-order-yes");
-  const productOrderResultEl = document.getElementById("product-order-result");
-  const productOrderCopyEl = document.getElementById("product-order-copy");
-  const gridPolygons = document.getElementById("grid-polygons");
-  const axisLines = document.getElementById("axis-lines");
-  const axisLabels = document.getElementById("axis-labels");
-  const radarShape = document.getElementById("radar-shape");
-  const vertexDots = document.getElementById("vertex-dots");
+  const state = {
+    qrCode: null,
+    product: null,
+    settings: DEFAULT_SETTINGS,
+    isReady: false,
+    isSubmitting: false
+  };
 
-  function clampValue(value, min = 0, max = 100) {
-    const number = Number(value);
-    if (!Number.isFinite(number)) return min;
-    return Math.min(max, Math.max(min, Math.round(number)));
+  const productNameEl = document.getElementById("product-name");
+  const price10mlEl = document.getElementById("price-10ml");
+  const price30mlEl = document.getElementById("price-30ml");
+  const quantity10mlEl = document.getElementById("quantity-10ml");
+  const quantity30mlEl = document.getElementById("quantity-30ml");
+  const formEl = document.getElementById("qr-request-form");
+  const emailEl = document.getElementById("requester-email");
+  const summaryEl = document.getElementById("request-summary");
+  const totalEl = document.getElementById("request-total");
+  const submitEl = document.getElementById("submit-request");
+  const statusEl = document.getElementById("request-status");
+  const shopPhoneEl = document.getElementById("shop-phone");
+  const businessHoursEl = document.getElementById("business-hours");
+
+  function formatYen(value) {
+    return `${new Intl.NumberFormat("ja-JP").format(Number(value || 0))}円（税込）`;
   }
 
-  function polarToCartesian(centerX, centerY, radius, angle) {
-    return {
-      x: centerX + radius * Math.cos(angle),
-      y: centerY + radius * Math.sin(angle)
+  function setStatus(message, tone = "") {
+    if (!statusEl) return;
+    statusEl.textContent = message || "";
+    if (tone) {
+      statusEl.dataset.tone = tone;
+    } else {
+      statusEl.removeAttribute("data-tone");
+    }
+  }
+
+  function getQrToken() {
+    return params.get("token") || params.get("public_token") || params.get("qr") || params.get("qr_code") || "";
+  }
+
+  function getQuantity(input) {
+    const value = Number(input?.value || 0);
+    if (!Number.isFinite(value)) return 0;
+    return Math.max(0, Math.floor(value));
+  }
+
+  function setQuantity(input, value) {
+    if (!input) return;
+    input.value = String(Math.max(0, Math.floor(Number(value || 0))));
+  }
+
+  function getRequestTotals() {
+    const quantity10ml = getQuantity(quantity10mlEl);
+    const quantity30ml = getQuantity(quantity30mlEl);
+    const totalVolumeMl = quantity10ml * 10 + quantity30ml * 30;
+    const totalPrice = quantity10ml * state.settings.price10ml + quantity30ml * state.settings.price30ml;
+    return { quantity10ml, quantity30ml, totalVolumeMl, totalPrice };
+  }
+
+  function isValidEmail(value) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || "").trim());
+  }
+
+  function isQrExpired(qrCode) {
+    if (!qrCode?.expires_at) return false;
+    const timestamp = new Date(qrCode.expires_at).getTime();
+    return Number.isFinite(timestamp) && timestamp <= Date.now();
+  }
+
+  function disableForm(message) {
+    state.isReady = false;
+    [quantity10mlEl, quantity30mlEl, emailEl, submitEl].forEach((element) => {
+      if (element) element.disabled = true;
+    });
+    document.querySelectorAll("[data-quantity-target]").forEach((button) => {
+      button.disabled = true;
+    });
+    if (message) setStatus(message, "error");
+    renderSummary();
+  }
+
+  function enableForm() {
+    state.isReady = true;
+    [quantity10mlEl, quantity30mlEl, emailEl].forEach((element) => {
+      if (element) element.disabled = false;
+    });
+    document.querySelectorAll("[data-quantity-target]").forEach((button) => {
+      button.disabled = false;
+    });
+    renderSummary();
+  }
+
+  function renderSettings() {
+    if (price10mlEl) price10mlEl.textContent = formatYen(state.settings.price10ml);
+    if (price30mlEl) price30mlEl.textContent = formatYen(state.settings.price30ml);
+    if (shopPhoneEl) shopPhoneEl.textContent = state.settings.shopPhone;
+    if (businessHoursEl) businessHoursEl.textContent = state.settings.businessHours;
+  }
+
+  function renderProduct() {
+    const productName = state.product?.product_name || "QR商品";
+    if (productNameEl) productNameEl.textContent = productName;
+    document.title = `${productName} | QR商品作成依頼`;
+  }
+
+  function renderSummary() {
+    const totals = getRequestTotals();
+    const maxVolume = Number(state.settings.maxVolumeMl || DEFAULT_SETTINGS.maxVolumeMl);
+    const isOverLimit = totals.totalVolumeMl > maxVolume;
+    const hasQuantity = totals.totalVolumeMl > 0;
+    const hasEmail = isValidEmail(emailEl?.value);
+    const canSubmit = state.isReady && !state.isSubmitting && hasQuantity && hasEmail && !isOverLimit;
+
+    if (summaryEl) {
+      summaryEl.innerHTML = [
+        `10ml × ${totals.quantity10ml}本 = ${formatYen(totals.quantity10ml * state.settings.price10ml)}`,
+        `30ml × ${totals.quantity30ml}本 = ${formatYen(totals.quantity30ml * state.settings.price30ml)}`,
+        `合計容量：${totals.totalVolumeMl}ml / 最大${maxVolume}ml`
+      ].join("<br>");
+    }
+    if (totalEl) {
+      totalEl.textContent = `商品合計：${formatYen(totals.totalPrice)}`;
+    }
+    if (submitEl) {
+      submitEl.disabled = !canSubmit;
+    }
+    if (!state.isReady) return;
+    if (isOverLimit) {
+      setStatus("最大依頼容量を超えています。数量を減らすか、店舗へご相談ください。", "error");
+    } else if (!hasQuantity) {
+      setStatus("10mlまたは30mlの数量を選択してください。");
+    } else if (!hasEmail) {
+      setStatus("受付メールをお送りするメールアドレスを入力してください。");
+    } else {
+      setStatus("");
+    }
+  }
+
+  async function loadPageData() {
+    const token = getQrToken();
+    state.settings = {
+      ...DEFAULT_SETTINGS,
+      ...(await window.FragrancePublicData?.loadQrProductPublicSettings?.() || {})
     };
-  }
+    renderSettings();
 
-  const axes = AXIS_META.map((axis) => ({
-    ...axis,
-    value: clampValue(params.get(axis.id) || FALLBACK_AXES[axis.id])
-  }));
-
-  function createRadarPoints(scale = 1) {
-    const center = 180;
-    const maxRadius = 108;
-    return axes.map((axis, index) => {
-      const angle = (-Math.PI / 2) + (index * Math.PI * 2 / axes.length);
-      return polarToCartesian(center, center, maxRadius * scale * (axis.value / 100), angle);
-    });
-  }
-
-  function renderGraph() {
-    const center = 180;
-    const maxRadius = 108;
-    gridPolygons.innerHTML = "";
-    axisLines.innerHTML = "";
-    axisLabels.innerHTML = "";
-
-    [0.25, 0.5, 0.75, 1].forEach((scale) => {
-      const points = axes.map((axis, index) => {
-        const angle = (-Math.PI / 2) + (index * Math.PI * 2 / axes.length);
-        const point = polarToCartesian(center, center, maxRadius * scale, angle);
-        return `${point.x},${point.y}`;
-      }).join(" ");
-      const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-      polygon.setAttribute("points", points);
-      gridPolygons.appendChild(polygon);
-    });
-
-    axes.forEach((axis, index) => {
-      const angle = (-Math.PI / 2) + (index * Math.PI * 2 / axes.length);
-      const axisEnd = polarToCartesian(center, center, maxRadius, angle);
-      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      line.setAttribute("x1", String(center));
-      line.setAttribute("y1", String(center));
-      line.setAttribute("x2", String(axisEnd.x));
-      line.setAttribute("y2", String(axisEnd.y));
-      axisLines.appendChild(line);
-
-      const labelPoint = polarToCartesian(center, center, maxRadius + 28, angle);
-      const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      label.setAttribute("x", String(labelPoint.x));
-      label.setAttribute("y", String(labelPoint.y));
-      label.textContent = axis.label;
-      axisLabels.appendChild(label);
-    });
-
-    const points = createRadarPoints();
-    radarShape.setAttribute("points", points.map((point) => `${point.x},${point.y}`).join(" "));
-    vertexDots.innerHTML = points.map((point) => `<circle cx="${point.x}" cy="${point.y}" r="4"></circle>`).join("");
-  }
-
-  function renderAxisStats() {
-    if (!productAxisStatsEl) return;
-    productAxisStatsEl.innerHTML = axes.map((axis) => `
-      <div class="product-axis-stat">
-        <span>${axis.label}</span>
-        <strong>${axis.value}</strong>
-      </div>
-    `).join("");
-  }
-
-  function renderProductMeta() {
-    document.title = `${productId} | 商品予約`;
-    if (productIdEl) {
-      productIdEl.textContent = productId;
+    if (!window.isSupabaseConfigured?.()) {
+      renderProduct();
+      disableForm("Supabase設定が未完了のため、現在このページから依頼を送信できません。");
+      return;
     }
-    if (productDescriptionEl) {
-      productDescriptionEl.textContent = `商品ID ${productId} の5軸バランスを表示しています。原料配合は公開していません。`;
+
+    if (!token) {
+      renderProduct();
+      const legacyProductId = params.get("product_id");
+      disableForm(legacyProductId
+        ? "このQRは旧形式です。店舗スタッフへ新しいQRの発行をご依頼ください。"
+        : "QRコード情報を確認できませんでした。");
+      return;
+    }
+
+    const pageData = await window.FragrancePublicData?.fetchQrProductPageData?.(token);
+    state.qrCode = pageData?.qrCode || null;
+    state.product = pageData?.product || null;
+    renderProduct();
+
+    if (!state.qrCode || !state.product) {
+      disableForm("このQR商品ページは現在利用できません。");
+      return;
+    }
+    if (state.qrCode.status !== "active" || isQrExpired(state.qrCode)) {
+      disableForm(state.qrCode.inactive_reason || "このQR商品ページは現在受付を停止しています。");
+      return;
+    }
+    enableForm();
+  }
+
+  async function submitRequest() {
+    if (!state.isReady || state.isSubmitting) return;
+    const totals = getRequestTotals();
+    if (!totals.totalVolumeMl) {
+      renderSummary();
+      return;
+    }
+    if (!isValidEmail(emailEl?.value)) {
+      renderSummary();
+      return;
+    }
+    state.isSubmitting = true;
+    renderSummary();
+    setStatus("送信しています。");
+    try {
+      const saved = await window.FragrancePublicData?.createQrProductRequest?.({
+        product_qr_code_id: state.qrCode.id,
+        fragrance_product_id: state.product.id,
+        requester_email: emailEl.value.trim(),
+        quantity_10ml: totals.quantity10ml,
+        quantity_30ml: totals.quantity30ml,
+        status: "requested"
+      });
+      if (!saved) throw new Error("依頼を保存できませんでした。");
+      setStatus("作成依頼を受け付けました。原材料在庫の確認後、メールでご連絡します。", "success");
+      if (submitEl) submitEl.disabled = true;
+      [quantity10mlEl, quantity30mlEl, emailEl].forEach((element) => {
+        if (element) element.disabled = true;
+      });
+      document.querySelectorAll("[data-quantity-target]").forEach((button) => {
+        button.disabled = true;
+      });
+    } catch (error) {
+      state.isSubmitting = false;
+      setStatus(error?.message || "送信に失敗しました。時間をおいて再度お試しください。", "error");
+      renderSummary();
     }
   }
 
-  if (productOrderYesEl) {
-    productOrderYesEl.addEventListener("click", () => {
-      if (productOrderResultEl) {
-        productOrderResultEl.hidden = false;
-      }
-      if (productOrderCopyEl) {
-        productOrderCopyEl.textContent = `現在は予約導線を準備中です。商品ID ${productId} を控えてスタッフへお問い合わせください。`;
-      }
+  document.querySelectorAll("[data-quantity-target]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const target = document.getElementById(button.dataset.quantityTarget);
+      const step = Number(button.dataset.step || 0);
+      setQuantity(target, getQuantity(target) + step);
+      renderSummary();
     });
-  }
+  });
 
-  renderProductMeta();
-  renderGraph();
-  renderAxisStats();
+  [quantity10mlEl, quantity30mlEl, emailEl].forEach((element) => {
+    element?.addEventListener("input", () => {
+      if (element === quantity10mlEl || element === quantity30mlEl) {
+        setQuantity(element, getQuantity(element));
+      }
+      renderSummary();
+    });
+  });
+
+  formEl?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    await submitRequest();
+  });
+
+  renderSettings();
+  renderSummary();
+  loadPageData();
 })();
