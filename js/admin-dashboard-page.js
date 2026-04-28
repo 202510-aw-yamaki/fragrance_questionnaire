@@ -12,6 +12,8 @@
   const scoringWeightSummaryEl = document.getElementById("manager-scoring-weight-summary");
   const scoringSummaryEl = document.getElementById("manager-scoring-summary");
   const materialLinksEl = document.getElementById("manager-material-links");
+  const qrRequestCountEl = document.getElementById("manager-qr-request-count");
+  const qrRequestListEl = document.getElementById("manager-qr-request-list");
 
   function createLocalDate(date) {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -66,6 +68,23 @@
     } catch (error) {
       return null;
     }
+  }
+
+  function parsePayload(row) {
+    const payload = row?.payload || {};
+    if (typeof payload !== "string") return payload;
+    try {
+      return JSON.parse(payload);
+    } catch (error) {
+      return {};
+    }
+  }
+
+  function formatDueDate(value) {
+    if (!value) return "期限未設定";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "期限未設定";
+    return `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
   }
 
   function normalizeName(value) {
@@ -300,6 +319,28 @@
       : `<p class="admin-empty">表示できる原料がありません。</p>`;
   }
 
+  function renderQrNotifications(rows) {
+    if (!qrRequestCountEl || !qrRequestListEl) return;
+    const openRows = (rows || []).filter((row) => row.status === "open");
+    qrRequestCountEl.textContent = String(openRows.length);
+    if (!openRows.length) {
+      qrRequestListEl.innerHTML = `<p class="admin-empty">未対応のQR依頼はありません。</p>`;
+      return;
+    }
+    qrRequestListEl.innerHTML = openRows.slice(0, 5).map((row) => {
+      const payload = parsePayload(row);
+      const productName = payload.product_name || "QR商品";
+      const totalVolume = payload.total_volume_ml ? `${payload.total_volume_ml}ml` : "容量未設定";
+      return `
+        <article class="portal-dashboard-row portal-dashboard-row--summary">
+          <span>${escapeHtml(productName)}</span>
+          <span>${escapeHtml(totalVolume)}</span>
+          <strong>${escapeHtml(formatDueDate(payload.availability_due_at))}</strong>
+        </article>
+      `;
+    }).join("");
+  }
+
   async function bootstrap() {
     const session = await window.AdminAuth.requireAdminSession();
     if (!session) return;
@@ -314,12 +355,20 @@
       ]
     });
 
-    const [reservations, slots, scoringRows, materials, settingsRows] = await Promise.all([
+    const [reservations, slots, scoringRows, materials, settingsRows, qrNotificationRows] = await Promise.all([
       window.AdminData.listRows("reservations", { orders: [{ column: "created_at", ascending: false }] }).catch(() => []),
       window.AdminData.listRows("reservation_slots", { filters: [{ operator: "in", column: "status", value: ["open", "recommended", "closed"] }] }).catch(() => []),
       window.AdminData.listRows("scoring_configs", { filters: [{ operator: "eq", column: "is_active", value: true }], limit: 1 }).catch(() => []),
       window.AdminData.listRows("material_points").catch(() => []),
-      window.AdminData.listRows("admin_settings", { filters: [{ operator: "in", column: "setting_key", value: [STAFF_SETTING_KEY, SHIFT_SETTING_KEY] }] }).catch(() => [])
+      window.AdminData.listRows("admin_settings", { filters: [{ operator: "in", column: "setting_key", value: [STAFF_SETTING_KEY, SHIFT_SETTING_KEY] }] }).catch(() => []),
+      window.AdminData.listRows("notification_events", {
+        filters: [
+          { operator: "eq", column: "event_type", value: "qr_product_requested" },
+          { operator: "eq", column: "status", value: "open" }
+        ],
+        orders: [{ column: "created_at", ascending: false }],
+        limit: 5
+      }).catch(() => [])
     ]);
 
     const staffRows = getDashboardStaffRows(slots, settingsRows);
@@ -347,6 +396,7 @@
     renderCoverage(slots, staffRows);
     renderScoringSummary(scoringRows[0] || null);
     renderMaterialLinks(materials);
+    renderQrNotifications(qrNotificationRows);
   }
 
   bootstrap();

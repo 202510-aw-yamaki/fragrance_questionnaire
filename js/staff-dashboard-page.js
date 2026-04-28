@@ -12,6 +12,8 @@
   const missingPrimaryEl = document.getElementById("staff-missing-primary");
   const missingSecondaryEl = document.getElementById("staff-missing-secondary");
   const missingNoteEl = document.getElementById("staff-missing-note");
+  const qrRequestCountEl = document.getElementById("staff-qr-request-count");
+  const qrRequestListEl = document.getElementById("staff-qr-request-list");
 
   if (!timelineEl || !eventsEl || !dateLabelEl) return;
 
@@ -19,6 +21,7 @@
   let selectedDate = new Date();
   let reservations = [];
   let slots = [];
+  let qrNotifications = [];
 
   function createLocalDate(date) {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -72,6 +75,33 @@
 
   function normalizeName(value) {
     return String(value || "").trim().toLowerCase();
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "\"": "&quot;",
+      "'": "&#039;"
+    }[char]));
+  }
+
+  function parsePayload(row) {
+    const payload = row?.payload || {};
+    if (typeof payload !== "string") return payload;
+    try {
+      return JSON.parse(payload);
+    } catch (error) {
+      return {};
+    }
+  }
+
+  function formatDueDate(value) {
+    if (!value) return "期限未設定";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "期限未設定";
+    return `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
   }
 
   function readAssignedStaffName() {
@@ -236,15 +266,40 @@
     kpiWeekEl.textContent = `${weeklyReservations.length}/${weeklySlots.length}`;
   }
 
+  function renderQrNotifications() {
+    if (!qrRequestCountEl || !qrRequestListEl) return;
+    const openRows = qrNotifications.filter((row) => row.status === "open");
+    qrRequestCountEl.textContent = String(openRows.length);
+    if (!openRows.length) {
+      qrRequestListEl.innerHTML = `<span class="admin-chip">未対応なし</span>`;
+      return;
+    }
+    qrRequestListEl.innerHTML = openRows.slice(0, 3).map((row) => {
+      const payload = parsePayload(row);
+      const productName = payload.product_name || "QR商品";
+      const totalVolume = payload.total_volume_ml ? `${payload.total_volume_ml}ml` : "容量未設定";
+      return `<span class="admin-chip">${escapeHtml(productName)} / ${escapeHtml(totalVolume)} / ${escapeHtml(formatDueDate(payload.availability_due_at))}</span>`;
+    }).join("");
+  }
+
   async function loadBaseData() {
-    const [reservationRows, slotRows] = await Promise.all([
+    const [reservationRows, slotRows, notificationRows] = await Promise.all([
       window.AdminData.listRows("reservations", { orders: [{ column: "created_at", ascending: false }] }).catch(() => []),
       window.AdminData.listRows("reservation_slots", {
         orders: [{ column: "slot_date", ascending: true }, { column: "slot_time", ascending: true }]
+      }).catch(() => []),
+      window.AdminData.listRows("notification_events", {
+        filters: [
+          { operator: "eq", column: "event_type", value: "qr_product_requested" },
+          { operator: "eq", column: "status", value: "open" }
+        ],
+        orders: [{ column: "created_at", ascending: false }],
+        limit: 5
       }).catch(() => [])
     ]);
     reservations = reservationRows || [];
     slots = slotRows || [];
+    qrNotifications = notificationRows || [];
   }
 
   prevButton.addEventListener("click", () => {
@@ -272,6 +327,7 @@
     await loadBaseData();
     renderPageHeading();
     renderKpis();
+    renderQrNotifications();
     renderTimeline();
     renderMissingDates();
   }
