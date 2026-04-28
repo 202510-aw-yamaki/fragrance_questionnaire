@@ -185,6 +185,182 @@
     `;
   }
 
+  function renderCustomerDashboard() {
+    return `
+      <section class="canvas customer-dashboard">
+        <header class="site-head"><div class="brand-mark">Fragrance Workshop</div><nav><a>制作履歴</a><a>予約確認</a><a>ログアウト</a></nav></header>
+        <section class="member-hero">
+          <div>
+            <p class="mini-ornament">MEMBER PAGE</p>
+            <h1>前回の香りと、今日の気分を見比べる</h1>
+            <p>制作履歴・予約・QR共有をひとつの場所で確認できる会員ページの試作です。</p>
+          </div>
+          <img src="../img/TOP/香水ハンドクリーム.png" alt="">
+        </section>
+        <main class="member-grid">
+          <article class="member-card featured">
+            <span>前回の完成品</span>
+            <h2>月夜の余韻</h2>
+            <p>フローラル 32% / ウッディ 28% / ムスク 24%</p>
+            <button class="outline-button">比較して見る</button>
+          </article>
+          <article class="member-card">
+            <span>次回予約</span>
+            <h2>2026.05.12 14:00</h2>
+            <p>上野教室 / 2名</p>
+          </article>
+          <article class="member-card">
+            <span>QR公開</span>
+            <h2>第三者作成依頼を許可済み</h2>
+            <p>商品名と公開状態をスタッフ詳細で管理します。</p>
+          </article>
+          <section class="history-list">
+            <h2>制作履歴</h2>
+            ${["2026.04.14 / 月夜の余韻", "2025.12.22 / 白檀の朝", "2025.09.03 / 雨上がりの庭"].map((item) => `<article><span>${item}</span><strong>詳細</strong></article>`).join("")}
+          </section>
+        </main>
+      </section>
+    `;
+  }
+
+  function renderResult(screen) {
+    const compare = screen.slug === "fragrance-graph-compare";
+    return `
+      <section class="canvas result-canvas">
+        <header class="site-head transparent"><div class="brand-mark">Fragrance Workshop</div><nav><a>結果</a><a>予約へ進む</a><a>会員保存</a></nav></header>
+        <main class="result-hero">
+          <section class="result-title">
+            <p class="mini-ornament">FRAGRANCE RESULT</p>
+            <h1>${compare ? "前回の香りとの変化" : "あなたの香りタイプ"}</h1>
+            <p>${compare ? "会員の制作履歴と今回のアンケート結果を並べて表示します。" : "アンケート回答から導いた香りの方向性と配合候補です。"}</p>
+          </section>
+          <section class="result-grid">
+            <article class="radar-panel">
+              <h2>香りバランス</h2>
+              <div class="radar-mock large"></div>
+              <div class="score-list">
+                <span>Floral <strong>82</strong></span>
+                <span>Woody <strong>68</strong></span>
+                <span>Citrus <strong>46</strong></span>
+                <span>Musk <strong>73</strong></span>
+              </div>
+            </article>
+            <article class="recipe-stack">
+              <img src="../img/TOP/香水対比.png" alt="">
+              <h2>月夜の余韻</h2>
+              <p>静かな甘さと深い余韻を中心にした、夜のワークショップ向けの香り。</p>
+              ${renderAdminRows([["Top", "ベルガモット", "24%"], ["Middle", "ローズ", "32%"], ["Base", "サンダルウッド", "44%"]])}
+              <button class="rose-button full">この内容で来店予約へ</button>
+            </article>
+          </section>
+          ${compare ? `
+            <section class="compare-strip">
+              <article><span>前回</span><strong>白檀の朝</strong><i>落ち着きが強い</i></article>
+              <article><span>今回</span><strong>月夜の余韻</strong><i>華やかさが増加</i></article>
+              <article><span>差分</span><strong>+18%</strong><i>Floral / Sweet</i></article>
+            </section>
+          ` : ""}
+        </main>
+      </section>
+    `;
+  }
+
+  function renderCompareModal() {
+    return `
+      <section class="canvas modal-canvas result-canvas">
+        <div class="modal-backdrop"></div>
+        <article class="modal-sheet">
+          <button class="modal-close">×</button>
+          <p class="mini-ornament">COMPARE DETAIL</p>
+          <h1>香りの比較詳細</h1>
+          <div class="modal-compare-grid">
+            <div><h2>前回</h2><div class="radar-mock large"></div><strong>白檀の朝</strong></div>
+            <div><h2>今回</h2><div class="radar-mock large"></div><strong>月夜の余韻</strong></div>
+          </div>
+          ${renderAdminRows([["Floral", "+18", "華やか"], ["Woody", "-6", "軽やか"], ["Musk", "+9", "余韻"]])}
+        </article>
+      </section>
+    `;
+  }
+
+  function renderReservation() {
+    const slots = ["10:00", "11:30", "13:00", "14:30", "16:00", "17:30"];
+    return `
+      <section class="canvas reservation-canvas">
+        <header class="site-head"><div class="brand-mark">Fragrance Workshop</div><nav><a>結果へ戻る</a><a>会員ページ</a></nav></header>
+        <main class="reservation-layout">
+          <section>
+            <p class="mini-ornament">RESERVATION</p>
+            <h1>香りワークショップを予約する</h1>
+            <p>アンケート結果を保持したまま、来店日時と人数を選択します。</p>
+            <img src="../img/TOP/Workshop体験.png" alt="">
+          </section>
+          <aside class="reservation-panel">
+            <label>来店日<input value="2026-05-12"></label>
+            <label>人数<select><option>2名</option><option>1名</option><option>3名</option></select></label>
+            <div class="slot-grid">${slots.map((slot, index) => `<button class="${index === 3 ? "selected" : ""}">${slot}</button>`).join("")}</div>
+            <div class="reservation-summary"><span>選択中</span><strong>2026.05.12 / 14:30 / 2名</strong></div>
+            <button class="rose-button full">予約内容を確認する</button>
+          </aside>
+        </main>
+      </section>
+    `;
+  }
+
+  function renderReservationComplete() {
+    return `
+      <section class="canvas complete-canvas">
+        <article class="complete-card">
+          <p class="mini-ornament">RESERVATION COMPLETE</p>
+          <h1>ご予約を受け付けました</h1>
+          <p>予約コードを来店時にスタッフへお伝えください。</p>
+          <div class="complete-code">FR-0428-1430</div>
+          ${renderAdminRows([["日時", "2026.05.12", "14:30"], ["人数", "2名", "上野教室"], ["アンケート", "月夜の余韻", "保存済み"]])}
+          <button class="outline-button">会員ページで確認する</button>
+        </article>
+      </section>
+    `;
+  }
+
+  function renderShippingInfo() {
+    return `
+      <section class="canvas shipping-canvas">
+        <main class="shipping-card">
+          <section class="shipping-summary">
+            <p class="mini-ornament">SHIPPING</p>
+            <h1>発送先情報</h1>
+            <p>作成可能メールの案内後に入力する発送先フォームの試作です。</p>
+            <img src="../img/TOP/Final_Call_hope.png" alt="">
+          </section>
+          <form class="shipping-form">
+            <label>お名前<input value="山田 花子"></label>
+            <label>郵便番号<input value="110-0005"></label>
+            <label>住所<input value="東京都台東区上野..."></label>
+            <label>電話番号<input value="03-1234-5678"></label>
+            <label class="wide">配送メモ<textarea>午前中希望</textarea></label>
+            <button class="rose-button full" type="button">発送先を送信する</button>
+          </form>
+        </main>
+      </section>
+    `;
+  }
+
+  function renderAdminLogin() {
+    return `
+      <section class="canvas admin-login-canvas">
+        <article class="admin-login-card">
+          <p class="mini-ornament">STAFF / ADMIN</p>
+          <h1>共通ログイン</h1>
+          <div class="role-switch"><button class="selected">スタッフ</button><button>管理者</button></div>
+          <label>メールアドレス<input value="staff@example.com"></label>
+          <label>パスワード<input type="password" value="password"></label>
+          <button class="rose-button full">ログイン</button>
+          <p>Supabase Auth の role 判定で、スタッフ画面と管理者画面を分離します。</p>
+        </article>
+      </section>
+    `;
+  }
+
   function renderProductRequest() {
     return `
       <section class="canvas product-request-canvas">
@@ -361,8 +537,15 @@
   function renderScreenContent(screen) {
     if (screen.kind === "customer-top") return renderCustomerTop();
     if (screen.kind === "customer-login") return renderCustomerLogin();
+    if (screen.kind === "customer-dashboard") return renderCustomerDashboard();
     if (screen.kind === "questionnaire") return renderQuestionnaire();
+    if (screen.kind === "result") return renderResult(screen);
+    if (screen.kind === "modal") return renderCompareModal();
+    if (screen.kind === "reservation") return renderReservation();
+    if (screen.kind === "complete") return renderReservationComplete();
     if (screen.kind === "product-request") return renderProductRequest();
+    if (screen.kind === "shipping") return renderShippingInfo();
+    if (screen.kind === "admin-login") return renderAdminLogin();
     if (screen.kind === "staff-dashboard") return renderStaffDashboard();
     if (screen.kind === "staff-table") return renderStaffTable();
     if (screen.kind === "staff-slots") return renderStaffSlots();
