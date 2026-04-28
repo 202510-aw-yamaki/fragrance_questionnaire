@@ -9074,6 +9074,40 @@
       </article>
     </section>
 
+    <section class="admin-panel portal-qr-settings-panel">
+      <div class="portal-section-head">
+        <div>
+          <h2>QR商品公開設定</h2>
+          <p class="admin-note">QR商品作成依頼ページに表示する価格、最大容量、店舗連絡先を設定します。</p>
+        </div>
+      </div>
+      <form class="admin-form-stack" id="qr-product-settings-form">
+        <div class="admin-grid cols-3">
+          <label>10ml税込価格
+            <input id="qr-price-10ml" type="number" min="0" step="1" inputmode="numeric">
+          </label>
+          <label>30ml税込価格
+            <input id="qr-price-30ml" type="number" min="0" step="1" inputmode="numeric">
+          </label>
+          <label>最大依頼容量 ml
+            <input id="qr-max-volume-ml" type="number" min="10" step="10" inputmode="numeric">
+          </label>
+        </div>
+        <div class="admin-grid cols-2">
+          <label>店舗電話番号
+            <input id="qr-shop-phone" type="text" placeholder="03-1234-5678">
+          </label>
+          <label>受付時間
+            <input id="qr-business-hours" type="text" placeholder="11:00〜19:00">
+          </label>
+        </div>
+        <div class="admin-actions">
+          <button class="admin-btn primary" type="submit">QR公開設定を保存</button>
+          <p class="admin-note" id="qr-settings-note">公開QRページはこの設定を参照します。</p>
+        </div>
+      </form>
+    </section>
+
     <section class="admin-panel portal-settings-calendar-panel">
       <div class="portal-section-head portal-settings-calendar-head">
         <div class="portal-settings-calendar-copy">

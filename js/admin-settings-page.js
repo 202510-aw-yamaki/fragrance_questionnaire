@@ -1,6 +1,14 @@
 (function () {
   const STAFF_SETTING_KEY = "staff_directory";
   const SHIFT_SETTING_KEY = "staff_shift_overrides";
+  const QR_PRODUCT_SETTING_KEY = "qr_product_public_settings";
+  const QR_DEFAULT_SETTINGS = {
+    price_10ml: 1000,
+    price_30ml: 2860,
+    max_volume_ml: 100,
+    shop_phone: "03-1234-5678",
+    business_hours: "11:00〜19:00"
+  };
   const WEEKDAY_LABELS = ["日", "月", "火", "水", "木", "金", "土"];
   const todayLabelEl = document.getElementById("settings-today-label");
   const todayStaffEl = document.getElementById("settings-today-staff");
@@ -10,6 +18,13 @@
   const calendarRangeEl = document.getElementById("settings-calendar-range");
   const calendarHeadEl = document.getElementById("settings-calendar-head");
   const calendarBodyEl = document.getElementById("settings-calendar-body");
+  const qrSettingsFormEl = document.getElementById("qr-product-settings-form");
+  const qrPrice10mlEl = document.getElementById("qr-price-10ml");
+  const qrPrice30mlEl = document.getElementById("qr-price-30ml");
+  const qrMaxVolumeEl = document.getElementById("qr-max-volume-ml");
+  const qrShopPhoneEl = document.getElementById("qr-shop-phone");
+  const qrBusinessHoursEl = document.getElementById("qr-business-hours");
+  const qrSettingsNoteEl = document.getElementById("qr-settings-note");
   const TEMP_TODAY_STAFF_FIXTURES = [
     { staffName: "仮スタッフA", shiftLabel: "出勤時間 10:00 - 18:00" },
     { staffName: "仮スタッフB", shiftLabel: "出勤時間 10:00 - 18:00" },
@@ -824,12 +839,15 @@
     renderCalendar();
   }
 
-  async function saveSetting(key, value) {
+  async function saveSetting(key, value, options = {}) {
     const payload = {
       setting_key: key,
       setting_value: value,
       updated_at: new Date().toISOString()
     };
+    if (Object.prototype.hasOwnProperty.call(options, "isPublic")) {
+      payload.is_public = Boolean(options.isPublic);
+    }
     const existing = state.settingRowMap.get(key);
     if (existing?.id) {
       const rows = await window.AdminData.updateRow("admin_settings", existing.id, payload).catch(() => []);
@@ -842,6 +860,43 @@
 
   function readSettingValue(key) {
     return state.settingRowMap.get(key)?.setting_value;
+  }
+
+  function normalizeQrSettings(value) {
+    const source = value && typeof value === "object" ? value : {};
+    return {
+      price_10ml: Number(source.price_10ml ?? source.price10ml ?? QR_DEFAULT_SETTINGS.price_10ml),
+      price_30ml: Number(source.price_30ml ?? source.price30ml ?? QR_DEFAULT_SETTINGS.price_30ml),
+      max_volume_ml: Number(source.max_volume_ml ?? source.maxVolumeMl ?? QR_DEFAULT_SETTINGS.max_volume_ml),
+      shop_phone: String(source.shop_phone ?? source.shopPhone ?? QR_DEFAULT_SETTINGS.shop_phone),
+      business_hours: String(source.business_hours ?? source.businessHours ?? QR_DEFAULT_SETTINGS.business_hours)
+    };
+  }
+
+  function setQrSettingsNote(message, isError = false) {
+    if (!qrSettingsNoteEl) return;
+    qrSettingsNoteEl.textContent = message;
+    qrSettingsNoteEl.className = isError ? "admin-error" : "admin-note";
+  }
+
+  function fillQrSettingsForm() {
+    if (!qrSettingsFormEl) return;
+    const settings = normalizeQrSettings(readSettingValue(QR_PRODUCT_SETTING_KEY));
+    if (qrPrice10mlEl) qrPrice10mlEl.value = String(settings.price_10ml);
+    if (qrPrice30mlEl) qrPrice30mlEl.value = String(settings.price_30ml);
+    if (qrMaxVolumeEl) qrMaxVolumeEl.value = String(settings.max_volume_ml);
+    if (qrShopPhoneEl) qrShopPhoneEl.value = settings.shop_phone;
+    if (qrBusinessHoursEl) qrBusinessHoursEl.value = settings.business_hours;
+  }
+
+  function readQrSettingsForm() {
+    return normalizeQrSettings({
+      price_10ml: qrPrice10mlEl?.value,
+      price_30ml: qrPrice30mlEl?.value,
+      max_volume_ml: qrMaxVolumeEl?.value,
+      shop_phone: qrShopPhoneEl?.value,
+      business_hours: qrBusinessHoursEl?.value
+    });
   }
 
   async function loadData() {
@@ -873,6 +928,7 @@
     }
     syncLoginIndexStorage();
     renderPage();
+    fillQrSettingsForm();
   }
 
   staffForm.addEventListener("submit", async (event) => {
@@ -1121,6 +1177,23 @@
     button.addEventListener("click", () => {
       closeModal(document.getElementById(button.dataset.modalClose));
     });
+  });
+
+  qrSettingsFormEl?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const settings = readQrSettingsForm();
+    if (
+      !Number.isFinite(settings.price_10ml) ||
+      !Number.isFinite(settings.price_30ml) ||
+      !Number.isFinite(settings.max_volume_ml) ||
+      settings.max_volume_ml <= 0
+    ) {
+      setQrSettingsNote("価格と最大容量を確認してください。", true);
+      return;
+    }
+    await saveSetting(QR_PRODUCT_SETTING_KEY, settings, { isPublic: true });
+    fillQrSettingsForm();
+    setQrSettingsNote("QR公開設定を保存しました。", false);
   });
 
   async function bootstrap() {
