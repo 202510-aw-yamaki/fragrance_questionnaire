@@ -215,3 +215,11 @@ tie-break は `floral -> fresh -> woody` とする。
 - 保存先は DB を基本としつつ、ローカル保存用 JSON の書き出しと JSON 読込も扱えること
 - STEP1 / STEP2 / Q8 の設問文と回答文は、現状では別ページへ分けず、このページ内で変更可能とする
 - 管理スタッフ確認ページ `admin/admin-dashboard.html` の「アンケート編集」は、本ページへの導線として扱う
+
+## 追記: 2026-04-28 Phase 2 アンケート結果の本人トークン制限
+
+ユーザー要望の「公開 Supabase で anon に許可する最小操作範囲」に合わせて、`create_questionnaire_result` の `result_code` 衝突時更新を制限した。
+
+- 新規アンケート結果は公開フォームから作成できる
+- 既存 `result_code` の再同期は、既存行の `edit_token_hash` が未設定、または呼び出し側の edit token が既存 hash と一致する場合だけ許可する
+- 一致しない場合は結果行を返さず、画面側は既存の `answered_unsaved` / `questionnaireSyncError` の失敗導線へ進む

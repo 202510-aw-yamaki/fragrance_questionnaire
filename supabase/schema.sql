@@ -476,6 +476,14 @@ begin
     source = excluded.source,
     edit_token_hash = coalesce(public.questionnaire_results.edit_token_hash, excluded.edit_token_hash),
     updated_at = excluded.updated_at
+  where public.questionnaire_results.edit_token_hash is null
+    or (
+      nullif(p_payload ->> 'edit_token_hash', '') is not null
+      and public.questionnaire_results.edit_token_hash = crypt(
+        p_payload ->> 'edit_token_hash',
+        public.questionnaire_results.edit_token_hash
+      )
+    )
   returning public.questionnaire_results.id, public.questionnaire_results.result_code;
 end;
 $$;

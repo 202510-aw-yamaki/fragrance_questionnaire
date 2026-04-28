@@ -61,3 +61,11 @@ qr_product_requests.handled_by_staff_id
 - QR依頼者メール・発送先の保持/削除判定用に `email_retention_until`, `shipping_address_retention_until`, `pii_anonymized_at` を持たせる
 
 初期実装では、メール実送信・自動削除/匿名化・期限超過ジョブはまだ接続しない。後続フェーズで Edge Functions / メールAPI / 管理画面ログに接続する。
+
+## 2026-04-28 Phase 2 implementation note
+
+ユーザー要望の anon 最小権限方針に合わせ、`create_questionnaire_result` は `result_code` 衝突時の再同期を本人 edit token で制限する。
+
+- 新規作成は公開フォームから許可する
+- 既存行の更新は `edit_token_hash` 未設定行、または呼び出し側 edit token が既存 hash と一致する場合だけ許可する
+- QR第三者・会員・スタッフ/管理者の権限分離方針は変更しない
