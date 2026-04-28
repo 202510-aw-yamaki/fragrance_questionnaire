@@ -13,6 +13,7 @@ Supabase設定項目
 3) supabase/migrations/20260428110000_scoring_single_active.sql
 4) supabase/migrations/20260428123000_questionnaire_result_token_guard.sql
 5) supabase/migrations/20260428124500_email_events_foundation.sql
+6) supabase/migrations/20260429103000_qr_request_public_guard.sql
 
 新規の空プロジェクトにまとめて作る場合だけ、supabase/schema.sql を使ってください。
 既存プロジェクトに schema.sql と migrations を両方そのまま流すと、重複や意図しない上書き確認が増えるため避けてください。

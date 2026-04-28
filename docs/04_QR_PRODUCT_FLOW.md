@@ -878,3 +878,12 @@ Codex は QR 関連実装時に以下を守ってください。
 - 管理者ダッシュボードの QR関連通知には、未送信の `email_events` を依頼者メール非表示で表示する
 - 送信基盤接続後は Edge Functions 側で `email_events.status` / `sent_at` / `failed_at` / `failure_reason` を更新する
 
+## 2026-04-29 QR request DB guard note
+
+ユーザー要望の anon 最小権限方針に合わせ、QR作成依頼の公開insertはDB側でも制限する。
+
+- 依頼者メールは空文字だけでなく、基本的なメール形式をRLSで確認する
+- `qr_product_public_settings.max_volume_ml` を超える依頼はDB側でも拒否する
+- `product_qr_codes.expires_at` が過去のQRは、画面側だけでなくDB insert policyでも拒否する
+- 作成可能/不可判断、発送先入力、発送完了、通知対応済み操作は引き続き後続フェーズで扱う
+

@@ -97,3 +97,11 @@ qr_product_requests.handled_by_staff_id
 - フロントからメールは直接送信しない
 - Edge Functions / メールAPI 接続までは `email_events` を mock / 管理画面ログ用のイベントとして扱う
 - `recipient_email` は個人情報として扱い、`retention_until` / `pii_anonymized_at` で削除・匿名化対象を判別できるようにする
+
+## 2026-04-29 QR public insert guard note
+
+公開QR商品依頼の保存は、フロント側バリデーションだけに依存しない。
+
+- `qr_product_public_max_volume_ml()` で公開設定 `qr_product_public_settings.max_volume_ml` をDB側から参照する
+- `qr_product_requests` の公開insertは、メール形式、依頼容量、QR有効期限、QR公開状態、完成品公開状態をRLSで検証する
+- 最大容量設定が未登録または数値でない場合は、DB側の既定値を100mlとする

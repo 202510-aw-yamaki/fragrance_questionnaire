@@ -618,6 +618,26 @@ begin
 end;
 $$;
 
+create or replace function public.qr_product_public_max_volume_ml()
+returns integer
+language sql
+stable
+set search_path = public
+as $$
+  select coalesce(
+    (
+      select greatest((setting_value ->> 'max_volume_ml')::integer, 1)
+      from public.admin_settings
+      where setting_key = 'qr_product_public_settings'
+        and is_public = true
+        and (setting_value ->> 'max_volume_ml') ~ '^[0-9]+$'
+      order by updated_at desc
+      limit 1
+    ),
+    100
+  );
+$$;
+
 create or replace function public.set_qr_product_request_defaults()
 returns trigger
 language plpgsql
@@ -1102,8 +1122,10 @@ on public.qr_product_requests for insert
 to anon, authenticated
 with check (
   status = 'requested'
-  and nullif(requester_email, '') is not null
+  and requester_email = btrim(requester_email)
+  and requester_email ~* '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$'
   and total_volume_ml > 0
+  and total_volume_ml <= public.qr_product_public_max_volume_ml()
   and exists (
     select 1
     from public.product_qr_codes pq
@@ -1112,6 +1134,7 @@ with check (
       and pq.fragrance_product_id = fragrance_product_id
       and pq.status = 'active'
       and pq.is_public = true
+      and (pq.expires_at is null or pq.expires_at > now())
       and fp.status = 'published'
   )
 );
@@ -1204,6 +1227,7 @@ grant execute on function public.create_questionnaire_result(jsonb) to anon, aut
 grant execute on function public.update_questionnaire_result_by_token(text, text, jsonb) to anon, authenticated;
 grant execute on function public.create_public_reservation(jsonb) to anon, authenticated;
 grant execute on function public.fetch_reservation_by_code(text) to anon, authenticated;
+grant execute on function public.qr_product_public_max_volume_ml() to anon, authenticated;
 
 grant insert (
   result_code,
