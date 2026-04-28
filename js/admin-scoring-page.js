@@ -737,19 +737,37 @@
   }
 
   async function saveScoringConfig(note) {
-    const nextVersion = Number(activeConfigRow?.version || 0) + 1;
-    await window.AdminData.updateRows("scoring_configs", {
-      is_active: false,
-      updated_at: new Date().toISOString()
-    }, [{ operator: "eq", column: "is_active", value: true }]);
-    await window.AdminData.insertRow("scoring_configs", {
-      config_key: `fragrance_master_v${nextVersion}`,
-      version: nextVersion,
-      is_active: true,
-      config_json: workingConfig,
-      note: note || null,
-      updated_at: new Date().toISOString()
-    });
+    const latestRows = await window.AdminData.listRows("scoring_configs", {
+      orders: [{ column: "version", ascending: false }],
+      limit: 1
+    }).catch(() => []);
+    const latestVersion = Math.max(Number(latestRows[0]?.version || 0), Number(activeConfigRow?.version || 0));
+    const nextVersion = latestVersion + 1;
+    const savedAt = new Date().toISOString();
+    let previousActiveRows = [];
+    try {
+      previousActiveRows = await window.AdminData.updateRows("scoring_configs", {
+        is_active: false,
+        updated_at: savedAt
+      }, [{ operator: "eq", column: "is_active", value: true }]);
+      await window.AdminData.insertRow("scoring_configs", {
+        config_key: `fragrance_master_v${nextVersion}`,
+        version: nextVersion,
+        is_active: true,
+        config_json: workingConfig,
+        note: note || null,
+        updated_at: savedAt
+      });
+    } catch (error) {
+      const previousActiveId = activeConfigRow?.id || previousActiveRows[0]?.id;
+      if (previousActiveId) {
+        await window.AdminData.updateRow("scoring_configs", previousActiveId, {
+          is_active: true,
+          updated_at: new Date().toISOString()
+        }).catch(console.error);
+      }
+      throw error;
+    }
     const legacyNote = document.getElementById("scoring-note");
     if (legacyNote) legacyNote.value = "";
     document.getElementById("scoring-note-modal").value = "";
