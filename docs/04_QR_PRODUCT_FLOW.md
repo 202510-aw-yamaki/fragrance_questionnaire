@@ -875,5 +875,6 @@ Codex は QR 関連実装時に以下を守ってください。
 - `qr_product_requests` insert 後、受付メール用の `qr_request_received_v1` イベントを `email_events` に `queued` として作成する
 - この段階ではメールを実送信しない
 - `email_events.retention_until` は QR依頼者メールの削除・匿名化判定に使う
+- 管理者ダッシュボードの QR関連通知には、未送信の `email_events` を依頼者メール非表示で表示する
 - 送信基盤接続後は Edge Functions 側で `email_events.status` / `sent_at` / `failed_at` / `failure_reason` を更新する
 

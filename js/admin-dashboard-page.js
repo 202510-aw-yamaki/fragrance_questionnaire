@@ -319,15 +319,16 @@
       : `<p class="admin-empty">表示できる原料がありません。</p>`;
   }
 
-  function renderQrNotifications(rows) {
+  function renderQrNotifications(rows, emailRows = []) {
     if (!qrRequestCountEl || !qrRequestListEl) return;
     const openRows = (rows || []).filter((row) => row.status === "open");
-    qrRequestCountEl.textContent = String(openRows.length);
-    if (!openRows.length) {
+    const queuedEmailRows = (emailRows || []).filter((row) => row.status === "queued");
+    qrRequestCountEl.textContent = String(openRows.length + queuedEmailRows.length);
+    if (!openRows.length && !queuedEmailRows.length) {
       qrRequestListEl.innerHTML = `<p class="admin-empty">未対応のQR依頼はありません。</p>`;
       return;
     }
-    qrRequestListEl.innerHTML = openRows.slice(0, 5).map((row) => {
+    const requestItems = openRows.slice(0, 5).map((row) => {
       const payload = parsePayload(row);
       const productName = payload.product_name || "QR商品";
       const totalVolume = payload.total_volume_ml ? `${payload.total_volume_ml}ml` : "容量未設定";
@@ -338,7 +339,19 @@
           <strong>${escapeHtml(formatDueDate(payload.availability_due_at))}</strong>
         </article>
       `;
-    }).join("");
+    });
+    const emailItems = queuedEmailRows.slice(0, 5).map((row) => {
+      const payload = parsePayload(row);
+      const productName = payload.product_name || "QR商品";
+      return `
+        <article class="portal-dashboard-row portal-dashboard-row--summary">
+          <span>${escapeHtml(productName)}</span>
+          <span>${escapeHtml(row.template_key || "email")}</span>
+          <strong>${escapeHtml(row.status || "queued")}</strong>
+        </article>
+      `;
+    });
+    qrRequestListEl.innerHTML = requestItems.concat(emailItems).join("");
   }
 
   async function bootstrap() {
@@ -355,7 +368,7 @@
       ]
     });
 
-    const [reservations, slots, scoringRows, materials, settingsRows, qrNotificationRows] = await Promise.all([
+    const [reservations, slots, scoringRows, materials, settingsRows, qrNotificationRows, emailEventRows] = await Promise.all([
       window.AdminData.listRows("reservations", { orders: [{ column: "created_at", ascending: false }] }).catch(() => []),
       window.AdminData.listRows("reservation_slots", { filters: [{ operator: "in", column: "status", value: ["open", "recommended", "closed"] }] }).catch(() => []),
       window.AdminData.listRows("scoring_configs", { filters: [{ operator: "eq", column: "is_active", value: true }], limit: 1 }).catch(() => []),
@@ -365,6 +378,13 @@
         filters: [
           { operator: "eq", column: "event_type", value: "qr_product_requested" },
           { operator: "eq", column: "status", value: "open" }
+        ],
+        orders: [{ column: "created_at", ascending: false }],
+        limit: 5
+      }).catch(() => []),
+      window.AdminData.listRows("email_events", {
+        filters: [
+          { operator: "eq", column: "status", value: "queued" }
         ],
         orders: [{ column: "created_at", ascending: false }],
         limit: 5
@@ -396,7 +416,7 @@
     renderCoverage(slots, staffRows);
     renderScoringSummary(scoringRows[0] || null);
     renderMaterialLinks(materials);
-    renderQrNotifications(qrNotificationRows);
+    renderQrNotifications(qrNotificationRows, emailEventRows);
   }
 
   bootstrap();
