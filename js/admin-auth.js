@@ -38,7 +38,7 @@
     }
     const requiredRole = getRequiredRoleFromPath();
     const actualRole = getSessionPortalRole(session);
-    if (requiredRole && actualRole && !isRoleAllowedForPortal(actualRole, requiredRole)) {
+    if (requiredRole && !isRoleAllowedForPortal(actualRole, requiredRole)) {
       await client?.auth.signOut();
       window.localStorage.removeItem(ROLE_STORAGE_KEY);
       window.location.replace(LOGIN_PAGE);
@@ -68,7 +68,8 @@
   function isRoleAllowedForPortal(actualRole, requestedRole) {
     const actual = normalizePortalRole(actualRole);
     const requested = normalizePortalRole(requestedRole);
-    if (!actual || !requested) return true;
+    if (!requested) return true;
+    if (!actual) return false;
     return actual === requested;
   }
 
@@ -117,9 +118,9 @@
     const { data, error } = await client.auth.signInWithPassword({ email, password });
     if (error) throw error;
     const actualRole = getSessionPortalRole(data?.session);
-    if (actualRole && !isRoleAllowedForPortal(actualRole, role)) {
+    if (!isRoleAllowedForPortal(actualRole, role)) {
       await client.auth.signOut();
-      throw new Error("This account is not allowed for the selected portal.");
+      throw new Error("選択したポータルに許可されたアカウントではありません。Supabase Auth の role 設定を確認してください。");
     }
     return data;
   }

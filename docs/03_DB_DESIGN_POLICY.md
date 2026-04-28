@@ -69,3 +69,12 @@ qr_product_requests.handled_by_staff_id
 - 新規作成は公開フォームから許可する
 - 既存行の更新は `edit_token_hash` 未設定行、または呼び出し側 edit token が既存 hash と一致する場合だけ許可する
 - QR第三者・会員・スタッフ/管理者の権限分離方針は変更しない
+
+## 2026-04-28 Phase 2 auth operation note
+
+ユーザー要望の「スタッフ/管理者アカウントを Supabase Auth で正式作成する運用」に合わせ、スタッフ/管理者ログインは Supabase Auth 側の `portal_role` または `role` を正式な権限根拠とする。
+
+- スタッフ画面は Auth metadata が `staff` のアカウントだけ許可する
+- 管理者画面は Auth metadata が `manager` または `admin` のアカウントだけ許可する
+- ログイン画面で選んだロールや localStorage の保存値は、画面遷移補助であり権限根拠にはしない
+- 運用時は Auth user と `staff_profiles.auth_user_id` を紐づけ、スタッフ表示名・成果集計・予約枠の責任者を追えるようにする
