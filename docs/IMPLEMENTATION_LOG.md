@@ -163,3 +163,22 @@
   - 旧素材を `archived/legacy/` へ退避できるよう、現行ページおよび visual-prototype からの直接参照をなくした。
 - 未対応:
   - 旧素材本体の移動は、参照解除のコミット後に別コミットで実施する。
+
+### 旧アンケート・旧TOP素材の legacy 退避
+
+- 対象:
+  - `img/questionnaire/`
+  - `img/questionnaire2/`
+  - `img/TOP/クエスチョンPC版大.png`
+  - `img/TOP/スマホ用プレビュー.png`
+  - `img/TOP/質問ページＰＣプレビュー.png`
+  - `img/TOP/中間イメージ.png`
+  - `img/TOP/香水作成の工程(左).png`
+  - `img/TOP/香水作成の工程(右).png`
+  - `img/TOP/看板.png`
+  - `img/TOP/値段表.png`
+  - `img/TOP/香水ハンドクリーム.png`
+  - `img/TOP/上野駅.png`
+- 実装:
+  - 現行ページおよび `visual-prototype` から直接参照が残っていないことを確認したうえで、`archived/legacy/img/` 配下へ移動。
+  - 現行で参照が残っている `hero-visual.png`, `香水の瓶が並ぶ.png`, `香水対比.png`, `Final_Call_hope.png`, ロゴ、QR地図画像などは移動対象外。
