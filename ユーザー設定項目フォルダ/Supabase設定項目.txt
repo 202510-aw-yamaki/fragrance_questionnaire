@@ -16,6 +16,7 @@ Supabase設定項目
 6) supabase/migrations/20260429103000_qr_request_public_guard.sql
 7) supabase/migrations/20260429113000_auth_role_app_metadata_only.sql
 8) supabase/migrations/20260429121000_customer_insert_role_guard.sql
+9) supabase/migrations/20260429124500_customer_link_public_records.sql
 
 新規の空プロジェクトにまとめて作る場合だけ、supabase/schema.sql を使ってください。
 既存プロジェクトに schema.sql と migrations を両方そのまま流すと、重複や意図しない上書き確認が増えるため避けてください。

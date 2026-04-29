@@ -118,3 +118,14 @@ qr_product_requests.handled_by_staff_id
 - スタッフ/管理者 `app_metadata` を持つAuthユーザーは、フロントとRLSの両方で会員 `customers` insert から除外する
 - 会員本人の制作履歴表示、過去完成品との比較、再予約導線は後続フェーズで扱う
 - QR第三者はこの導線に入れず、引き続き `qr_product_requests` だけに保存する
+
+## 2026-04-29 customer record link note
+
+会員ログイン中の公開導線では、`customers.id` をアンケート結果・予約・完成品へ紐づける。
+
+- `create_questionnaire_result()` と `create_public_reservation()` は、payload内の任意 `customer_id` ではなく、現在のSupabase Authユーザーから `current_customer_profile_id()` で会員IDを解決する
+- anon利用時、またはスタッフ/管理者Auth利用時は `customer_id` を付けない
+- 直接insert fallbackでも、RLSにより `customer_id` は本人の `customers.id` または null のみに制限する
+- `fragrance_products.customer_id` は、スタッフ画面の完成品保存時に予約の `customer_id` を引き継ぐ
+- QR第三者はこの紐づけには入れず、引き続き `qr_product_requests` のみで扱う
+- 会員ページでの制作履歴表示・差分表示・再予約UIは後続フェーズで扱う

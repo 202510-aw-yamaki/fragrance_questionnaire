@@ -148,7 +148,9 @@
     if (!client) return null;
     const resultCode = payload.result_code || createCode("QR");
     const editToken = getOrCreateEditToken(resultCode);
-    const rpcPayload = { ...payload, result_code: resultCode, edit_token_hash: editToken };
+    const currentCustomer = await getCurrentCustomerProfile();
+    const customerPayload = currentCustomer?.id ? { customer_id: currentCustomer.id } : {};
+    const rpcPayload = { ...payload, ...customerPayload, result_code: resultCode, edit_token_hash: editToken };
     try {
       const { data, error } = await client.rpc("create_questionnaire_result", { p_payload: rpcPayload });
       if (error) throw error;
@@ -172,7 +174,7 @@
         try {
           const { data, error: retryError } = await client
             .from("questionnaire_results")
-            .upsert([{ ...payload, result_code: resultCode }], { onConflict: "result_code" })
+            .upsert([omitQuestionnaireOptionalColumns({ ...payload, result_code: resultCode })], { onConflict: "result_code" })
             .select("id, result_code")
             .single();
           if (retryError) throw retryError;
@@ -253,8 +255,13 @@
     return message.includes("pgrst204") || message.includes("could not find") || message.includes("column");
   }
 
+  function omitQuestionnaireOptionalColumns(payload) {
+    const { edit_token_hash, customer_id, ...basePayload } = payload;
+    return basePayload;
+  }
+
   function omitReservationOptionalColumns(payload) {
-    const { questionnaire_flow_status, questionnaire_sync_error, ...basePayload } = payload;
+    const { questionnaire_flow_status, questionnaire_sync_error, customer_id, ...basePayload } = payload;
     return basePayload;
   }
 
@@ -262,7 +269,10 @@
     const client = window.getSupabaseClient?.();
     if (!client) return null;
     const reservationCode = payload.reservation_code || createCode("FR");
-    const rpcPayload = { ...payload, reservation_code: reservationCode };
+    const currentCustomer = await getCurrentCustomerProfile();
+    const customerPayload = currentCustomer?.id ? { customer_id: currentCustomer.id } : {};
+    const reservationPayload = { ...payload, ...customerPayload };
+    const rpcPayload = { ...reservationPayload, reservation_code: reservationCode };
     try {
       const { data, error } = await client.rpc("create_public_reservation", { p_payload: rpcPayload });
       if (error) throw error;
@@ -283,11 +293,11 @@
       return data;
     };
     try {
-      return await insertReservation(payload);
+      return await insertReservation(reservationPayload);
     } catch (error) {
-      if ((payload.questionnaire_flow_status || payload.questionnaire_sync_error) && isMissingColumnError(error)) {
+      if (isMissingColumnError(error)) {
         try {
-          return await insertReservation(omitReservationOptionalColumns(payload));
+          return await insertReservation(omitReservationOptionalColumns(reservationPayload));
         } catch (retryError) {
           console.error("Failed to create reservation.", retryError);
           return null;
@@ -369,6 +379,19 @@
       .maybeSingle();
     if (insertError) throw insertError;
     return inserted || null;
+  }
+
+  async function getCurrentCustomerProfile() {
+    const client = window.getSupabaseClient?.();
+    if (!client?.auth?.getUser) return null;
+    try {
+      const { data, error } = await client.auth.getUser();
+      if (error || !data?.user || isStaffOrManagerAuthUser(data.user)) return null;
+      return await ensureCustomerProfile(data.user);
+    } catch (error) {
+      console.error("Failed to resolve current customer profile.", error);
+      return null;
+    }
   }
 
   async function signInCustomer(email, password) {
@@ -533,6 +556,7 @@
     signInCustomer,
     signUpCustomer,
     ensureCustomerProfile,
+    getCurrentCustomerProfile,
     loadQrProductPublicSettings,
     fetchQrProductPageData,
     createQrProductRequest

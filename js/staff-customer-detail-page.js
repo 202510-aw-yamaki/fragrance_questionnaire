@@ -741,6 +741,7 @@
       workshop_session_id: workshopId || null,
       reservation_id: reservation.id,
       questionnaire_result_id: reservation.questionnaire_result_id || null,
+      customer_id: reservation.customer_id || fragranceProduct?.customer_id || null,
       product_name: readiness.productName || fragranceProduct?.product_name,
       final_axes: readiness.axes,
       recipe_items: readiness.recipeItems,

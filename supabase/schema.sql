@@ -287,8 +287,10 @@ create table if not exists public.email_events (
 create index if not exists idx_customers_auth_user_id on public.customers(auth_user_id);
 create index if not exists idx_staff_profiles_auth_user_id on public.staff_profiles(auth_user_id);
 create index if not exists idx_reservation_slots_staff_profile_id on public.reservation_slots(staff_profile_id);
+create index if not exists idx_questionnaire_results_customer_id on public.questionnaire_results(customer_id);
 create index if not exists idx_reservations_customer_id on public.reservations(customer_id);
 create index if not exists idx_workshop_sessions_staff_profile_id on public.workshop_sessions(staff_profile_id);
+create index if not exists idx_fragrance_products_customer_id on public.fragrance_products(customer_id);
 create index if not exists idx_fragrance_products_staff_id on public.fragrance_products(created_by_staff_id);
 create index if not exists idx_fragrance_products_status on public.fragrance_products(status);
 create index if not exists idx_product_qr_codes_public_token on public.product_qr_codes(public_token);
@@ -321,6 +323,20 @@ as $$
   from public.staff_profiles sp
   where sp.auth_user_id = auth.uid()
     and sp.is_active = true
+  limit 1;
+$$;
+
+create or replace function public.current_customer_profile_id()
+returns uuid
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select c.id
+  from public.customers c
+  where c.auth_user_id = auth.uid()
+    and c.status = 'active'
   limit 1;
 $$;
 
@@ -439,6 +455,7 @@ begin
   return query
   insert into public.questionnaire_results (
     result_code,
+    customer_id,
     step1_answers_json,
     step1_answer_keys_json,
     step2_answers_json,
@@ -459,6 +476,7 @@ begin
   )
   values (
     v_result_code,
+    public.current_customer_profile_id(),
     p_payload -> 'step1_answers_json',
     p_payload -> 'step1_answer_keys_json',
     p_payload -> 'step2_answers_json',
@@ -493,6 +511,7 @@ begin
     profile_key = excluded.profile_key,
     summary_headline = excluded.summary_headline,
     summary_body = excluded.summary_body,
+    customer_id = coalesce(public.questionnaire_results.customer_id, excluded.customer_id),
     source = excluded.source,
     edit_token_hash = coalesce(public.questionnaire_results.edit_token_hash, excluded.edit_token_hash),
     updated_at = excluded.updated_at
@@ -524,6 +543,7 @@ begin
   insert into public.reservations (
     reservation_code,
     questionnaire_result_id,
+    customer_id,
     questionnaire_flow_status,
     questionnaire_sync_error,
     slot_id,
@@ -541,6 +561,7 @@ begin
   values (
     v_reservation_code,
     nullif(p_payload ->> 'questionnaire_result_id', '')::uuid,
+    public.current_customer_profile_id(),
     coalesce(nullif(p_payload ->> 'questionnaire_flow_status', ''), 'skipped'),
     p_payload ->> 'questionnaire_sync_error',
     nullif(p_payload ->> 'slot_id', '')::uuid,
@@ -878,7 +899,10 @@ drop policy if exists "manager questionnaire results all" on public.questionnair
 create policy "public insert questionnaire results"
 on public.questionnaire_results for insert
 to anon, authenticated
-with check (true);
+with check (
+  customer_id is null
+  or customer_id = public.current_customer_profile_id()
+);
 create policy "staff select questionnaire results"
 on public.questionnaire_results for select
 to authenticated
@@ -904,7 +928,10 @@ drop policy if exists "manager reservations all" on public.reservations;
 create policy "public insert reservations"
 on public.reservations for insert
 to anon, authenticated
-with check (true);
+with check (
+  customer_id is null
+  or customer_id = public.current_customer_profile_id()
+);
 create policy "staff select reservations"
 on public.reservations for select
 to authenticated
@@ -1229,6 +1256,7 @@ grant execute on function public.update_questionnaire_result_by_token(text, text
 grant execute on function public.create_public_reservation(jsonb) to anon, authenticated;
 grant execute on function public.fetch_reservation_by_code(text) to anon, authenticated;
 grant execute on function public.qr_product_public_max_volume_ml() to anon, authenticated;
+grant execute on function public.current_customer_profile_id() to anon, authenticated;
 
 grant insert (
   result_code,
