@@ -182,3 +182,16 @@
 - 実装:
   - 現行ページおよび `visual-prototype` から直接参照が残っていないことを確認したうえで、`archived/legacy/img/` 配下へ移動。
   - 現行で参照が残っている `hero-visual.png`, `香水の瓶が並ぶ.png`, `香水対比.png`, `Final_Call_hope.png`, ロゴ、QR地図画像などは移動対象外。
+
+### STEP1用の新規背景画像追加
+
+- 対象: `customer/questionnaire.html`, `customer/questionnaire_step2.html`, `css/customer-survey-layout.css`, `img/questionnaire-v11/`
+- 追加:
+  - `img/questionnaire-v11/step1-a-floral.png`
+  - `img/questionnaire-v11/step1-b-fresh.png`
+  - `img/questionnaire-v11/step1-c-woody.png`
+  - `img/questionnaire-v11/step1-d-warm.png`
+- 実装:
+  - STEP1のA/B/C/Dカードに、`deep-research-report-ver.1.1.md` の方向性に合わせた新規生成背景を割り当て。
+  - 旧 `img/questionnaire/` は参照せず、文字可読性を保つために淡い写真背景の上へ白系グラデーションを重ねるCSSに調整。
+  - STEP2は `survey-step2-page` として分離し、画像背景を強制的に使わない状態を維持。

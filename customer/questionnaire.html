@@ -1178,7 +1178,7 @@ img {
   <script src="../js/public-data.js"></script>
 </head>
 
-<body class="page-canvas">
+<body class="page-canvas survey-step1-page">
   <header class="site-header">
     <div class="header-inner page-header-inner site-container">
       <a class="brand" id="brand-link" href="../index.html" aria-label="トップへ戻る">
@@ -1525,6 +1525,13 @@ img {
         }
       }
     });
+
+    const step1OptionVisuals = {
+      A: 'url("../img/questionnaire-v11/step1-b-fresh.png")',
+      B: 'url("../img/questionnaire-v11/step1-a-floral.png")',
+      C: 'url("../img/questionnaire-v11/step1-c-woody.png")',
+      D: 'url("../img/questionnaire-v11/step1-d-warm.png")'
+    };
 
     const questions = [
       {
@@ -1936,9 +1943,11 @@ img {
         const button = document.createElement("button");
         button.type = "button";
         button.className = "option-card";
+        button.classList.add(`option-key-${String(option.key).toLowerCase()}`);
         if (option.cardClass) button.classList.add(option.cardClass);
         if (answerKeys[question.id] === option.key) button.classList.add("selected");
-        if (option.visual) button.style.backgroundImage = option.visual;
+        const optionVisual = option.visual || step1OptionVisuals[option.key];
+        if (optionVisual) button.style.backgroundImage = optionVisual;
         else button.style.removeProperty("background-image");
         button.style.backgroundColor = option.color || "#fffdfa";
         button.innerHTML = `<div class="option-copy"><span class="option-label">${option.key}</span><span class="option-title">${option.title}</span><span class="option-desc">${option.desc}</span></div>`;

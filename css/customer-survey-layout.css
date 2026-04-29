@@ -165,7 +165,6 @@ body:has(.question-shell) .step-copy,
   min-height: clamp(92px, 11vw, 140px);
   padding: 18px 22px;
   overflow: hidden;
-  background-image: none !important;
 }
 
 .option-card::before {
@@ -173,6 +172,26 @@ body:has(.question-shell) .step-copy,
     radial-gradient(circle at 92% 18%, rgba(213, 138, 53, .16), transparent 42px),
     radial-gradient(circle at 92% 78%, rgba(130, 153, 124, .12), transparent 58px),
     linear-gradient(90deg, rgba(255, 253, 249, .98), rgba(255, 253, 249, .88));
+}
+
+body:not(.survey-step1-page) .option-card {
+  background-image: none !important;
+}
+
+body.survey-step1-page .option-card {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+body.survey-step1-page .option-card::before {
+  background:
+    linear-gradient(90deg, rgba(255, 253, 249, .96) 0%, rgba(255, 253, 249, .88) 38%, rgba(255, 253, 249, .64) 70%, rgba(255, 253, 249, .42) 100%),
+    radial-gradient(circle at 12% 18%, rgba(255, 255, 255, .72), transparent 44px);
+}
+
+body.survey-step1-page .option-card::after {
+  opacity: .78;
 }
 
 .option-card::after {
