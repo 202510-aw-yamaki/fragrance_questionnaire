@@ -6,6 +6,17 @@
 
 ## 2026-04-29
 
+### トップページの質問プレビュー・基本情報の再構成
+
+- 対象: `index.html`, `css/top-reference-layout.css`
+- 参照: `レイアウトimg/01. index.html トップページ.png`
+- 実装:
+  - 質問プレビューを旧スクリーンショット画像の差し込みから、HTML/CSSで作るPCプレビュー + レーダー/スライダー構成へ変更。
+  - 基本情報エリアを、看板・料金表・駅写真のラスター画像依存から、HTMLカード、料金カード、アクセスカード、地図iframeの構成へ変更。
+  - hero-gallery へ旧プレビュー画像をJSで差し込む処理を停止。
+- 未対応:
+  - トップ全体の全セクション再設計は継続作業。今回の変更はユーザー指摘箇所の旧画像依存排除とレイアウト寄せ。
+
 ### STEP1通常設問のver.1.1反映
 
 - 対象: `js/fragrance-master-data.js`, `customer/questionnaire.html`, `customer/questionnaire_step2.html`, `css/customer-survey-layout.css`, `docs/SURVEY_SCORING_LOGIC.md`, `ユーザー設定フォルダ/Supabase設定項目.txt`

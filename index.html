@@ -2130,41 +2130,45 @@ input[type="range"] {
       <div class="section-inner site-container">
         <div class="section-header">
           <span class="eyebrow">Question Page Preview</span>
-          <h2 id="preview-heading">次ページで始まる体験を先に確認</h2>
-          <p>固定5問で傾向をつかみ、分岐2問で少しだけ自分向けに深掘りします。最後はレーダー風グラフとスライダーで全体像を見ながら調整できます。</p>
+          <h2 id="preview-heading">質問の流れを見渡せる画面</h2>
+          <p>STEP1は4つの選択肢と「全部好き」「この中にない」で入口を整え、STEP2と結果画面で香りの方向を細かく調整します。</p>
         </div>
 
-        <div class="preview-layout">
-          <article class="preview-shell preview-pc" aria-label="PC版プレビュー">
-            <div class="shell-head"><strong>PC版プレビュー</strong><span>見渡せる段階構成</span></div>
-            <div class="pc-preview">
-              <img class="pc-preview-image" src="img/TOP/クエスチョンPC版大.png" alt="アンケート画面のPCプレビュー">
-              <div class="section-cta">
-                <a class="btn btn-primary" href="customer/questionnaire.html">香りづくりをはじめる</a>
-                <a class="btn btn-secondary" href="customer/reservation.html?source=direct">そのまま予約する</a>
+        <div class="preview-layout preview-layout--rebuilt">
+          <article class="preview-shell preview-pc" aria-label="PC版アンケート画面の構成プレビュー">
+            <div class="shell-head"><strong>PC版プレビュー</strong><span>4択 + 補助選択</span></div>
+            <div class="pc-preview rebuilt-preview">
+              <aside class="pc-nav" aria-label="質問ナビゲーション">
+                <ol>
+                  <li>Q1 香り立ち</li>
+                  <li>Q2 使う場面</li>
+                  <li>Q3 甘さと温度</li>
+                  <li>Q4 残り方</li>
+                  <li>Q5 伝わる印象</li>
+                </ol>
+              </aside>
+              <div class="pc-main">
+                <div class="preview-step-line"><span>Q1 / STEP1</span><strong>最初の香り立ちとして、いちばん心地よいのは？</strong></div>
+                <div class="preview-progress"><span></span></div>
+                <div class="option-row"><span class="thumb fresh"></span><span>A せっけんや水のようにみずみずしい</span></div>
+                <div class="option-row"><span class="thumb floral"></span><span>B 白い花がふわっとやわらかい</span></div>
+                <div class="option-row"><span class="thumb woody"></span><span>C 木や葉のように静かで落ち着く</span></div>
+                <div class="option-row"><span class="thumb warm"></span><span>D 紅茶やスパイスのように温かく印象に残る</span></div>
+                <div class="minor-options"><span>全部好き</span><span>この中にない</span></div>
               </div>
+              <aside class="pc-side" aria-label="補助説明">
+                <div class="pc-store">Fragrance Workshop</div>
+                <div class="pc-note"><strong>豆知識</strong><br>最初に心地よいと感じる香りは、その後の全体印象にも影響しやすいです。</div>
+                <a class="btn btn-secondary" href="customer/questionnaire.html">質問を開く</a>
+              </aside>
+            </div>
+            <div class="section-cta">
+              <a class="btn btn-primary" href="customer/questionnaire.html">香りづくりをはじめる</a>
+              <a class="btn btn-secondary" href="customer/reservation.html?source=direct">そのまま予約する</a>
             </div>
           </article>
 
-          <article class="preview-shell preview-pad" aria-label="中間版プレビュー">
-            <div class="shell-head"><strong>中間版プレビュー</strong><span>横幅に合わせた中間イメージ</span></div>
-            <div class="pc-preview">
-              <img class="pc-preview-image" src="img/TOP/中間イメージ.png" alt="中間レイアウトのプレビュー">
-              <div class="section-cta">
-                <a class="btn btn-primary" href="customer/questionnaire.html">香りづくりをはじめる</a>
-                <a class="btn btn-secondary" href="customer/reservation.html?source=direct">そのまま予約する</a>
-              </div>
-            </div>
-          </article>
-
-          <article class="preview-shell preview-mobile" aria-label="スマホ版プレビュー">
-            <div class="shell-head"><strong>スマホ版プレビュー</strong><span>1問1画面の集中UI</span></div>
-            <div class="mobile-frame">
-              <img class="pc-preview-image" src="img/TOP/スマホ用プレビュー.png" alt="スマホ版アンケート画面のプレビュー">
-            </div>
-          </article>
-
-          <article class="preview-balance" aria-label="回答後プレビュー：レーダー風グラフとスライダー">
+          <article class="preview-balance" aria-label="回答後プレビュー レーダーグラフとスライダー">
             <div class="shell-head"><strong>回答後プレビュー</strong><span>レーダーグラフとスライダー</span></div>
             <div class="balance-grid">
               <div class="radar-wrap">
@@ -2182,29 +2186,22 @@ input[type="range"] {
                     <line x1="150" y1="150" x2="84" y2="242" />
                     <line x1="150" y1="150" x2="44" y2="116" />
                   </g>
-                  <polygon id="shape" points="150,60 220,126 185,200 108,206 80,130" fill="rgba(168,111,74,0.28)"
-                    stroke="#9a6543" stroke-width="2" />
+                  <polygon id="shape" points="150,60 220,126 185,200 108,206 80,130" fill="rgba(168,111,74,0.28)" stroke="#9a6543" stroke-width="2" />
                   <g id="dots" fill="#8f5c3c"></g>
                 </svg>
               </div>
               <div class="slider-wrap">
-                <div class="slider-row"><label for="floral">フローラル</label><input id="floral" type="range" min="0"
-                    max="100" value="74"><output id="floral-val">74</output></div>
-                <div class="slider-row"><label for="fresh">フレッシュ</label><input id="fresh" type="range" min="0" max="100"
-                    value="58"><output id="fresh-val">58</output></div>
-                <div class="slider-row"><label for="woody">ウッディ</label><input id="woody" type="range" min="0" max="100"
-                    value="43"><output id="woody-val">43</output></div>
-                <div class="slider-row"><label for="spicy">スパイシー</label><input id="spicy" type="range" min="0" max="100"
-                    value="31"><output id="spicy-val">31</output></div>
-                <div class="slider-row"><label for="sweet">スウィート</label><input id="sweet" type="range" min="0" max="100"
-                    value="49"><output id="sweet-val">49</output></div>
+                <div class="slider-row"><label for="floral">フローラル</label><input id="floral" type="range" min="0" max="100" value="74"><output id="floral-val">74</output></div>
+                <div class="slider-row"><label for="fresh">フレッシュ</label><input id="fresh" type="range" min="0" max="100" value="58"><output id="fresh-val">58</output></div>
+                <div class="slider-row"><label for="woody">ウッディ</label><input id="woody" type="range" min="0" max="100" value="43"><output id="woody-val">43</output></div>
+                <div class="slider-row"><label for="spicy">スパイシー</label><input id="spicy" type="range" min="0" max="100" value="31"><output id="spicy-val">31</output></div>
+                <div class="slider-row"><label for="sweet">スウィート</label><input id="sweet" type="range" min="0" max="100" value="49"><output id="sweet-val">49</output></div>
               </div>
             </div>
           </article>
         </div>
       </div>
     </section>
-
     <section id="value" aria-labelledby="value-heading">
       <div class="section-inner site-container">
         <div class="section-header">
@@ -2264,26 +2261,39 @@ input[type="range"] {
           <h2 id="information-heading">基本情報</h2>
         </div>
 
-        <div class="info-layout">
-          <figure class="info-visual info-signboard" aria-label="店頭看板イメージ">
-            <img src="img/TOP/看板.png" alt="店頭の看板イメージ">
-          </figure>
+        <div class="info-layout info-layout--rebuilt">
+          <article class="info-visual info-signboard info-text-visual" aria-label="香水づくり体験の料金案内">
+            <span class="info-mark">吟</span>
+            <h3>香水づくり体験</h3>
+            <p>あなただけの香りを調香</p>
+            <dl>
+              <div><dt>1フェイス 2時間</dt><dd>5,000円</dd></div>
+              <div><dt>2フェイス 3時間</dt><dd>8,800円</dd></div>
+            </dl>
+          </article>
 
           <div class="info-middle">
             <article class="card info-copy-card">
               <h3>当店では予約なしでも、<br>お時間が空いていれば<br>ワークを体験できます。</h3>
               <ul class="info-list">
-                <li>事前予約があるとよりあなた好みに</li>
+                <li>事前予約があると、よりあなた好みに準備できます</li>
                 <li>店内での販売も行っています</li>
               </ul>
             </article>
 
-            <figure class="info-visual info-subvisual" aria-label="香水ハンドクリームのイメージ">
-              <img src="img/TOP/香水ハンドクリーム.png" alt="香水ハンドクリームのイメージ">
-            </figure>
+            <article class="info-visual info-subvisual info-product-card" aria-label="店内商品案内">
+              <div class="product-bottle-row" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+              <h3>店頭で香りを確認</h3>
+              <p>体験前後に、香りの方向やサイズ感をスタッフへ相談できます。</p>
+            </article>
 
-            <div class="info-price-wrap">
-              <img class="info-price-image" src="img/TOP/値段表.png" alt="料金表">
+            <div class="info-price-wrap info-price-card">
+              <h3>料金案内</h3>
+              <div class="info-price-list">
+                <div><span>香水づくり</span><strong>5,000円から</strong></div>
+                <div><span>所要時間</span><strong>2時間から</strong></div>
+                <div><span>予約</span><strong>当日空き枠可</strong></div>
+              </div>
               <div class="info-price-actions">
                 <a class="btn btn-secondary" href="customer/questionnaire.html">アンケートから始める</a>
                 <a class="btn btn-primary" href="customer/reservation.html?source=direct">事前予約をする</a>
@@ -2292,13 +2302,16 @@ input[type="range"] {
           </div>
 
           <div class="info-right">
-            <figure class="info-visual info-station" aria-label="上野駅周辺イメージ">
-              <img src="img/TOP/上野駅.png" alt="上野駅周辺イメージ">
-            </figure>
+            <article class="info-visual info-station info-access-card" aria-label="アクセス案内">
+              <span class="station-label">UENO</span>
+              <h3>上野駅周辺</h3>
+              <p>東京都台東区東上野3-15-5 曽我ビル3F</p>
+              <p>駅からの道順は、地図で確認できます。</p>
+            </article>
 
             <section class="info-map-card" id="information-map" aria-labelledby="info-map-title">
               <div class="info-map-head">
-                <p>東京都台東区東上野3-15-5 曽我ビル3F</p>
+                <p id="info-map-title">東京都台東区東上野3-15-5 曽我ビル3F</p>
               </div>
 
               <iframe title="東京都台東区東上野3-15-5 曽我ビル3F の地図" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
@@ -2308,7 +2321,6 @@ input[type="range"] {
         </div>
       </div>
     </section>
-
     <section id="reassurance" aria-labelledby="reassurance-heading">
       <div class="section-inner site-container">
         <div class="section-header">
@@ -2471,28 +2483,8 @@ input[type="range"] {
         gallery.setAttribute("aria-label", "\u30c8\u30c3\u30d7\u30d3\u30e5\u30fc\u624b\u9806\u753b\u50cf\u30d7\u30ec\u30fc\u30b9\u30db\u30eb\u30c0\u30fc");
       }
 
-      var imageDefs = [
-        {
-          src: "img/TOP/\u8cea\u554f\u30da\u30fc\u30b8\uff30\uff23\u30d7\u30ec\u30d3\u30e5\u30fc.png",
-          alt: "\u30a2\u30f3\u30b1\u30fc\u30c8\u753b\u9762\u306ePC\u30d7\u30ec\u30d3\u30e5\u30fc"
-        },
-        {
-          src: "img/TOP/\u9999\u6c34\u4f5c\u6210\u306e\u5de5\u7a0b(\u5de6).png",
-          alt: "\u9999\u6c34\u4f5c\u6210\u306e\u5de5\u7a0b\u306e\u5de6\u5074\u30a4\u30e1\u30fc\u30b8"
-        },
-        {
-          src: "img/TOP/\u9999\u6c34\u4f5c\u6210\u306e\u5de5\u7a0b(\u53f3).png",
-          alt: "\u9999\u6c34\u4f5c\u6210\u306e\u5de5\u7a0b\u306e\u53f3\u5074\u30a4\u30e1\u30fc\u30b8"
-        }
-      ];
-
-      var shots = document.querySelectorAll(".hero-gallery .hero-shot");
-      shots.forEach(function (shot, index) {
-        if (!imageDefs[index] || shot.querySelector("img")) return;
-        var img = document.createElement("img");
-        img.src = imageDefs[index].src;
-        img.alt = imageDefs[index].alt;
-        shot.insertBefore(img, shot.firstChild);
+      document.querySelectorAll(".hero-gallery .hero-shot").forEach(function (shot) {
+        shot.classList.add("is-text-placeholder");
       });
     })();
 

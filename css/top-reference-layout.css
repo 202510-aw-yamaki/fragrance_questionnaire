@@ -277,6 +277,194 @@
   padding-top: 34px;
 }
 
+.top-reference-page .preview-layout--rebuilt {
+  grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.72fr);
+  align-items: stretch;
+}
+
+.top-reference-page .preview-layout--rebuilt .preview-pc {
+  min-height: 620px;
+}
+
+.top-reference-page .preview-layout--rebuilt .rebuilt-preview {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.28fr) minmax(0, 1fr) minmax(190px, 0.34fr);
+  gap: 12px;
+  min-height: 470px;
+}
+
+.top-reference-page .preview-layout--rebuilt .section-cta {
+  margin-top: 14px;
+  justify-content: center;
+}
+
+.top-reference-page .preview-step-line {
+  display: grid;
+  gap: 8px;
+  text-align: center;
+}
+
+.top-reference-page .preview-step-line span {
+  color: var(--top-gold);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.top-reference-page .preview-step-line strong {
+  color: var(--top-ink);
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+  font-size: clamp(1.35rem, 2vw, 2rem);
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.top-reference-page .preview-progress {
+  height: 8px;
+  border-radius: 999px;
+  background: #ead9c6;
+  overflow: hidden;
+}
+
+.top-reference-page .preview-progress span {
+  display: block;
+  width: 32%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #df827b, #e9aa64);
+}
+
+.top-reference-page #question-preview .thumb.fresh {
+  background: linear-gradient(135deg, #dceff1, #f8ffff);
+}
+
+.top-reference-page #question-preview .thumb.floral {
+  background: linear-gradient(135deg, #f0cfc8, #fff6f2);
+}
+
+.top-reference-page #question-preview .thumb.woody {
+  background: linear-gradient(135deg, #dbe7d5, #f7f5ec);
+}
+
+.top-reference-page #question-preview .thumb.warm {
+  background: linear-gradient(135deg, #e6c6a5, #fff1e1);
+}
+
+.top-reference-page .info-layout--rebuilt {
+  grid-template-columns: 0.95fr 0.9fr 0.9fr;
+  gap: 14px;
+}
+
+.top-reference-page .info-layout--rebuilt .info-visual {
+  min-height: 100%;
+}
+
+.top-reference-page .info-text-visual,
+.top-reference-page .info-product-card,
+.top-reference-page .info-access-card,
+.top-reference-page .info-price-card {
+  display: grid;
+  align-content: center;
+  gap: 14px;
+  padding: 24px;
+  text-align: center;
+  background:
+    radial-gradient(circle at 78% 18%, rgba(220, 172, 112, 0.18), transparent 7rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 249, 241, 0.9));
+}
+
+.top-reference-page .info-text-visual {
+  min-height: 440px;
+  background:
+    linear-gradient(180deg, rgba(39, 47, 54, 0.12), rgba(39, 47, 54, 0.68)),
+    radial-gradient(circle at 46% 30%, rgba(255, 255, 255, 0.64), transparent 10rem),
+    linear-gradient(135deg, #d5c1ab, #7f8c8a);
+  color: #fffdf8;
+}
+
+.top-reference-page .info-mark {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.68);
+  border-radius: 50%;
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+  font-size: 2rem;
+}
+
+.top-reference-page .info-text-visual h3,
+.top-reference-page .info-product-card h3,
+.top-reference-page .info-access-card h3,
+.top-reference-page .info-price-card h3 {
+  margin: 0;
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+  font-weight: 500;
+}
+
+.top-reference-page .info-text-visual dl,
+.top-reference-page .info-price-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.top-reference-page .info-text-visual dl div,
+.top-reference-page .info-price-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.34);
+}
+
+.top-reference-page .info-price-list div {
+  border-color: rgba(193, 135, 49, 0.24);
+}
+
+.top-reference-page .info-text-visual dt,
+.top-reference-page .info-text-visual dd {
+  margin: 0;
+}
+
+.top-reference-page .product-bottle-row {
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  gap: 10px;
+  min-height: 92px;
+}
+
+.top-reference-page .product-bottle-row span {
+  width: 28px;
+  height: 74px;
+  border: 1px solid rgba(193, 135, 49, 0.32);
+  border-radius: 8px 8px 12px 12px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(230, 187, 116, 0.28));
+}
+
+.top-reference-page .product-bottle-row span:nth-child(2) {
+  height: 86px;
+}
+
+.top-reference-page .product-bottle-row span:nth-child(3) {
+  height: 64px;
+}
+
+.top-reference-page .station-label {
+  display: inline-grid;
+  place-items: center;
+  width: min(100%, 220px);
+  min-height: 58px;
+  margin: 0 auto;
+  border: 1px solid rgba(76, 127, 126, 0.3);
+  border-radius: 8px;
+  color: #4c7f7e;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  background: rgba(235, 247, 246, 0.72);
+}
+
 .top-reference-page .info-map-card iframe {
   min-height: 300px;
 }
@@ -329,6 +517,9 @@
 
   .top-reference-page .hero-wrap,
   .top-reference-page .flow-bottom,
+  .top-reference-page .preview-layout--rebuilt,
+  .top-reference-page .preview-layout--rebuilt .rebuilt-preview,
+  .top-reference-page .info-layout--rebuilt,
   .top-reference-page .cta-section .cta-box {
     grid-template-columns: 1fr;
   }
