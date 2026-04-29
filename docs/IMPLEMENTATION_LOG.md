@@ -81,3 +81,17 @@
   - CSS疑似要素で新しい見出し文言を表示する実装は避け、既存HTML上の文言を正とする。
 - 未対応:
   - 会員比較モード、比較拡大モーダル、過去完成品との差分表示は `Phase 6` の残タスクとして実装しない。
+
+### スタッフ・管理者ダッシュボード
+
+- 対象: `staff/staff-dashboard.html`, `admin/admin-dashboard.html`
+- 追加: `css/portal-dashboard-reference.css`
+- 参照:
+  - `レイアウトimg/14. staff staff-dashboard.html スタッフダッシュボード.png`
+  - `レイアウトimg/21. admin admin-dashboard.html 管理者ダッシュボード.png`
+- 実装:
+  - 既存の `portal-staff-dashboard-page` / `portal-admin-dashboard-page` 構造を維持し、後勝ちCSSでヘッダー、ヒーロー、KPIカード、通知カード、導線カードの見た目を調整。
+  - スタッフ側の `staff-kpi-today`, `staff-qr-request-count`, `staff-qr-request-list`, `staff-day-timeline`, `staff-day-events` は維持。
+  - 管理者側の `kpi-reservations`, `kpi-reservations-week`, `kpi-slots`, `manager-qr-request-count`, `manager-qr-request-list` は維持。
+- 未対応:
+  - QR通知の対応済み操作、作成可否判断、発送完了操作は `Phase 5` の残タスクとして実装しない。

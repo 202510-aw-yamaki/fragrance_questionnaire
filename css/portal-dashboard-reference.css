@@ -1,0 +1,150 @@
+.portal-staff-dashboard-page,
+.portal-admin-dashboard-page {
+  --portal-ref-ink: #2f2118;
+  --portal-ref-muted: #6f5a49;
+  --portal-ref-line: rgba(202, 139, 51, 0.28);
+  --portal-ref-gold: #cf8e2c;
+  --portal-ref-green: #4c743f;
+  --portal-ref-alert: #c84c4c;
+  background:
+    linear-gradient(90deg, rgba(255, 250, 244, 0.95), rgba(255, 250, 244, 0.72), rgba(255, 250, 244, 0.9)),
+    url("../img/TOP/hero-visual.png") right top / min(52vw, 820px) auto no-repeat,
+    linear-gradient(180deg, #fffaf3, #fffdf9 46%, #fbf1e7);
+  color: var(--portal-ref-ink);
+}
+
+.portal-staff-dashboard-page .admin-header,
+.portal-admin-dashboard-page .admin-header {
+  background: rgba(255, 252, 247, 0.94);
+  border-bottom: 1px solid var(--portal-ref-line);
+  box-shadow: 0 12px 30px rgba(89, 58, 30, 0.06);
+}
+
+.portal-staff-dashboard-page .admin-header-inner,
+.portal-admin-dashboard-page .admin-header-inner {
+  min-height: 76px;
+}
+
+.portal-staff-dashboard-page .admin-brand,
+.portal-admin-dashboard-page .admin-brand {
+  color: var(--portal-ref-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.35rem, 2.2vw, 2.25rem);
+  letter-spacing: 0;
+}
+
+.portal-staff-dashboard-page .admin-nav a,
+.portal-staff-dashboard-page .admin-logout,
+.portal-admin-dashboard-page .admin-nav a,
+.portal-admin-dashboard-page .admin-logout {
+  border-radius: 8px;
+  color: var(--portal-ref-ink);
+  background: rgba(255, 252, 247, 0.78);
+}
+
+.portal-staff-dashboard-page .admin-nav a.active,
+.portal-admin-dashboard-page .admin-nav a.active {
+  color: #a85f16;
+  border-color: rgba(207, 142, 44, 0.42);
+  background: rgba(255, 248, 236, 0.92);
+}
+
+.portal-staff-dashboard-page .admin-main.site-container.portal-stack,
+.portal-admin-dashboard-page .admin-main.site-container.portal-stack {
+  width: min(1600px, calc(100% - 56px));
+  padding-top: 32px;
+}
+
+.portal-staff-dashboard-page .admin-panel,
+.portal-admin-dashboard-page .admin-panel {
+  border-color: var(--portal-ref-line);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 251, 246, 0.88));
+  box-shadow: 0 20px 48px rgba(93, 60, 32, 0.09);
+}
+
+.portal-staff-dashboard-page .portal-hero,
+.portal-admin-dashboard-page .portal-hero {
+  min-height: 144px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.portal-staff-dashboard-page .portal-hero h1,
+.portal-admin-dashboard-page .portal-hero h1 {
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--portal-ref-ink);
+}
+
+.portal-staff-dashboard-page .portal-hero-label,
+.portal-admin-dashboard-page .portal-hero-label {
+  color: var(--portal-ref-gold);
+}
+
+.portal-staff-dashboard-page .portal-hero::before,
+.portal-admin-dashboard-page .portal-hero::before {
+  content: "";
+  display: block;
+  width: 164px;
+  height: 18px;
+  background:
+    linear-gradient(var(--portal-ref-gold), var(--portal-ref-gold)) left 50% / 64px 1px no-repeat,
+    linear-gradient(var(--portal-ref-gold), var(--portal-ref-gold)) right 50% / 64px 1px no-repeat,
+    radial-gradient(circle, var(--portal-ref-gold) 0 3px, transparent 4px);
+  opacity: 0.78;
+}
+
+.portal-staff-dashboard-page .portal-stat-card,
+.portal-admin-dashboard-page .portal-manager-metric-grid > .admin-panel {
+  min-height: 132px;
+}
+
+.portal-staff-dashboard-page .portal-stat-value,
+.portal-admin-dashboard-page .portal-dashboard-row strong,
+.portal-admin-dashboard-page .portal-section-head .admin-note span {
+  color: var(--portal-ref-green);
+}
+
+.portal-staff-dashboard-page .portal-stat-card--qr .portal-stat-value,
+.portal-admin-dashboard-page #manager-qr-request-count,
+.portal-admin-dashboard-page .portal-ng-text {
+  color: var(--portal-ref-alert);
+}
+
+.portal-staff-dashboard-page .portal-detail-panel,
+.portal-admin-dashboard-page .portal-manager-bottom > .admin-panel {
+  min-height: 220px;
+}
+
+.portal-staff-dashboard-page .portal-action-card,
+.portal-admin-dashboard-page .portal-action-card,
+.portal-admin-dashboard-page .admin-mini-card {
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.portal-staff-dashboard-page .portal-action-card:hover,
+.portal-admin-dashboard-page .portal-action-card:hover,
+.portal-admin-dashboard-page .admin-mini-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(207, 142, 44, 0.52);
+  box-shadow: 0 24px 54px rgba(93, 60, 32, 0.12);
+}
+
+@media (max-width: 72rem) {
+  .portal-staff-dashboard-page .admin-main.site-container.portal-stack,
+  .portal-admin-dashboard-page .admin-main.site-container.portal-stack {
+    width: min(100% - 32px, 980px);
+  }
+}
+
+@media (max-width: 56rem) {
+  .portal-staff-dashboard-page .admin-main.site-container.portal-stack,
+  .portal-admin-dashboard-page .admin-main.site-container.portal-stack {
+    width: min(100% - 24px, 720px);
+    padding-top: 20px;
+  }
+}
