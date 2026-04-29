@@ -1,0 +1,475 @@
+/* Reference-layout polish for customer survey/result pages. */
+
+.page-canvas {
+  background:
+    linear-gradient(90deg, rgba(255, 250, 244, .82), rgba(255, 250, 244, .68)),
+    radial-gradient(circle at 88% 28%, rgba(226, 171, 148, .22), transparent 19rem),
+    radial-gradient(circle at 8% 72%, rgba(210, 176, 126, .18), transparent 18rem),
+    #fffaf4;
+}
+
+.site-header {
+  background: rgba(255, 252, 247, .92);
+  border-bottom-color: rgba(218, 151, 70, .78);
+}
+
+.brand {
+  color: #3f2b1f;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.28rem, 2.2vw, 2rem);
+  letter-spacing: .015em;
+}
+
+.brand::before {
+  content: "";
+  width: 34px;
+  height: 34px;
+  margin-right: 12px;
+  border: 1.5px solid #d58a35;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 34%, #d58a35 36%, transparent 38%),
+    conic-gradient(from 0deg, transparent 0 10deg, rgba(213, 138, 53, .68) 10deg 22deg, transparent 22deg 45deg);
+}
+
+.brand picture {
+  display: none;
+}
+
+body:has(.question-shell) .page-shell {
+  width: min(1480px, calc(100% - 48px));
+  padding: clamp(24px, 3vw, 46px) 0 34px;
+  position: relative;
+}
+
+body:has(.question-shell) .page-shell::before {
+  content: "";
+  display: none;
+}
+
+body:has(.question-shell) .page-shell::after {
+  content: "";
+  display: none;
+}
+
+body:has(.question-shell) .step-strip {
+  position: absolute;
+  top: clamp(28px, 3vw, 48px);
+  left: min(58vw, 820px);
+  width: min(320px, 31vw);
+  min-height: 94px;
+  padding: 18px 22px;
+  border-radius: 10px;
+  background: rgba(255, 252, 247, .84);
+  box-shadow: 0 12px 26px rgba(95, 61, 35, .1);
+}
+
+body:has(.question-shell) .step-group {
+  width: 100%;
+  justify-content: center;
+}
+
+body:has(.question-shell) .step-badge {
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: #4a3022;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.45rem, 2.2vw, 2.4rem);
+  font-weight: 400;
+  letter-spacing: .08em;
+  padding: 0;
+}
+
+body:has(.question-shell) .step-badge.next,
+body:has(.question-shell) .step-copy,
+.nav-panel,
+.store-visual strong,
+.store-visual span {
+  display: none;
+}
+
+.question-shell {
+  grid-template-columns: minmax(0, 1fr) minmax(270px, 360px);
+  gap: clamp(22px, 2.8vw, 42px);
+  padding: clamp(24px, 3.2vw, 48px);
+  border: 0;
+  border-radius: 18px;
+  background: rgba(255, 253, 249, .88);
+  box-shadow: 0 20px 48px rgba(94, 62, 35, .12);
+}
+
+.main-panel {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  text-align: center;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+}
+
+.question-meta {
+  justify-content: center;
+}
+
+.question-index {
+  background: transparent;
+  color: #4c3122;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.35rem, 2vw, 2.4rem);
+  font-weight: 400;
+}
+
+.helper-text,
+.question-caption {
+  color: #5f4a3d;
+}
+
+.progress-row {
+  width: min(360px, 100%);
+  justify-self: center;
+}
+
+.progress-track {
+  height: 8px;
+  background: #e9d7c0;
+  box-shadow: inset 0 0 0 1px rgba(210, 146, 74, .25);
+}
+
+.progress-bar {
+  background: linear-gradient(90deg, #db807a, #e8aa64);
+}
+
+.question-title {
+  color: #3c291d;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.55rem, 2.6vw, 2.8rem);
+  font-weight: 400;
+  letter-spacing: .03em;
+}
+
+.option-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 24px;
+}
+
+.option-card,
+.sub-option {
+  border-color: rgba(225, 194, 160, .88);
+  border-radius: 10px;
+  background: rgba(255, 253, 249, .94);
+  box-shadow: 0 8px 20px rgba(120, 82, 48, .07);
+}
+
+.option-card {
+  min-height: clamp(92px, 11vw, 140px);
+  padding: 18px 22px;
+}
+
+.option-card::before {
+  background: linear-gradient(90deg, rgba(255, 253, 249, .98), rgba(255, 253, 249, .78));
+}
+
+.option-card.selected,
+.sub-option.selected {
+  border-color: #d99435;
+  background: linear-gradient(135deg, rgba(255, 244, 239, .98), rgba(255, 252, 248, .94));
+  box-shadow: 0 14px 28px rgba(191, 112, 76, .16), inset 0 0 0 1px rgba(217, 148, 53, .5);
+}
+
+.option-copy {
+  max-width: min(78%, 520px);
+  text-align: left;
+}
+
+.option-label {
+  color: #d68a36;
+}
+
+.option-title {
+  color: #3c291d;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.1rem, 1.7vw, 1.8rem);
+  font-weight: 400;
+}
+
+.sub-options {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.sub-option {
+  min-height: 60px;
+  font-size: 1rem;
+}
+
+.side-panel {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  gap: 20px;
+  grid-template-rows: minmax(250px, 1fr) auto auto;
+}
+
+.store-visual {
+  border-radius: 0 0 14px 14px;
+  min-height: 320px;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 244, .08), rgba(125, 76, 46, .16)),
+    url("../img/TOP/hero-visual.png") center / cover;
+  box-shadow: none;
+}
+
+.side-card,
+.return-card,
+.mobile-return-card {
+  border-color: rgba(225, 194, 160, .8);
+  border-radius: 12px;
+  background: rgba(255, 253, 249, .88);
+  box-shadow: 0 12px 26px rgba(94, 62, 35, .1);
+}
+
+.side-card {
+  background: rgba(255, 253, 249, .88);
+}
+
+.side-card strong,
+.return-card strong {
+  color: #3e2a1e;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.15rem;
+  font-weight: 400;
+  text-align: center;
+}
+
+.side-card p,
+.return-card p {
+  color: #5b493d;
+  text-align: center;
+}
+
+.action-btn,
+.btn,
+.main-nav button {
+  border-radius: 8px;
+}
+
+.action-btn.primary,
+.btn-primary {
+  background: linear-gradient(180deg, #e99e98, #c96d68);
+  border-color: #b85f5a;
+  box-shadow: 0 12px 22px rgba(168, 83, 76, .2), inset 0 0 0 2px rgba(255, 239, 224, .7);
+}
+
+body:has(#questionnaire-sync-modal) .page-shell::before {
+  content: "";
+}
+
+body:has(#questionnaire-sync-modal) .page-shell::after {
+  content: "";
+}
+
+body:has(#questionnaire-sync-modal) .option-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+body:has(#questionnaire-sync-modal) .sub-options {
+  border: 1px solid rgba(225, 194, 160, .8);
+  border-radius: 10px;
+  padding: 18px;
+  background: rgba(255, 253, 249, .82);
+}
+
+body:has(#questionnaire-sync-modal) .sub-option {
+  min-height: 52px;
+}
+
+body:has(#radar-graph) {
+  background:
+    linear-gradient(90deg, rgba(255, 250, 244, .78), rgba(255, 250, 244, .64)),
+    radial-gradient(circle at 91% 18%, rgba(219, 168, 119, .18), transparent 18rem),
+    #fffaf4;
+}
+
+body:has(#radar-graph) main {
+  width: min(1480px, calc(100% - 48px));
+}
+
+body:has(#radar-graph) #graph-adjustment::before {
+  content: "";
+  display: none;
+}
+
+body:has(#radar-graph) #graph-adjustment::after {
+  content: "";
+  display: none;
+}
+
+body:has(#radar-graph) .graph-layout {
+  grid-template-columns: minmax(0, 1.1fr) minmax(300px, .92fr) minmax(260px, .48fr);
+  gap: 28px;
+}
+
+body:has(#radar-graph) .graph-card,
+body:has(#radar-graph) .slider-card,
+body:has(#radar-graph) .reassure-card,
+body:has(#radar-graph) .cta-box {
+  border-color: rgba(225, 194, 160, .78);
+  border-radius: 14px;
+  background: rgba(255, 253, 249, .9);
+  box-shadow: 0 16px 36px rgba(94, 62, 35, .1);
+}
+
+body:has(#radar-graph) .graph-card:first-child {
+  grid-template-columns: minmax(190px, .55fr) minmax(280px, 1fr);
+  align-items: center;
+}
+
+body:has(#radar-graph) .graph-card:first-child .section-header {
+  margin: 0;
+}
+
+body:has(#radar-graph) .graph-frame {
+  width: min(100%, 480px);
+  border: 0;
+  background: transparent;
+}
+
+body:has(#radar-graph) #radar-graph {
+  width: min(100%, 420px);
+}
+
+body:has(#radar-graph) .graph-caption {
+  grid-column: 1 / -1;
+  color: #5d4a3c;
+}
+
+body:has(#radar-graph) .slider-row {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  grid-template-columns: minmax(120px, .7fr) minmax(0, 1fr);
+  align-items: center;
+  padding: 4px 0;
+}
+
+body:has(#radar-graph) .slider-head {
+  display: contents;
+}
+
+body:has(#radar-graph) .slider-title {
+  display: block;
+}
+
+body:has(#radar-graph) .slider-detail {
+  display: none;
+}
+
+body:has(#radar-graph) input[type="range"] {
+  accent-color: #df7f83;
+}
+
+body:has(#radar-graph) .helper-grid {
+  grid-template-rows: repeat(3, minmax(0, auto));
+}
+
+body:has(#radar-graph) .helper-grid .reassure-card {
+  padding: 20px;
+}
+
+body:has(#radar-graph) .helper-grid .reassure-card h3 {
+  color: #3e2a1e;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.18rem;
+  font-weight: 400;
+}
+
+body:has(#radar-graph) .cta-box {
+  grid-template-columns: minmax(0, .95fr) minmax(280px, .65fr);
+}
+
+body:has(#radar-graph) .graph-placeholder-image {
+  max-height: 220px;
+  object-fit: cover;
+}
+
+@media (max-width: 68.6875em) {
+  body:has(.question-shell) .page-shell,
+  body:has(#radar-graph) main {
+    width: min(100% - 20px, 1160px);
+  }
+
+  body:has(.question-shell) .page-shell::before,
+  body:has(.question-shell) .page-shell::after {
+    margin-left: 4px;
+  }
+
+  body:has(.question-shell) .step-strip {
+    position: static;
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
+  .question-shell,
+  body:has(#radar-graph) .graph-layout,
+  body:has(#radar-graph) .graph-card:first-child,
+  body:has(#radar-graph) .cta-box {
+    grid-template-columns: 1fr;
+  }
+
+  .side-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .store-visual {
+    display: none;
+  }
+
+  body:has(#questionnaire-sync-modal) .option-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 47.9375em) {
+  .brand::before {
+    width: 26px;
+    height: 26px;
+    margin-right: 8px;
+  }
+
+  body:has(.question-shell) .page-shell::before {
+    font-size: 2.2rem;
+  }
+
+  body:has(.question-shell) .page-shell::after {
+    font-size: .92rem;
+    margin-bottom: 14px;
+  }
+
+  .question-shell {
+    padding: 18px;
+  }
+
+  .option-list,
+  .sub-options {
+    grid-template-columns: 1fr;
+  }
+
+  .side-panel {
+    display: none;
+  }
+
+  .option-copy {
+    max-width: 100%;
+  }
+
+  body:has(#radar-graph) #graph-adjustment::before {
+    font-size: 2.15rem;
+    margin-top: 18px;
+  }
+
+  body:has(#radar-graph) .slider-row {
+    grid-template-columns: 1fr;
+  }
+}

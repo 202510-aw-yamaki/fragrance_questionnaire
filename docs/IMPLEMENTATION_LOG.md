@@ -66,3 +66,18 @@
   - `reservation-complete.html` は予約コード取得、sessionStorage復元、予約コード参照、カウントダウン処理を変更しない。
 - 未対応:
   - 参照画像の静的カレンダーをそのまま実装することは避け、現行の公開予約枠データ導線を優先。
+
+### アンケート・通常結果ページ
+
+- 対象: `customer/questionnaire.html`, `customer/questionnaire_step2.html`, `customer/fragrance-graph.html`
+- 追加: `css/customer-survey-layout.css`
+- 参照:
+  - `レイアウトimg/04. customer questionnaire.html 初回アンケートページ.png`
+  - `レイアウトimg/05. customer questionnaire_step2.html 分岐後アンケートページ.png`
+  - `レイアウトimg/06. customer fragrance-graph.html 通常結果ページ.png`
+- 実装:
+  - 参照画像をページ内に差し込まず、後勝ちCSSでアンケートカード、選択肢、サイドカード、結果グラフ、スライダー、CTAの見た目を調整。
+  - 既存HTMLへの追加はCSS読み込みのみ。
+  - CSS疑似要素で新しい見出し文言を表示する実装は避け、既存HTML上の文言を正とする。
+- 未対応:
+  - 会員比較モード、比較拡大モーダル、過去完成品との差分表示は `Phase 6` の残タスクとして実装しない。
