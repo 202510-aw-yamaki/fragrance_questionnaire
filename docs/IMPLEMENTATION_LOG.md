@@ -51,3 +51,18 @@
   - `index.html` にはCSS読み込みと `body` クラスのみ追加。
 - 未対応:
   - 文言や文字表示の修正は行わない。
+
+### 予約・予約完了ページ
+
+- 対象: `customer/reservation.html`, `customer/reservation-complete.html`
+- 追加: `css/customer-booking-layout.css`
+- 参照:
+  - `レイアウトimg/09. customer reservation.html 来店予約ページ.png`
+  - `レイアウトimg/10. customer reservation-complete.html 予約完了ページ.png`
+- 実装:
+  - 参照画像をページ内に差し込まず、既存アセットと後勝ちCSSで予約カード、予約枠選択、入力欄、確認CTA、完了カードの見た目を調整。
+  - `reservation.html` は既存の `slot-list` と予約枠モーダルを維持し、DBから取得する予約枠表示・予約保存処理は変更しない。
+  - 既存JSが参照する `confirm-btn`, `selected-status`, `slot-list`, `visit-type`, `guest-count`, `staff-memo`, `slot-modal`, `slot-modal-card`, `slot-modal-panels`, `slot-modal-title`, `slot-modal-copy` は維持。
+  - `reservation-complete.html` は予約コード取得、sessionStorage復元、予約コード参照、カウントダウン処理を変更しない。
+- 未対応:
+  - 参照画像の静的カレンダーをそのまま実装することは避け、現行の公開予約枠データ導線を優先。
