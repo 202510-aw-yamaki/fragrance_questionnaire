@@ -104,19 +104,14 @@
   position: relative;
   min-height: min(760px, calc(100vh - 70px));
   display: grid;
-  grid-template-columns: minmax(340px, 0.75fr) minmax(520px, 1fr);
+  grid-template-columns: minmax(0, 680px);
+  justify-content: center;
   align-items: center;
-  gap: 40px;
+  gap: 18px;
 }
 
 .portal-login-page .portal-login-shell::before {
-  content: "";
-  min-height: 560px;
-  border-radius: 22px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 252, 247, 0.24)),
-    url("../img/TOP/hero-visual.png") center / cover no-repeat;
-  box-shadow: var(--admin7-shadow);
+  display: none;
 }
 
 .portal-login-page .portal-login-grid {
@@ -130,6 +125,35 @@
   box-shadow: var(--admin7-shadow);
 }
 
+.portal-login-page .portal-login-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 18px;
+  padding: 6px;
+  border: 1px solid rgba(190, 133, 61, 0.18);
+  border-radius: 14px;
+  background: rgba(245, 233, 216, 0.52);
+}
+
+.portal-login-page .portal-login-tab {
+  min-height: 46px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--admin7-muted);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.portal-login-page .portal-login-tab.is-active {
+  border-color: rgba(190, 133, 61, 0.34);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 249, 240, 0.94));
+  color: var(--admin7-ink);
+  box-shadow: 0 12px 24px rgba(101, 70, 35, 0.1);
+}
+
 .portal-login-page .portal-login-grid::before {
   display: none;
 }
@@ -140,15 +164,16 @@
   box-shadow: none;
 }
 
+.portal-login-page .portal-login-panel[hidden] {
+  display: none;
+}
+
 .portal-login-page .portal-login-panel--staff {
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-  border-bottom: 0;
+  border-radius: 14px;
 }
 
 .portal-login-page .portal-login-panel--manager {
-  border-top-right-radius: 0;
-  border-top-left-radius: 0;
+  border-radius: 14px;
   background: rgba(255, 249, 240, 0.78);
 }
 
@@ -160,10 +185,8 @@
 }
 
 .portal-login-page .portal-login-actions {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  justify-content: flex-end;
+  position: static;
+  justify-content: center;
 }
 
 .portal-admin-settings-page .portal-hero,

@@ -9036,7 +9036,11 @@
       <p class="admin-error" id="config-error" hidden>Supabase 設定が未完了です。`js/supabase-config.js` を設定してください。</p>
       <p class="admin-error" id="login-error" hidden></p>
       <div class="portal-login-grid">
-        <section class="portal-login-panel portal-login-panel--staff">
+        <div class="portal-login-tabs" role="tablist" aria-label="ログイン種別">
+          <button class="portal-login-tab is-active" id="staff-login-tab" type="button" role="tab" aria-selected="true" aria-controls="staff-login-panel" data-login-tab="staff">スタッフログイン</button>
+          <button class="portal-login-tab" id="manager-login-tab" type="button" role="tab" aria-selected="false" aria-controls="manager-login-panel" data-login-tab="manager">管理者ログイン</button>
+        </div>
+        <section class="portal-login-panel portal-login-panel--staff" id="staff-login-panel" role="tabpanel" aria-labelledby="staff-login-tab">
           <p class="portal-hero-label">STAFF LOGIN</p>
           <h1>スタッフ画面へログイン</h1>
           <p class="admin-note">担当スタッフの確認ページ、予約枠作成、予約情報一覧へ進みます。</p>
@@ -9051,7 +9055,7 @@
           </form>
         </section>
 
-        <section class="portal-login-panel portal-login-panel--manager">
+        <section class="portal-login-panel portal-login-panel--manager" id="manager-login-panel" role="tabpanel" aria-labelledby="manager-login-tab" hidden>
           <p class="portal-hero-label">ADMIN LOGIN</p>
           <h1>管理者画面へログイン</h1>
           <p class="admin-note">管理スタッフ確認ページ、配点ロジック、原料ポイントなどの管理画面へ進みます。</p>
@@ -9079,6 +9083,21 @@
     const errorEl = document.getElementById("login-error");
     const configErrorEl = document.getElementById("config-error");
     const loginForms = Array.from(document.querySelectorAll("[data-login-role]"));
+    const loginTabs = Array.from(document.querySelectorAll("[data-login-tab]"));
+    const loginPanels = Array.from(document.querySelectorAll("[role='tabpanel'][id$='login-panel']"));
+
+    function activateLoginTab(role) {
+      loginTabs.forEach((tab) => {
+        const isActive = tab.dataset.loginTab === role;
+        tab.classList.toggle("is-active", isActive);
+        tab.setAttribute("aria-selected", String(isActive));
+      });
+      loginPanels.forEach((panel) => {
+        const form = panel.querySelector("[data-login-role]");
+        panel.hidden = form?.dataset.loginRole !== role;
+      });
+      errorEl.hidden = true;
+    }
 
     async function bootstrap() {
       if (!window.AdminAuth.isConfigured()) {
@@ -9113,6 +9132,12 @@
       });
     });
 
+    loginTabs.forEach((tab) => {
+      tab.addEventListener("click", () => activateLoginTab(tab.dataset.loginTab || "staff"));
+    });
+
+    const initialRole = window.AdminAuth.readRoleFromLocation?.() || window.AdminAuth.readStoredRole?.() || "staff";
+    activateLoginTab(initialRole === "staff" ? "staff" : "manager");
     bootstrap();
   </script>
 </body>
