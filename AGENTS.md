@@ -66,6 +66,7 @@ Codex は作業前に、必ず以下を読むこと。
 7. docs/05_IMPLEMENTATION_ROADMAP.md
 8. docs/06_OPEN_ISSUES.md
 9. docs/presentation/fragrance_questionnaire_architecture_v5.pptx
+10. docs/presentation/fragrance_image_explanations_v1.pptx
 
 特に、DB・認証・QRコード関連の作業では、03_DB_DESIGN_POLICY.md と 05_IMPLEMENTATION_ROADMAP.md を必ず参照すること。
 そして、06_OPEN_ISSUES.md にある項目は、勝手に実装しないこと。
