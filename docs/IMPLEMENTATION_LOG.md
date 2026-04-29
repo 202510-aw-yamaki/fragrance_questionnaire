@@ -25,3 +25,17 @@
   - ヘッダーを固定配置にし、中央カードがビューポート内に収まりやすい高さへ調整。
 - 未対応:
   - 作成可否判断、発送先入力、発送完了、通知対応済み操作は実装しない。
+
+### 会員ログイン・会員トップページ
+
+- 対象: `customer/customer-login.html`, `customer/index.html`
+- 追加: `css/customer-portal-layout.css`
+- 参照:
+  - `レイアウトimg/02. customer login.html 会員ログインページ.png`
+  - `レイアウトimg/03. customer index.html 会員トップページ.png`
+- 実装:
+  - 参照画像をページ内に差し込まず、後勝ちCSSで会員ログインと会員トップの背景、カード、ボタン、履歴リストの見た目を調整。
+  - 既存JSが参照する `customer-login-form`, `setup-button`, `login-status`, `portal-status`, `login-link`, `logout-button`, `member-name`, `member-email`, `member-code`, `reservation-list`, `product-list` は維持。
+  - `customer/customer-login.html` と `customer/index.html` にはCSS読み込みと `body` クラスのみ追加。
+- 未対応:
+  - 前回完成品との差分表示、過去完成品をもとにした再予約UIは `Phase 6` の残タスクとして実装しない。

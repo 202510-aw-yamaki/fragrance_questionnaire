@@ -1,0 +1,399 @@
+/* Shared customer portal layout refinements. Loaded after each page's inline CSS. */
+
+.customer-login-page,
+.customer-index-page {
+  --portal-ink: #3a2416;
+  --portal-muted: #715f51;
+  --portal-line: #e6cba8;
+  --portal-gold: #c8872c;
+  --portal-rose: #d87572;
+  --portal-rose-deep: #bd5f5d;
+  --portal-cream: #fffaf2;
+  --portal-card: rgba(255, 252, 246, 0.94);
+  --portal-shadow: 0 24px 60px rgba(96, 62, 34, 0.13);
+  color: var(--portal-ink);
+  background:
+    linear-gradient(90deg, rgba(255, 248, 238, 0.94) 0%, rgba(255, 248, 238, 0.72) 45%, rgba(255, 248, 238, 0.9) 100%),
+    radial-gradient(circle at 8% 80%, rgba(216, 117, 114, 0.16), transparent 18%),
+    radial-gradient(circle at 90% 24%, rgba(200, 135, 44, 0.18), transparent 22%),
+    linear-gradient(135deg, #fffdf9 0%, #f7eadb 100%);
+}
+
+.customer-login-page .site-header,
+.customer-index-page .site-header {
+  border-bottom: 1px solid rgba(200, 135, 44, 0.45);
+  background: rgba(255, 252, 247, 0.9);
+}
+
+.customer-login-page .brand,
+.customer-index-page .brand {
+  color: var(--portal-ink);
+}
+
+.customer-login-page main,
+.customer-index-page .page-main {
+  position: relative;
+  overflow: hidden;
+}
+
+.customer-login-page main::before,
+.customer-index-page .page-main::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 6% 55%, rgba(255, 255, 255, 0.9) 0 12%, transparent 30%),
+    radial-gradient(ellipse at 88% 22%, rgba(255, 255, 255, 0.72) 0 10%, transparent 26%);
+}
+
+.customer-login-page .site-container,
+.customer-index-page .header-inner,
+.customer-index-page .page-main,
+.customer-index-page .footer-inner {
+  width: min(1500px, calc(100% - 64px));
+}
+
+.customer-login-page .customer-layout {
+  position: relative;
+  z-index: 1;
+  grid-template-columns: minmax(390px, 0.95fr) minmax(420px, 1.05fr);
+  grid-template-areas:
+    "login hero"
+    "login graph"
+    "login history";
+  gap: 24px 48px;
+  align-items: center;
+  min-height: calc(100vh - 168px);
+}
+
+.customer-login-page .hero-card,
+.customer-login-page .login-card,
+.customer-login-page .graph-card,
+.customer-login-page .history-card,
+.customer-index-page .panel,
+.customer-index-page .status,
+.customer-index-page .record,
+.customer-index-page .empty {
+  border: 1px solid rgba(200, 135, 44, 0.32);
+  border-radius: 8px;
+  background: var(--portal-card);
+  box-shadow: var(--portal-shadow);
+}
+
+.customer-login-page .login-card {
+  grid-area: login;
+  position: relative;
+  gap: 18px;
+  padding: clamp(28px, 4vw, 58px);
+  border-radius: 10px;
+  outline: 1px solid rgba(200, 135, 44, 0.42);
+  outline-offset: -12px;
+  text-align: center;
+}
+
+.customer-login-page .login-card::before,
+.customer-login-page .graph-card::before,
+.customer-login-page .history-card::before,
+.customer-index-page .hero-main::before,
+.customer-index-page .history-panel > div:first-child::before {
+  content: "";
+  display: block;
+  width: 132px;
+  height: 18px;
+  margin: 0 auto 10px;
+  background:
+    linear-gradient(var(--portal-gold), var(--portal-gold)) left 50% / 48px 1px no-repeat,
+    linear-gradient(var(--portal-gold), var(--portal-gold)) right 50% / 48px 1px no-repeat,
+    radial-gradient(circle, var(--portal-gold) 0 3px, transparent 4px);
+  opacity: 0.85;
+}
+
+.customer-login-page .login-card .overline,
+.customer-login-page .hero-card .eyebrow,
+.customer-login-page .graph-card .overline,
+.customer-login-page .history-card .overline,
+.customer-index-page .overline {
+  min-height: auto;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--portal-gold);
+  letter-spacing: 0.08em;
+}
+
+.customer-login-page .login-card h2 {
+  margin-bottom: 12px;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.22;
+}
+
+.customer-login-page .login-form {
+  text-align: left;
+}
+
+.customer-login-page .field {
+  color: var(--portal-ink);
+}
+
+.customer-login-page input {
+  min-height: 58px;
+  border-color: rgba(164, 126, 88, 0.52);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.customer-login-page .form-actions {
+  display: grid;
+  gap: 14px;
+}
+
+.customer-login-page .form-actions .btn,
+.customer-index-page .action-row .btn {
+  width: 100%;
+}
+
+.customer-login-page .btn,
+.customer-index-page .btn {
+  border-radius: 6px;
+}
+
+.customer-login-page .btn-primary,
+.customer-index-page .btn.primary {
+  border-color: rgba(166, 80, 73, 0.3);
+  background: linear-gradient(180deg, #e99491, var(--portal-rose-deep));
+  box-shadow: 0 12px 22px rgba(189, 95, 93, 0.24);
+}
+
+.customer-login-page .btn-secondary,
+.customer-index-page .btn:not(.primary) {
+  border-color: rgba(200, 135, 44, 0.5);
+  background: rgba(255, 252, 247, 0.72);
+}
+
+.customer-login-page .portal-points {
+  padding-top: 18px;
+  border-top: 1px solid rgba(200, 135, 44, 0.34);
+  text-align: left;
+}
+
+.customer-login-page .hero-card {
+  grid-area: hero;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--portal-ink);
+  text-align: center;
+}
+
+.customer-login-page .hero-card h1 {
+  margin: 12px auto 8px;
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+}
+
+.customer-login-page .hero-card p {
+  margin-inline: auto;
+  color: var(--portal-muted);
+}
+
+.customer-login-page .graph-card,
+.customer-login-page .history-card {
+  min-height: 180px;
+  padding: 28px;
+}
+
+.customer-login-page .graph-card {
+  grid-area: graph;
+}
+
+.customer-login-page .history-card {
+  grid-area: history;
+}
+
+.customer-login-page .graph-frame,
+.customer-login-page .axis-list {
+  display: none;
+}
+
+.customer-login-page .history-row {
+  border-color: rgba(200, 135, 44, 0.25);
+}
+
+.customer-index-page .page-main {
+  padding: 0 0 32px;
+}
+
+.customer-index-page .hero {
+  position: relative;
+  z-index: 1;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 0.34fr);
+  gap: 22px;
+  align-items: end;
+  min-height: 270px;
+  padding: 42px 0 18px;
+}
+
+.customer-index-page .hero::after {
+  content: "";
+  position: absolute;
+  inset: 0 calc(50% - 50vw) auto;
+  height: 260px;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(255, 252, 247, 0.96) 0%, rgba(255, 252, 247, 0.72) 52%, rgba(255, 252, 247, 0.25) 100%),
+    url("../img/TOP/hero-visual.png") right center / cover no-repeat;
+}
+
+.customer-index-page .hero-main,
+.customer-index-page .member-card,
+.customer-index-page .history-panel {
+  padding: clamp(22px, 3vw, 34px);
+}
+
+.customer-index-page .hero-main {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.customer-index-page h1 {
+  font-size: clamp(2.25rem, 5vw, 4rem);
+}
+
+.customer-index-page .lead {
+  font-size: 1.08rem;
+}
+
+.customer-index-page .action-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  max-width: 720px;
+}
+
+.customer-index-page .status {
+  margin-top: 18px;
+  max-width: 720px;
+  background: rgba(255, 249, 239, 0.86);
+}
+
+.customer-index-page .member-card {
+  background: rgba(255, 252, 247, 0.88);
+}
+
+.customer-index-page .history-grid {
+  position: relative;
+  z-index: 1;
+  grid-template-columns: minmax(360px, 0.95fr) minmax(360px, 1.05fr);
+  gap: 22px;
+}
+
+.customer-index-page .history-panel:first-child {
+  min-height: 360px;
+}
+
+.customer-index-page .record-list {
+  gap: 14px;
+}
+
+.customer-index-page .record {
+  grid-template-columns: 92px minmax(0, 1fr) auto;
+  align-items: center;
+  min-height: 104px;
+  padding: 14px 18px;
+  background: rgba(255, 252, 247, 0.82);
+}
+
+.customer-index-page .record::before {
+  content: "";
+  width: 76px;
+  height: 76px;
+  border-radius: 8px;
+  border: 1px solid rgba(200, 135, 44, 0.24);
+  background:
+    radial-gradient(circle at 48% 28%, rgba(224, 185, 133, 0.9) 0 10px, transparent 11px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(216, 117, 114, 0.1)),
+    rgba(246, 231, 212, 0.8);
+}
+
+.customer-index-page .record h3 {
+  font-size: 1.25rem;
+}
+
+.customer-index-page .pill {
+  border-radius: 6px;
+  background: #fde7df;
+  color: var(--portal-ink);
+}
+
+.customer-index-page .empty {
+  background: rgba(255, 252, 247, 0.78);
+}
+
+@media (max-width: 980px) {
+  .customer-login-page .site-container,
+  .customer-index-page .header-inner,
+  .customer-index-page .page-main,
+  .customer-index-page .footer-inner {
+    width: min(100% - 32px, 720px);
+  }
+
+  .customer-login-page .customer-layout,
+  .customer-index-page .hero,
+  .customer-index-page .history-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .customer-login-page .customer-layout {
+    grid-template-areas:
+      "hero"
+      "login"
+      "graph"
+      "history";
+  }
+
+  .customer-index-page .hero {
+    min-height: 0;
+    padding-top: 28px;
+  }
+
+  .customer-index-page .hero::after {
+    height: 220px;
+    opacity: 0.52;
+  }
+
+  .customer-index-page .action-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .customer-login-page .site-container,
+  .customer-index-page .header-inner,
+  .customer-index-page .page-main,
+  .customer-index-page .footer-inner {
+    width: min(100% - 24px, 520px);
+  }
+
+  .customer-login-page .login-card,
+  .customer-login-page .graph-card,
+  .customer-login-page .history-card,
+  .customer-index-page .hero-main,
+  .customer-index-page .member-card,
+  .customer-index-page .history-panel {
+    padding: 22px;
+  }
+
+  .customer-login-page .login-card {
+    outline-offset: -8px;
+  }
+
+  .customer-index-page .record {
+    grid-template-columns: 1fr;
+  }
+
+  .customer-index-page .record::before {
+    display: none;
+  }
+}
