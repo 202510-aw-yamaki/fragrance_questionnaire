@@ -525,6 +525,16 @@
     const client = window.getSupabaseClient?.();
     const qrToken = String(token || "").trim();
     if (!client || !qrToken) return null;
+    try {
+      const { data, error } = await client.rpc("record_qr_product_access", { p_token: qrToken });
+      if (error) throw error;
+      return normalizeSingleRow(data);
+    } catch (error) {
+      if (!isMissingFunctionError(error)) {
+        console.error("Failed to record QR product access.", error);
+        return null;
+      }
+    }
     const selectColumns = "id, fragrance_product_id, qr_code, public_token, status, expires_at, inactive_reason";
     const findByColumn = async (column) => {
       const { data, error } = await client
@@ -548,6 +558,12 @@
     if (!client) return null;
     const qrCode = await fetchProductQrCodeByToken(token);
     if (!qrCode?.fragrance_product_id) return null;
+    if (qrCode.is_available === false) {
+      return {
+        qrCode,
+        product: null
+      };
+    }
     try {
       const { data, error } = await client
         .from("fragrance_products")

@@ -20,6 +20,7 @@ schema.sql と migrations を同じ既存プロジェクトへ両方そのまま
 8) supabase/migrations/20260429121000_customer_insert_role_guard.sql
 9) supabase/migrations/20260429124500_customer_link_public_records.sql
 10) supabase/migrations/20260429131500_customer_portal_summary.sql
+11) supabase/migrations/20260429134500_qr_access_tracking.sql
 
 docs/archive/ や archived/legacy/ のSQLは現在仕様として実行しないでください。
 
@@ -147,7 +148,9 @@ Edge Functions、メールAPI、送信元、再送、失敗時運用、送信ロ
 このリポジトリ側の更新後、SQL Editorで以下を追加適用してください。
 - supabase/migrations/20260429124500_customer_link_public_records.sql
 - supabase/migrations/20260429131500_customer_portal_summary.sql
+- supabase/migrations/20260429134500_qr_access_tracking.sql
 
 このSQLは、ログイン済み会員の `customers.id` をアンケート結果・予約・完成品へ紐づけるための土台です。
 anonやQR第三者に広い権限を追加するものではありません。
 `fetch_customer_portal_summary()` は会員ページ表示用の限定RPCで、会員本人の予約履歴と制作履歴に必要な項目だけを返します。
+`record_qr_product_access()` はQR商品ページ表示時に `product_qr_codes.access_count` と `last_accessed_at` を更新します。

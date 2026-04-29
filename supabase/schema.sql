@@ -742,6 +742,59 @@ as $$
   );
 $$;
 
+create or replace function public.record_qr_product_access(p_token text)
+returns table(
+  id uuid,
+  fragrance_product_id uuid,
+  qr_code text,
+  public_token text,
+  status text,
+  expires_at timestamptz,
+  inactive_reason text,
+  is_available boolean
+)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_token text := btrim(coalesce(p_token, ''));
+begin
+  if v_token = '' then
+    return;
+  end if;
+
+  return query
+  with target_qr as (
+    select pq.id
+    from public.product_qr_codes pq
+    where pq.is_public = true
+      and (pq.public_token = v_token or pq.qr_code = v_token)
+    order by pq.updated_at desc nulls last, pq.created_at desc nulls last
+    limit 1
+  )
+  update public.product_qr_codes pq
+  set
+    access_count = pq.access_count + 1,
+    last_accessed_at = now(),
+    updated_at = now()
+  from target_qr
+  where pq.id = target_qr.id
+  returning
+    pq.id,
+    pq.fragrance_product_id,
+    pq.qr_code,
+    pq.public_token,
+    pq.status,
+    pq.expires_at,
+    pq.inactive_reason,
+    (
+      pq.status = 'active'
+      and (pq.expires_at is null or pq.expires_at > now())
+    ) as is_available;
+end;
+$$;
+
 create or replace function public.set_qr_product_request_defaults()
 returns trigger
 language plpgsql
@@ -1174,6 +1227,7 @@ using (
     where pq.fragrance_product_id = fragrance_products.id
       and pq.status = 'active'
       and pq.is_public = true
+      and (pq.expires_at is null or pq.expires_at > now())
   )
 );
 create policy "staff fragrance products own"
@@ -1199,7 +1253,11 @@ drop policy if exists "manager product qr codes all" on public.product_qr_codes;
 create policy "public select active product qr codes"
 on public.product_qr_codes for select
 to anon, authenticated
-using (status = 'active' and is_public = true);
+using (
+  status = 'active'
+  and is_public = true
+  and (expires_at is null or expires_at > now())
+);
 create policy "staff product qr codes own"
 on public.product_qr_codes for all
 to authenticated
@@ -1343,6 +1401,7 @@ grant execute on function public.fetch_reservation_by_code(text) to anon, authen
 grant execute on function public.qr_product_public_max_volume_ml() to anon, authenticated;
 grant execute on function public.current_customer_profile_id() to anon, authenticated;
 grant execute on function public.fetch_customer_portal_summary() to authenticated;
+grant execute on function public.record_qr_product_access(text) to anon, authenticated;
 
 grant insert (
   result_code,

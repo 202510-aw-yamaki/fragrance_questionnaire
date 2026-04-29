@@ -108,6 +108,15 @@ qr_product_requests.handled_by_staff_id
 - `qr_product_requests` の公開insertは、メール形式、依頼容量、QR有効期限、QR公開状態、完成品公開状態をRLSで検証する
 - 最大容量設定が未登録または数値でない場合は、DB側の既定値を100mlとする
 
+## 2026-04-29 QR access tracking note
+
+QR商品ページのアクセス記録は `record_qr_product_access()` を入口にする。
+
+- 公開QRトークンまたはQRコード値から `product_qr_codes` を解決し、`access_count` と `last_accessed_at` を更新する
+- 公開selectの対象は、有効期限内の `active` / `is_public` QRに限定する
+- 期限切れ・無効化QRへのアクセス記録は行うが、作成依頼フォームは有効化しない
+- 無効化QRの直近アクセス集計、管理者通知、自動無効化処理は後続フェーズで扱う
+
 ## 2026-04-29 customer auth connection note
 
 会員ログインページは、Supabase Auth と `customers` を接続する入口として扱う。
