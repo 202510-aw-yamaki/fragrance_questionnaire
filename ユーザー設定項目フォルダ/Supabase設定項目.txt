@@ -20,6 +20,9 @@ Supabase設定項目
 10) supabase/migrations/20260429131500_customer_portal_summary.sql
 11) supabase/migrations/20260429134500_qr_access_tracking.sql
 
+2026-04-29追記:
+ユーザー側で 9) から 11) までのSQL Editor適用が完了済みです。
+
 新規の空プロジェクトにまとめて作る場合だけ、supabase/schema.sql を使ってください。
 既存プロジェクトに schema.sql と migrations を両方そのまま流すと、重複や意図しない上書き確認が増えるため避けてください。
 

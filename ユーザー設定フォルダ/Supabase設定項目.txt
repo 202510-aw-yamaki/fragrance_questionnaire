@@ -154,3 +154,12 @@ Edge Functions、メールAPI、送信元、再送、失敗時運用、送信ロ
 anonやQR第三者に広い権限を追加するものではありません。
 `fetch_customer_portal_summary()` は会員ページ表示用の限定RPCで、会員本人の予約履歴と制作履歴に必要な項目だけを返します。
 `record_qr_product_access()` はQR商品ページ表示時に `product_qr_codes.access_count` と `last_accessed_at` を更新します。
+
+11. 2026-04-29 追加SQL適用済み確認
+
+ユーザー側で以下のSQL Editor適用が完了済みです。
+- supabase/migrations/20260429124500_customer_link_public_records.sql
+- supabase/migrations/20260429131500_customer_portal_summary.sql
+- supabase/migrations/20260429134500_qr_access_tracking.sql
+
+このため、会員ID紐づけ、会員ページ用限定RPC、QR商品ページアクセス記録はSupabase側にも反映済みとして扱います。
