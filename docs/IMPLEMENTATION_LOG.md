@@ -39,3 +39,15 @@
   - `customer/customer-login.html` と `customer/index.html` にはCSS読み込みと `body` クラスのみ追加。
 - 未対応:
   - 前回完成品との差分表示、過去完成品をもとにした再予約UIは `Phase 6` の残タスクとして実装しない。
+
+### トップページ
+
+- 対象: `index.html`
+- 追加: `css/top-reference-layout.css`
+- 参照: `レイアウトimg/01. index.html トップページ.png`
+- 実装:
+  - 参照画像をページ内に差し込まず、既存の `img/TOP/hero-visual.png` などの実在アセットと後勝ちCSSで、ヒーロー、CTA、3ステップ、FAQ、最終CTAの見た目を調整。
+  - 既存のヘッダー、ナビゲーション、アンケート、会員ログイン、予約導線のリンクは維持。
+  - `index.html` にはCSS読み込みと `body` クラスのみ追加。
+- 未対応:
+  - 文言や文字表示の修正は行わない。

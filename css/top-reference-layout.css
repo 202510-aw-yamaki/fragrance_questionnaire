@@ -1,0 +1,370 @@
+.top-reference-page {
+  --top-ink: #2d1f18;
+  --top-muted: #6d5c4e;
+  --top-line: #e6caa7;
+  --top-gold: #c18731;
+  --top-rose: #df7778;
+  --top-rose-deep: #c95e62;
+  --top-card: rgba(255, 252, 247, 0.92);
+  background:
+    linear-gradient(180deg, #fffaf4 0%, #fffdf9 44%, #fbf2e8 100%);
+  color: var(--top-ink);
+}
+
+.top-reference-page .site-header {
+  background: rgba(255, 252, 247, 0.94);
+  border-bottom: 1px solid rgba(197, 139, 68, 0.24);
+  box-shadow: 0 12px 28px rgba(105, 70, 38, 0.06);
+}
+
+.top-reference-page .page-header-inner {
+  width: min(1760px, calc(100% - 56px));
+  min-height: 68px;
+}
+
+.top-reference-page .brand img {
+  max-height: 48px;
+}
+
+.top-reference-page .main-nav a {
+  color: #39281f;
+  font-weight: 700;
+}
+
+.top-reference-page .header-actions .btn,
+.top-reference-page .btn {
+  border-radius: 8px;
+}
+
+.top-reference-page .btn-primary {
+  border-color: rgba(191, 91, 96, 0.34);
+  background: linear-gradient(180deg, #e98a8b, var(--top-rose-deep));
+  color: #fffdfb;
+  box-shadow: 0 14px 24px rgba(201, 94, 98, 0.22);
+}
+
+.top-reference-page .header-reserve-link {
+  background: linear-gradient(180deg, #d8a650, #b97823);
+  border-color: rgba(156, 101, 26, 0.3);
+}
+
+.top-reference-page .btn-secondary {
+  border-color: rgba(193, 135, 49, 0.54);
+  background: rgba(255, 252, 247, 0.76);
+  color: var(--top-ink);
+}
+
+.top-reference-page .hero {
+  position: relative;
+  min-height: min(640px, calc(100svh - 68px));
+  padding: 0;
+  display: grid;
+  align-items: stretch;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgba(255, 249, 241, 0.98) 0%, rgba(255, 249, 241, 0.86) 39%, rgba(255, 249, 241, 0.22) 68%, rgba(255, 249, 241, 0.05) 100%),
+    url("../img/TOP/hero-visual.png") right center / cover no-repeat;
+}
+
+.top-reference-page .hero::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 90px;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(255, 252, 247, 0.96));
+}
+
+.top-reference-page .hero .section-inner {
+  position: relative;
+  z-index: 1;
+  width: min(1760px, calc(100% - 64px));
+  min-height: min(640px, calc(100svh - 68px));
+  display: grid;
+  align-content: center;
+}
+
+.top-reference-page .hero-wrap {
+  grid-template-columns: minmax(360px, 0.54fr) minmax(360px, 0.46fr);
+  align-items: center;
+}
+
+.top-reference-page .hero-visual {
+  display: none;
+}
+
+.top-reference-page .hero-copy {
+  max-width: 660px;
+  min-height: 0;
+  padding: clamp(34px, 5vw, 80px) 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.top-reference-page .hero-copy .eyebrow,
+.top-reference-page .section-header .eyebrow {
+  min-height: 0;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--top-gold);
+}
+
+.top-reference-page .hero-copy h1 {
+  margin: 10px 0 22px;
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+  font-size: clamp(3.1rem, 6.4vw, 6.1rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+
+.top-reference-page .lead {
+  max-width: 660px;
+  color: #3e3028;
+  font-weight: 600;
+}
+
+.top-reference-page .cta-row {
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.top-reference-page .cta-row .btn {
+  min-width: 210px;
+  min-height: 58px;
+  font-size: 1rem;
+}
+
+.top-reference-page .hero-points,
+.top-reference-page .hero-gallery,
+.top-reference-page .flow-visual-card {
+  display: none;
+}
+
+.top-reference-page main section {
+  padding: 58px 0;
+}
+
+.top-reference-page .section-header {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.top-reference-page .section-header h2 {
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.top-reference-page .section-header::before,
+.top-reference-page .section-header::after,
+.top-reference-page .card h3::after {
+  content: "";
+  display: block;
+  width: 160px;
+  height: 18px;
+  margin: 0 auto 6px;
+  background:
+    linear-gradient(var(--top-gold), var(--top-gold)) left 50% / 60px 1px no-repeat,
+    linear-gradient(var(--top-gold), var(--top-gold)) right 50% / 60px 1px no-repeat,
+    radial-gradient(circle, var(--top-gold) 0 3px, transparent 4px);
+  opacity: 0.78;
+}
+
+.top-reference-page .section-header::after {
+  margin: 4px auto 0;
+}
+
+.top-reference-page .flow-grid,
+.top-reference-page .reassure-grid,
+.top-reference-page .info-layout,
+.top-reference-page .benefits-grid,
+.top-reference-page .cta-box {
+  gap: 28px;
+}
+
+.top-reference-page .card,
+.top-reference-page .cta-box,
+.top-reference-page .reassure-item,
+.top-reference-page .info-map-card,
+.top-reference-page .preview-shell,
+.top-reference-page .preview-balance {
+  border-color: rgba(193, 135, 49, 0.28);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 251, 246, 0.88));
+  box-shadow: 0 18px 42px rgba(99, 62, 31, 0.1);
+}
+
+.top-reference-page #flow {
+  padding-top: 48px;
+}
+
+.top-reference-page #flow .flow-grid > .card {
+  min-height: 286px;
+  text-align: center;
+  display: grid;
+  align-content: start;
+}
+
+.top-reference-page .flow-title-row {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.top-reference-page .step-no {
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #e2b461, #c18731);
+  color: #fffdf8;
+}
+
+.top-reference-page .flow-bullets li,
+.top-reference-page .benefit-list li {
+  padding-left: 0;
+}
+
+.top-reference-page .flow-bullets li::before,
+.top-reference-page .benefit-list li::before {
+  display: none;
+}
+
+.top-reference-page .flow-bottom {
+  margin-top: 28px;
+  grid-template-columns: minmax(0, 0.9fr) minmax(380px, 1.1fr);
+}
+
+.top-reference-page .flow-action-card {
+  min-height: 100%;
+}
+
+.top-reference-page .reassure-item {
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  align-items: center;
+  gap: 18px;
+}
+
+.top-reference-page .reassure-item::before {
+  content: "";
+  width: 62px;
+  height: 62px;
+  border: 1px solid rgba(193, 135, 49, 0.3);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 50% 34%, rgba(193, 135, 49, 0.32) 0 14px, transparent 15px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(241, 214, 178, 0.32));
+}
+
+.top-reference-page .faq-grid details {
+  border-radius: 8px;
+  border-color: rgba(193, 135, 49, 0.25);
+}
+
+.top-reference-page .faq-grid summary {
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+}
+
+.top-reference-page #information {
+  padding-top: 34px;
+}
+
+.top-reference-page .info-map-card iframe {
+  min-height: 300px;
+}
+
+.top-reference-page .cta-section .cta-box {
+  position: relative;
+  overflow: hidden;
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+  padding: 34px;
+}
+
+.top-reference-page .cta-section .cta-box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(255, 246, 242, 0.92), rgba(255, 246, 242, 0.38));
+}
+
+.top-reference-page .cta-section .cta-box > * {
+  position: relative;
+  z-index: 1;
+}
+
+.top-reference-page .cta-media {
+  min-height: 240px;
+  border-radius: 8px;
+}
+
+.top-reference-page .site-footer {
+  background: #fff7ed;
+  border-top-color: rgba(193, 135, 49, 0.22);
+}
+
+@media (max-width: 68.6875em) {
+  .top-reference-page .page-header-inner,
+  .top-reference-page .hero .section-inner {
+    width: min(100% - 32px, 920px);
+  }
+
+  .top-reference-page .hero {
+    background:
+      linear-gradient(180deg, rgba(255, 249, 241, 0.94), rgba(255, 249, 241, 0.82)),
+      url("../img/TOP/hero-visual.png") center / cover no-repeat;
+  }
+
+  .top-reference-page .hero .section-inner {
+    min-height: auto;
+  }
+
+  .top-reference-page .hero-wrap,
+  .top-reference-page .flow-bottom,
+  .top-reference-page .cta-section .cta-box {
+    grid-template-columns: 1fr;
+  }
+
+  .top-reference-page .hero-copy {
+    max-width: 720px;
+    padding: 58px 0;
+  }
+}
+
+@media (max-width: 47.9375em) {
+  .top-reference-page .page-header-inner {
+    min-height: auto;
+  }
+
+  .top-reference-page .hero {
+    min-height: auto;
+  }
+
+  .top-reference-page .hero-copy {
+    padding: 46px 0 34px;
+  }
+
+  .top-reference-page .hero-copy h1 {
+    font-size: clamp(2.55rem, 13vw, 4.6rem);
+  }
+
+  .top-reference-page .cta-row .btn {
+    width: 100%;
+  }
+
+  .top-reference-page main section {
+    padding: 44px 0;
+  }
+
+  .top-reference-page .reassure-item {
+    grid-template-columns: 1fr;
+  }
+}
