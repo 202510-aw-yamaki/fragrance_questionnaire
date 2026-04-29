@@ -1,0 +1,443 @@
+.portal-login-page,
+.portal-admin-settings-page,
+.portal-admin-scoring-page,
+.portal-admin-materials-page {
+  --admin7-ink: #34231c;
+  --admin7-muted: #75675b;
+  --admin7-line: rgba(202, 127, 28, 0.24);
+  --admin7-gold: #c97d19;
+  --admin7-gold-soft: rgba(202, 127, 28, 0.13);
+  --admin7-green: #56764e;
+  --admin7-panel: rgba(255, 253, 248, 0.95);
+  --admin7-shadow: 0 26px 72px rgba(101, 70, 35, 0.13);
+  color: var(--admin7-ink);
+  background:
+    radial-gradient(circle at 0 20%, rgba(214, 151, 82, 0.14), transparent 25rem),
+    radial-gradient(circle at 100% 16%, rgba(221, 180, 122, 0.2), transparent 30rem),
+    linear-gradient(180deg, #fffdf8 0%, #fbf5ec 58%, #fffaf3 100%);
+}
+
+.portal-login-page::before,
+.portal-login-page::after,
+.portal-admin-settings-page::before,
+.portal-admin-scoring-page::before,
+.portal-admin-materials-page::before {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.portal-login-page::before,
+.portal-admin-settings-page::before,
+.portal-admin-scoring-page::before,
+.portal-admin-materials-page::before {
+  left: -6rem;
+  bottom: -3rem;
+  width: min(28vw, 25rem);
+  aspect-ratio: 0.78;
+  border: 1px solid rgba(202, 127, 28, 0.16);
+  border-radius: 43% 43% 18% 18%;
+  transform: rotate(-9deg);
+  opacity: 0.5;
+}
+
+.portal-login-page::after {
+  right: -5rem;
+  top: 9rem;
+  width: min(30vw, 27rem);
+  aspect-ratio: 1.2;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 44% 44%, rgba(255, 255, 255, 0.78), transparent 38%),
+    linear-gradient(135deg, rgba(202, 127, 28, 0.14), transparent 62%);
+  opacity: 0.72;
+}
+
+.portal-admin-settings-page .admin-header,
+.portal-admin-scoring-page .admin-header,
+.portal-admin-materials-page .admin-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  border-bottom: 1px solid var(--admin7-line);
+  background: rgba(255, 252, 246, 0.91);
+  backdrop-filter: blur(14px);
+}
+
+.portal-admin-settings-page .admin-header-inner--manager,
+.portal-admin-scoring-page .admin-header-inner--manager,
+.portal-admin-materials-page .admin-header-inner--manager,
+.portal-login-page .portal-login-shell {
+  width: min(1480px, calc(100vw - 64px));
+}
+
+.portal-admin-settings-page .admin-main.site-container.portal-stack,
+.portal-admin-scoring-page .admin-main.site-container.portal-stack,
+.portal-admin-materials-page .admin-main.site-container.portal-stack {
+  width: min(1480px, calc(100vw - 72px));
+  margin: 24px auto 48px;
+  gap: 18px;
+}
+
+.portal-admin-settings-page .admin-panel,
+.portal-admin-scoring-page .admin-panel,
+.portal-admin-materials-page .admin-panel,
+.portal-admin-materials-page .portal-material-list-panel,
+.portal-login-page .portal-login-panel {
+  border: 1px solid rgba(190, 133, 61, 0.2);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 251, 244, 0.92)),
+    var(--admin7-panel);
+  box-shadow: var(--admin7-shadow);
+}
+
+.portal-login-page .admin-main.portal-login-main {
+  min-height: 100vh;
+  width: min(1480px, calc(100vw - 64px));
+  display: grid;
+  place-items: center;
+}
+
+.portal-login-page .portal-login-shell {
+  position: relative;
+  min-height: min(760px, calc(100vh - 70px));
+  display: grid;
+  grid-template-columns: minmax(340px, 0.75fr) minmax(520px, 1fr);
+  align-items: center;
+  gap: 40px;
+}
+
+.portal-login-page .portal-login-shell::before {
+  content: "";
+  min-height: 560px;
+  border-radius: 22px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 252, 247, 0.24)),
+    url("../img/TOP/hero-visual.png") center / cover no-repeat;
+  box-shadow: var(--admin7-shadow);
+}
+
+.portal-login-page .portal-login-grid {
+  position: relative;
+  grid-template-columns: 1fr;
+  gap: 0;
+  padding: 30px;
+  border: 1px solid rgba(190, 133, 61, 0.22);
+  border-radius: 20px;
+  background: rgba(255, 253, 248, 0.96);
+  box-shadow: var(--admin7-shadow);
+}
+
+.portal-login-page .portal-login-grid::before {
+  display: none;
+}
+
+.portal-login-page .portal-login-panel {
+  min-height: auto;
+  border-radius: 14px;
+  box-shadow: none;
+}
+
+.portal-login-page .portal-login-panel--staff {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  border-bottom: 0;
+}
+
+.portal-login-page .portal-login-panel--manager {
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+  background: rgba(255, 249, 240, 0.78);
+}
+
+.portal-login-page .portal-login-form input,
+.portal-login-page .portal-login-button,
+.portal-login-page .portal-login-actions .admin-btn {
+  min-height: 48px;
+  border-radius: 10px;
+}
+
+.portal-login-page .portal-login-actions {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  justify-content: flex-end;
+}
+
+.portal-admin-settings-page .portal-hero,
+.portal-admin-scoring-page .portal-scoring-hero-card,
+.portal-admin-materials-page .portal-materials-overview-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.portal-admin-settings-page .portal-hero::after,
+.portal-admin-scoring-page .portal-scoring-hero-card::after,
+.portal-admin-materials-page .portal-materials-overview-card::after {
+  content: "";
+  position: absolute;
+  right: 2rem;
+  top: 1rem;
+  width: 18rem;
+  aspect-ratio: 1.3;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 55% 35%, rgba(255, 255, 255, 0.82), transparent 30%),
+    linear-gradient(135deg, rgba(202, 127, 28, 0.12), transparent 66%);
+  opacity: 0.6;
+}
+
+.portal-admin-settings-page .portal-hero-label,
+.portal-admin-scoring-page .portal-hero-label,
+.portal-admin-materials-page .portal-hero-label,
+.portal-login-page .portal-hero-label {
+  color: var(--admin7-gold);
+  letter-spacing: 0.1em;
+}
+
+.portal-admin-settings-page h1,
+.portal-admin-scoring-page h1,
+.portal-admin-materials-page h1,
+.portal-login-page h1 {
+  color: var(--admin7-ink);
+  letter-spacing: 0;
+}
+
+.portal-admin-settings-page .portal-control-grid {
+  grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.85fr);
+  gap: 18px;
+}
+
+.portal-admin-settings-page .portal-settings-today-panel,
+.portal-admin-settings-page .portal-settings-side-card,
+.portal-admin-settings-page .portal-qr-settings-panel,
+.portal-admin-settings-page .portal-settings-calendar-panel {
+  border-radius: 18px;
+}
+
+.portal-admin-settings-page .portal-settings-today-panel .admin-card-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.portal-admin-settings-page .portal-settings-staff-card,
+.portal-admin-settings-page .portal-settings-action-stack .admin-btn,
+.portal-admin-settings-page .portal-settings-select,
+.portal-admin-settings-page .portal-calendar-shell,
+.portal-admin-settings-page .portal-qr-settings-panel input {
+  border-radius: 12px;
+}
+
+.portal-admin-settings-page .portal-qr-settings-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 0.72fr) minmax(390px, 0.48fr);
+  gap: 26px;
+  align-items: start;
+  padding: 24px;
+}
+
+.portal-admin-settings-page .portal-qr-settings-panel .portal-section-head {
+  grid-column: 1 / -1;
+}
+
+.portal-admin-settings-page #qr-product-settings-form {
+  display: grid;
+  gap: 16px;
+}
+
+.portal-admin-settings-page #qr-product-settings-form .admin-grid.cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.portal-admin-settings-page #qr-product-settings-form .admin-grid.cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.portal-admin-settings-page .portal-settings-calendar-panel {
+  overflow: hidden;
+}
+
+.portal-admin-settings-page .portal-calendar-shell {
+  border: 1px solid rgba(190, 133, 61, 0.18);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.portal-admin-scoring-page .portal-scoring-hero-grid,
+.portal-admin-scoring-page .portal-scoring-hero-bottom {
+  position: relative;
+  z-index: 1;
+}
+
+.portal-admin-scoring-page .portal-scoring-top-actions .admin-btn,
+.portal-admin-scoring-page .portal-scoring-inline-actions .admin-btn,
+.portal-admin-scoring-page .portal-scoring-save-form .admin-actions .admin-btn,
+.portal-admin-materials-page .portal-materials-save-actions .admin-btn,
+.portal-admin-materials-page .portal-material-json-actions .admin-btn,
+.portal-admin-materials-page .portal-materials-entry-actions .admin-btn {
+  border-radius: 999px;
+}
+
+.portal-admin-scoring-page .portal-scoring-branch-area {
+  border-style: dashed;
+}
+
+.portal-admin-scoring-page .portal-scoring-branch-shell {
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 16px;
+}
+
+.portal-admin-scoring-page .portal-scoring-columns {
+  grid-template-columns: minmax(360px, 0.9fr) minmax(460px, 1.1fr);
+  gap: 18px;
+}
+
+.portal-admin-scoring-page .portal-scoring-column {
+  gap: 18px;
+}
+
+.portal-admin-scoring-page .portal-scoring-question-card,
+.portal-admin-scoring-page .portal-scoring-basic-card,
+.portal-admin-scoring-page .portal-scoring-branch-card,
+.portal-admin-scoring-page .portal-scoring-weight-card,
+.portal-admin-scoring-page .portal-scoring-finish-table {
+  border: 1px solid rgba(190, 133, 61, 0.18);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.portal-admin-scoring-page .portal-scoring-score-table {
+  border-radius: 12px;
+  background: rgba(255, 252, 247, 0.8);
+}
+
+.portal-admin-scoring-page .portal-scoring-score-row {
+  grid-template-columns: 36px minmax(160px, 1fr) repeat(5, minmax(50px, 0.6fr));
+}
+
+.portal-admin-scoring-page .portal-scoring-finish-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 0.78fr);
+  gap: 18px;
+}
+
+.portal-admin-scoring-page .portal-scoring-explanation {
+  border-radius: 16px;
+  background: rgba(255, 249, 239, 0.78);
+}
+
+.portal-admin-materials-page .portal-materials-overview-card {
+  gap: 18px;
+}
+
+.portal-admin-materials-page .portal-materials-hero-row {
+  grid-template-columns: minmax(360px, 0.9fr) minmax(0, 1fr) auto;
+  align-items: end;
+}
+
+.portal-admin-materials-page .portal-materials-control-row {
+  grid-template-columns: 0.55fr 0.9fr 0.8fr 0.8fr auto;
+  gap: 12px;
+}
+
+.portal-admin-materials-page .portal-materials-search-row {
+  grid-template-columns: minmax(280px, 0.72fr) minmax(0, 1fr);
+  gap: 14px;
+}
+
+.portal-admin-materials-page .portal-material-chip-grid {
+  grid-template-columns: repeat(6, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.portal-admin-materials-page .portal-material-chip,
+.portal-admin-materials-page .portal-material-card,
+.portal-admin-materials-page .portal-materials-stat,
+.portal-admin-materials-page .portal-materials-select-field,
+.portal-admin-materials-page .portal-material-json-card {
+  border-radius: 14px;
+}
+
+.portal-admin-materials-page .portal-material-list-panel {
+  padding: 18px;
+}
+
+.portal-admin-materials-page .portal-material-card-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.portal-admin-materials-page .portal-material-axis-row {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.portal-admin-materials-page .portal-material-json-head {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.portal-admin-materials-page .portal-modal-dialog--material {
+  width: min(920px, calc(100vw - 42px));
+  border: 1px solid rgba(190, 133, 61, 0.24);
+  border-radius: 20px;
+  background: rgba(255, 253, 248, 0.98);
+}
+
+@media (max-width: 1180px) {
+  .portal-admin-settings-page .admin-main.site-container.portal-stack,
+  .portal-admin-scoring-page .admin-main.site-container.portal-stack,
+  .portal-admin-materials-page .admin-main.site-container.portal-stack,
+  .portal-login-page .portal-login-shell {
+    width: min(1120px, calc(100vw - 40px));
+  }
+
+  .portal-login-page .portal-login-shell,
+  .portal-admin-settings-page .portal-control-grid,
+  .portal-admin-settings-page .portal-qr-settings-panel,
+  .portal-admin-scoring-page .portal-scoring-columns,
+  .portal-admin-scoring-page .portal-scoring-finish-grid,
+  .portal-admin-materials-page .portal-materials-hero-row,
+  .portal-admin-materials-page .portal-materials-control-row,
+  .portal-admin-materials-page .portal-materials-search-row {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-login-page .portal-login-actions {
+    position: static;
+  }
+
+  .portal-admin-materials-page .portal-material-chip-grid,
+  .portal-admin-materials-page .portal-material-card-grid,
+  .portal-admin-settings-page #qr-product-settings-form .admin-grid.cols-3,
+  .portal-admin-settings-page #qr-product-settings-form .admin-grid.cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .portal-admin-settings-page .admin-main.site-container.portal-stack,
+  .portal-admin-scoring-page .admin-main.site-container.portal-stack,
+  .portal-admin-materials-page .admin-main.site-container.portal-stack,
+  .portal-login-page .admin-main.portal-login-main,
+  .portal-login-page .portal-login-shell {
+    width: min(100vw - 24px, 1120px);
+  }
+
+  .portal-login-page .portal-login-grid,
+  .portal-admin-settings-page .portal-qr-settings-panel {
+    padding: 18px;
+  }
+
+  .portal-admin-settings-page .portal-settings-today-panel .admin-card-list,
+  .portal-admin-materials-page .portal-material-chip-grid,
+  .portal-admin-materials-page .portal-material-card-grid,
+  .portal-admin-materials-page .portal-material-axis-row,
+  .portal-admin-settings-page #qr-product-settings-form .admin-grid.cols-3,
+  .portal-admin-settings-page #qr-product-settings-form .admin-grid.cols-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-admin-scoring-page .portal-scoring-score-table {
+    overflow-x: auto;
+  }
+}

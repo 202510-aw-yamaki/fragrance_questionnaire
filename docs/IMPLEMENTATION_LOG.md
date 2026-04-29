@@ -6,6 +6,18 @@
 
 ## 2026-04-29
 
+### 管理系ページのレイアウト調整
+
+- 対象: `admin-login.html`, `admin/admin-settings.html`, `admin/admin-scoring.html`, `admin/admin-materials.html`
+- 追加: `css/admin-phase7-ui.css`
+- 実装:
+  - 既存HTMLとインラインCSSは残し、外部CSSを後勝ちで読み込む構成にした。
+  - ログイン、基本設定、配点ロジック、原料ポイントの管理系画面をレイアウト画像13/22/23/24へ寄せた。
+  - レイアウト画像25のQR商品設定は、現状の `admin-settings.html` 内 `portal-qr-settings-panel` を対象として見た目を調整。
+  - Auth、RLS、DB保存、配点JSON、原料保存、QR公開設定のロジックは変更していない。
+- 未対応:
+  - QR商品設定の専用ページ化、実メール送信、通知対応済み操作は後続フェーズ扱い。
+
 ### スタッフ運用ページのレイアウト調整
 
 - 対象: `staff/staff-reservations.html`, `staff/staff-slots.html`, `staff/staff-customer-detail.html`
