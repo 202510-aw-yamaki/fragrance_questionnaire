@@ -129,3 +129,12 @@ qr_product_requests.handled_by_staff_id
 - `fragrance_products.customer_id` は、スタッフ画面の完成品保存時に予約の `customer_id` を引き継ぐ
 - QR第三者はこの紐づけには入れず、引き続き `qr_product_requests` のみで扱う
 - 会員ページでの制作履歴表示・差分表示・再予約UIは後続フェーズで扱う
+
+## 2026-04-29 customer portal summary note
+
+会員ページ表示は、base tableを直接広く読ませるのではなく、`fetch_customer_portal_summary()` を入口にする。
+
+- 現在のSupabase Authユーザーから `current_customer_profile_id()` で本人の `customers.id` を解決する
+- 返却するのは会員情報、予約履歴、制作履歴の表示に必要な限定項目のみとする
+- QR第三者、スタッフ、管理者は会員ページの履歴取得対象にしない
+- 過去完成品との差分計算や再予約生成は、このRPCとは分けて後続フェーズで扱う

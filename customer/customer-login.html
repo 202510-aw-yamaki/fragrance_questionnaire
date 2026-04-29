@@ -627,6 +627,9 @@
           var result = await window.FragrancePublicData.signInCustomer(credentials.email, credentials.password);
           var displayName = result.customer?.display_name || credentials.email;
           showStatus(displayName + " としてログインしました。会員情報をDBに接続済みです。");
+          window.setTimeout(function () {
+            window.location.href = "index.html";
+          }, 500);
         } catch (error) {
           showStatus(error?.message || "ログインに失敗しました。");
         } finally {
@@ -653,6 +656,9 @@
             return;
           }
           showStatus("会員アカウントを作成し、customersに紐づけました。");
+          window.setTimeout(function () {
+            window.location.href = "index.html";
+          }, 500);
         } catch (error) {
           showStatus(error?.message || "初回設定に失敗しました。");
         } finally {

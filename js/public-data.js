@@ -432,6 +432,50 @@
     };
   }
 
+  async function signOutCustomer() {
+    const client = window.getSupabaseClient?.();
+    if (!client?.auth?.signOut) return;
+    await client.auth.signOut();
+  }
+
+  function normalizeCustomerPortalPayload(data, customerFallback) {
+    const payload = data || {};
+    return {
+      customer: payload.customer || customerFallback || null,
+      reservations: Array.isArray(payload.reservations) ? payload.reservations : [],
+      products: Array.isArray(payload.products) ? payload.products : []
+    };
+  }
+
+  async function loadCustomerPortalData() {
+    const client = window.getSupabaseClient?.();
+    if (!client) return normalizeCustomerPortalPayload(null, null);
+    const customer = await getCurrentCustomerProfile();
+    if (!customer?.id) return normalizeCustomerPortalPayload(null, null);
+    try {
+      const { data, error } = await client.rpc("fetch_customer_portal_summary");
+      if (error) throw error;
+      return normalizeCustomerPortalPayload(data, customer);
+    } catch (error) {
+      if (!isMissingFunctionError(error)) {
+        console.error("Failed to load customer portal summary.", error);
+        return normalizeCustomerPortalPayload(null, customer);
+      }
+    }
+    try {
+      const { data, error } = await client
+        .from("reservations")
+        .select("id, reservation_code, slot_label, visit_type, guest_count, summary_headline, profile_key, status, created_at, updated_at")
+        .eq("customer_id", customer.id)
+        .order("updated_at", { ascending: false });
+      if (error) throw error;
+      return normalizeCustomerPortalPayload({ reservations: data || [] }, customer);
+    } catch (error) {
+      console.error("Failed to load customer reservation fallback.", error);
+      return normalizeCustomerPortalPayload(null, customer);
+    }
+  }
+
   function toFiniteNumber(value) {
     const number = Number(value);
     return Number.isFinite(number) ? number : undefined;
@@ -555,8 +599,10 @@
     fetchReservationByCode,
     signInCustomer,
     signUpCustomer,
+    signOutCustomer,
     ensureCustomerProfile,
     getCurrentCustomerProfile,
+    loadCustomerPortalData,
     loadQrProductPublicSettings,
     fetchQrProductPageData,
     createQrProductRequest
