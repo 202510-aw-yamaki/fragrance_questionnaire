@@ -6,6 +6,17 @@
 
 ## 2026-04-29
 
+### スタッフ運用ページのレイアウト調整
+
+- 対象: `staff/staff-reservations.html`, `staff/staff-slots.html`, `staff/staff-customer-detail.html`
+- 追加: `css/staff-phase7-layout.css`
+- 実装:
+  - 既存の巨大なインラインCSSは削除せず、`</style>` 直後の外部CSSで後勝ち調整。
+  - 予約一覧、予約枠作成、スタッフ専用詳細の3ページを、レイアウト画像15/16/17のカード・ヘッダー・業務画面構成へ近づけた。
+  - 既存IDとJS生成クラスを維持し、DB接続・予約状態更新・QR生成条件のロジックは変更していない。
+- 未対応:
+  - 香りのバランス調整モーダル、商品名入力モーダル、同意確認モーダルの専用フロー分離は後続作業。
+
 ### QR商品作成依頼ページの表示指摘対応
 
 - 対象: `customer/product-reservation.html`, `css/qr-product-page.css`
