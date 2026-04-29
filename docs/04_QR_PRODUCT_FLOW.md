@@ -9,6 +9,10 @@
 - 同意が揃った最終登録済み商品は `published`、不足がある保存は `draft` として扱う
 - 旧 `customer/product-reservation.html` へのQR表示はまだ互換表示であり、正規QR導線は後続フェーズで `product_qr_codes` と接続する
 
+2026-04-29追記:
+上記の旧 `customer/product-reservation.html` 互換表示は、現在は `archived/legacy/customer-product-reservation.legacy.html` に隔離済み。
+現行の `customer/product-reservation.html` は `product_qr_codes` と `fragrance_products` に紐づく正規QR商品作成依頼ページとして扱う。
+
 ## 2026-04-28 QR request page implementation note
 
 ユーザー要望により、旧 `customer/product-reservation.html` は `archived/legacy/customer-product-reservation.legacy.html` に隔離し、同じ公開URLを `product_qr_codes` と `fragrance_products` に紐づくQR商品作成依頼ページへリニューアルした。
