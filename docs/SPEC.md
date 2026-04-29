@@ -6,11 +6,12 @@
 ## 正本の考え方
 
 - 配点ロジックと原料プロファイルの基準は `deep-research-report.md`
+→最新は`deep-research-report-ver.1.1.md`
 - 目標仕様の整理先は `docs/SPEC.md`、`docs/IMPLEMENTATION_RULES.md`、`docs/SURVEY_SCORING_LOGIC.md`、`docs/MATERIAL_POINTS.md`
 - 実装済み / 未達の状態管理は `docs/COMPLETED_REQUIREMENTS.md`、`docs/UNMET_REQUIREMENTS.md`
 - `レイアウトimg` 配下の画像は、主にスタッフ / 管理者画面の導線、画面構成、ラベル、モーダル構成を補う参考資料として扱う
 - `レイアウトimg` 配下の画像内にある数値はモック値を含み得るため、配点値、5軸値、テンプレート値、原料ポイント値の正本としては扱わない
-- 数値仕様が必要な場合は、必ず `deep-research-report.md`、`docs/SURVEY_SCORING_LOGIC.md`、`docs/MATERIAL_POINTS.md` を参照する
+- 数値仕様が必要な場合は、必ず`deep-research-report-ver.1.1`、 `deep-research-report.md`、`docs/SURVEY_SCORING_LOGIC.md`、`docs/MATERIAL_POINTS.md` を参照する
 - 現行コードが仕様書と異なる場合は、原則としてコード側が未追従とみなす
 
 ## システムの到達目標
@@ -148,15 +149,13 @@
 
 ### マスタ
 
-- 基剤マスタ
 - 原料マスタ
 - 将来のおすすめテンプレート候補
 - スタッフ / 管理者権限
 
-## 基剤と原料の扱い
+## 原料の扱い
 
-- DB 上は共通マスタ `material_points` を中心に扱い、`material_type` で `base` / `ingredient` を区別する方針を正とする
-- UI 上は基剤管理画面と原料管理画面を分けてもよい
+
 - 数値管理は「単位量あたり五軸へ与える値」で扱う
 
 ## 最終成果物の定義
@@ -177,8 +176,5 @@
 - QRコードは会員本人ではなく、ワークショップで完成した香水に紐づける
 - QR商品導線は、会員導線とは分けて扱う
 
-### 将来拡張
-
-- 将来的には、QR商品向けのお客様専用TOPページを別途設け、そこから商品作成依頼へ進む構成に拡張してもよい。
 
 
