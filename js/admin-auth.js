@@ -179,7 +179,8 @@
       return [
         ["staff-dashboard.html", "\u4e88\u5b9a\u78ba\u8a8d", "staff-dashboard"],
         ["staff-slots.html", "\u4e88\u7d04\u67a0\u4f5c\u6210", "slots"],
-        ["staff-reservations.html", "\u4e88\u7d04\u60c5\u5831\u4e00\u89a7", "reservations"]
+        ["staff-reservations.html", "\u4e88\u7d04\u60c5\u5831\u4e00\u89a7", "reservations"],
+        ["staff-qr-requests.html", "QR\u4f9d\u983c\u4e00\u89a7", "qr-requests"]
       ];
     }
 
@@ -187,6 +188,7 @@
       ["admin-dashboard.html", "Dashboard", "dashboard"],
       ["admin-scoring.html", "\u914d\u70b9\u30ed\u30b8\u30c3\u30af", "scoring"],
       ["admin-materials.html", "\u539f\u6599\u30dd\u30a4\u30f3\u30c8", "materials"],
+      ["admin-qr-requests.html", "QR\u4f9d\u983c\u4e00\u89a7", "qr-requests"],
       ["admin-settings.html", "\u305d\u306e\u4ed6\u8a2d\u5b9a", "settings"]
     ];
   }

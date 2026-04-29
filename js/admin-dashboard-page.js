@@ -351,7 +351,8 @@
         </article>
       `;
     });
-    qrRequestListEl.innerHTML = requestItems.concat(emailItems).join("");
+    qrRequestListEl.innerHTML = requestItems.concat(emailItems).join("")
+      + `<a class="admin-btn" href="${window.AdminAuth.appendRoleToHref("admin-qr-requests.html", "manager")}">QR依頼一覧</a>`;
   }
 
   async function bootstrap() {
@@ -362,6 +363,7 @@
       role: "manager",
       session,
       links: [
+        { href: "admin-qr-requests.html", label: "QR依頼一覧", key: "qr-requests" },
         { href: "admin-settings.html", label: "スタッフ登録/管理", key: "settings" },
         { href: "admin-scoring.html", label: "配点ロジック", key: "scoring" },
         { href: "admin-materials.html", label: "原料ポイント", key: "materials" }

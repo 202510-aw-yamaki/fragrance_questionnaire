@@ -1178,6 +1178,7 @@
       session,
       brandText: "Fragrance STAFF_管理スタッフ名",
       links: [
+        { href: "admin-qr-requests.html", label: "QR依頼一覧", key: "qr-requests" },
         { href: "admin-scoring.html", label: "配点ロジック", key: "scoring" },
         { href: "admin-materials.html", label: "原料ポイント", key: "materials" }
       ]

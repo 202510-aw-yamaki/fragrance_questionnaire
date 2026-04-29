@@ -411,6 +411,7 @@
       role: "manager",
       session,
       links: [
+        { href: "admin-qr-requests.html", label: "QR依頼一覧", key: "qr-requests" },
         { href: "admin-settings.html", label: "スタッフ登録/管理", key: "settings" },
         { href: "admin-scoring.html", label: "配点ロジック", key: "scoring" }
       ]

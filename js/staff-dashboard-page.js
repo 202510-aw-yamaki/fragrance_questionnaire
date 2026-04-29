@@ -279,7 +279,7 @@
       const productName = payload.product_name || "QR商品";
       const totalVolume = payload.total_volume_ml ? `${payload.total_volume_ml}ml` : "容量未設定";
       return `<span class="admin-chip">${escapeHtml(productName)} / ${escapeHtml(totalVolume)} / ${escapeHtml(formatDueDate(payload.availability_due_at))}</span>`;
-    }).join("");
+    }).join("") + `<a class="admin-chip" href="${window.AdminAuth.appendRoleToHref("staff-qr-requests.html", "staff")}">QR依頼一覧</a>`;
   }
 
   async function loadBaseData() {

@@ -900,6 +900,7 @@
       role: "manager",
       session,
       links: [
+        { href: "admin-qr-requests.html", label: "QR依頼一覧", key: "qr-requests" },
         { href: "admin-settings.html", label: "スタッフ登録/管理", key: "settings" },
         { href: "admin-materials.html", label: "原料ポイント", key: "materials" }
       ]
