@@ -310,10 +310,58 @@ a {
   padding: 28px;
 }
 
-.step-card img {
+.step-visual {
+  position: relative;
   height: 120px;
-  width: 100%;
-  object-fit: contain;
+  border-radius: 18px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 30%, rgba(255, 255, 255, 0.78), transparent 28%),
+    linear-gradient(135deg, rgba(245, 226, 210, 0.95), rgba(226, 200, 171, 0.72));
+}
+
+.step-visual::before,
+.step-visual::after,
+.step-visual span {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  background: rgba(255, 253, 249, 0.72);
+  box-shadow: 0 16px 26px rgba(126, 94, 70, 0.12);
+}
+
+.step-visual::before {
+  width: 70px;
+  height: 70px;
+  left: 18px;
+  bottom: 18px;
+}
+
+.step-visual::after {
+  width: 110px;
+  height: 18px;
+  right: 18px;
+  bottom: 28px;
+}
+
+.step-visual span {
+  width: 16px;
+  height: 82px;
+  right: 44px;
+  top: 20px;
+  transform: rotate(16deg);
+}
+
+.step-visual.tone-blend {
+  background:
+    radial-gradient(circle at 74% 24%, rgba(255, 255, 255, 0.72), transparent 25%),
+    linear-gradient(135deg, rgba(224, 235, 221, 0.96), rgba(193, 170, 137, 0.65));
+}
+
+.step-visual.tone-finish {
+  background:
+    radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.72), transparent 26%),
+    linear-gradient(135deg, rgba(236, 218, 194, 0.96), rgba(184, 141, 123, 0.62));
 }
 
 .step-card h3 {
@@ -530,11 +578,32 @@ a {
   color: #8f3341;
 }
 
-.answer-card img {
+.answer-orb {
   width: 78px;
   height: 78px;
   border-radius: 50%;
-  object-fit: cover;
+  background:
+    radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.88), transparent 22%),
+    linear-gradient(135deg, rgba(242, 196, 200, 0.94), rgba(255, 246, 237, 0.86));
+  box-shadow: inset 0 0 0 1px rgba(198, 151, 82, 0.2);
+}
+
+.answer-orb.tone-sweet {
+  background:
+    radial-gradient(circle at 36% 28%, rgba(255, 255, 255, 0.9), transparent 24%),
+    linear-gradient(135deg, rgba(235, 184, 192, 0.88), rgba(248, 224, 198, 0.86));
+}
+
+.answer-orb.tone-fresh {
+  background:
+    radial-gradient(circle at 34% 26%, rgba(255, 255, 255, 0.9), transparent 24%),
+    linear-gradient(135deg, rgba(188, 220, 214, 0.9), rgba(238, 248, 243, 0.86));
+}
+
+.answer-orb.tone-woody {
+  background:
+    radial-gradient(circle at 34% 26%, rgba(255, 255, 255, 0.82), transparent 24%),
+    linear-gradient(135deg, rgba(177, 141, 108, 0.82), rgba(219, 226, 199, 0.86));
 }
 
 .question-actions {
@@ -755,8 +824,9 @@ a {
   min-height: calc(100vh - 108px);
   padding: 42px;
   background:
-    linear-gradient(145deg, rgba(255, 250, 245, 0.95), rgba(246, 236, 226, 0.92)),
-    url("../img/TOP/中間イメージ.png") center / cover no-repeat;
+    radial-gradient(circle at 12% 14%, rgba(255, 255, 255, 0.72), transparent 20%),
+    radial-gradient(circle at 86% 28%, rgba(216, 127, 140, 0.16), transparent 24%),
+    linear-gradient(145deg, rgba(255, 250, 245, 0.95), rgba(246, 236, 226, 0.92));
 }
 
 .overview-board {
@@ -875,10 +945,65 @@ a {
   color: var(--muted);
 }
 
-.member-hero img {
-  width: 100%;
+.member-hero-visual {
+  position: relative;
+  min-height: 240px;
   border-radius: 24px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.85), transparent 24%),
+    linear-gradient(135deg, rgba(246, 236, 225, 0.95), rgba(219, 190, 160, 0.74));
+  width: 100%;
   box-shadow: var(--shadow-soft);
+}
+
+.member-hero-visual::before,
+.member-hero-visual::after,
+.member-hero-visual span {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  background: rgba(255, 253, 249, 0.72);
+  box-shadow: 0 18px 34px rgba(126, 94, 70, 0.14);
+}
+
+.member-hero-visual::before {
+  width: 78px;
+  height: 150px;
+  left: 56px;
+  bottom: 34px;
+  border-radius: 36px 36px 18px 18px;
+}
+
+.member-hero-visual::after {
+  width: 210px;
+  height: 24px;
+  right: 42px;
+  bottom: 56px;
+}
+
+.member-hero-visual span:nth-child(1) {
+  width: 18px;
+  height: 116px;
+  left: 160px;
+  bottom: 54px;
+  transform: rotate(18deg);
+}
+
+.member-hero-visual span:nth-child(2) {
+  width: 26px;
+  height: 26px;
+  right: 92px;
+  top: 54px;
+  background: rgba(220, 155, 53, 0.4);
+}
+
+.member-hero-visual span:nth-child(3) {
+  width: 44px;
+  height: 44px;
+  right: 142px;
+  top: 92px;
+  background: rgba(216, 127, 140, 0.34);
 }
 
 .member-grid {
@@ -1267,8 +1392,9 @@ a {
   place-items: center;
   padding: 34px;
   background:
-    linear-gradient(145deg, rgba(255, 250, 245, 0.88), rgba(247, 235, 224, 0.78)),
-    url("../img/TOP/中間イメージ.png") center / cover no-repeat;
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.74), transparent 20%),
+    radial-gradient(circle at 82% 28%, rgba(220, 155, 53, 0.18), transparent 26%),
+    linear-gradient(145deg, rgba(255, 250, 245, 0.88), rgba(247, 235, 224, 0.78));
 }
 
 .complete-card {

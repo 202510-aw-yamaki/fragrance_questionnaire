@@ -153,3 +153,13 @@
   - 管理者側の `kpi-reservations`, `kpi-reservations-week`, `kpi-slots`, `manager-qr-request-count`, `manager-qr-request-list` は維持。
 - 未対応:
   - QR通知の対応済み操作、作成可否判断、発送完了操作は `Phase 5` の残タスクとして実装しない。
+
+### visual-prototype の旧画像参照整理
+
+- 対象: `visual-prototype/app.js`, `visual-prototype/styles.css`
+- 実装:
+  - `img/questionnaire/` の旧アンケート画像参照を外し、CSSで作る控えめなオーブ・カード表現へ変更。
+  - `img/TOP/香水ハンドクリーム.png` と `img/TOP/中間イメージ.png` の参照を外し、CSS背景・装飾に置き換え。
+  - 旧素材を `archived/legacy/` へ退避できるよう、現行ページおよび visual-prototype からの直接参照をなくした。
+- 未対応:
+  - 旧素材本体の移動は、参照解除のコミット後に別コミットで実施する。

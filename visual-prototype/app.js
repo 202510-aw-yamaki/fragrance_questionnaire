@@ -107,12 +107,12 @@
           <h2>3ステップで、来店前の準備が完了</h2>
           <div class="step-cards">
             ${[
-              ["香りのアンケート", "前半は香り・色・気分・使いたいシーンを、答えやすい質問だけで進みます。", "../img/questionnaire/花香る.png"],
-              ["ベースができる", "5問目までは共通、後半は回答傾向に応じて分岐します。", "../img/TOP/香水の瓶が並ぶ.png"],
-              ["店頭で完成", "診断結果は確定ではなく、当日スタッフと一緒に仕上げます。", "../img/TOP/香水対比.png"]
-            ].map(([title, body, image]) => `
+              ["香りのアンケート", "前半は香り・色・気分・使いたいシーンを、答えやすい質問だけで進みます。", "survey"],
+              ["ベースができる", "5問目までは共通、後半は回答傾向に応じて分岐します。", "blend"],
+              ["店頭で完成", "診断結果は確定ではなく、当日スタッフと一緒に仕上げます。", "finish"]
+            ].map(([title, body, tone]) => `
               <article class="soft-card step-card">
-                <img src="${image}" alt="">
+                <div class="step-visual tone-${tone}"><span></span></div>
                 <h3>${title}</h3>
                 <p>${body}</p>
               </article>
@@ -187,13 +187,13 @@
               <h2>今日はどんな雰囲気の香りに惹かれますか？</h2>
               <div class="answer-grid">
                 ${[
-                  ["華やかで明るい", "../img/questionnaire/花香る.png"],
-                  ["やわらかく甘い", "../img/questionnaire/優しいピンク.png", "is-selected"],
-                  ["爽やかで軽やか", "../img/questionnaire/みずみずしい.png"],
-                  ["深みがあり落ち着く", "../img/questionnaire/深いグリーン.png"]
-                ].map(([label, image, state = ""]) => `
+                  ["華やかで明るい", "floral"],
+                  ["やわらかく甘い", "sweet", "is-selected"],
+                  ["爽やかで軽やか", "fresh"],
+                  ["深みがあり落ち着く", "woody"]
+                ].map(([label, tone, state = ""]) => `
                   <button class="answer-card ${state}">
-                    <img src="${image}" alt="">
+                    <span class="answer-orb tone-${tone}"></span>
                     <strong>${label}</strong>
                   </button>
                 `).join("")}
@@ -227,7 +227,9 @@
             <h1>前回の香りと、今日の気分を見比べる</h1>
             <p>制作履歴・予約・QR共有をひとつの場所で確認できる会員ページの試作です。</p>
           </div>
-          <img src="../img/TOP/香水ハンドクリーム.png" alt="">
+          <div class="member-hero-visual" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
         </section>
         <main class="member-grid">
           <article class="member-card featured">
