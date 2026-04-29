@@ -1253,8 +1253,8 @@ img {
     </section>
   </div>
   <script>
-    const SCORING_LOGIC_SOURCE = "deep-research-report.md";
-    const SCORING_LOGIC_VERSION = "2026-04-14";
+    const SCORING_LOGIC_SOURCE = "deep-research-report-ver.1.1.md";
+    const SCORING_LOGIC_VERSION = "2026-04-29";
     // === FRAGRANCE SCORING EDIT POINT: MASTER CONFIG START ===
     // 配点・分岐・Q8・graph preset・reservation summary profile のfallback設定です。
     // 通常の調整は admin-scoring.html から scoring_configs に保存し、
@@ -1467,13 +1467,151 @@ img {
       }
     };
     // === FRAGRANCE SCORING EDIT POINT: MASTER CONFIG END ===
+    Object.assign(MASTER_SCORING_CONFIG, {
+      logicSource: SCORING_LOGIC_SOURCE,
+      logicVersion: SCORING_LOGIC_VERSION,
+      subOptionKeyMap: {
+        "全部好き": "ALL",
+        "この中にない": "NONE",
+        "この中にはない": "NONE"
+      },
+      step1PrimaryAxes: {
+        Q1: ["fresh", "floral", "woody", "spicy", "sweet"],
+        Q2: ["fresh", "floral", "woody", "spicy", "sweet"],
+        Q3: ["fresh", "floral", "woody", "spicy", "sweet"],
+        Q4: ["fresh", "floral", "woody", "spicy", "sweet"],
+        Q5: ["fresh", "floral", "woody", "spicy", "sweet"]
+      },
+      step1ScoreMap: {
+        Q1: {
+          A: { floral: 1, fresh: 8, woody: -2, spicy: -2, sweet: 0 },
+          B: { floral: 8, fresh: 1, woody: -2, spicy: -1, sweet: 2 },
+          C: { floral: -2, fresh: -1, woody: 8, spicy: 2, sweet: -1 },
+          D: { floral: 0, fresh: -1, woody: 1, spicy: 4, sweet: 4 },
+          ALL: { floral: 2, fresh: 2, woody: 1, spicy: 1, sweet: 1 },
+          NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
+        },
+        Q2: {
+          A: { floral: 0, fresh: 5, woody: 0, spicy: -1, sweet: -1 },
+          B: { floral: 4, fresh: 1, woody: 0, spicy: -1, sweet: 2 },
+          C: { floral: 0, fresh: -1, woody: 4, spicy: 1, sweet: 0 },
+          D: { floral: 1, fresh: -2, woody: 1, spicy: 3, sweet: 3 },
+          ALL: { floral: 1, fresh: 1, woody: 1, spicy: 1, sweet: 1 },
+          NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
+        },
+        Q3: {
+          A: { floral: 0, fresh: 4, woody: -1, spicy: 0, sweet: -3 },
+          B: { floral: 4, fresh: 1, woody: 0, spicy: -1, sweet: 2 },
+          C: { floral: 0, fresh: -1, woody: 4, spicy: 1, sweet: 1 },
+          D: { floral: 0, fresh: -2, woody: 1, spicy: 3, sweet: 4 },
+          ALL: { floral: 1, fresh: 1, woody: 1, spicy: 1, sweet: 1 },
+          NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
+        },
+        Q4: {
+          A: { floral: 0, fresh: 4, woody: -1, spicy: -1, sweet: -1 },
+          B: { floral: 3, fresh: 1, woody: 0, spicy: -1, sweet: 2 },
+          C: { floral: 0, fresh: 0, woody: 4, spicy: 1, sweet: 0 },
+          D: { floral: 0, fresh: -1, woody: 2, spicy: 3, sweet: 2 },
+          ALL: { floral: 1, fresh: 1, woody: 1, spicy: 1, sweet: 1 },
+          NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
+        },
+        Q5: {
+          A: { floral: 0, fresh: 4, woody: 0, spicy: 0, sweet: -1 },
+          B: { floral: 4, fresh: 1, woody: 0, spicy: -1, sweet: 2 },
+          C: { floral: 0, fresh: 0, woody: 4, spicy: 1, sweet: 0 },
+          D: { floral: 1, fresh: -1, woody: 1, spicy: 2, sweet: 3 },
+          ALL: { floral: 1, fresh: 1, woody: 1, spicy: 1, sweet: 1 },
+          NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
+        }
+      }
+    });
 
     const questions = [
-      { id: "Q1", nav: "惹かれる香り", title: "今いちばん惹かれる香りは？", caption: "花・透明感・森の落ち着きのうち、空気感として近いものを選んでください。", helper: "直感でひとつ選んでください", noteTitle: "豆知識＜香りの第一印象＞", noteBody: "最初に好きだと感じる香りは、その後の全体印象にも強く影響しやすいです。", footer: "最初の一問は、好みの入口をつかむための軽い質問です。", options: [{ key: "A", title: "花がふわっと香る", desc: "淡い花びらとやわらかな朝の光。甘すぎず、軽く上品な華やかさ。", visual: "url('../img/questionnaire/花香る.png')", color: "#f7eee8", cardClass: "option-card-image-right" }, { key: "B", title: "みずみずしく爽やか", desc: "透明なガラス、水滴、白い窓辺。朝の空気みたいな清潔感。", visual: "url('../img/questionnaire/みずみずしい.png')", color: "#f5fbff", cardClass: "option-card-image-right" }, { key: "C", title: "木や森の落ち着き", desc: "木の天板と深いグリーン。静けさと安心感のある穏やかな方向。", visual: "url('../img/questionnaire/木や森の落ち着き.png')", color: "#f3f5ef", cardClass: "option-card-image-right" }], subOptions: ["全部好き", "この中にはない"] },
-      { id: "Q2", nav: "好きな色", title: "好きな色は何ですか？", caption: "色の印象から、香りの温度感や落ち着き方の好みを見ていきます。", helper: "色の印象にいちばん近いものを選んでください", noteTitle: "豆知識＜色と香り＞", noteBody: "色の好みは、香りの軽さ・温度感・落ち着きの好みとつながることが多いです。", footer: "色の選び方は、香りの見えない印象を言葉にしやすくします。", options: [{ key: "A", title: "やさしいピンク・ベージュ", desc: "温かく上品で、やさしさと親しみを感じるトーン。", visual: "url('../img/questionnaire/優しいピンク.png')", color: "#f7eeea", cardClass: "option-card-image-right" }, { key: "B", title: "白・水色・透明感", desc: "軽やかで清潔。澄んだガラスや光を感じる方向。", visual: "url('../img/questionnaire/水色透明感.png')", color: "#f4fbff", cardClass: "option-card-image-right" }, { key: "C", title: "ブラウン・深いグリーン", desc: "自然素材の落ち着き。安心感と静けさを感じる色合い。", visual: "url('../img/questionnaire/深いグリーン.png')", color: "#eff4ee", cardClass: "option-card-image-right" }], subOptions: ["全部好き", "この中にはない"] },
-      { id: "Q3", nav: "なりたい気分", title: "どんな気分になりたいですか？", caption: "香りをまとったあと、自分がどう整っていたいかで選んでください。", helper: "香りをまとったあとの気分で選んでください", noteTitle: "豆知識＜香りと気分＞", noteBody: "香りは『香りそのものの好み』だけでなく、『なりたい気分』から選ぶと決めやすくなります。", footer: "この質問は、当日の提案トーンを合わせるための軸になります。", options: [{ key: "A", title: "やさしく癒やされたい", desc: "白い花とやわらかい布。包まれるような安心感がある方向。", visual: "url('../img/questionnaire/癒されたい白い薔薇.png')", color: "#f7f2ee", cardClass: "option-card-image-right" }, { key: "B", title: "すっきり切り替えたい", desc: "透明な器と軽い陰影。空気が入れ替わるようなクリアさ。", visual: "url('../img/questionnaire/スッキリ水.png')", color: "#f3fbfd", cardClass: "option-card-image-right" }, { key: "C", title: "自分らしさを出したい", desc: "少し深い色の花材と整ったテーブル。芯のある静かな個性。", visual: "url('../img/questionnaire/深いともしび.png')", color: "#f3efea", cardClass: "option-card-image-right" }], subOptions: ["全部好き", "この中にはない"] },
-      { id: "Q4", nav: "使いたい時", title: "どんな時に使いたいですか？", caption: "使う場面を先に決めると、強さや余韻のちょうどよさが見えやすくなります。", helper: "香りを使う場面に近いものを選んでください", noteTitle: "豆知識＜香りのシーン設計＞", noteBody: "同じ香りでも、使う時間帯や場面によって『ちょうどよい強さ』は変わります。", footer: "休日、仕事、夜時間では、似合う香りの抜け方も少しずつ変わります。", options: [{ key: "A", title: "休日に気分を上げたい", desc: "明るい昼の室内と軽い花材。少し気分が上がる軽快さ。", visual: "url('../img/questionnaire/うきうきおはっな.png')", color: "#f9f0ea", cardClass: "option-card-image-right" }, { key: "B", title: "仕事や外出で心地よく整えたい", desc: "白とグレージュの整い。毎日使いやすい清潔感のある方向。", visual: "url('../img/questionnaire/きったくごーん.png')", color: "#f3f6f1", cardClass: "option-card-image-right" }, { key: "C", title: "夜や特別な時間を深く楽しみたい", desc: "少し影のある花材と静かなテーブル。余韻を楽しむ落ち着き。", visual: "url('../img/questionnaire/特別な夜.png')", color: "#f3eeeb", cardClass: "option-card-image-right" }], subOptions: ["全部好き", "この中にはない"] },
-      { id: "Q5", nav: "好きな音楽", title: "好きな音楽は何ですか？", caption: "テンポや余韻の好みから、香りの立ち上がり方や残り方を見ていきます。", helper: "音の雰囲気にいちばん近いものを選んでください", noteTitle: "豆知識＜香りとリズム＞", noteBody: "音楽の好みは、香りの『立ち上がりの軽さ』や『余韻の長さ』の好みに重なることがあります。", footer: "5問目まで来ると、次の深掘り質問に進む準備がほぼ整います。", options: [{ key: "A", title: "明るいポップ", desc: "軽快で明るい空気感。ぱっと抜けるような軽やかさ。", visual: "url('../img/questionnaire/虹色ポップスカイ.png')", color: "#f1f6fd", cardClass: "option-card-image-right" }, { key: "B", title: "心にしみるストリングス", desc: "やわらかな布と花。繊細で感情に寄り添うやさしい温度。", visual: "url('../img/questionnaire/弦と薔薇と.png')", color: "#f6efea", cardClass: "option-card-image-right" }, { key: "C", title: "自然に耳に残るクラシック", desc: "木の質感と静かな影。上品で洗練された余韻。", visual: "url('../img/questionnaire/バーリチュース.png')", color: "#f1eee7", cardClass: "option-card-image-right" }], subOptions: ["全部好き", "この中にはない"] }
+      {
+        id: "Q1",
+        nav: "香り立ち",
+        title: "最初の香り立ちとして、いちばん心地よいのはどれですか？",
+        caption: "最初に触れる香りの空気感を、直感に近い言葉から選んでください。",
+        helper: "直感でひとつ選んでください",
+        noteTitle: "豆知識＜香りの第一印象＞",
+        noteBody: "最初に心地よいと感じる香りは、その後の全体印象にも強く影響しやすいです。",
+        footer: "最初の一問は、好みの入口をつかむための軽い質問です。",
+        options: [
+          { key: "A", title: "せっけんや水のようにみずみずしい", desc: "清潔で軽く、朝の空気のようにすっと広がる印象。", color: "#f2fbfd" },
+          { key: "B", title: "白い花がふわっとやわらかい", desc: "甘すぎず、上品でやさしい花の気配が残る印象。", color: "#f8f0ec" },
+          { key: "C", title: "木や葉のように静かで落ち着く", desc: "自然素材に触れるような、安心感と静けさのある印象。", color: "#f2f5ee" },
+          { key: "D", title: "紅茶やスパイスのように温かく印象に残る", desc: "ぬくもりと余韻があり、少し深みを感じる印象。", color: "#f7efe7" }
+        ],
+        subOptions: ["全部好き", "この中にない"]
+      },
+      {
+        id: "Q2",
+        nav: "使う場面",
+        title: "どんな場面で使いやすいと感じますか？",
+        caption: "香りを使う場面から、軽さや深さのちょうどよさを見ていきます。",
+        helper: "場面としていちばん近いものを選んでください",
+        noteTitle: "豆知識＜香りのシーン設計＞",
+        noteBody: "同じ香りでも、使う時間帯や距離感によって心地よい強さは変わります。",
+        footer: "場面の選び方は、香りの強さと余韻の方向を決める手がかりになります。",
+        options: [
+          { key: "A", title: "朝の外出や仕事前に、清潔に整う", desc: "気分を軽く切り替えて、きちんと整う印象。", color: "#f3fbfd" },
+          { key: "B", title: "人と近い距離で、やさしく上品に見せたい", desc: "近づいたときにふんわり伝わる、やわらかな華やかさ。", color: "#f8f0ea" },
+          { key: "C", title: "一人時間や読書のときに、静かに落ち着きたい", desc: "静かな時間に寄り添う、深すぎない落ち着き。", color: "#f1f4ee" },
+          { key: "D", title: "夜や特別な時間に、少し色気や深みがほしい", desc: "印象に残る余韻と、温かさを少し足す方向。", color: "#f6eee8" }
+        ],
+        subOptions: ["全部好き", "この中にない"]
+      },
+      {
+        id: "Q3",
+        nav: "甘さと温度",
+        title: "香りの甘さや温度感は、どれがちょうどいいですか？",
+        caption: "甘さの強さと温度感から、似合いやすい香りの輪郭を整えます。",
+        helper: "甘さや温度感に近いものを選んでください",
+        noteTitle: "豆知識＜甘さと温度感＞",
+        noteBody: "甘さは量だけでなく、涼しさやぬくもりの感じ方でも印象が変わります。",
+        footer: "ここでは、香りが軽く感じるか、温かく残るかを見ています。",
+        options: [
+          { key: "A", title: "甘さは少なく、さらっと涼しい", desc: "水や白い布のような、軽く澄んだ温度感。", color: "#f1fbfe" },
+          { key: "B", title: "花の蜜のように、やさしくほのか", desc: "近づくとやわらかく感じる、控えめな甘さ。", color: "#f8f1ec" },
+          { key: "C", title: "木や樹脂のように、まろやかで落ち着く", desc: "静かに続く丸みと、自然な深さのある甘さ。", color: "#f2f1ea" },
+          { key: "D", title: "バニラやスパイスのように、温かくしっかり", desc: "ぬくもりが残り、後半まで印象が続く甘さ。", color: "#f7eee5" }
+        ],
+        subOptions: ["全部好き", "この中にない"]
+      },
+      {
+        id: "Q4",
+        nav: "残り方",
+        title: "香りの残り方は、どれが心地よいですか？",
+        caption: "香りがどのくらい残ると心地よいかで、仕上がりの方向を絞ります。",
+        helper: "残り方として近いものを選んでください",
+        noteTitle: "豆知識＜香りの余韻＞",
+        noteBody: "香りは立ち上がりだけでなく、後半にどう残るかで印象が大きく変わります。",
+        footer: "余韻の選び方は、香りの濃さや持続感の調整につながります。",
+        options: [
+          { key: "A", title: "つけたてにすっと広がって、軽く引く", desc: "軽やかに広がり、強く残りすぎない印象。", color: "#f3fbfd" },
+          { key: "B", title: "近づいたときにふんわり感じる", desc: "距離が近いとやさしく伝わる、穏やかな残り方。", color: "#f8f0ed" },
+          { key: "C", title: "静かに落ち着いて、長めに続く", desc: "主張しすぎず、低い温度でゆっくり続く余韻。", color: "#f1f4ef" },
+          { key: "D", title: "後半にぬくもりや深みが出てくる", desc: "時間が経つほど、温かさと奥行きが見えてくる印象。", color: "#f7eee6" }
+        ],
+        subOptions: ["全部好き", "この中にない"]
+      },
+      {
+        id: "Q5",
+        nav: "伝わる印象",
+        title: "会った人に、香りでどんな印象が伝わるとしっくりきますか？",
+        caption: "人に伝わる印象から、最後の香りの見え方を整えます。",
+        helper: "伝わってほしい印象に近いものを選んでください",
+        noteTitle: "豆知識＜香りと印象＞",
+        noteBody: "香りは自分の気分だけでなく、人との距離感や印象づくりにも影響します。",
+        footer: "5問目まで来ると、次の深掘り質問に進む準備がほぼ整います。",
+        options: [
+          { key: "A", title: "清潔で軽やか、話しかけやすい", desc: "明るく抜け感があり、重たくならない印象。", color: "#f1fbfe" },
+          { key: "B", title: "やわらかく上品で、親しみやすい", desc: "花のようにやさしく、近い距離でも心地よい印象。", color: "#f8f1ec" },
+          { key: "C", title: "落ち着いて知的で、安心感がある", desc: "静かで整っていて、信頼感のある印象。", color: "#f2f4ee" },
+          { key: "D", title: "印象に残る、あたたかい余韻がある", desc: "控えめでも記憶に残る、深みのある印象。", color: "#f7eee6" }
+        ],
+        subOptions: ["全部好き", "この中にない"]
+      }
     ];
     const SCORING_CONFIG_KEY = "fragranceScoringConfig";
     const SCORE_STATE_KEY = "fragranceScoreState";
@@ -1540,6 +1678,7 @@ img {
         config &&
         config.logicSource === SCORING_LOGIC_SOURCE &&
         config.logicVersion === SCORING_LOGIC_VERSION &&
+        config.step1ScoreMap?.Q1?.D &&
         config.step1ScoreMap?.Q1?.ALL &&
         config.q8ScoreMap?.ALL &&
         Object.prototype.hasOwnProperty.call(config.finishTemplates || {}, "A")
@@ -1799,7 +1938,8 @@ img {
         button.className = "option-card";
         if (option.cardClass) button.classList.add(option.cardClass);
         if (answerKeys[question.id] === option.key) button.classList.add("selected");
-        button.style.backgroundImage = option.visual;
+        if (option.visual) button.style.backgroundImage = option.visual;
+        else button.style.removeProperty("background-image");
         button.style.backgroundColor = option.color || "#fffdfa";
         button.innerHTML = `<div class="option-copy"><span class="option-label">${option.key}</span><span class="option-title">${option.title}</span><span class="option-desc">${option.desc}</span></div>`;
         button.addEventListener("click", () => selectAnswer(question, option.title, option.key));

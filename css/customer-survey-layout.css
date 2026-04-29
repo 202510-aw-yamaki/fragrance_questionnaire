@@ -164,10 +164,29 @@ body:has(.question-shell) .step-copy,
 .option-card {
   min-height: clamp(92px, 11vw, 140px);
   padding: 18px 22px;
+  overflow: hidden;
+  background-image: none !important;
 }
 
 .option-card::before {
-  background: linear-gradient(90deg, rgba(255, 253, 249, .98), rgba(255, 253, 249, .78));
+  background:
+    radial-gradient(circle at 92% 18%, rgba(213, 138, 53, .16), transparent 42px),
+    radial-gradient(circle at 92% 78%, rgba(130, 153, 124, .12), transparent 58px),
+    linear-gradient(90deg, rgba(255, 253, 249, .98), rgba(255, 253, 249, .88));
+}
+
+.option-card::after {
+  content: "";
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(213, 138, 53, .35);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 253, 249, .86) 0 38%, transparent 40%),
+    conic-gradient(from 24deg, rgba(213, 138, 53, .58), rgba(202, 112, 112, .28), rgba(132, 158, 139, .34), rgba(213, 138, 53, .58));
 }
 
 .option-card.selected,
@@ -178,7 +197,7 @@ body:has(.question-shell) .step-copy,
 }
 
 .option-copy {
-  max-width: min(78%, 520px);
+  max-width: min(100%, 620px);
   text-align: left;
 }
 
@@ -271,6 +290,26 @@ body:has(#questionnaire-sync-modal) .page-shell::after {
 
 body:has(#questionnaire-sync-modal) .option-list {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+body:has(#questionnaire-sync-modal) .option-card {
+  min-height: clamp(124px, 12vw, 156px);
+  padding-top: 34px;
+}
+
+body:has(#questionnaire-sync-modal) .option-card::after {
+  content: "香り傾向";
+  width: auto;
+  height: auto;
+  right: 16px;
+  top: 14px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: rgba(255, 250, 244, .86);
+  color: #b77734;
+  font-size: .72rem;
+  line-height: 1.5;
+  letter-spacing: .08em;
 }
 
 body:has(#questionnaire-sync-modal) .sub-options {

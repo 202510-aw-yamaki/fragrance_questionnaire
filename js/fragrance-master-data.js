@@ -7,8 +7,8 @@
     spicy: "スパイシー",
     sweet: "スウィート"
   };
-  const SCORING_LOGIC_SOURCE = "deep-research-report.md";
-  const SCORING_LOGIC_VERSION = "2026-04-14";
+  const SCORING_LOGIC_SOURCE = "deep-research-report-ver.1.1.md";
+  const SCORING_LOGIC_VERSION = "2026-04-29";
 
   const STEP1_QUESTION_SCHEMA = [
     {
@@ -361,6 +361,129 @@
     }
   };
 
+  const STEP1_QUESTION_SCHEMA_V11 = [
+    {
+      id: "Q1",
+      title: "Q1 最初の香り立ち",
+      answers: {
+        A: "せっけんや水のようにみずみずしい",
+        B: "白い花がふわっとやわらかい",
+        C: "木や葉のように静かで落ち着く",
+        D: "紅茶やスパイスのように温かく印象に残る",
+        ALL: "全部好き",
+        NONE: "この中にない"
+      }
+    },
+    {
+      id: "Q2",
+      title: "Q2 使いやすい場面",
+      answers: {
+        A: "朝の外出や仕事前に、清潔に整う",
+        B: "人と近い距離で、やさしく上品に見せたい",
+        C: "一人時間や読書のときに、静かに落ち着きたい",
+        D: "夜や特別な時間に、少し色気や深みがほしい",
+        ALL: "全部好き",
+        NONE: "この中にない"
+      }
+    },
+    {
+      id: "Q3",
+      title: "Q3 甘さや温度感",
+      answers: {
+        A: "甘さは少なく、さらっと涼しい",
+        B: "花の蜜のように、やさしくほのか",
+        C: "木や樹脂のように、まろやかで落ち着く",
+        D: "バニラやスパイスのように、温かくしっかり",
+        ALL: "全部好き",
+        NONE: "この中にない"
+      }
+    },
+    {
+      id: "Q4",
+      title: "Q4 香りの残り方",
+      answers: {
+        A: "つけたてにすっと広がって、軽く引く",
+        B: "近づいたときにふんわり感じる",
+        C: "静かに落ち着いて、長めに続く",
+        D: "後半にぬくもりや深みが出てくる",
+        ALL: "全部好き",
+        NONE: "この中にない"
+      }
+    },
+    {
+      id: "Q5",
+      title: "Q5 人に伝わる印象",
+      answers: {
+        A: "清潔で軽やか、話しかけやすい",
+        B: "やわらかく上品で、親しみやすい",
+        C: "落ち着いて知的で、安心感がある",
+        D: "印象に残る、あたたかい余韻がある",
+        ALL: "全部好き",
+        NONE: "この中にない"
+      }
+    }
+  ];
+
+  const STEP1_PRIMARY_AXES_V11 = {
+    Q1: ["fresh", "floral", "woody", "spicy", "sweet"],
+    Q2: ["fresh", "floral", "woody", "spicy", "sweet"],
+    Q3: ["fresh", "floral", "woody", "spicy", "sweet"],
+    Q4: ["fresh", "floral", "woody", "spicy", "sweet"],
+    Q5: ["fresh", "floral", "woody", "spicy", "sweet"]
+  };
+
+  const STEP1_SCORE_MAP_V11 = {
+    Q1: {
+      A: { floral: 1, fresh: 8, woody: -2, spicy: -2, sweet: 0 },
+      B: { floral: 8, fresh: 1, woody: -2, spicy: -1, sweet: 2 },
+      C: { floral: -2, fresh: -1, woody: 8, spicy: 2, sweet: -1 },
+      D: { floral: 0, fresh: -1, woody: 1, spicy: 4, sweet: 4 },
+      ALL: { floral: 2, fresh: 2, woody: 1, spicy: 1, sweet: 1 },
+      NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
+    },
+    Q2: {
+      A: { floral: 0, fresh: 5, woody: 0, spicy: -1, sweet: -1 },
+      B: { floral: 4, fresh: 1, woody: 0, spicy: -1, sweet: 2 },
+      C: { floral: 0, fresh: -1, woody: 4, spicy: 1, sweet: 0 },
+      D: { floral: 1, fresh: -2, woody: 1, spicy: 3, sweet: 3 },
+      ALL: { floral: 1, fresh: 1, woody: 1, spicy: 1, sweet: 1 },
+      NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
+    },
+    Q3: {
+      A: { floral: 0, fresh: 4, woody: -1, spicy: 0, sweet: -3 },
+      B: { floral: 4, fresh: 1, woody: 0, spicy: -1, sweet: 2 },
+      C: { floral: 0, fresh: -1, woody: 4, spicy: 1, sweet: 1 },
+      D: { floral: 0, fresh: -2, woody: 1, spicy: 3, sweet: 4 },
+      ALL: { floral: 1, fresh: 1, woody: 1, spicy: 1, sweet: 1 },
+      NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
+    },
+    Q4: {
+      A: { floral: 0, fresh: 4, woody: -1, spicy: -1, sweet: -1 },
+      B: { floral: 3, fresh: 1, woody: 0, spicy: -1, sweet: 2 },
+      C: { floral: 0, fresh: 0, woody: 4, spicy: 1, sweet: 0 },
+      D: { floral: 0, fresh: -1, woody: 2, spicy: 3, sweet: 2 },
+      ALL: { floral: 1, fresh: 1, woody: 1, spicy: 1, sweet: 1 },
+      NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
+    },
+    Q5: {
+      A: { floral: 0, fresh: 4, woody: 0, spicy: 0, sweet: -1 },
+      B: { floral: 4, fresh: 1, woody: 0, spicy: -1, sweet: 2 },
+      C: { floral: 0, fresh: 0, woody: 4, spicy: 1, sweet: 0 },
+      D: { floral: 1, fresh: -1, woody: 1, spicy: 2, sweet: 3 },
+      ALL: { floral: 1, fresh: 1, woody: 1, spicy: 1, sweet: 1 },
+      NONE: { floral: 0, fresh: 0, woody: 0, spicy: 0, sweet: 0 }
+    }
+  };
+
+  STEP1_QUESTION_SCHEMA.splice(0, STEP1_QUESTION_SCHEMA.length, ...STEP1_QUESTION_SCHEMA_V11);
+  DEFAULT_SCORING_CONFIG.subOptionKeyMap = {
+    "全部好き": "ALL",
+    "この中にない": "NONE",
+    "この中にはない": "NONE"
+  };
+  DEFAULT_SCORING_CONFIG.step1PrimaryAxes = STEP1_PRIMARY_AXES_V11;
+  DEFAULT_SCORING_CONFIG.step1ScoreMap = STEP1_SCORE_MAP_V11;
+
   const DEFAULT_MATERIAL_TEMPLATES = [
     { material_code: "bergamot", material_name: "ベルガモット", category: "Top", point_axes: { floral: 10, fresh: 60, woody: 15, spicy: 10, sweet: 5 }, note: "シトラスの抜け感と軽いフローラル感を持つ初期テンプレート。", is_active: true, sort_order: 10 },
     { material_code: "lemon", material_name: "レモン", category: "Top", point_axes: { floral: 2, fresh: 78, woody: 5, spicy: 5, sweet: 10 }, note: "もっとも軽く鮮明なフレッシュ寄りテンプレート。", is_active: true, sort_order: 20 },
@@ -427,6 +550,7 @@
       config &&
       config.logicSource === SCORING_LOGIC_SOURCE &&
       config.logicVersion === SCORING_LOGIC_VERSION &&
+      config.step1ScoreMap?.Q1?.D &&
       config.step1ScoreMap?.Q1?.ALL &&
       config.step2ScoreMap?.floral?.Q6?.ALL &&
       config.q8ScoreMap?.ALL &&

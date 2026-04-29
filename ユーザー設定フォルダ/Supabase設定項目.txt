@@ -163,3 +163,18 @@ anonやQR第三者に広い権限を追加するものではありません。
 - supabase/migrations/20260429134500_qr_access_tracking.sql
 
 このため、会員ID紐づけ、会員ページ用限定RPC、QR商品ページアクセス記録はSupabase側にも反映済みとして扱います。
+
+12. 2026-04-29 STEP1再設計後に必要なSupabase確認
+
+リポジトリ側のSTEP1初期設定を deep-research-report-ver.1.1.md 基準へ更新しました。
+公開ページは active な scoring_configs を優先して読み込むため、Supabase側に古い active config が残っている場合は、管理画面 admin/admin-scoring.html から新しい初期テンプレートを読み込み、新versionとして保存してください。
+
+確認項目:
+- active scoring_configs の config_json.logicSource が deep-research-report-ver.1.1.md になっていること
+- active scoring_configs の config_json.logicVersion が 2026-04-29 になっていること
+- step1ScoreMap.Q1 から Q5 までに A/B/C/D/ALL/NONE が存在すること
+- questionTextOverrides で古いSTEP1文言を上書きしていないこと
+
+会員ログイン検証用のメールアドレスとパスワードは、リポジトリ内には保存しないでください。
+指定の検証用会員は Supabase Auth の Users で作成またはパスワード更新し、customer/customer-login.html の通常フォームから入力して確認してください。
+customers 行はログイン時に auth_user_id と紐づく想定です。メール確認が有効な場合は、確認完了後にログインしてください。
