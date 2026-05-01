@@ -4,6 +4,7 @@
   const eventsEl = document.getElementById("staff-day-events");
   const dateLabelEl = document.getElementById("staff-day-current-label");
   const pageHeadingEl = document.getElementById("staff-dashboard-heading");
+  const staffEyebrowEl = document.getElementById("staff-dashboard-eyebrow");
   const noteEl = document.getElementById("staff-dashboard-note");
   const prevButton = document.getElementById("staff-day-prev");
   const nextButton = document.getElementById("staff-day-next");
@@ -55,8 +56,13 @@
 
   function renderPageHeading() {
     if (!pageHeadingEl) return;
-    const today = createLocalDate(new Date());
-    pageHeadingEl.textContent = `本日【${formatDateLabel(today, { padMonthDay: true })}】の予定確認ページ`;
+    pageHeadingEl.textContent = "本日のワークショップ";
+    if (staffEyebrowEl) {
+      staffEyebrowEl.textContent = `Staff Dashboard / 担当スタッフ: ${readAssignedStaffName()}`;
+    }
+    if (noteEl) {
+      noteEl.textContent = "本日の予約状況と通知を確認できます。";
+    }
   }
 
   function parseMinutes(timeText) {
@@ -115,17 +121,17 @@
     const staffName = readAssignedStaffName();
     const instructorSlots = slots.filter((row) => String(row.instructor_name || "").trim());
     if (!instructorSlots.length) {
-      noteEl.textContent = `担当スタッフ: ${staffName}。予約枠に担当者名が未設定のため、全枠を表示しています。`;
+      noteEl.textContent = "予約枠に担当者名が未設定のため、全枠を表示しています。";
       return slots;
     }
 
     const matched = slots.filter((row) => normalizeName(row.instructor_name) === normalizeName(staffName));
     if (!matched.length) {
-      noteEl.textContent = `担当スタッフ: ${staffName}。現在の予約枠に一致する担当者名がないため、割当済みデータは 0 件です。`;
+      noteEl.textContent = "現在の予約枠に一致する担当者名がないため、割当済みデータは 0 件です。";
       return [];
     }
 
-    noteEl.textContent = `担当スタッフ: ${staffName}`;
+    noteEl.textContent = "本日の予約状況と通知を確認できます。";
     return matched;
   }
 
@@ -174,7 +180,7 @@
     const actionLabel = event.reservation ? "詳細を開く" : "予約枠を開く";
     return `
       <article class="day-event ${event.color}">
-        <div class="day-event-time"><span>&#128337;</span><strong>${event.timeRange}</strong></div>
+        <div class="day-event-time"><span>&#128337;</span><strong>${event.timeRange.split("-")[0]}</strong></div>
         <h3 class="day-event-title">${event.title}</h3>
         <div class="day-event-location"><span>&#128205;</span><span>${event.location}</span></div>
         <div class="day-event-attendees">
@@ -233,7 +239,8 @@
     }).filter(Boolean);
 
     if (!missingPrimaryEl || !missingSecondaryEl) return;
-    missingPrimaryEl.hidden = true;
+    missingPrimaryEl.hidden = false;
+    missingPrimaryEl.textContent = String(missingDates.length);
     if (missingNoteEl) {
       missingNoteEl.hidden = true;
       missingNoteEl.textContent = "";
@@ -319,6 +326,8 @@
     window.AdminAuth.renderAdminHeader("staff-dashboard", {
       role: "staff",
       session,
+      brandText: "Staff Dashboard",
+      roleLabel: "",
       links: [
         { href: "staff-slots.html", label: "予約枠作成", key: "slots" },
         { href: "staff-reservations.html", label: "予約情報一覧", key: "reservations" }

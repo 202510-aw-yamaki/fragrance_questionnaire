@@ -6,22 +6,30 @@
   <title>Staff Dashboard | Fragrance Workshop</title>
   <link rel="stylesheet" href="../css/rebuild-ui.css">
 </head>
-<body class="staff-page" data-page="staff-dashboard">
+<body class="staff-page staff-dashboard-page" data-page="staff-dashboard">
   <header class="admin-header" id="admin-header"></header>
   <main class="staff-main">
-    <section class="admin-page-title">
-      <div><span class="eyebrow">Staff Dashboard</span><h1 id="staff-dashboard-heading">本日のワークショップ</h1><p class="admin-note" id="staff-dashboard-note"></p></div>
-      <div class="action-row"><button class="admin-btn secondary" id="staff-day-prev" type="button">前日</button><strong id="staff-day-current-label">-</strong><button class="admin-btn secondary" id="staff-day-next" type="button">翌日</button></div>
+    <section class="admin-page-title staff-dashboard-title">
+      <div>
+        <span class="eyebrow" id="staff-dashboard-eyebrow">Staff Dashboard</span>
+        <h1 id="staff-dashboard-heading">本日のワークショップ</h1>
+        <p class="admin-note" id="staff-dashboard-note"></p>
+      </div>
+      <div class="staff-date-switcher">
+        <button class="admin-btn secondary" id="staff-day-prev" type="button">前日</button>
+        <strong id="staff-day-current-label">-</strong>
+        <button class="admin-btn secondary" id="staff-day-next" type="button">翌日</button>
+      </div>
     </section>
     <section class="kpi-grid">
-      <article class="admin-panel kpi-card"><span class="decor-icon">□</span><div><p>本日の予約</p><strong class="kpi-value" id="staff-kpi-today">0</strong></div></article>
-      <article class="admin-panel kpi-card"><span class="decor-icon">□</span><div><p>今週の予約</p><strong class="kpi-value" id="staff-kpi-week">0</strong></div></article>
-      <article class="admin-panel kpi-card"><span class="decor-icon">□</span><div><p>未作成枠</p><strong class="kpi-value" id="staff-missing-primary">0</strong></div></article>
-      <article class="admin-panel kpi-card"><span class="decor-icon">□</span><div><p>QR依頼</p><strong class="kpi-value" id="staff-qr-request-count">0</strong></div></article>
+      <article class="admin-panel kpi-card"><span class="staff-kpi-icon" aria-hidden="true">日</span><div><p>本日の予約</p><strong class="kpi-value" id="staff-kpi-today">0</strong><span class="kpi-unit">件</span></div></article>
+      <article class="admin-panel kpi-card"><span class="staff-kpi-icon" aria-hidden="true">週</span><div><p>今週の予約</p><strong class="kpi-value" id="staff-kpi-week">0</strong><span class="kpi-unit">件</span></div></article>
+      <article class="admin-panel kpi-card"><span class="staff-kpi-icon" aria-hidden="true">枠</span><div><p>未作成枠</p><strong class="kpi-value" id="staff-missing-primary">0</strong><span class="kpi-unit">件</span></div></article>
+      <article class="admin-panel kpi-card"><span class="staff-kpi-icon" aria-hidden="true">QR</span><div><p>QR作成依頼</p><strong class="kpi-value" id="staff-qr-request-count">0</strong><span class="kpi-unit">件</span></div></article>
     </section>
     <section class="dashboard-grid section">
-      <article class="admin-panel"><h2>本日の予約リスト</h2><div id="staff-day-timeline"></div><div id="staff-day-events" class="portal-list-body"></div></article>
-      <article class="admin-panel"><h2>通知</h2><div id="staff-qr-request-list" class="portal-list-body"></div><p class="admin-note" id="staff-missing-secondary"></p><p class="admin-note" id="staff-missing-note"></p></article>
+      <article class="admin-panel staff-list-panel"><h2>本日の予約リスト</h2><div id="staff-day-timeline"></div><div id="staff-day-events" class="portal-list-body"></div></article>
+      <article class="admin-panel staff-list-panel"><h2>通知</h2><div id="staff-qr-request-list" class="portal-list-body"></div><p class="admin-note" id="staff-missing-secondary"></p><p class="admin-note" id="staff-missing-note"></p></article>
     </section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

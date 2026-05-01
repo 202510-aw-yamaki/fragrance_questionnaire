@@ -179,10 +179,9 @@
   function getHeaderLinks(role) {
     if (role === "staff") {
       return [
-        ["staff-dashboard.html", "\u4e88\u5b9a\u78ba\u8a8d", "staff-dashboard"],
-        ["staff-slots.html", "\u4e88\u7d04\u67a0\u4f5c\u6210", "slots"],
-        ["staff-reservations.html", "\u4e88\u7d04\u60c5\u5831\u4e00\u89a7", "reservations"],
-        ["staff-qr-requests.html", "QR\u4f9d\u983c\u4e00\u89a7", "qr-requests"]
+        ["staff-reservations.html", "\u4e88\u7d04\u4e00\u89a7", "reservations"],
+        ["staff-slots.html", "\u4e88\u7d04\u67a0", "slots"],
+        ["staff-qr-requests.html", "\u901a\u77e5", "qr-requests"]
       ];
     }
 
@@ -223,22 +222,23 @@
       .filter(({ key }) => role !== "staff" || key !== activePage);
     const portalSwitchLinks = sessionRole === "manager"
       ? (role === "staff"
-        ? [{ href: HOME_BY_ROLE.manager, label: "\u7ba1\u7406\u8005\u753b\u9762", key: "portal-manager" }]
-        : [{ href: HOME_BY_ROLE.staff, label: "\u30b9\u30bf\u30c3\u30d5\u753b\u9762", key: "portal-staff" }])
+        ? [{ href: HOME_BY_ROLE.manager, label: "\u7ba1\u7406\u8005\u753b\u9762\u3078", key: "portal-manager" }]
+        : [{ href: HOME_BY_ROLE.staff, label: "\u30b9\u30bf\u30c3\u30d5\u753b\u9762\u3078", key: "portal-staff" }])
       : [];
     const links = baseLinks.concat(portalSwitchLinks);
     const brandHref = appendRoleToHref(role === "staff" ? HOME_BY_ROLE.staff : HOME_BY_ROLE.manager, role);
     const brandName = options.brandText || (role === "staff"
       ? `Fragrance STAFF_${getStaffDisplayName(session)}`
       : `Fragrance STAFF_${getStaffDisplayName(session)}`);
-    const roleLabel = options.roleLabel || (role === "staff" ? "\u30b9\u30bf\u30c3\u30d5\u5c02\u7528" : "\u7ba1\u7406\u8005");
+    const roleLabel = options.roleLabel ?? (role === "staff" ? "\u30b9\u30bf\u30c3\u30d5\u5c02\u7528" : "\u7ba1\u7406\u8005");
     const navId = "admin-nav-menu";
     const showMenuToggle = role === "staff" && links.length > 0;
     mount.innerHTML = `
       <div class="admin-header-inner site-container ${role === "staff" ? "admin-header-inner--staff" : "admin-header-inner--manager"}">
         <a class="admin-brand" href="${brandHref}">
+          ${role === "staff" ? `<span class="admin-brand-mark" aria-hidden="true">\u2725</span>` : ""}
           <span>${brandName}</span>
-          <small class="admin-brand-meta">${roleLabel}</small>
+          ${roleLabel ? `<small class="admin-brand-meta">${roleLabel}</small>` : ""}
         </a>
         <div class="admin-header-actions ${role === "staff" ? "admin-header-actions--staff" : ""}">
           ${showMenuToggle ? `
@@ -254,7 +254,7 @@
             </button>
           ` : ""}
           <nav class="admin-nav ${role === "staff" ? "admin-nav--staff" : ""}" id="${navId}" aria-label="\u7ba1\u7406\u30e1\u30cb\u30e5\u30fc">
-            ${links.map(({ href, label, key }) => `<a class="${activePage === key ? "active" : ""}" href="${appendRoleToHref(href, role)}">${label}</a>`).join("")}
+            ${links.map(({ href, label, key }) => `<a class="${activePage === key ? "active" : ""}" data-admin-nav-key="${key}" href="${appendRoleToHref(href, role)}">${label}</a>`).join("")}
           </nav>
           <button class="admin-logout ${role === "staff" ? "admin-logout--staff" : ""}" id="admin-logout-btn" type="button">\u30ed\u30b0\u30a2\u30a6\u30c8</button>
         </div>

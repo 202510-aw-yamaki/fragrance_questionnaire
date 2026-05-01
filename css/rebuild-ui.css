@@ -891,6 +891,256 @@ input[type="range"]::-moz-range-thumb {
   padding: 34px 0 72px;
 }
 
+body.staff-page .admin-header-inner--staff {
+  min-height: 78px;
+  gap: 14px;
+}
+
+body.staff-page .admin-brand {
+  gap: 12px;
+  flex: 0 0 auto;
+  font-size: 26px;
+}
+
+.admin-brand-mark {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  color: var(--gold);
+  font-family: var(--serif);
+  font-size: 34px;
+  line-height: 1;
+}
+
+body.staff-page .admin-header-actions--staff {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+body.staff-page .admin-nav--staff {
+  flex-wrap: nowrap;
+  gap: 0;
+}
+
+body.staff-page .admin-nav--staff a {
+  padding: 6px 14px;
+  border-right: 1px solid var(--line-strong);
+  white-space: nowrap;
+  font-size: 16px;
+}
+
+body.staff-page .admin-nav--staff a:last-child {
+  border-right: 0;
+}
+
+body.staff-page .admin-nav--staff a[data-admin-nav-key="portal-manager"] {
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  padding: 9px 13px;
+  color: var(--gold-dark);
+  background: rgba(255, 253, 249, 0.92);
+}
+
+body.staff-page .admin-logout--staff {
+  min-height: 40px;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  padding: 8px 4px;
+  white-space: nowrap;
+}
+
+body[data-page="staff-dashboard"] .staff-main {
+  position: relative;
+  overflow: hidden;
+  padding: 28px 0 38px;
+}
+
+body[data-page="staff-dashboard"] .staff-main::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: max(-80px, calc((100vw - 1180px) / 2));
+  width: min(42vw, 520px);
+  height: 260px;
+  background: url("../img/TOP/Final_Call_hope.png") center / cover no-repeat;
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.staff-dashboard-title,
+body[data-page="staff-dashboard"] .kpi-grid,
+body[data-page="staff-dashboard"] .dashboard-grid {
+  position: relative;
+  z-index: 1;
+}
+
+.staff-dashboard-title {
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.staff-dashboard-title .eyebrow {
+  margin-bottom: 8px;
+  color: var(--gold-dark);
+  text-transform: none;
+}
+
+.staff-dashboard-title h1 {
+  font-size: clamp(36px, 4vw, 52px);
+  line-height: 1.12;
+}
+
+.staff-dashboard-title .admin-note {
+  margin: 10px 0 0;
+}
+
+.staff-date-switcher {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 253, 249, 0.88);
+  padding: 8px;
+}
+
+.staff-date-switcher .admin-btn {
+  min-height: 40px;
+  border-radius: 999px;
+  padding: 8px 16px;
+  box-shadow: none;
+}
+
+.staff-date-switcher strong {
+  min-width: 120px;
+  text-align: center;
+}
+
+body[data-page="staff-dashboard"] .kpi-grid {
+  gap: 14px;
+}
+
+body[data-page="staff-dashboard"] .kpi-card {
+  min-height: 92px;
+  grid-template-columns: 54px 1fr;
+  gap: 14px;
+  padding: 18px 22px;
+  background: rgba(255, 253, 249, 0.94);
+}
+
+.staff-kpi-icon {
+  display: grid;
+  place-items: center;
+  color: var(--gold);
+  font-family: var(--serif);
+  font-size: 31px;
+  line-height: 1;
+}
+
+body[data-page="staff-dashboard"] .kpi-card p {
+  margin: 0 0 4px;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+body[data-page="staff-dashboard"] .kpi-value {
+  display: inline-block;
+  font-size: 40px;
+}
+
+.kpi-unit {
+  margin-left: 7px;
+  font-family: var(--serif);
+  font-size: 20px;
+}
+
+body[data-page="staff-dashboard"] .dashboard-grid.section {
+  padding: 16px 0 0;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.9fr);
+}
+
+.staff-list-panel {
+  padding: 20px 22px;
+}
+
+.staff-list-panel h2 {
+  margin: 0 0 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line-strong);
+  font-size: 25px;
+}
+
+#staff-day-timeline {
+  display: none;
+}
+
+.day-event {
+  display: grid;
+  grid-template-columns: 78px 1fr 1fr 54px 94px;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 253, 249, 0.96);
+  padding: 10px 12px;
+}
+
+.day-event-time,
+.day-event-location,
+.day-event-attendees {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--green);
+}
+
+.day-event-time strong {
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 23px;
+}
+
+.day-event-title {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 16px;
+}
+
+.day-event .admin-actions {
+  justify-content: flex-end;
+}
+
+.day-event .admin-btn {
+  min-height: 34px;
+  padding: 7px 12px;
+  box-shadow: none;
+  white-space: nowrap;
+}
+
+.day-avatar-group {
+  display: none;
+}
+
+body[data-page="staff-dashboard"] #staff-qr-request-list .admin-chip,
+body[data-page="staff-dashboard"] #staff-missing-secondary .admin-chip {
+  width: 100%;
+  justify-content: space-between;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  padding: 12px 0;
+}
+
 .admin-page-title,
 .portal-page-title {
   display: flex;
@@ -1145,6 +1395,22 @@ input[type="range"]::-moz-range-thumb {
     grid-template-columns: 1fr;
   }
 
+  body[data-page="staff-dashboard"] .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body[data-page="staff-dashboard"] .dashboard-grid.section {
+    grid-template-columns: 1fr;
+  }
+
+  .day-event {
+    grid-template-columns: 78px 1fr 94px;
+  }
+
+  .day-event .admin-actions {
+    justify-content: flex-start;
+  }
+
   .section-title::before,
   .section-title::after {
     display: none;
@@ -1215,6 +1481,17 @@ input[type="range"]::-moz-range-thumb {
 
   .admin-login-guide section {
     padding: 22px 18px;
+  }
+
+  body[data-page="staff-dashboard"] .kpi-grid,
+  .day-event {
+    grid-template-columns: 1fr;
+  }
+
+  .staff-date-switcher {
+    align-items: stretch;
+    flex-direction: column;
+    border-radius: var(--radius);
   }
 
   .hero-title,
