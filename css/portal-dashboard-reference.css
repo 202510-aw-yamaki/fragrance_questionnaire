@@ -148,3 +148,74 @@
     padding-top: 20px;
   }
 }
+
+/* 2026-05-01 dashboard layout image refresh */
+.portal-staff-dashboard-page .portal-staff-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(330px, 0.42fr);
+  align-items: start;
+}
+
+.portal-staff-dashboard-page .portal-side-stack {
+  display: grid;
+  gap: 16px;
+}
+
+.portal-staff-dashboard-page .portal-action-card--qr {
+  border-color: rgba(200, 76, 76, 0.22);
+}
+
+.portal-admin-dashboard-page .portal-manager-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.portal-admin-dashboard-page .portal-manager-metric-grid > .admin-panel {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+
+.portal-admin-dashboard-page .portal-manager-metric-grid > .admin-panel .portal-section-head h2 {
+  font-size: 1.05rem;
+}
+
+.portal-admin-dashboard-page .portal-dashboard-qr-actions {
+  margin-top: auto;
+}
+
+.portal-admin-dashboard-page .portal-manager-link-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.portal-admin-dashboard-page .portal-action-card {
+  min-height: 128px;
+  align-content: center;
+}
+
+.portal-admin-dashboard-page .portal-manager-bottom {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  gap: 22px;
+}
+
+@media (max-width: 78rem) {
+  .portal-admin-dashboard-page .portal-manager-metric-grid,
+  .portal-admin-dashboard-page .portal-manager-link-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .portal-staff-dashboard-page .portal-staff-layout,
+  .portal-admin-dashboard-page .portal-manager-bottom {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 56rem) {
+  .portal-admin-dashboard-page .portal-manager-metric-grid,
+  .portal-admin-dashboard-page .portal-manager-link-grid {
+    grid-template-columns: 1fr;
+  }
+}

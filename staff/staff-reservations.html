@@ -9065,19 +9065,34 @@
       </form>
     </section>
 
-    <section class="admin-panel portal-list-card portal-reservations-list-section">
-      <div class="portal-list-head portal-reservation-head portal-reservations-head-row">
-        <span>来店日時</span>
-        <span>お客様名</span>
-        <span>来店目的</span>
-        <span>人数</span>
-        <span>傾向</span>
-        <span>作成日時</span>
-        <span>予約情報</span>
-        <span>詳細</span>
-      </div>
-      <div id="reservation-rows" class="portal-list-body portal-reservations-list-body"></div>
-      <p class="admin-empty portal-reservations-empty" id="reservation-empty" hidden>該当する予約はありません。</p>
+    <section class="portal-reservations-main-grid">
+      <section class="admin-panel portal-list-card portal-reservations-list-section">
+        <div class="portal-list-head portal-reservation-head portal-reservations-head-row">
+          <span>来店日時</span>
+          <span>お客様名</span>
+          <span>来店目的</span>
+          <span>人数</span>
+          <span>傾向</span>
+          <span>作成日時</span>
+          <span>予約情報</span>
+          <span>詳細</span>
+        </div>
+        <div id="reservation-rows" class="portal-list-body portal-reservations-list-body"></div>
+        <p class="admin-empty portal-reservations-empty" id="reservation-empty" hidden>該当する予約はありません。</p>
+      </section>
+
+      <aside class="admin-panel portal-reservations-summary" aria-label="予約確認サマリー">
+        <h2>当日サマリー</h2>
+        <div class="portal-reservations-summary-grid">
+          <span>未確認</span>
+          <strong>絞り込みで確認</strong>
+          <span>メモ未記入</span>
+          <strong>詳細画面で確認</strong>
+          <span>完了済み</span>
+          <strong>ステータスで管理</strong>
+        </div>
+        <p class="admin-note">予約詳細ではアンケート結果、来店前メモ、最終配合を確認します。</p>
+      </aside>
     </section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

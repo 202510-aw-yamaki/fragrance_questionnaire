@@ -400,3 +400,113 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* 2026-05-01 staff layout image refresh */
+.portal-reservations-page .portal-reservations-main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(270px, 0.28fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.portal-reservations-page .portal-reservations-summary {
+  position: sticky;
+  top: 96px;
+  display: grid;
+  gap: 18px;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.portal-reservations-page .portal-reservations-summary h2 {
+  margin: 0;
+  color: var(--staff7-ink);
+  font-size: 1.35rem;
+}
+
+.portal-reservations-page .portal-reservations-summary-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.portal-reservations-page .portal-reservations-summary-grid span,
+.portal-reservations-page .portal-reservations-summary-grid strong {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 1px solid rgba(190, 133, 61, 0.16);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.portal-reservations-page .portal-reservations-summary-grid span {
+  border-radius: 12px 12px 0 0;
+  color: var(--staff7-muted);
+  font-weight: 700;
+}
+
+.portal-reservations-page .portal-reservations-summary-grid strong {
+  margin-top: -10px;
+  border-top: 0;
+  border-radius: 0 0 12px 12px;
+  color: #56764e;
+  font-size: 1.08rem;
+}
+
+.staff-customer-detail-page .staff-customer-action-panel {
+  border-color: rgba(89, 122, 77, 0.26);
+}
+
+.staff-customer-detail-page .staff-customer-action-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.staff-customer-detail-page .staff-customer-action {
+  display: grid;
+  gap: 6px;
+  min-height: 118px;
+  align-content: center;
+  padding: 20px;
+  border: 1px solid rgba(190, 133, 61, 0.2);
+  border-radius: 14px;
+  background: rgba(255, 253, 248, 0.88);
+  color: var(--staff7-ink);
+  text-decoration: none;
+}
+
+.staff-customer-detail-page .staff-customer-action span {
+  font-size: 1.12rem;
+  font-weight: 700;
+}
+
+.staff-customer-detail-page .staff-customer-action small {
+  color: var(--staff7-muted);
+  line-height: 1.6;
+}
+
+.staff-customer-detail-page .staff-customer-action:hover {
+  border-color: rgba(89, 122, 77, 0.38);
+  box-shadow: 0 18px 44px rgba(102, 73, 40, 0.11);
+}
+
+.portal-slots-page .portal-slot-layout--reference {
+  align-items: stretch;
+}
+
+.portal-slots-page .portal-slot-editor-panel .portal-slot-form--reference {
+  align-content: start;
+}
+
+@media (max-width: 1180px) {
+  .portal-reservations-page .portal-reservations-main-grid,
+  .staff-customer-detail-page .staff-customer-action-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-reservations-page .portal-reservations-summary {
+    position: static;
+  }
+}

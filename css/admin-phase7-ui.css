@@ -593,3 +593,119 @@
     overflow-x: auto;
   }
 }
+
+/* 2026-05-01 staff/admin layout image refresh */
+.portal-login-page .portal-login-brandbar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: 72px;
+  padding: 0 4px 10px;
+  border-bottom: 1px solid rgba(190, 133, 61, 0.28);
+}
+
+.portal-login-page .portal-login-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--admin7-ink);
+  text-decoration: none;
+}
+
+.portal-login-page .portal-login-brand-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(202, 127, 28, 0.42);
+  border-radius: 10px;
+  color: var(--admin7-gold);
+  font-size: 18px;
+}
+
+.portal-login-page .portal-login-brand strong {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.45rem, 2.4vw, 2.15rem);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.portal-login-page .portal-login-brand small,
+.portal-login-page .portal-login-secure-note {
+  display: block;
+  color: #a16d2d;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.portal-admin-settings-page .portal-hero,
+.portal-admin-scoring-page .portal-scoring-hero-card,
+.portal-admin-materials-page .portal-materials-overview-card {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.portal-admin-settings-page .portal-hero h1,
+.portal-admin-scoring-page .portal-scoring-hero-card h1,
+.portal-admin-materials-page .portal-materials-overview-card h1 {
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+  font-size: clamp(2.2rem, 3.2vw, 4.2rem);
+  font-weight: 500;
+  letter-spacing: 0;
+  text-align: center;
+}
+
+.portal-admin-settings-page .portal-hero-copy-block,
+.portal-admin-scoring-page .portal-scoring-hero-card .portal-hero-copy-block,
+.portal-admin-materials-page .portal-materials-title-strip,
+.portal-admin-materials-page .portal-materials-hero-row .portal-hero-copy-block {
+  justify-items: center;
+  text-align: center;
+}
+
+.portal-admin-settings-page .portal-control-grid {
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+}
+
+.portal-admin-settings-page .portal-qr-settings-panel {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.portal-admin-settings-page #qr-product-settings-form {
+  display: grid;
+  gap: 18px;
+}
+
+.portal-admin-settings-page #qr-product-settings-form .admin-actions {
+  justify-content: center;
+}
+
+.portal-admin-settings-page #qr-product-settings-form .admin-btn {
+  min-width: min(420px, 100%);
+}
+
+.portal-admin-scoring-page .portal-scoring-branch-area,
+.portal-admin-scoring-page .portal-scoring-column > .admin-panel,
+.portal-admin-scoring-page .portal-scoring-finish-panel,
+.portal-admin-materials-page .portal-material-list-panel,
+.portal-admin-materials-page .portal-material-json-card {
+  border-radius: 12px;
+}
+
+.portal-admin-materials-page .portal-materials-control-row,
+.portal-admin-materials-page .portal-materials-search-row {
+  border-top: 1px solid rgba(190, 133, 61, 0.18);
+  padding-top: 18px;
+}
+
+@media (max-width: 760px) {
+  .portal-login-page .portal-login-brandbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
