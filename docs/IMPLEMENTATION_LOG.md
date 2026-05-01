@@ -207,3 +207,13 @@
 - 補足:
   - STEP2 の5軸傾向表示は `scoreStep2Answers` の結果プレビューのみで、管理画面の配点や保存ロジックは変更していない。
   - レイアウト画像は直接参照せず、生成画像とCSSで近づける方針を継続する。
+
+### スタッフ/管理者ポータル権限の整理
+
+- 対象: `js/admin-auth.js`, `js/staff-customer-detail-page.js`
+- 実装:
+  - `staff` はスタッフ画面のみ、`manager` はスタッフ画面と管理者画面に入れる判定へ変更。
+  - `manager` でログインしている場合、共通ヘッダーにスタッフ画面/管理者画面の切り替えリンクを追加。
+  - `staff-customer-detail.html` 系の個別ヘッダーにも、`manager` セッション時だけ管理者画面へ戻る導線を追加。
+- 補足:
+  - Supabase Auth の `portal_role` / `role` は既存取得関数を使い、画面側の `role` パラメータだけで管理者権限を認めない。

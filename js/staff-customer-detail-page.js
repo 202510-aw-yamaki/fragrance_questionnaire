@@ -137,10 +137,15 @@
     const staffName = window.AdminAuth?.getStaffDisplayName
       ? window.AdminAuth.getStaffDisplayName(session)
       : "staff";
+    const sessionRole = window.AdminAuth?.getSessionPortalRole?.(session);
+    const managerLink = sessionRole === "manager"
+      ? `<a class="staff-detail-nav-link" href="${escapeHtml(window.AdminAuth.appendRoleToHref("../admin/admin-dashboard.html", "manager"))}">\u7ba1\u7406\u8005\u753b\u9762</a>`
+      : "";
     headerEl.innerHTML = `
       <div class="staff-detail-header-inner staff-detail-header-inner-simple">
         <a class="staff-detail-brand" href="${escapeHtml(window.AdminAuth.appendRoleToHref("staff-dashboard.html", "staff"))}">Fragrance STAFF_${escapeHtml(staffName)}</a>
         <div class="staff-detail-header-actions">
+          ${managerLink}
           <a class="staff-detail-nav-link" id="staff-detail-back" href="${escapeHtml(back.href)}">戻る</a>
           <button class="staff-detail-logout" id="staff-detail-logout" type="button">ログアウト</button>
         </div>

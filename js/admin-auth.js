@@ -67,6 +67,8 @@
     const requested = normalizePortalRole(requestedRole);
     if (!requested) return true;
     if (!actual) return false;
+    if (requested === "staff") return actual === "staff" || actual === "manager";
+    if (requested === "manager") return actual === "manager";
     return actual === requested;
   }
 
@@ -213,11 +215,18 @@
     if (!mount) return;
     const role = options.role === "staff" || options.role === "manager" ? options.role : readRoleFromLocation() || readStoredRole() || "manager";
     const session = options.session || null;
+    const sessionRole = getSessionPortalRole(session);
     const optionLinks = normalizeHeaderLinks(options.links);
-    const links = (role === "staff"
+    const baseLinks = (role === "staff"
       ? getHeaderLinks(role).map(([href, label, key]) => ({ href, label, key }))
       : (optionLinks || getHeaderLinks(role).map(([href, label, key]) => ({ href, label, key }))))
       .filter(({ key }) => role !== "staff" || key !== activePage);
+    const portalSwitchLinks = sessionRole === "manager"
+      ? (role === "staff"
+        ? [{ href: HOME_BY_ROLE.manager, label: "\u7ba1\u7406\u8005\u753b\u9762", key: "portal-manager" }]
+        : [{ href: HOME_BY_ROLE.staff, label: "\u30b9\u30bf\u30c3\u30d5\u753b\u9762", key: "portal-staff" }])
+      : [];
+    const links = baseLinks.concat(portalSwitchLinks);
     const brandHref = appendRoleToHref(role === "staff" ? HOME_BY_ROLE.staff : HOME_BY_ROLE.manager, role);
     const brandName = options.brandText || (role === "staff"
       ? `Fragrance STAFF_${getStaffDisplayName(session)}`
