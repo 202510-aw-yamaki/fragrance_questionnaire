@@ -3,6 +3,10 @@
   const emptyEl = document.getElementById("reservation-empty");
   const filterForm = document.getElementById("filter-form");
   const hideCompletedEl = document.getElementById("filter-hide-completed");
+  const summaryTotalEl = document.getElementById("reservation-summary-total");
+  const summaryOpenEl = document.getElementById("reservation-summary-open");
+  const summaryMemoEl = document.getElementById("reservation-summary-memo");
+  const summaryCompletedEl = document.getElementById("reservation-summary-completed");
 
   if (!rowsEl || !filterForm) return;
 
@@ -43,6 +47,11 @@
       .join(" ");
   }
 
+  function formatSlotTime(row) {
+    const slot = slotMap.get(row.slot_id);
+    return String(slot?.slot_time || row.slot_label || "-").slice(0, 5);
+  }
+
   function formatCreatedDate(value) {
     const datePart = String(value || "").slice(0, 10);
     return datePart ? formatShortDate(datePart) : "-";
@@ -55,6 +64,28 @@
     if (text.includes("再来")) return "再来店";
     if (text.includes("初")) return "初来店";
     return text;
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "\"": "&quot;",
+      "'": "&#039;"
+    }[char]));
+  }
+
+  function getCustomerEmail(row, draftCustomer) {
+    return draftCustomer?.email || row.customer_email || row.email || row.contact_email || "-";
+  }
+
+  function renderSummary(rows) {
+    if (!summaryTotalEl || !summaryOpenEl || !summaryMemoEl || !summaryCompletedEl) return;
+    summaryTotalEl.textContent = String(rows.length);
+    summaryOpenEl.textContent = String(rows.filter((row) => row.status !== "completed" && row.status !== "canceled").length);
+    summaryMemoEl.textContent = String(rows.filter((row) => !String(row.staff_memo || "").trim()).length);
+    summaryCompletedEl.textContent = String(rows.filter((row) => row.status === "completed").length);
   }
 
   function getBranchKey(row) {
@@ -118,19 +149,20 @@
     const filtered = getFilteredRows();
     rowsEl.innerHTML = "";
     emptyEl.hidden = filtered.length > 0;
+    renderSummary(filtered);
 
     filtered.forEach((row) => {
       const draftCustomer = readDraftCustomer(row);
       const detailHref = window.AdminAuth.appendRoleToHref(`staff-customer-detail.html?reservation=${encodeURIComponent(row.id)}`, "staff");
+      const memoLabel = String(row.staff_memo || "").trim() ? "メモあり" : "未記入";
       const article = document.createElement("article");
       article.className = "portal-list-row portal-reservation-row";
       article.innerHTML = `
-        <span class="portal-reservation-cell portal-reservation-cell--datetime" data-label="来店日時">${formatDateTime(row)}</span>
-        <span class="portal-reservation-cell portal-reservation-cell--customer" data-label="お客様名">${draftCustomer?.name || row.customer_name || "未入力"}</span>
-        <span class="portal-reservation-cell portal-reservation-cell--visit-type" data-label="来店目的">${formatVisitType(row.visit_type)}</span>
-        <span class="portal-reservation-cell portal-reservation-cell--guest-count" data-label="人数">${row.guest_count || "-"}</span>
-        <span class="portal-reservation-cell portal-reservation-cell--summary" data-label="傾向">${formatBranchLabel(row)}</span>
-        <span class="portal-reservation-cell portal-reservation-cell--created-at" data-label="作成日時">${formatCreatedDate(row.created_at)}</span>
+        <span class="portal-reservation-cell portal-reservation-cell--datetime" data-label="時間">${escapeHtml(formatSlotTime(row))}</span>
+        <span class="portal-reservation-cell portal-reservation-cell--customer" data-label="お客様名">${escapeHtml(draftCustomer?.name || row.customer_name || "未入力")}</span>
+        <span class="portal-reservation-cell portal-reservation-cell--email" data-label="メール">${escapeHtml(getCustomerEmail(row, draftCustomer))}</span>
+        <span class="portal-reservation-cell portal-reservation-cell--summary" data-label="香り傾向">${escapeHtml(formatBranchLabel(row))}</span>
+        <span class="portal-reservation-cell portal-reservation-cell--memo ${memoLabel === "未記入" ? "is-empty" : ""}" data-label="事前メモ">${memoLabel}</span>
         <span class="portal-reservation-cell portal-reservation-cell--status">
           <select class="portal-reservation-status-select" data-status-id="${row.id}">
             <option value="confirmed"${row.status === "confirmed" ? " selected" : ""}>予約受付</option>
@@ -138,7 +170,7 @@
             <option value="completed"${row.status === "completed" ? " selected" : ""}>接客完了</option>
           </select>
         </span>
-        <span class="portal-reservation-cell portal-reservation-cell--action"><a class="admin-btn primary portal-row-link" href="${detailHref}">詳細</a></span>
+        <span class="portal-reservation-cell portal-reservation-cell--action"><a class="admin-btn secondary portal-row-link" href="${detailHref}">詳細を見る</a></span>
       `;
       rowsEl.appendChild(article);
     });
@@ -198,6 +230,8 @@
     window.AdminAuth.renderAdminHeader("reservations", {
       role,
       session,
+      brandText: "Staff Reservations",
+      roleLabel: "",
       links: [
         { href: "staff-reservations.html", label: "予約確認", key: "reservations" },
         { href: "staff-slots.html", label: "予約枠作成", key: "slots" }

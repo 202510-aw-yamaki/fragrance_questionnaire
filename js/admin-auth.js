@@ -179,6 +179,7 @@
   function getHeaderLinks(role) {
     if (role === "staff") {
       return [
+        ["staff-dashboard.html", "\u30c0\u30c3\u30b7\u30e5\u30dc\u30fc\u30c9", "staff-dashboard"],
         ["staff-reservations.html", "\u4e88\u7d04\u4e00\u89a7", "reservations"],
         ["staff-slots.html", "\u4e88\u7d04\u67a0", "slots"],
         ["staff-qr-requests.html", "\u901a\u77e5", "qr-requests"]
@@ -219,7 +220,7 @@
     const baseLinks = (role === "staff"
       ? getHeaderLinks(role).map(([href, label, key]) => ({ href, label, key }))
       : (optionLinks || getHeaderLinks(role).map(([href, label, key]) => ({ href, label, key }))))
-      .filter(({ key }) => role !== "staff" || key !== activePage);
+      .filter(({ key }) => role !== "staff" || activePage !== "staff-dashboard" || key !== activePage);
     const portalSwitchLinks = sessionRole === "manager"
       ? (role === "staff"
         ? [{ href: HOME_BY_ROLE.manager, label: "\u7ba1\u7406\u8005\u753b\u9762\u3078", key: "portal-manager" }]

@@ -6,19 +6,41 @@
   <title>スタッフ予約一覧 | Fragrance Workshop</title>
   <link rel="stylesheet" href="../css/rebuild-ui.css">
 </head>
-<body class="staff-page" data-page="staff-reservations">
+<body class="staff-page staff-reservations-page" data-page="staff-reservations">
   <header class="admin-header" id="admin-header"></header>
   <main class="staff-main">
-    <section class="admin-page-title"><div><span class="eyebrow">Reservations</span><h1>予約一覧</h1></div><label class="pill"><input id="filter-hide-completed" type="checkbox"> 完了済みを隠す</label></section>
-    <form class="portal-filter-form card" id="filter-form">
-      <div class="form-grid">
+    <section class="admin-page-title staff-reservation-title">
+      <div><span class="eyebrow">Staff Reservations</span><h1>予約一覧</h1></div>
+    </section>
+    <form class="portal-filter-form card staff-reservation-filter" id="filter-form">
+      <div class="staff-reservation-filter-grid">
         <label class="field">日付<input id="filter-date" type="date"></label>
-        <label class="field">状態<select id="filter-status"><option value="">すべて</option><option value="confirmed">予約済み</option><option value="completed">完了</option><option value="cancelled">取消</option></select></label>
+        <label class="field">状態<select id="filter-status"><option value="">すべて</option><option value="confirmed">予約済み</option><option value="completed">完了</option><option value="canceled">取消</option></select></label>
         <label class="field">検索<input id="filter-keyword" type="text" placeholder="お客様名・傾向"></label>
+        <div class="staff-reservation-filter-actions">
+          <label class="pill"><input id="filter-hide-completed" type="checkbox"> 完了済みを隠す</label>
+          <button class="admin-btn primary" type="submit">絞り込み</button>
+        </div>
       </div>
-      <button class="admin-btn primary" type="submit">絞り込み</button>
     </form>
-    <section class="section"><div id="reservation-rows" class="portal-list-body"></div><p class="admin-empty" id="reservation-empty" hidden>該当する予約はありません。</p></section>
+    <section class="staff-reservation-layout section">
+      <article class="admin-panel staff-reservation-table">
+        <div class="staff-reservation-table-head" aria-hidden="true">
+          <span>時間</span><span>お客様名</span><span>メール</span><span>香り傾向</span><span>事前メモ</span><span>ステータス</span><span>操作</span>
+        </div>
+        <div id="reservation-rows" class="portal-list-body"></div>
+        <p class="admin-empty" id="reservation-empty" hidden>該当する予約はありません。</p>
+      </article>
+      <aside class="admin-panel staff-reservation-summary">
+        <h2>当日サマリー</h2>
+        <div class="staff-summary-grid">
+          <article><span>予約数</span><strong id="reservation-summary-total">0</strong><small>件</small></article>
+          <article><span>未完了</span><strong id="reservation-summary-open">0</strong><small>件</small></article>
+          <article><span>メモ未記入</span><strong id="reservation-summary-memo">0</strong><small>件</small></article>
+          <article><span>完了済み</span><strong id="reservation-summary-completed">0</strong><small>件</small></article>
+        </div>
+      </aside>
+    </section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabase-config.js"></script>

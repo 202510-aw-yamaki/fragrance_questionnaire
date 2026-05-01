@@ -1141,6 +1141,191 @@ body[data-page="staff-dashboard"] #staff-missing-secondary .admin-chip {
   padding: 12px 0;
 }
 
+body[data-page="staff-reservations"] .staff-main {
+  position: relative;
+  overflow: hidden;
+  padding: 28px 0 38px;
+}
+
+body[data-page="staff-reservations"] .staff-main::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: max(-80px, calc((100vw - 1180px) / 2));
+  width: min(44vw, 560px);
+  height: 245px;
+  background: url("../img/TOP/Final_Call_hope.png") center / cover no-repeat;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.staff-reservation-title,
+.staff-reservation-filter,
+.staff-reservation-layout {
+  position: relative;
+  z-index: 1;
+}
+
+.staff-reservation-title {
+  margin-bottom: 22px;
+}
+
+.staff-reservation-title .eyebrow {
+  margin-bottom: 8px;
+  text-transform: none;
+}
+
+.staff-reservation-title h1 {
+  font-size: clamp(38px, 4vw, 56px);
+  line-height: 1.12;
+}
+
+.staff-reservation-filter {
+  padding: 22px 26px;
+}
+
+.staff-reservation-filter-grid {
+  display: grid;
+  grid-template-columns: minmax(170px, 0.9fr) minmax(170px, 0.9fr) minmax(220px, 1.1fr) minmax(260px, 0.9fr);
+  gap: 18px;
+  align-items: end;
+}
+
+.staff-reservation-filter-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.staff-reservation-filter-actions .pill {
+  min-height: 44px;
+  border-radius: var(--radius);
+  white-space: nowrap;
+}
+
+.staff-reservation-filter-actions .admin-btn {
+  min-width: 112px;
+}
+
+.staff-reservation-layout.section {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 16px;
+  padding: 16px 0 0;
+  align-items: start;
+}
+
+.staff-reservation-table {
+  padding: 20px 22px;
+}
+
+.staff-reservation-table-head,
+.portal-reservation-row {
+  display: grid;
+  grid-template-columns: 80px 118px minmax(160px, 1fr) 110px 100px 130px 112px;
+  gap: 12px;
+  align-items: center;
+}
+
+.staff-reservation-table-head {
+  padding: 8px 12px 14px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.portal-reservation-row {
+  min-height: 64px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 11px 12px;
+}
+
+.portal-reservation-cell--datetime {
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 22px;
+}
+
+.portal-reservation-cell--email,
+.portal-reservation-cell--summary {
+  color: var(--muted);
+}
+
+.portal-reservation-cell--memo {
+  color: var(--green);
+  font-weight: 800;
+}
+
+.portal-reservation-cell--memo.is-empty {
+  color: #c75d37;
+}
+
+.portal-reservation-status-select {
+  min-height: 38px;
+  border-radius: 999px;
+  padding: 6px 10px;
+  color: var(--green);
+  font-weight: 800;
+}
+
+.portal-row-link {
+  min-height: 36px;
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+
+.staff-reservation-summary {
+  display: grid;
+  gap: 14px;
+  padding: 22px;
+}
+
+.staff-reservation-summary h2 {
+  margin: 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line-strong);
+  font-size: 24px;
+}
+
+.staff-summary-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.staff-summary-grid article {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 6px;
+  align-items: baseline;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 253, 249, 0.92);
+  padding: 14px;
+}
+
+.staff-summary-grid span {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.staff-summary-grid strong {
+  color: var(--gold-dark);
+  font-family: var(--serif);
+  font-size: 32px;
+  line-height: 1;
+}
+
+@media (max-width: 1120px) {
+  .staff-reservation-layout.section {
+    grid-template-columns: 1fr;
+  }
+}
+
 .admin-page-title,
 .portal-page-title {
   display: flex;
@@ -1403,6 +1588,28 @@ body[data-page="staff-dashboard"] #staff-missing-secondary .admin-chip {
     grid-template-columns: 1fr;
   }
 
+  .staff-reservation-filter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .staff-reservation-layout.section {
+    grid-template-columns: 1fr;
+  }
+
+  .staff-reservation-table-head {
+    display: none;
+  }
+
+  .portal-reservation-row {
+    grid-template-columns: 90px 1fr 112px;
+  }
+
+  .portal-reservation-cell--email,
+  .portal-reservation-cell--summary,
+  .portal-reservation-cell--memo {
+    display: none;
+  }
+
   .day-event {
     grid-template-columns: 78px 1fr 94px;
   }
@@ -1492,6 +1699,22 @@ body[data-page="staff-dashboard"] #staff-missing-secondary .admin-chip {
     align-items: stretch;
     flex-direction: column;
     border-radius: var(--radius);
+  }
+
+  .staff-reservation-filter-grid,
+  .portal-reservation-row {
+    grid-template-columns: 1fr;
+  }
+
+  .staff-reservation-filter-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .portal-reservation-cell--email,
+  .portal-reservation-cell--summary,
+  .portal-reservation-cell--memo {
+    display: block;
   }
 
   .hero-title,
