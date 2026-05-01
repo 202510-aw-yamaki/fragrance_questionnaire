@@ -6,36 +6,97 @@
   <title>スタッフ・管理者ログイン | Fragrance Workshop</title>
   <link rel="stylesheet" href="css/rebuild-ui.css">
 </head>
-<body data-page="admin-login">
-  <main class="page-hero">
-    <div class="page-shell page-hero-inner">
-      <section>
-        <a class="brand" href="index.html"><span class="brand-mark">✦</span><span>Fragrance Workshop</span></a>
-        <h1>スタッフ・管理者ログイン</h1>
-        <p class="page-copy">スタッフ・管理者用のログイン画面です。</p>
-      </section>
-      <section class="login-panel">
-        <p class="admin-error" id="config-error" hidden>Supabase 設定が未完了です。js/supabase-config.js を設定してください。</p>
-        <p class="admin-error" id="login-error" hidden></p>
-        <div class="action-row" role="tablist">
-          <button class="portal-login-tab btn secondary is-active" id="staff-login-tab" type="button" role="tab" aria-selected="true" aria-controls="staff-login-panel" data-login-tab="staff">スタッフログイン</button>
-          <button class="portal-login-tab btn secondary" id="manager-login-tab" type="button" role="tab" aria-selected="false" aria-controls="manager-login-panel" data-login-tab="manager">管理者ログイン</button>
-        </div>
-        <section id="staff-login-panel" role="tabpanel" aria-labelledby="staff-login-tab">
-          <form class="login-form" data-login-role="staff">
-            <label>ログインID<input data-login-field="identifier" type="text" autocomplete="username" required></label>
-            <label>パスワード<input data-login-field="password" type="password" autocomplete="current-password" required></label>
-            <button class="btn primary" type="submit">ログイン</button>
-          </form>
+<body class="admin-login-page" data-page="admin-login">
+  <main class="admin-login-stage">
+    <div class="admin-login-bg" aria-hidden="true"></div>
+    <div class="admin-login-shell">
+      <header class="admin-login-topbar">
+        <a class="admin-login-brand" href="index.html">
+          <span class="brand-mark">✦</span>
+          <span>
+            <strong>Fragrance Atelier</strong>
+            <small>WORKSHOP ADMIN SYSTEM</small>
+          </span>
+        </a>
+        <p>管理者専用ページ</p>
+      </header>
+
+      <div class="admin-login-layout">
+        <section class="admin-login-card">
+          <div class="admin-login-tabs" role="tablist" aria-label="ログイン種別">
+            <button class="portal-login-tab is-active" id="staff-login-tab" type="button" role="tab" aria-selected="true" aria-controls="staff-login-panel" data-login-tab="staff">スタッフログイン</button>
+            <button class="portal-login-tab" id="manager-login-tab" type="button" role="tab" aria-selected="false" aria-controls="manager-login-panel" data-login-tab="manager">管理者ログイン</button>
+          </div>
+
+          <p class="admin-error" id="config-error" hidden>Supabase 設定が未完了です。js/supabase-config.js を設定してください。</p>
+          <p class="admin-error" id="login-error" hidden></p>
+
+          <section class="admin-login-panel" id="staff-login-panel" role="tabpanel" aria-labelledby="staff-login-tab">
+            <div class="admin-login-panel-head">
+              <span class="admin-login-icon" aria-hidden="true">S</span>
+              <p>STAFF LOGIN</p>
+              <h1>スタッフログイン</h1>
+              <span>予約確認・枠作成・QR依頼の対応画面に入ります。</span>
+            </div>
+            <form class="login-form" data-login-role="staff">
+              <label>ログインID<input data-login-field="identifier" type="text" autocomplete="username" required></label>
+              <label>パスワード<input data-login-field="password" type="password" autocomplete="current-password" required></label>
+              <button class="btn primary admin-login-submit" type="submit">スタッフとしてログイン</button>
+            </form>
+            <a class="admin-login-help" href="mailto:admin@example.com">パスワードをお忘れの方</a>
+          </section>
+
+          <section class="admin-login-panel" id="manager-login-panel" role="tabpanel" aria-labelledby="manager-login-tab" hidden>
+            <div class="admin-login-panel-head">
+              <span class="admin-login-icon" aria-hidden="true">A</span>
+              <p>ADMIN LOGIN</p>
+              <h1>管理者ログイン</h1>
+              <span>スタッフ・予約・素材設定を管理する画面に入ります。</span>
+            </div>
+            <form class="login-form" data-login-role="manager">
+              <label>ログインID<input data-login-field="identifier" type="text" autocomplete="username" required></label>
+              <label>パスワード<input data-login-field="password" type="password" autocomplete="current-password" required></label>
+              <button class="btn gold admin-login-submit" type="submit">管理者としてログイン</button>
+            </form>
+            <a class="admin-login-help" href="mailto:admin@example.com">パスワードをお忘れの方</a>
+          </section>
         </section>
-        <section id="manager-login-panel" role="tabpanel" aria-labelledby="manager-login-tab" hidden>
-          <form class="login-form" data-login-role="manager">
-            <label>ログインID<input data-login-field="identifier" type="text" autocomplete="username" required></label>
-            <label>パスワード<input data-login-field="password" type="password" autocomplete="current-password" required></label>
-            <button class="btn gold" type="submit">ログイン</button>
-          </form>
-        </section>
-      </section>
+
+        <aside class="admin-login-guide" aria-label="ログイン後の機能">
+          <section>
+            <p class="admin-login-guide-kicker">スタッフ</p>
+            <h2>当日の運用をすぐ確認</h2>
+            <div class="admin-login-feature-list">
+              <article>
+                <strong>予約枠作成</strong>
+                <span>ワークショップの受付枠を追加します。</span>
+              </article>
+              <article>
+                <strong>予約情報一覧</strong>
+                <span>来店予定と対応状況を確認します。</span>
+              </article>
+              <article>
+                <strong>QR依頼一覧</strong>
+                <span>作成依頼の可否判断と進行を管理します。</span>
+              </article>
+            </div>
+          </section>
+          <section>
+            <p class="admin-login-guide-kicker">管理者</p>
+            <h2>設定と店舗状況を管理</h2>
+            <div class="admin-login-feature-list">
+              <article>
+                <strong>スタッフ管理</strong>
+                <span>担当者の追加・権限・ログイン情報を管理します。</span>
+              </article>
+              <article>
+                <strong>素材・配点設定</strong>
+                <span>香り軸や原料ポイントの調整を行います。</span>
+              </article>
+            </div>
+          </section>
+        </aside>
+      </div>
     </div>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
