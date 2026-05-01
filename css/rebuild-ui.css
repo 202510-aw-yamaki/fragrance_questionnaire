@@ -24,6 +24,8 @@
 
 html {
   min-width: 320px;
+  scroll-behavior: smooth;
+  scroll-padding-top: 92px;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--sans);
@@ -393,7 +395,7 @@ body[data-page="home"] .hero-copy {
 
 .home-flow-card {
   display: grid;
-  gap: 18px;
+  gap: 4px;
 }
 
 .home-flow-image {
@@ -459,6 +461,7 @@ body[data-page="home"] .hero-copy {
 
 .section {
   padding: 64px 0;
+  scroll-margin-top: 92px;
 }
 
 .section-title {
@@ -497,6 +500,10 @@ body[data-page="home"] .hero-copy {
 
 .grid-2 {
   align-items: start;
+}
+
+#question-preview .grid-2 {
+  align-items: stretch;
 }
 
 .kpi-grid {
