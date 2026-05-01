@@ -30,6 +30,22 @@
   color: var(--portal-ink);
 }
 
+.customer-index-page .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.25rem, 2vw, 1.9rem);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.customer-index-page .brand img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
 .customer-login-page main,
 .customer-index-page .page-main {
   position: relative;
@@ -228,22 +244,22 @@
 .customer-index-page .hero {
   position: relative;
   z-index: 1;
-  grid-template-columns: minmax(0, 1fr) minmax(300px, 0.34fr);
-  gap: 22px;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, 0.24fr);
+  gap: 18px;
   align-items: end;
-  min-height: 270px;
-  padding: 42px 0 18px;
+  min-height: 330px;
+  padding: 46px 0 22px;
 }
 
 .customer-index-page .hero::after {
   content: "";
   position: absolute;
   inset: 0 calc(50% - 50vw) auto;
-  height: 260px;
+  height: 330px;
   z-index: -1;
   background:
-    linear-gradient(90deg, rgba(255, 252, 247, 0.96) 0%, rgba(255, 252, 247, 0.72) 52%, rgba(255, 252, 247, 0.25) 100%),
-    url("../img/TOP/hero-visual.png") right center / cover no-repeat;
+    linear-gradient(90deg, rgba(255, 252, 247, 0.98) 0%, rgba(255, 252, 247, 0.86) 42%, rgba(255, 252, 247, 0.18) 100%),
+    url("../img/TOP/香水の瓶が並ぶ.png") right center / cover no-repeat;
 }
 
 .customer-index-page .hero-main,
@@ -259,7 +275,9 @@
 }
 
 .customer-index-page h1 {
-  font-size: clamp(2.25rem, 5vw, 4rem);
+  font-family: Georgia, "Times New Roman", "Hiragino Mincho ProN", serif;
+  font-size: clamp(2.4rem, 5vw, 4.5rem);
+  font-weight: 500;
 }
 
 .customer-index-page .lead {
@@ -279,7 +297,30 @@
 }
 
 .customer-index-page .member-card {
-  background: rgba(255, 252, 247, 0.88);
+  align-self: end;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 10px;
+  background: rgba(255, 252, 247, 0.72);
+  box-shadow: 0 14px 34px rgba(96, 62, 34, 0.1);
+}
+
+.customer-index-page .member-card h2 {
+  margin: 4px 0 0;
+  font-size: 1.05rem;
+}
+
+.customer-index-page .member-field {
+  gap: 2px;
+  padding-bottom: 8px;
+}
+
+.customer-index-page .member-field span {
+  font-size: 0.75rem;
+}
+
+.customer-index-page .member-field strong {
+  font-size: 0.86rem;
 }
 
 .customer-index-page .history-grid {

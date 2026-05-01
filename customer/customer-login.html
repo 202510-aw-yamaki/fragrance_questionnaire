@@ -601,6 +601,20 @@
         status.hidden = false;
       }
 
+      function formatAuthError(error, fallback) {
+        var message = String(error?.message || "").toLowerCase();
+        if (message.includes("invalid login credentials")) {
+          return "メールアドレスまたはパスワードが正しくありません。入力内容をご確認ください。";
+        }
+        if (message.includes("email not confirmed")) {
+          return "メールアドレスの確認が完了していません。確認メールをご確認ください。";
+        }
+        if (message.includes("user already registered") || message.includes("already registered")) {
+          return "このメールアドレスはすでに登録されています。ログインをお試しください。";
+        }
+        return fallback;
+      }
+
       function readCredentials() {
         var formData = new FormData(form);
         return {
@@ -632,7 +646,7 @@
             window.location.href = "index.html";
           }, 500);
         } catch (error) {
-          showStatus(error?.message || "ログインに失敗しました。");
+          showStatus(formatAuthError(error, "ログインできませんでした。入力内容をご確認のうえ、もう一度お試しください。"));
         } finally {
           setBusy(false);
         }
@@ -661,7 +675,7 @@
             window.location.href = "index.html";
           }, 500);
         } catch (error) {
-          showStatus(error?.message || "初回設定に失敗しました。");
+          showStatus(formatAuthError(error, "初回パスワード設定ができませんでした。入力内容をご確認のうえ、もう一度お試しください。"));
         } finally {
           setBusy(false);
         }
