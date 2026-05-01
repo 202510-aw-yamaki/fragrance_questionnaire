@@ -114,6 +114,23 @@ img {
   font-family: var(--serif);
 }
 
+.brand-logo-mark {
+  width: 48px;
+  height: 48px;
+  display: inline-grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(201, 139, 52, 0.42);
+  border-radius: 50%;
+  background: #fff9ef;
+}
+
+.brand-logo-mark img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
 .main-nav,
 .admin-nav,
 .staff-detail-header-actions {
@@ -304,6 +321,112 @@ h3,
 
 .hero-actions {
   margin-top: 30px;
+}
+
+body[data-page="home"] .hero {
+  min-height: 560px;
+}
+
+body[data-page="home"] .hero-copy {
+  max-width: 620px;
+  color: #4e3f36;
+  font-weight: 700;
+}
+
+.home-hero-actions {
+  width: min(430px, 100%);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.home-hero-actions .btn {
+  width: 100%;
+}
+
+.home-hero-actions .btn:first-child {
+  grid-column: 1 / -1;
+  min-height: 58px;
+}
+
+.home-step-grid {
+  align-items: stretch;
+}
+
+.home-step-card {
+  display: grid;
+  gap: 14px;
+  text-align: center;
+}
+
+.home-step-art {
+  width: 100%;
+  height: 128px;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 0;
+}
+
+.home-step-card h3 {
+  font-size: 24px;
+}
+
+.home-step-card .admin-note {
+  margin: 0;
+  text-align: left;
+}
+
+.home-support-card {
+  display: grid;
+  gap: 18px;
+}
+
+.home-support-card .section-title {
+  margin-bottom: 0;
+  font-size: 38px;
+  line-height: 1.45;
+}
+
+.home-support-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+
+.home-support-list {
+  display: grid;
+  gap: 12px;
+}
+
+.home-support-list > div {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 10px 16px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 250, 243, 0.78);
+  padding: 14px 16px;
+}
+
+.home-support-list span {
+  grid-row: span 2;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  color: var(--gold-dark);
+  font-family: var(--serif);
+  font-weight: 800;
+}
+
+.home-support-list p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
 }
 
 .section {
@@ -1462,6 +1585,44 @@ body[data-page="staff-reservations"] .staff-main::before {
   font-weight: 700;
 }
 
+details.card {
+  padding: 0;
+  overflow: hidden;
+}
+
+details.card summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 58px;
+  padding: 18px 22px;
+  color: var(--ink);
+  font-weight: 800;
+  cursor: pointer;
+  list-style: none;
+}
+
+details.card summary::-webkit-details-marker {
+  display: none;
+}
+
+details.card summary::after {
+  content: "+";
+  color: var(--gold-dark);
+  font-size: 24px;
+  line-height: 1;
+}
+
+details.card[open] summary::after {
+  content: "-";
+}
+
+details.card .admin-note {
+  margin: 0;
+  padding: 0 22px 18px;
+}
+
 .footer {
   border-top: 1px solid var(--line);
   background: rgba(255, 250, 243, 0.94);
@@ -1485,6 +1646,49 @@ body[data-page="staff-reservations"] .staff-main::before {
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.84), rgba(244, 224, 196, 0.78)),
     url("../img/TOP/グーグルマップ地図上野教室.png") center / cover no-repeat;
+}
+
+.map-embed {
+  width: 100%;
+  min-height: 260px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-strong);
+}
+
+.final-cta-card {
+  position: relative;
+  min-height: 210px;
+  display: grid;
+  grid-template-columns: minmax(220px, 0.95fr) minmax(0, 1.4fr);
+  gap: 30px;
+  align-items: center;
+  overflow: hidden;
+  padding: 28px 34px;
+}
+
+.final-cta-image {
+  width: 100%;
+  height: 168px;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+
+.final-cta-content {
+  position: relative;
+  z-index: 1;
+}
+
+.final-cta-content .section-title {
+  margin-bottom: 20px;
+  text-align: left;
+  font-size: 34px;
+  line-height: 1.45;
+}
+
+.final-cta-content .section-title::before,
+.final-cta-content .section-title::after {
+  display: none;
 }
 
 .visual-band {
@@ -1569,6 +1773,18 @@ body[data-page="staff-reservations"] .staff-main::before {
   .admin-hero-inner,
   .question-layout {
     grid-template-columns: 1fr;
+  }
+
+  .final-cta-card {
+    grid-template-columns: 1fr;
+  }
+
+  .final-cta-content .section-title {
+    text-align: center;
+  }
+
+  .final-cta-content .hero-actions {
+    justify-content: center;
   }
 
   .reservation-row,
@@ -1660,6 +1876,36 @@ body[data-page="staff-reservations"] .staff-main::before {
   .brand-mark {
     width: 38px;
     height: 38px;
+  }
+
+  .brand-logo-mark {
+    width: 38px;
+    height: 38px;
+  }
+
+  .brand-logo-mark img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .home-hero-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .home-step-art {
+    height: 112px;
+  }
+
+  .home-support-list > div {
+    grid-template-columns: 1fr;
+  }
+
+  .home-support-list span {
+    grid-row: auto;
+  }
+
+  .final-cta-card {
+    padding: 22px 18px;
   }
 
   .admin-login-stage {

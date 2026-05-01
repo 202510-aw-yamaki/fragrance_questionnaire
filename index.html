@@ -11,14 +11,14 @@
   <header class="site-header">
     <div class="site-header-inner site-container">
       <a class="brand" href="#top" aria-label="Fragrance Workshop">
-        <span class="brand-mark">✦</span>
+        <span class="brand-logo-mark"><img src="img/TOP/吟ロゴ.png" alt=""></span>
         <span>Fragrance Workshop</span>
       </a>
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu" aria-label="メニュー">
         <span></span><span></span><span></span>
       </button>
       <nav class="main-nav" id="site-menu" aria-label="ページメニュー">
-        <a href="customer/questionnaire.html">アンケート</a>
+        <a href="#top">トップ</a>
         <a href="#flow">体験の流れ</a>
         <a href="#faq">よくある質問</a>
         <a href="customer/customer-login.html">会員ログイン</a>
@@ -36,7 +36,7 @@
         <div class="hero-content">
           <h1 class="hero-title" id="hero-title">あなたに合う<br>香りを知る</h1>
           <p class="hero-copy">8問・約1分で、今のあなたに合う香りバランスのベースを作ります。最後は店頭でスタッフと一緒に仕上げます。</p>
-          <div class="hero-actions">
+          <div class="hero-actions home-hero-actions">
             <a class="btn primary" href="customer/questionnaire.html">アンケートをはじめる</a>
             <a class="btn secondary" href="customer/customer-login.html">会員ログイン</a>
             <a class="btn secondary" href="customer/reservation.html?source=direct">ワークショップ予約</a>
@@ -48,21 +48,21 @@
     <section class="section" id="flow">
       <div class="site-container">
         <h2 class="section-title" id="flow-heading">3ステップで、来店前の準備が完了</h2>
-        <div class="grid-3">
-          <article class="card" id="flow-step-1">
-            <img class="option-art" src="img/questionnaire-v11/step1-a-floral.png" alt="">
+        <div class="grid-3 home-step-grid">
+          <article class="card home-step-card" id="flow-step-1">
+            <img class="home-step-art" src="img/TOP/料金表の上の画像.png" alt="">
             <h3>香りのアンケート</h3>
-            <p class="admin-note">香り・色・気分・使いたいシーンなど、答えやすい質問だけで進みます。</p>
+            <p class="admin-note">前半は香り・色・気分・使いたいシーンを、直感で答えられる質問だけで進みます。</p>
           </article>
-          <article class="card" id="flow-step-2">
-            <img class="option-art" src="img/TOP/香水の瓶が並ぶ.png" alt="">
+          <article class="card home-step-card" id="flow-step-2">
+            <img class="home-step-art" src="img/TOP/香水の瓶が並ぶ.png" alt="">
             <h3>ベースができる</h3>
-            <p class="admin-note">5軸の香りバランスを可視化し、当日の調香の出発点にします。</p>
+            <p class="admin-note">回答傾向に合わせて、当日に試す香りのベースを作ります。</p>
           </article>
-          <article class="card" id="flow-step-3">
-            <img class="option-art" src="img/TOP/Workshop体験.png" alt="">
+          <article class="card home-step-card" id="flow-step-3">
+            <img class="home-step-art" src="img/TOP/Workshop体験.png" alt="">
             <h3>店頭で完成</h3>
-            <p class="admin-note">アンケート結果を見ながら、スタッフと一緒に香りを仕上げます。</p>
+            <p class="admin-note">回答内容は決定結果ではなく、当日スタッフと一緒に完成させます。</p>
           </article>
         </div>
       </div>
@@ -73,26 +73,20 @@
         <article class="card">
           <h2 class="section-title" id="preview-heading">体験の流れ</h2>
           <ol class="step-list">
-            <li class="step-item"><span class="step-number">1</span><span><strong>アンケート回答</strong><br>好みや気分を選びます。</span></li>
-            <li class="step-item"><span class="step-number">2</span><span><strong>香り5軸を確認</strong><br>傾向をグラフで見ます。</span></li>
-            <li class="step-item"><span class="step-number">3</span><span><strong>来店予約</strong><br>日時を選びます。</span></li>
-            <li class="step-item"><span class="step-number">4</span><span><strong>ワークショップで調香</strong><br>スタッフと微調整します。</span></li>
-            <li class="step-item"><span class="step-number">5</span><span><strong>完成品を受け取る</strong><br>自分だけの香りを持ち帰ります。</span></li>
+            <li class="step-item"><span class="step-number">1</span><span><strong>アンケート回答</strong><br>あなたの香りの好みや気分を、簡単な質問でお答えください。</span></li>
+            <li class="step-item"><span class="step-number">2</span><span><strong>香り5軸を確認</strong><br>香りを5つの軸で分析し、あなたの傾向を可視化します。</span></li>
+            <li class="step-item"><span class="step-number">3</span><span><strong>来店予約</strong><br>ご都合の良い日時を選んで、ワークショップを予約します。</span></li>
+            <li class="step-item"><span class="step-number">4</span><span><strong>ワークショップで調香</strong><br>スタッフと一緒に、あなただけの香りを調香します。</span></li>
+            <li class="step-item"><span class="step-number">5</span><span><strong>完成品を受け取る</strong><br>世界にひとつの香水をお持ち帰りいただけます。</span></li>
           </ol>
         </article>
-        <article class="card">
-          <h2 class="section-title">香り5軸</h2>
-          <svg id="radar" class="radar" viewBox="0 0 300 300" role="img" aria-label="香りバランス">
-            <polygon points="150,30 264,112 220,246 80,246 36,112" fill="none" stroke="#d9b77e"></polygon>
-            <polygon id="shape" points="150,60 220,126 185,200 108,206 80,130" fill="rgba(220,119,119,.25)" stroke="#d77777" stroke-width="3"></polygon>
-            <g id="dots" fill="#d77777"></g>
-          </svg>
-          <div class="slider-list">
-            <label class="field" for="floral">フローラル <output id="floral-val">74</output><input id="floral" type="range" min="0" max="100" value="74"></label>
-            <label class="field" for="fresh">シトラス <output id="fresh-val">58</output><input id="fresh" type="range" min="0" max="100" value="58"></label>
-            <label class="field" for="woody">ウッディ <output id="woody-val">43</output><input id="woody" type="range" min="0" max="100" value="43"></label>
-            <label class="field" for="spicy">スパイシー <output id="spicy-val">31</output><input id="spicy" type="range" min="0" max="100" value="31"></label>
-            <label class="field" for="sweet">ムスク <output id="sweet-val">49</output><input id="sweet" type="range" min="0" max="100" value="49"></label>
+        <article class="card home-support-card">
+          <h2 class="section-title">安心して楽しめる<br>ワークショップ</h2>
+          <img class="home-support-image" src="img/TOP/Workshop体験.png" alt="">
+          <div class="home-support-list">
+            <div><span aria-hidden="true">人</span><strong>初めてでもスタッフがサポート</strong><p>丁寧にサポートするので、香りが苦手な方でも安心です。</p></div>
+            <div><span aria-hidden="true">香</span><strong>アンケート結果をもとに提案</strong><p>あなたの傾向に合わせた香りの方向性をご提案します。</p></div>
+            <div><span aria-hidden="true">再</span><strong>完成した香りは会員ページで確認可能</strong><p>レシピやメモをいつでも確認でき、リピートもスムーズです。</p></div>
           </div>
         </article>
       </div>
@@ -110,18 +104,21 @@
         </article>
         <article class="card">
           <h2>アクセス</h2>
-          <div class="map-placeholder">Googleマップ</div>
+          <iframe class="map-embed" title="Fragrance Workshop Googleマップ" src="https://www.google.com/maps?q=%E6%9D%B1%E4%BA%AC%E9%83%BD%E5%8F%B0%E6%9D%B1%E5%8C%BA%E6%9D%B1%E4%B8%8A%E9%87%8E3-15-5%20%E6%9B%BD%E6%88%91%E3%83%93%E3%83%AB3F&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
           <p class="admin-note">東京都台東区東上野3-15-5 曽我ビル3F</p>
         </article>
       </div>
     </section>
 
     <section class="section" id="final-cta" aria-labelledby="final-cta-heading">
-      <div class="site-container card">
-        <h2 class="section-title" id="final-cta-heading">まずはアンケートから、あなたの香りを見つけましょう</h2>
-        <div class="hero-actions">
-          <a class="btn primary" href="customer/questionnaire.html">アンケートをはじめる</a>
-          <a class="btn secondary" href="customer/reservation.html?source=direct">予約ページに移る</a>
+      <div class="site-container card final-cta-card">
+        <img class="final-cta-image" src="img/TOP/Final_Call_hope.png" alt="">
+        <div class="final-cta-content">
+          <h2 class="section-title" id="final-cta-heading">まずはアンケートから、<br>あなたの香りを見つけましょう</h2>
+          <div class="hero-actions">
+            <a class="btn primary" href="customer/questionnaire.html">アンケートをはじめる</a>
+            <a class="btn secondary" href="customer/reservation.html?source=direct">予約ページに移る</a>
+          </div>
         </div>
       </div>
     </section>
