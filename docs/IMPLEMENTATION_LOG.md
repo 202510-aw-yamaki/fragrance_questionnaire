@@ -275,3 +275,18 @@
   - `create_questionnaire_result` に `#variable_conflict use_column` を追加した。
   - 既存の戻り値 `{ id, result_code }` とフロント側の呼び出し契約は変更していない。
   - 前回SQL適用済みでも重ねて実行できるSQLをユーザー設定フォルダに追加した。
+
+### questionnaire系RPCの pgcrypto search_path 修正
+
+- 対象:
+  - `supabase/schema.sql`
+  - `supabase/migrations/20260501115000_fix_pgcrypto_search_path_for_questionnaire.sql`
+  - `ユーザー設定フォルダ/20260501_questionnaire_pgcrypto_search_path.txt`
+- 背景:
+  - 前回の `result_code` 曖昧参照修正後、エラーが `42883 function crypt(text, text) does not exist` に変わった。
+  - `crypt()` は `pgcrypto` 拡張の関数で、Supabaseでは `extensions` スキーマ側に存在する場合がある。
+  - questionnaire系関数が `set search_path = public` のみだったため、関数内から `crypt()` を解決できなかった。
+- 実装:
+  - `extensions` スキーマと `pgcrypto` 拡張をSQL側で明示。
+  - `hash_questionnaire_edit_token`, `update_questionnaire_result_by_token`, `create_questionnaire_result` の `search_path` を `public, extensions` に変更。
+  - 戻り値やフロント側のRPC呼び出し契約は変更していない。

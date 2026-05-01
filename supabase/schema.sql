@@ -1,4 +1,5 @@
-create extension if not exists pgcrypto;
+create schema if not exists extensions;
+create extension if not exists pgcrypto with schema extensions;
 
 create table if not exists public.questionnaire_results (
   id uuid primary key default gen_random_uuid(),
@@ -395,6 +396,7 @@ $$;
 create or replace function public.hash_questionnaire_edit_token()
 returns trigger
 language plpgsql
+set search_path = public, extensions
 as $$
 begin
   if new.edit_token_hash is not null and new.edit_token_hash !~ '^\$2[aby]\$' then
@@ -418,7 +420,7 @@ create or replace function public.update_questionnaire_result_by_token(
 returns table(id uuid, result_code text)
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 begin
   if nullif(p_result_code, '') is null or nullif(p_edit_token, '') is null then
@@ -444,7 +446,7 @@ create or replace function public.create_questionnaire_result(p_payload jsonb)
 returns table(id uuid, result_code text)
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 #variable_conflict use_column
 declare
