@@ -73,12 +73,12 @@
 .customer-login-page .customer-layout {
   position: relative;
   z-index: 1;
-  grid-template-columns: minmax(390px, 0.95fr) minmax(420px, 1.05fr);
+  grid-template-columns: minmax(0, 0.98fr) minmax(0, 1.02fr);
   grid-template-areas:
     "login hero"
     "login features";
-  gap: 24px 48px;
-  align-items: center;
+  gap: 20px 28px;
+  align-items: start;
   min-height: calc(100vh - 168px);
 }
 
@@ -101,11 +101,11 @@
   grid-area: login;
   position: relative;
   gap: 18px;
-  padding: clamp(28px, 4vw, 58px);
+  padding: clamp(26px, 3.6vw, 48px);
   border-radius: 10px;
   outline: 1px solid rgba(200, 135, 44, 0.42);
   outline-offset: -12px;
-  text-align: center;
+  text-align: left;
 }
 
 .customer-login-page .login-card::before,
@@ -140,12 +140,13 @@
 
 .customer-login-page .login-card h2 {
   margin-bottom: 12px;
-  font-size: clamp(2rem, 4vw, 3rem);
-  line-height: 1.22;
+  font-size: clamp(1.8rem, 3.5vw, 2.65rem);
+  line-height: 1.18;
 }
 
 .customer-login-page .login-form {
   text-align: left;
+  max-width: 100%;
 }
 
 .customer-login-page .field {
@@ -167,6 +168,10 @@
 .customer-login-page .form-actions .btn,
 .customer-index-page .action-row .btn {
   width: 100%;
+  min-width: 0;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.35;
 }
 
 .customer-login-page .btn,
@@ -195,34 +200,39 @@
 
 .customer-login-page .hero-card {
   grid-area: hero;
-  min-height: 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
+  min-height: 336px;
+  padding: clamp(26px, 3.4vw, 40px);
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  border: 1px solid rgba(200, 135, 44, 0.32);
+  background:
+    linear-gradient(180deg, rgba(255, 252, 247, 0.88), rgba(255, 247, 239, 0.78)),
+    url("../img/TOP/hero-visual.png") center / cover no-repeat;
+  box-shadow: var(--portal-shadow);
   color: var(--portal-ink);
-  text-align: center;
+  text-align: left;
 }
 
 .customer-login-page .portal-feature-grid {
   grid-area: features;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: 16px;
 }
 
 .customer-login-page .portal-feature-card {
-  min-height: 180px;
+  min-height: 170px;
   display: grid;
   place-items: center;
   gap: 16px;
-  padding: 28px 18px;
+  padding: 24px 18px;
   text-align: center;
 }
 
 .customer-login-page .feature-icon {
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
   display: grid;
   place-items: center;
   border: 1px solid rgba(200, 135, 44, 0.24);
@@ -237,18 +247,18 @@
 .customer-login-page .portal-feature-card h2 {
   margin: 0;
   font-family: Georgia, "Times New Roman", "Hiragino Mincho ProN", serif;
-  font-size: clamp(1.15rem, 2vw, 1.5rem);
+  font-size: clamp(1.05rem, 1.8vw, 1.35rem);
   font-weight: 500;
 }
 
 .customer-login-page .hero-card h1 {
-  margin: 12px auto 8px;
-  font-size: clamp(1.7rem, 3vw, 2.5rem);
+  margin: 4px 0 8px;
+  font-size: clamp(2rem, 4vw, 3rem);
 }
 
 .customer-login-page .hero-card p {
-  margin-inline: auto;
   color: var(--portal-muted);
+  max-width: 34ch;
 }
 
 .customer-login-page .graph-card,
@@ -281,11 +291,11 @@
 .customer-index-page .hero {
   position: relative;
   z-index: 1;
-  grid-template-columns: minmax(0, 1fr) minmax(250px, 0.24fr);
-  gap: 18px;
-  align-items: end;
+  grid-template-columns: minmax(0, 1.14fr) minmax(0, 0.86fr);
+  gap: 20px;
+  align-items: start;
   min-height: 330px;
-  padding: 46px 0 22px;
+  padding: 42px 0 20px;
 }
 
 .customer-index-page .hero::after {
@@ -303,40 +313,45 @@
 .customer-index-page .member-card,
 .customer-index-page .history-panel {
   padding: clamp(22px, 3vw, 34px);
+  min-width: 0;
 }
 
 .customer-index-page .hero-main {
   border: 0;
   background: transparent;
   box-shadow: none;
+  display: grid;
+  align-content: start;
+  gap: 10px;
 }
 
 .customer-index-page h1 {
   font-family: Georgia, "Times New Roman", "Hiragino Mincho ProN", serif;
-  font-size: clamp(2.4rem, 5vw, 4.5rem);
+  font-size: clamp(2.2rem, 4.6vw, 4rem);
   font-weight: 500;
 }
 
 .customer-index-page .lead {
-  font-size: 1.08rem;
+  max-width: 42ch;
+  font-size: 1.05rem;
 }
 
 .customer-index-page .action-row {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  max-width: 720px;
+  max-width: 760px;
 }
 
 .customer-index-page .status {
   margin-top: 18px;
-  max-width: 720px;
+  max-width: 760px;
   background: rgba(255, 249, 239, 0.86);
 }
 
 .customer-index-page .member-card {
   align-self: end;
   gap: 10px;
-  padding: 16px;
+  padding: 14px 16px;
   border-radius: 10px;
   background: rgba(255, 252, 247, 0.72);
   box-shadow: 0 14px 34px rgba(96, 62, 34, 0.1);
@@ -357,14 +372,15 @@
 }
 
 .customer-index-page .member-field strong {
-  font-size: 0.86rem;
+  font-size: 0.92rem;
+  line-height: 1.45;
 }
 
 .customer-index-page .history-grid {
   position: relative;
   z-index: 1;
-  grid-template-columns: minmax(360px, 1.05fr) minmax(300px, 0.62fr) minmax(360px, 0.95fr);
-  gap: 22px;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.82fr) minmax(0, 1.06fr);
+  gap: 18px;
 }
 
 .customer-index-page .history-panel:first-child {
@@ -397,6 +413,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 18px;
   border: 1px solid rgba(200, 135, 44, 0.28);
   border-radius: 8px;
@@ -410,6 +427,7 @@
   margin: 0;
   font-family: Georgia, "Times New Roman", "Hiragino Mincho ProN", serif;
   font-size: clamp(1.15rem, 2vw, 1.8rem);
+  min-width: 0;
 }
 
 .customer-index-page .record-list {
@@ -417,7 +435,7 @@
 }
 
 .customer-index-page .record {
-  grid-template-columns: 92px minmax(0, 1fr) auto;
+  grid-template-columns: 84px minmax(0, 1fr) auto;
   align-items: center;
   min-height: 104px;
   padding: 14px 18px;
@@ -437,7 +455,9 @@
 }
 
 .customer-index-page .record h3 {
-  font-size: 1.25rem;
+  font-size: 1.08rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
 }
 
 .customer-index-page .pill {
@@ -523,5 +543,10 @@
 
   .customer-index-page .record::before {
     display: none;
+  }
+
+  .customer-index-page .action-row .btn,
+  .customer-login-page .form-actions .btn {
+    min-height: 50px;
   }
 }
