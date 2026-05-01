@@ -427,9 +427,14 @@ body[data-page="home"] .hero-copy {
   place-items: center;
   border: 1px solid var(--line-strong);
   border-radius: 50%;
-  color: var(--gold-dark);
-  font-family: var(--serif);
-  font-weight: 800;
+  overflow: hidden;
+  background: #fffaf3;
+}
+
+.home-support-list span img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
 }
 
 .home-support-list p {
@@ -438,15 +443,24 @@ body[data-page="home"] .hero-copy {
   line-height: 1.6;
 }
 
+.home-support-start {
+  margin: auto 0 0;
+  text-align: center;
+  font-family: var(--serif);
+  font-size: 26px;
+  color: var(--ink);
+}
+
 .home-support-actions {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
-  margin-top: auto;
+  margin-top: 0;
 }
 
 .home-support-actions .btn {
   width: 100%;
+  border-radius: 120px;
 }
 
 .section {
@@ -1684,9 +1698,16 @@ details.card .admin-note {
   align-items: center;
   overflow: hidden;
   padding: 46px 34px;
-  background:
-    linear-gradient(90deg, rgba(255, 252, 246, 0.86), rgba(255, 247, 237, 0.68)),
-    url("../img/TOP/top-bottom-image.png") center / cover no-repeat;
+  background: #fffdf8;
+}
+
+.final-cta-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("../img/TOP/top-bottom-image.png") center / cover no-repeat;
+  filter: grayscale(1);
+  opacity: 0.16;
 }
 
 .final-cta-image {
@@ -1718,6 +1739,10 @@ details.card .admin-note {
 
 .final-cta-content .hero-actions {
   justify-content: center;
+}
+
+.final-cta-content .btn {
+  border-radius: 120px;
 }
 
 .visual-band {
