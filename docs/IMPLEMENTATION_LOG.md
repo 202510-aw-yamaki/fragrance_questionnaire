@@ -238,3 +238,26 @@
   - 会員トップのヒーロー背景を、レイアウト画像に近い香水ボトル系の既存画像へ変更。
 - 補足:
   - 会員情報、予約履歴、制作履歴のDB接続IDは維持している。
+
+### ページリニューアル方針の固定
+
+- 対象: `docs/SPEC.md`
+- 追記:
+  - 捨ててよいものは、既存ページの見た目用HTML構造、過剰に重なったCSS、表示都合だけのJS。
+  - 残すべきものは、Supabase接続、認証、RLS前提のデータ関数、アンケート配点ロジック、`sessionStorage` の契約、既存DOM IDのうちDB連携JSが参照するもの。
+  - `レイアウトimg/` を完成イメージの正として、ページ単位で新しい薄いHTML/CSSへ置き換える。
+  - 新ページでDB連携を維持できることを確認した後、旧HTML/CSS/表示都合JSを `archived/legacy/` へ退避する。
+
+### questionnaire_result RPC の曖昧な result_code 参照修正
+
+- 対象:
+  - `supabase/schema.sql`
+  - `supabase/migrations/20260501103000_fix_questionnaire_result_rpc_ambiguous_result_code.sql`
+  - `ユーザー設定フォルダ/20260501_questionnaire_result_rpc_fix.txt`
+- 原因:
+  - `create_questionnaire_result` の戻り値列 `result_code` と、`on conflict (result_code)` の列参照が PL/pgSQL 内で衝突していた。
+  - Supabase RPC では `42702 column reference "result_code" is ambiguous` として失敗していた。
+- 実装:
+  - フロントが期待する戻り値 `{ id, result_code }` は維持する。
+  - `on conflict (result_code)` を `on conflict on constraint questionnaire_results_result_code_key` に変更し、曖昧な列参照を避ける。
+  - SQL Editor で適用できる内容をユーザー設定フォルダに追加した。

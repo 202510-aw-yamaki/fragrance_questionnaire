@@ -495,7 +495,7 @@ begin
     p_payload ->> 'edit_token_hash',
     coalesce(nullif(p_payload ->> 'updated_at', '')::timestamptz, now())
   )
-  on conflict (result_code) do update
+  on conflict on constraint questionnaire_results_result_code_key do update
   set
     step1_answers_json = excluded.step1_answers_json,
     step1_answer_keys_json = excluded.step1_answer_keys_json,
