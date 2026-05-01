@@ -18,7 +18,7 @@
 }
 
 .top-reference-page .page-header-inner {
-  width: min(1760px, calc(100% - 56px));
+  width: min(1160px, calc(100% - 32px));
   min-height: 68px;
 }
 
@@ -79,7 +79,7 @@
 .top-reference-page .hero .section-inner {
   position: relative;
   z-index: 1;
-  width: min(1760px, calc(100% - 64px));
+  width: min(1160px, calc(100% - 32px));
   min-height: min(640px, calc(100svh - 68px));
   display: grid;
   align-content: center;
@@ -129,15 +129,22 @@
 }
 
 .top-reference-page .cta-row {
-  gap: 14px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
   margin-top: 28px;
   max-width: 760px;
 }
 
 .top-reference-page .cta-row .btn {
-  min-width: 210px;
+  width: 100%;
+  min-width: 0;
   min-height: 58px;
   font-size: 1rem;
+}
+
+.top-reference-page .cta-row .btn:first-child {
+  grid-column: 1 / -1;
 }
 
 .top-reference-page .hero-points,
@@ -148,6 +155,15 @@
 
 .top-reference-page main section {
   padding: 58px 0;
+}
+
+.top-reference-page #flow,
+.top-reference-page #question-preview,
+.top-reference-page #reassurance,
+.top-reference-page #information,
+.top-reference-page #value {
+  padding-top: 58px;
+  padding-bottom: 58px;
 }
 
 .top-reference-page .section-header {
@@ -202,7 +218,7 @@
 }
 
 .top-reference-page #flow {
-  padding-top: 48px;
+  padding-top: 58px;
 }
 
 .top-reference-page #flow .flow-grid > .card {
@@ -276,7 +292,7 @@
 }
 
 .top-reference-page #information {
-  padding-top: 34px;
+  padding-top: 58px;
 }
 
 .top-reference-page .preview-layout--rebuilt {
@@ -352,12 +368,28 @@
 }
 
 .top-reference-page .info-layout--rebuilt {
-  grid-template-columns: 0.95fr 0.9fr 0.9fr;
-  gap: 14px;
+  grid-template-columns: minmax(320px, 1.08fr) minmax(300px, 0.96fr) minmax(300px, 0.96fr);
+  gap: 16px;
+  align-items: stretch;
 }
 
 .top-reference-page .info-layout--rebuilt .info-visual {
   min-height: 100%;
+}
+
+.top-reference-page .info-middle,
+.top-reference-page .info-right {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
+.top-reference-page .info-middle {
+  grid-template-rows: auto auto auto;
+}
+
+.top-reference-page .info-right {
+  grid-template-rows: auto minmax(0, 1fr);
 }
 
 .top-reference-page .info-text-visual,
@@ -365,7 +397,7 @@
 .top-reference-page .info-access-card,
 .top-reference-page .info-price-card {
   display: grid;
-  align-content: center;
+  align-content: start;
   gap: 14px;
   padding: 24px;
   text-align: center;
@@ -422,6 +454,7 @@
 
 .top-reference-page .info-price-list div {
   border-color: rgba(193, 135, 49, 0.24);
+  align-items: baseline;
 }
 
 .top-reference-page .info-text-visual dt,
@@ -471,6 +504,23 @@
   min-height: 300px;
 }
 
+.top-reference-page .info-price-wrap {
+  padding: 24px;
+  width: 100%;
+  justify-items: stretch;
+}
+
+.top-reference-page .info-price-actions {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.top-reference-page .info-price-actions .btn {
+  width: 100%;
+  min-width: 0;
+}
+
 .top-reference-page .cta-section .cta-box {
   position: relative;
   overflow: hidden;
@@ -504,7 +554,7 @@
 @media (max-width: 68.6875em) {
   .top-reference-page .page-header-inner,
   .top-reference-page .hero .section-inner {
-    width: min(100% - 32px, 920px);
+    width: min(100% - 32px, 1160px);
   }
 
   .top-reference-page .hero {
@@ -524,6 +574,14 @@
   .top-reference-page .info-layout--rebuilt,
   .top-reference-page .cta-section .cta-box {
     grid-template-columns: 1fr;
+  }
+
+  .top-reference-page .cta-row {
+    grid-template-columns: 1fr;
+  }
+
+  .top-reference-page .cta-row .btn:first-child {
+    grid-column: auto;
   }
 
   .top-reference-page .hero-copy {
@@ -551,6 +609,10 @@
 
   .top-reference-page .cta-row .btn {
     width: 100%;
+  }
+
+  .top-reference-page .info-price-actions {
+    grid-template-columns: 1fr;
   }
 
   .top-reference-page main section {
