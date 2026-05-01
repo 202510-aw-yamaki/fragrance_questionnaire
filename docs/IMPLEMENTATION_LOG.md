@@ -390,3 +390,43 @@
   - 背景、カード角丸、見出し、フィルタ配置を他の管理画面に近づけた。
   - `qr-request-filter-form`, `qr-request-status-filter`, `qr-request-keyword-filter`, `qr-request-rows`, `qr-request-empty`, `qr-request-count` は維持した。
   - 状態変更ボタンやメール送信ボタンは追加していない。
+
+### トップページ残課題の分担修正
+
+- 対象:
+  - `index.html`
+  - `css/top-reference-layout.css`
+- 背景:
+  - ユーザー注釈で、ヒーローCTAは「アンケート開始」を1行目、下に「会員ログイン」「ワークショップ予約」を2カラムにする方針。
+  - 3 STEP FLOW の箇条書きは不要。
+  - BASIC INFORMATION 付近で料金カードが崩れていた。
+- 実装:
+  - サブエージェントには担当ファイルを `index.html` と `css/top-reference-layout.css` に限定して依頼した。
+  - `flow-bullets` のHTMLを削除し、各ステップカードは本文1つで完結する構成にした。
+  - ヒーローCTAを1段目のアンケート開始、2段目の会員ログイン/予約のグリッドへ調整した。
+  - 基本情報セクションの3カラム、料金カード、ボタン配置を崩れにくい比率へ調整した。
+  - `customer/questionnaire.html`, `customer/customer-login.html?mode=return`, `customer/reservation.html?source=direct` のリンクは維持した。
+
+### 会員ログイン・会員トップの比率調整
+
+- 対象:
+  - `css/customer-portal-layout.css`
+- 背景:
+  - 会員情報を大きく見せず、会員トップは前回制作/新規作成/予約履歴を主役にする方針。
+  - 会員ログインは左側ログイン、右側説明カード群へ寄せる方針。
+- 実装:
+  - サブエージェントには担当ファイルを `customer/customer-login.html`, `customer/index.html`, `css/customer-portal-layout.css` に限定して依頼した。
+  - 実際の編集はCSSのみで、HTMLとSupabase Auth/会員データ取得契約は変更していない。
+  - `customer-login-form`, `setup-button`, `login-status`, `name="email"`, `name="password"`, `portal-status`, `login-link`, `logout-button`, `member-name`, `member-email`, `member-code`, `reservation-list`, `product-list` は維持した。
+
+### QR商品ページの連絡先表示崩れ抑制
+
+- 対象:
+  - `customer/product-reservation.html`
+  - `css/qr-product-page.css`
+- 背景:
+  - ユーザー注釈で、まとまった本数の電話案内部分が崩れていた。
+- 実装:
+  - 文章と連絡先を分け、電話番号/受付時間を `.contact-lines` として2カラム表示にした。
+  - 小さい幅では1カラムに戻るようにした。
+  - `shop-phone`, `business-hours`, `qr-request-form`, `submit-request` などのJS参照IDは維持した。
