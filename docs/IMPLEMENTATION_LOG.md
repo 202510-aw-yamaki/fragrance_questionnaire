@@ -303,3 +303,76 @@
 - 実装:
   - anon の `scoring_configs` select列権限に `is_active` を追加。
   - 公開される行は既存RLSにより `is_active = true` のまま。
+
+### レイアウト画像基準での顧客アンケート系再構成
+
+- 対象:
+  - `customer/questionnaire.html`
+  - `customer/fragrance-graph.html`
+  - `css/customer-survey-layout.css`
+- 背景:
+  - `レイアウトimg/04. customer questionnaire.html 初回アンケートページ.png`
+  - `レイアウトimg/05. customer questionnaire_step2.html 分岐後アンケートページ.png`
+  - `レイアウトimg/06. customer fragrance-graph.html 通常結果ページ.png`
+  - 既存の見た目を無理に補正するのではなく、Supabase/配点/sessionStorage/DOM契約を残して、完成イメージに寄せる方針にした。
+- 実装:
+  - STEP1に5問ステッパー `question-stepper` を追加し、現在位置と回答済み状態が見えるようにした。
+  - STEP1の質問タイトルは、既存の `question-title` IDを維持したまま2行表示にした。
+  - STEP1/STEP2のカード、背景、右側情報カード、サブ選択ボタンをレイアウト画像に近い余白と比率に再調整した。
+  - 結果ページに表示見出し `graph-page-title` を追加し、5軸グラフとスライダーを完成イメージ寄りの2カラム構成へ寄せた。
+  - `option-list`, `progress-bar`, `progress-label`, `step2-status`, `axis-preview`, `radar-graph`, `slider-list`, `reserve-link` など、既存JS参照IDは維持した。
+
+### レイアウト画像基準での顧客入口・予約系再構成
+
+- 対象:
+  - `index.html`
+  - `customer/customer-login.html`
+  - `customer/index.html`
+  - `customer/reservation.html`
+  - `customer/reservation-complete.html`
+  - `css/top-reference-layout.css`
+  - `css/customer-portal-layout.css`
+  - `css/customer-booking-layout.css`
+  - `css/qr-product-page.css`
+- 背景:
+  - `レイアウトimg/01. index.html トップページ.png`
+  - `レイアウトimg/02. customer login.html 会員ログインページ.png`
+  - `レイアウトimg/03. customer index.html 会員トップページ.png`
+  - `レイアウトimg/09. customer reservation.html 来店予約ページ.png`
+  - `レイアウトimg/10. customer reservation-complete.html 予約完了ページ.png`
+  - `レイアウトimg/11. customer product-reservation.html QR商品作成依頼ページ.png`
+- 実装:
+  - トップページのCTAを、アンケート開始1段、その下に会員ログインとワークショップ予約の導線が並ぶ形へ寄せた。
+  - 会員ログインは、会員本人向け入口であることを明示し、QR第三者導線と混ぜない説明へ変更した。
+  - 会員トップは、会員情報カードを主役にせず、前回制作・新規作成・予約履歴を中心にした構成へ寄せた。
+  - 予約ページの確定ボタンを入力欄の流れに近い位置へ移し、予約要約と枠選択の視線移動を整理した。
+  - 予約完了ページは、表示内容の補助導線をレイアウト画像寄りにした。
+  - QR商品ページはCSS側で2カラム数量入力と縦長崩れの抑制を進めた。QR作成可否、発送先入力、発送完了、通知対応済み操作は実装していない。
+  - `customer-login-form`, `portal-status`, `reservation-list`, `product-list`, `confirm-btn`, `slot-list`, `qr-request-form`, `submit-request` など、既存JS参照IDは維持した。
+
+### レイアウト画像基準でのスタッフ・管理者系再構成
+
+- 対象:
+  - `admin-login.html`
+  - `staff/staff-dashboard.html`
+  - `staff/staff-reservations.html`
+  - `staff/staff-slots.html`
+  - `staff/staff-customer-detail.html`
+  - `admin/admin-dashboard.html`
+  - `admin/admin-settings.html`
+  - `admin/admin-scoring.html`
+  - `admin/admin-materials.html`
+  - `css/admin-phase7-ui.css`
+  - `css/staff-phase7-layout.css`
+  - `css/portal-dashboard-reference.css`
+- 背景:
+  - `レイアウトimg/13. admin-login.html 共通ログインページ.png`
+  - `レイアウトimg/14`〜`24` のスタッフ/管理者画面完成イメージ。
+- 実装:
+  - 共通ログインにブランドバーとスタッフ/管理者共通入口の説明を追加し、タブ式ログインを維持した。
+  - スタッフ予約一覧に当日サマリー補助パネルを追加し、一覧と確認観点を分けた。
+  - スタッフ詳細に、お客様共有アクションの導線を追加し、香り調整・商品名・同意確認へ移動しやすくした。
+  - 管理者ダッシュボードにQR依頼一覧/QR商品設定への導線を追加した。
+  - 管理者設定、配点、原料ページの見出しを、完成イメージに近い管理画面の言い方へ寄せた。
+  - `admin-header`, `data-login-role`, `data-login-tab`, `reservation-rows`, `reservation-empty`, `staff-detail-form`, `product-name`, `personal-info-consent`, `third-party-order-consent`, `recipe-list`, `qr-product-settings-form`, `scoring-form` など、現行JS参照IDは維持した。
+  - QR作成可否、発送先入力、発送完了、通知対応済み操作は実装していない。
