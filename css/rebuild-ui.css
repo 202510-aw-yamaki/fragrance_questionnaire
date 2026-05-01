@@ -431,12 +431,6 @@ body[data-page="home"] .hero-copy {
   background: #fffaf3;
 }
 
-.home-support-list span img {
-  width: 34px;
-  height: 34px;
-  object-fit: contain;
-}
-
 .home-support-list p {
   margin: 0;
   color: var(--muted);
@@ -1706,8 +1700,6 @@ details.card .admin-note {
   position: absolute;
   inset: 0;
   background: url("../img/TOP/top-bottom-image.png") center / cover no-repeat;
-  filter: grayscale(1);
-  opacity: 0.16;
 }
 
 .final-cta-image {
