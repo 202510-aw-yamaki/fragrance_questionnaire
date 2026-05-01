@@ -1296,7 +1296,12 @@ button {
           <img src="../img/TOP/roherarogo.png" alt="FRAGRANCE WORKSHOP">
         </picture>
       </a>
-      <button class="action-btn primary header-cta" id="confirm-btn" type="button" disabled>予約を確定する</button>
+      <nav class="reservation-nav" aria-label="予約ページナビゲーション">
+        <a href="questionnaire.html">アンケート</a>
+        <a href="customer-login.html">会員ログイン</a>
+        <a href="reservation.html">予約</a>
+        <a href="../admin-login.html">管理者</a>
+      </nav>
     </div>
   </header>
 
@@ -1320,7 +1325,7 @@ button {
         <div class="section-label">Reservation</div>
         <div class="status-line status-pill" id="selected-status">未選択: 来店日時を選んでください</div>
         <div class="booking-intro">
-          <h2>予約を確定する</h2>
+          <h2>ワークショップを予約する</h2>
           <p>ここで決めるのは、来店日時と共有メモだけです。当日の香りは店頭でスタッフと一緒に微調整できます。</p>
         </div>
 
@@ -1386,6 +1391,7 @@ button {
           <h3>スタッフに伝えたいこと（任意）</h3>
           <p class="memo-help">例: 甘さは控えめにしたい / 仕事用で使いたい / 最初は軽い方向から試したい / 4名以上の場合は人数を記入してください</p>
           <textarea id="staff-memo" placeholder="当日スタッフに伝えておきたいことがあれば入力してください。"></textarea>
+          <button class="action-btn primary header-cta" id="confirm-btn" type="button" disabled>この日時で予約する</button>
         </article>
       </section>
 

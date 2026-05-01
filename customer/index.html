@@ -321,9 +321,9 @@
       <div class="panel hero-main">
         <span class="overline">Member Portal</span>
         <h1>会員ページ</h1>
-        <p class="lead">予約履歴と制作履歴を確認できます。</p>
+        <p class="lead"><span id="member-name-inline">○○</span>さん、こんにちは。これまでの香りや次回の予約を確認できます。</p>
         <div class="action-row">
-          <a class="btn primary" href="questionnaire.html">アンケートを始める</a>
+          <a class="btn primary" href="questionnaire.html">アンケートに進む</a>
           <a class="btn" href="reservation.html">予約する</a>
           <a class="btn" href="customer-login.html" id="login-link">ログイン</a>
         </div>
@@ -351,21 +351,36 @@
     </section>
 
     <section class="history-grid" aria-label="会員履歴">
-      <div class="panel history-panel">
+      <div class="panel history-panel previous-product-panel">
+        <div>
+          <span class="overline">Previous Fragrance</span>
+          <h2>前回作成した香水</h2>
+        </div>
+        <div class="record-list" id="product-list"></div>
+        <a class="btn primary repeat-link" href="reservation.html">もう一度この香りを予約する</a>
+      </div>
+
+      <div class="panel history-panel new-fragrance-panel">
+        <div>
+          <span class="overline">New Fragrance</span>
+          <h2>新しく香りを作る</h2>
+          <p>今の気分に合わせて、もう一度アンケートから予約できます。</p>
+        </div>
+        <a class="btn" href="questionnaire.html">アンケートに進む</a>
+      </div>
+
+      <div class="panel history-panel production-history-panel">
         <div>
           <span class="overline">Reservations</span>
           <h2>予約履歴</h2>
         </div>
         <div class="record-list" id="reservation-list"></div>
       </div>
+    </section>
 
-      <div class="panel history-panel">
-        <div>
-          <span class="overline">Fragrance Products</span>
-          <h2>制作履歴</h2>
-        </div>
-        <div class="record-list" id="product-list"></div>
-      </div>
+    <section class="compare-strip" aria-label="比較ページ">
+      <p>前回の香りと今回のアンケート結果を比較できます</p>
+      <a class="btn" href="fragrance-graph.html">比較ページを開く</a>
     </section>
   </main>
 
@@ -383,6 +398,7 @@
       var loginLink = document.getElementById("login-link");
       var logoutButton = document.getElementById("logout-button");
       var memberNameEl = document.getElementById("member-name");
+      var memberNameInlineEl = document.getElementById("member-name-inline");
       var memberEmailEl = document.getElementById("member-email");
       var memberCodeEl = document.getElementById("member-code");
       var reservationListEl = document.getElementById("reservation-list");
@@ -480,6 +496,7 @@
 
       function renderCustomer(customer) {
         memberNameEl.textContent = customer.display_name || "-";
+        if (memberNameInlineEl) memberNameInlineEl.textContent = customer.display_name || "お客様";
         memberEmailEl.textContent = customer.email || "-";
         memberCodeEl.textContent = customer.customer_code || "-";
         loginLink.hidden = true;

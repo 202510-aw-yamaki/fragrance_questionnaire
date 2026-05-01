@@ -62,8 +62,9 @@
   align-items: stretch;
   overflow: hidden;
   background:
-    linear-gradient(90deg, rgba(255, 249, 241, 0.98) 0%, rgba(255, 249, 241, 0.86) 39%, rgba(255, 249, 241, 0.22) 68%, rgba(255, 249, 241, 0.05) 100%),
-    url("../img/TOP/hero-visual.png") right center / cover no-repeat;
+    linear-gradient(90deg, rgba(255, 249, 241, 0.98) 0%, rgba(255, 249, 241, 0.9) 39%, rgba(255, 249, 241, 0.28) 68%, rgba(255, 249, 241, 0.08) 100%),
+    url("../img/TOP/料金表の上の画像.png") right center / min(62vw, 1020px) auto no-repeat,
+    linear-gradient(180deg, #fff7ed, #f8eadc);
 }
 
 .top-reference-page .hero::after {
@@ -130,6 +131,7 @@
 .top-reference-page .cta-row {
   gap: 14px;
   margin-top: 28px;
+  max-width: 760px;
 }
 
 .top-reference-page .cta-row .btn {
@@ -508,7 +510,7 @@
   .top-reference-page .hero {
     background:
       linear-gradient(180deg, rgba(255, 249, 241, 0.94), rgba(255, 249, 241, 0.82)),
-      url("../img/TOP/hero-visual.png") center / cover no-repeat;
+      url("../img/TOP/料金表の上の画像.png") center / cover no-repeat;
   }
 
   .top-reference-page .hero .section-inner {
