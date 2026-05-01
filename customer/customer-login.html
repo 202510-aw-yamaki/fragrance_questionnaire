@@ -9,28 +9,48 @@
 <body data-page="customer-login">
   <header class="site-header">
     <div class="site-header-inner site-container">
-      <a class="brand" href="../index.html"><span class="brand-mark">✦</span><span>Fragrance Workshop</span></a>
-      <nav class="main-nav is-static"><a href="../index.html">トップ</a><a href="questionnaire.html">アンケート</a><a href="reservation.html">予約</a></nav>
+      <a class="brand" href="../index.html"><span class="brand-logo-mark"><img src="../img/costomer/吟ロゴ.png" alt=""></span><span>Fragrance Workshop</span></a>
+      <nav class="main-nav is-static customer-login-nav"><a href="../index.html">トップページへ戻る</a></nav>
     </div>
   </header>
-  <main class="page-hero">
-    <div class="page-shell page-hero-inner">
-      <section>
-        <span class="eyebrow" id="entrance-label">Customer Entrance</span>
-        <h1 id="customer-title">会員ページで香りの履歴を確認する</h1>
-        <p class="page-copy">制作した香りや予約履歴を確認できます。</p>
-      </section>
-      <section class="login-panel">
-        <h2 id="login-title">メールアドレスでログイン</h2>
+  <main class="customer-login-main">
+    <div class="customer-login-shell">
+      <section class="login-panel customer-login-card" aria-labelledby="login-title">
+        <div class="customer-login-heading">
+          <span class="customer-login-ornament" aria-hidden="true"></span>
+          <h1 id="login-title">会員ログイン</h1>
+          <p>過去に作った香水や、次回のご予約を確認できます。</p>
+        </div>
         <form class="login-form" id="customer-login-form">
-          <label>メールアドレス<input type="email" name="email" autocomplete="email" required></label>
-          <label>パスワード<input type="password" name="password" autocomplete="current-password" required></label>
-          <div class="action-row">
-            <button class="btn primary" type="submit">ログイン</button>
-            <button class="btn secondary" type="button" id="setup-button">初回ログイン・パスワード設定</button>
+          <label>メールアドレス<input type="email" name="email" autocomplete="email" placeholder="member@example.com" required></label>
+          <label>パスワード<input type="password" name="password" autocomplete="current-password" placeholder="パスワードを入力" required></label>
+          <button class="btn primary customer-login-submit" type="submit">ログイン</button>
+          <div class="customer-login-links">
+            <button class="customer-login-text-button" type="button" id="setup-button">初回ログイン・パスワード設定</button>
           </div>
           <p class="status-note" id="login-status" aria-live="polite" hidden></p>
         </form>
+      </section>
+      <section class="customer-login-benefits" aria-labelledby="benefits-title">
+        <h2 id="benefits-title">会員ページでできること</h2>
+        <div class="customer-benefit-grid">
+          <article class="customer-benefit-card">
+            <img src="../img/costomer/customer_seisaku.png" alt="">
+            <h3>制作履歴を見る</h3>
+          </article>
+          <article class="customer-benefit-card">
+            <img src="../img/costomer/customer_kako.png" alt="">
+            <h3>過去の香水を再予約</h3>
+          </article>
+          <article class="customer-benefit-card">
+            <img src="../img/costomer/customer_saido.png" alt="">
+            <h3>再度アンケートから予約</h3>
+          </article>
+          <article class="customer-benefit-card">
+            <img src="../img/costomer/customer_zenkai.png" alt="">
+            <h3>前回の香りと比較</h3>
+          </article>
+        </div>
       </section>
     </div>
   </main>
