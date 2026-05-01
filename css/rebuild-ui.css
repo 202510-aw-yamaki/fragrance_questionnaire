@@ -115,19 +115,15 @@ img {
 }
 
 .brand-logo-mark {
-  width: 48px;
-  height: 48px;
+  width: 42px;
+  height: 42px;
   display: inline-grid;
   place-items: center;
-  overflow: hidden;
-  border: 1px solid rgba(201, 139, 52, 0.42);
-  border-radius: 50%;
-  background: #fff9ef;
 }
 
 .brand-logo-mark img {
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   object-fit: contain;
 }
 
@@ -362,7 +358,7 @@ body[data-page="home"] .hero-copy {
 .home-step-art {
   width: 100%;
   height: 128px;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
   border-radius: 0;
 }
@@ -379,6 +375,7 @@ body[data-page="home"] .hero-copy {
 .home-support-card {
   display: grid;
   gap: 18px;
+  align-content: start;
 }
 
 .home-support-card .section-title {
@@ -390,6 +387,18 @@ body[data-page="home"] .hero-copy {
 .home-support-image {
   width: 100%;
   height: 180px;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+
+.home-flow-card {
+  display: grid;
+  gap: 18px;
+}
+
+.home-flow-image {
+  width: 100%;
+  height: 150px;
   object-fit: cover;
   border-radius: var(--radius);
 }
@@ -427,6 +436,17 @@ body[data-page="home"] .hero-copy {
   margin: 0;
   color: var(--muted);
   line-height: 1.6;
+}
+
+.home-support-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: auto;
+}
+
+.home-support-actions .btn {
+  width: 100%;
 }
 
 .section {
@@ -1660,11 +1680,13 @@ details.card .admin-note {
   position: relative;
   min-height: 210px;
   display: grid;
-  grid-template-columns: minmax(220px, 0.95fr) minmax(0, 1.4fr);
-  gap: 30px;
+  grid-template-columns: 1fr;
   align-items: center;
   overflow: hidden;
-  padding: 28px 34px;
+  padding: 46px 34px;
+  background:
+    linear-gradient(90deg, rgba(255, 252, 246, 0.86), rgba(255, 247, 237, 0.68)),
+    url("../img/TOP/top-bottom-image.png") center / cover no-repeat;
 }
 
 .final-cta-image {
@@ -1677,11 +1699,14 @@ details.card .admin-note {
 .final-cta-content {
   position: relative;
   z-index: 1;
+  width: min(620px, 100%);
+  margin: 0 auto;
+  text-align: center;
 }
 
 .final-cta-content .section-title {
   margin-bottom: 20px;
-  text-align: left;
+  text-align: center;
   font-size: 34px;
   line-height: 1.45;
 }
@@ -1689,6 +1714,10 @@ details.card .admin-note {
 .final-cta-content .section-title::before,
 .final-cta-content .section-title::after {
   display: none;
+}
+
+.final-cta-content .hero-actions {
+  justify-content: center;
 }
 
 .visual-band {
@@ -1879,13 +1908,13 @@ details.card .admin-note {
   }
 
   .brand-logo-mark {
-    width: 38px;
-    height: 38px;
+    width: 34px;
+    height: 34px;
   }
 
   .brand-logo-mark img {
-    width: 28px;
-    height: 28px;
+    width: 34px;
+    height: 34px;
   }
 
   .home-hero-actions {
@@ -1902,6 +1931,10 @@ details.card .admin-note {
 
   .home-support-list span {
     grid-row: auto;
+  }
+
+  .home-support-actions {
+    grid-template-columns: 1fr;
   }
 
   .final-cta-card {
