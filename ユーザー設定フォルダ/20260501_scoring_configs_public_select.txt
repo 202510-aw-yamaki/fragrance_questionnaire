@@ -1,0 +1,33 @@
+目的:
+customer/questionnaire.html を開いたときに、公開ページが active な scoring_configs を読み込めない問題を修正します。
+
+現在のエラー:
+code: 42501
+message: permission denied for table scoring_configs
+
+原因:
+公開アンケートページは下記の条件で active な配点設定を読みます。
+
+select=config_json,version,updated_at
+is_active=eq.true
+order=version.desc
+limit=1
+
+anon には config_json / version / updated_at の select 権限はありますが、フィルタに使う is_active の select 権限が不足しているため、Supabase REST が 401 になります。
+
+今回の対応:
+anon に scoring_configs の is_active を含む最小select権限を付与します。
+公開される行は既存RLSの public select active scoring config により is_active = true の行だけです。
+
+適用方法:
+Supabase SQL Editor で、下記SQLをそのまま実行してください。
+
+SQL:
+
+grant select (config_json, version, updated_at, is_active) on public.scoring_configs to anon;
+
+notify pgrst, 'reload schema';
+
+補足:
+SQL Editor のタブが多く残っていても、DBに影響するのは実行済みSQLだけです。
+タブを閉じても、適用済みのDB定義やデータは消えません。

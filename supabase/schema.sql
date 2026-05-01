@@ -1442,7 +1442,7 @@ grant insert (
   axes,
   updated_at
 ) on public.reservations to anon;
-grant select (config_json, version, updated_at) on public.scoring_configs to anon;
+grant select (config_json, version, updated_at, is_active) on public.scoring_configs to anon;
 grant select (id, material_code, material_name, category, point_axes, note, is_active, sort_order, updated_at) on public.material_points to anon;
 grant select (id, slot_code, slot_date, slot_time, slot_label, instructor_name, status, sort_order, is_active) on public.reservation_slots to anon;
 grant select (setting_key, setting_value, updated_at, is_public) on public.admin_settings to anon;

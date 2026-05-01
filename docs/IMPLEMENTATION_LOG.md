@@ -290,3 +290,16 @@
   - `extensions` スキーマと `pgcrypto` 拡張をSQL側で明示。
   - `hash_questionnaire_edit_token`, `update_questionnaire_result_by_token`, `create_questionnaire_result` の `search_path` を `public, extensions` に変更。
   - 戻り値やフロント側のRPC呼び出し契約は変更していない。
+
+### active scoring_configs の公開読み取り権限修正
+
+- 対象:
+  - `supabase/schema.sql`
+  - `supabase/migrations/20260501121000_allow_public_active_scoring_config_filter.sql`
+  - `ユーザー設定フォルダ/20260501_scoring_configs_public_select.txt`
+- 背景:
+  - `customer/questionnaire.html` 起動時に `scoring_configs?select=config_json,version,updated_at&is_active=eq.true...` が 401 になった。
+  - RLS policy は active 行のみselect可能にしているが、anon の列権限にフィルタ列 `is_active` が含まれていなかった。
+- 実装:
+  - anon の `scoring_configs` select列権限に `is_active` を追加。
+  - 公開される行は既存RLSにより `is_active = true` のまま。
