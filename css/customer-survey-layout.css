@@ -656,3 +656,446 @@ body:has(#radar-graph) .graph-placeholder-image {
     grid-template-columns: 1fr;
   }
 }
+
+/* 2026-05 reference rebuild: survey and result pages */
+body.survey-step1-page,
+body.survey-step2-page,
+body:has(#radar-graph) {
+  --fw-ink: #3b2619;
+  --fw-muted: #725a49;
+  --fw-gold: #d58a35;
+  --fw-rose: #d87878;
+  --fw-green: #8a9b73;
+  background:
+    linear-gradient(90deg, rgba(255, 252, 247, .97) 0%, rgba(255, 250, 244, .9) 54%, rgba(255, 247, 241, .7) 100%),
+    radial-gradient(circle at 9% 84%, rgba(212, 121, 111, .16), transparent 18rem),
+    radial-gradient(circle at 88% 23%, rgba(213, 138, 53, .14), transparent 20rem),
+    url("../img/TOP/香水の瓶が並ぶ.png") right 9rem / min(42vw, 640px) auto no-repeat,
+    #fffaf4;
+}
+
+body.survey-step1-page .site-header,
+body.survey-step2-page .site-header,
+body:has(#radar-graph) .site-header {
+  position: static;
+  background: rgba(255, 253, 249, .94);
+  border-bottom: 1px solid rgba(213, 138, 53, .78);
+}
+
+body.survey-step1-page .page-header-inner,
+body.survey-step2-page .page-header-inner,
+body:has(#radar-graph) .page-header-inner {
+  min-height: 68px;
+}
+
+body.survey-step1-page .brand img,
+body.survey-step2-page .brand img {
+  height: 48px;
+  max-height: 48px;
+}
+
+body.survey-step1-page .page-shell,
+body.survey-step2-page .page-shell {
+  width: min(1540px, calc(100% - 56px));
+  padding: clamp(34px, 4.5vw, 66px) 0 42px;
+}
+
+body.survey-step1-page .page-shell::before {
+  content: "香りのアンケート";
+}
+
+body.survey-step2-page .page-shell::before {
+  content: "もう少し香りを絞り込みます";
+}
+
+body.survey-step1-page .page-shell::before,
+body.survey-step2-page .page-shell::before {
+  display: block;
+  margin: 0 0 6px clamp(10px, 4vw, 70px);
+  color: var(--fw-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.6rem, 4.6vw, 4.85rem);
+  font-weight: 400;
+  line-height: 1.08;
+}
+
+body.survey-step1-page .page-shell::after {
+  content: "今の気分や好きな雰囲気から、あなたの香りの方向性を見つけます。";
+}
+
+body.survey-step2-page .page-shell::after {
+  content: "最初の回答に合わせて、香りの方向性をもう少しだけ調整します。";
+}
+
+body.survey-step1-page .page-shell::after,
+body.survey-step2-page .page-shell::after {
+  display: block;
+  margin: 0 0 30px clamp(10px, 4vw, 70px);
+  color: var(--fw-muted);
+  font-size: clamp(1rem, 1.45vw, 1.35rem);
+}
+
+body.survey-step1-page .step-strip,
+body.survey-step2-page .step-strip {
+  top: clamp(48px, 6vw, 88px);
+  left: min(53vw, 820px);
+  width: min(330px, 30vw);
+  min-height: 96px;
+  border: 1px solid rgba(225, 194, 160, .82);
+  background: rgba(255, 253, 249, .88);
+}
+
+body.survey-step2-page .step-badge.current::before {
+  content: "追加質問 ";
+}
+
+body.survey-step1-page .question-shell,
+body.survey-step2-page .question-shell {
+  max-width: 1240px;
+  margin-left: clamp(0px, 4vw, 70px);
+  grid-template-columns: minmax(0, 1fr) minmax(310px, 370px);
+  gap: clamp(28px, 3.2vw, 46px);
+  padding: clamp(28px, 3.4vw, 54px);
+  border: 1px solid rgba(225, 194, 160, .7);
+  border-radius: 16px;
+}
+
+body.survey-step1-page .main-panel,
+body.survey-step2-page .main-panel {
+  min-height: 580px;
+  align-content: start;
+}
+
+body.survey-step1-page .question-meta,
+body.survey-step2-page .question-meta {
+  display: none;
+}
+
+body.survey-step1-page .progress-row,
+body.survey-step2-page .progress-row {
+  width: min(310px, 100%);
+  margin: 0 auto 4px;
+}
+
+.question-stepper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 22px;
+  min-height: 26px;
+  margin: 0 auto 18px;
+  position: relative;
+}
+
+.question-stepper::before {
+  content: "";
+  position: absolute;
+  width: min(270px, 75%);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(213, 138, 53, .48), transparent);
+}
+
+.question-stepper-dot {
+  position: relative;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(213, 138, 53, .72);
+  border-radius: 50%;
+  background: rgba(255, 253, 249, .95);
+  color: transparent;
+}
+
+.question-stepper-dot.current {
+  width: 25px;
+  height: 25px;
+  background: linear-gradient(180deg, #e79a96, #ce6f6b);
+  border-color: #ce6f6b;
+  box-shadow: 0 0 0 4px rgba(217, 148, 53, .16);
+}
+
+.question-stepper-dot.done {
+  background: #e5ab63;
+}
+
+.question-stepper-dot b {
+  display: none;
+}
+
+body.survey-step1-page .question-title,
+body.survey-step2-page .question-title {
+  min-height: 2.35em;
+  display: grid;
+  align-content: center;
+  gap: 0;
+  color: var(--fw-ink);
+  line-height: 1.18;
+}
+
+body.survey-step1-page .question-title span {
+  display: block;
+}
+
+body.survey-step1-page .question-caption,
+body.survey-step2-page .question-caption {
+  margin-top: 8px;
+}
+
+body.survey-step1-page .option-list {
+  width: min(100%, 820px);
+  margin: 18px auto 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 28px;
+}
+
+body.survey-step1-page .option-card {
+  min-height: 128px;
+  padding: 20px 24px 18px;
+  border-radius: 10px;
+}
+
+body.survey-step1-page .option-card::before {
+  background:
+    linear-gradient(90deg, rgba(255, 253, 249, .98) 0%, rgba(255, 253, 249, .9) 45%, rgba(255, 253, 249, .65) 100%),
+    radial-gradient(circle at 16% 50%, rgba(255, 255, 255, .78), transparent 58px);
+}
+
+body.survey-step1-page .option-title {
+  max-width: 13.5em;
+  font-size: clamp(1.08rem, 1.42vw, 1.52rem);
+  line-height: 1.45;
+}
+
+body.survey-step1-page .option-desc {
+  max-width: 27em;
+  font-size: .88rem;
+  line-height: 1.7;
+}
+
+body.survey-step1-page .sub-options,
+body.survey-step2-page .sub-options {
+  width: min(100%, 820px);
+  margin: auto auto 0;
+}
+
+body.survey-step1-page .side-panel,
+body.survey-step2-page .side-panel {
+  grid-template-rows: minmax(285px, 1fr) auto auto;
+}
+
+body.survey-step1-page .store-visual,
+body.survey-step2-page .store-visual {
+  min-height: 360px;
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 244, .08), rgba(255, 244, 237, .2)),
+    url("../img/TOP/hero-visual.png") center / cover;
+}
+
+body.survey-step1-page .side-card,
+body.survey-step2-page .side-card,
+body.survey-step1-page .return-card,
+body.survey-step2-page .return-card {
+  padding: 20px 22px;
+}
+
+body.survey-step2-page .option-list {
+  width: min(100%, 980px);
+  margin: 20px auto 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+body.survey-step2-page .option-card {
+  min-height: clamp(190px, 19vw, 270px);
+  padding: 18px;
+  align-items: end;
+  background-position: center;
+  background-size: cover;
+}
+
+body.survey-step2-page .option-card::before {
+  background:
+    linear-gradient(180deg, rgba(255, 253, 249, .72), rgba(255, 253, 249, .94)),
+    radial-gradient(circle at 30% 18%, rgba(255, 255, 255, .54), transparent 64px);
+}
+
+body.survey-step2-page .option-copy {
+  width: 100%;
+  padding: 4px;
+}
+
+body.survey-step2-page .option-title {
+  font-size: clamp(1.08rem, 1.55vw, 1.55rem);
+}
+
+body.survey-step2-page .step2-status {
+  width: min(100%, 780px);
+  margin: 22px auto 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+body.survey-step2-page .step2-status-item {
+  position: relative;
+}
+
+body.survey-step2-page .step2-status-item::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  left: -50%;
+  width: 100%;
+  height: 1px;
+  background: rgba(213, 138, 53, .35);
+}
+
+body.survey-step2-page .step2-status-item:first-child::before {
+  display: none;
+}
+
+body.survey-step2-page .axis-preview-card strong {
+  display: block;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+body.survey-step2-page .axis-preview-row {
+  grid-template-columns: 88px minmax(0, 1fr) 34px;
+}
+
+.graph-page-title {
+  margin: clamp(34px, 4.5vw, 68px) 0 22px clamp(0px, 5vw, 70px);
+  color: var(--fw-ink);
+}
+
+.graph-page-title h1 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.7rem, 4.8vw, 5rem);
+  font-weight: 400;
+  line-height: 1.08;
+}
+
+.graph-page-title p {
+  margin: 12px 0 0;
+  color: var(--fw-muted);
+  font-size: clamp(1rem, 1.35vw, 1.3rem);
+}
+
+body:has(#radar-graph) #graph-adjustment {
+  padding-top: 0;
+}
+
+body:has(#radar-graph) .graph-layout {
+  width: min(1200px, 76vw);
+  margin-left: clamp(0px, 5vw, 70px);
+  grid-template-columns: minmax(0, 1.1fr) minmax(290px, .62fr);
+  grid-template-areas:
+    "radar helper"
+    "slider helper";
+}
+
+body:has(#radar-graph) .graph-card:first-child {
+  grid-area: radar;
+  min-height: 360px;
+}
+
+body:has(#radar-graph) .slider-card {
+  grid-area: slider;
+}
+
+body:has(#radar-graph) .helper-grid {
+  grid-area: helper;
+}
+
+body:has(#radar-graph) .graph-card:first-child .section-header h2 {
+  color: var(--fw-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.45rem, 2vw, 2.25rem);
+  font-weight: 400;
+}
+
+body:has(#radar-graph) .slider-card .section-header h2 {
+  color: var(--fw-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.25rem, 1.75vw, 1.75rem);
+  font-weight: 400;
+}
+
+body:has(#radar-graph) .helper-grid .reassure-card:first-child {
+  min-height: 260px;
+}
+
+body:has(#radar-graph) .cta-box {
+  width: min(920px, 70vw);
+  margin-left: clamp(0px, 18vw, 280px);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+body:has(#radar-graph) .cta-media,
+body:has(#radar-graph) .graph-placeholder-image {
+  display: none;
+}
+
+@media (max-width: 68.6875em) {
+  body.survey-step1-page .page-shell,
+  body.survey-step2-page .page-shell {
+    width: min(100% - 24px, 1120px);
+  }
+
+  body.survey-step1-page .page-shell::before,
+  body.survey-step2-page .page-shell::before,
+  body.survey-step1-page .page-shell::after,
+  body.survey-step2-page .page-shell::after,
+  .graph-page-title,
+  body:has(#radar-graph) .graph-layout,
+  body:has(#radar-graph) .cta-box,
+  body.survey-step1-page .question-shell,
+  body.survey-step2-page .question-shell {
+    margin-left: 0;
+  }
+
+  body.survey-step1-page .question-shell,
+  body.survey-step2-page .question-shell,
+  body:has(#radar-graph) .graph-layout {
+    width: 100%;
+    grid-template-columns: 1fr;
+    grid-template-areas: none;
+  }
+
+  body:has(#radar-graph) .graph-card:first-child,
+  body:has(#radar-graph) .slider-card,
+  body:has(#radar-graph) .helper-grid {
+    grid-area: auto;
+  }
+
+  body.survey-step2-page .option-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 47.9375em) {
+  body.survey-step1-page .page-shell::before,
+  body.survey-step2-page .page-shell::before,
+  .graph-page-title h1 {
+    font-size: 2.2rem;
+  }
+
+  body.survey-step1-page .option-list,
+  body.survey-step2-page .option-list,
+  body.survey-step1-page .sub-options,
+  body.survey-step2-page .sub-options {
+    grid-template-columns: 1fr;
+  }
+
+  body.survey-step1-page .main-panel,
+  body.survey-step2-page .main-panel {
+    min-height: 0;
+  }
+
+  .question-stepper {
+    gap: 14px;
+  }
+}

@@ -1222,6 +1222,7 @@ img {
           </div>
           <div class="progress-label" id="progress-label">1 / 5</div>
         </div>
+        <div class="question-stepper" id="question-stepper" aria-label="5問中の現在位置"></div>
         <div>
           <h1 class="question-title" id="question-title"></h1>
           <p class="question-caption" id="question-caption"></p>
@@ -1658,6 +1659,7 @@ img {
     const helperText = document.getElementById("helper-text");
     const progressBar = document.getElementById("progress-bar");
     const progressLabel = document.getElementById("progress-label");
+    const questionStepper = document.getElementById("question-stepper");
     const questionTitle = document.getElementById("question-title");
     const questionCaption = document.getElementById("question-caption");
     const noteTitle = document.getElementById("note-title");
@@ -1962,6 +1964,51 @@ img {
       });
     }
 
+    function splitTitleIntoTwoLines(title) {
+      const normalizedTitle = String(title || "").trim();
+      if (!normalizedTitle) return ["", ""];
+      const punctuationIndex = normalizedTitle.search(/[、。？?]/);
+      if (punctuationIndex > 5 && punctuationIndex < normalizedTitle.length - 6) {
+        return [
+          normalizedTitle.slice(0, punctuationIndex + 1),
+          normalizedTitle.slice(punctuationIndex + 1)
+        ];
+      }
+      const midpoint = Math.ceil(normalizedTitle.length / 2);
+      const candidates = ["、", "。", "？", "?", " "];
+      let breakIndex = -1;
+      candidates.some((mark) => {
+        const before = normalizedTitle.lastIndexOf(mark, midpoint);
+        const after = normalizedTitle.indexOf(mark, midpoint);
+        const indexes = [before, after].filter((index) => index > 5 && index < normalizedTitle.length - 5);
+        if (!indexes.length) return false;
+        breakIndex = indexes.sort((a, b) => Math.abs(a - midpoint) - Math.abs(b - midpoint))[0];
+        if (mark !== " " && breakIndex >= 0) breakIndex += 1;
+        return true;
+      });
+      if (breakIndex < 0) breakIndex = midpoint;
+      return [
+        normalizedTitle.slice(0, breakIndex).trim(),
+        normalizedTitle.slice(breakIndex).trim()
+      ];
+    }
+
+    function renderQuestionTitle(element, title) {
+      element.innerHTML = "";
+      splitTitleIntoTwoLines(title).forEach((line) => {
+        const span = document.createElement("span");
+        span.textContent = line;
+        element.appendChild(span);
+      });
+    }
+
+    function renderQuestionStepper() {
+      questionStepper.innerHTML = questions.map((question, index) => {
+        const state = index === currentIndex ? "current" : (answers[question.id] ? "done" : "pending");
+        return `<span class="question-stepper-dot ${state}"><b>${index + 1}</b></span>`;
+      }).join("");
+    }
+
     function renderOptions(question) {
       optionList.innerHTML = "";
       question.options.forEach((option) => {
@@ -2008,11 +2055,12 @@ img {
       renderNav();
       renderOptions(question);
       renderSubOptions(question);
+      renderQuestionStepper();
       questionIndex.textContent = `${question.id} / STEP1`;
       helperText.textContent = question.helper;
       progressBar.style.width = `${progress}%`;
       progressLabel.textContent = `${currentIndex + 1} / ${questions.length}`;
-      questionTitle.textContent = question.title;
+      renderQuestionTitle(questionTitle, question.title);
       questionCaption.textContent = question.caption;
       noteTitle.innerHTML = question.noteTitle.replace("・・", "<br>・・");
       noteBody.textContent = question.noteBody;
