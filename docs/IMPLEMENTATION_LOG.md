@@ -457,3 +457,28 @@
 - 残作業:
   - Supabase実接続でのログイン、保存、予約、QR依頼送信の結合確認。
   - QR依頼の作成可否判断、通知、メール、期限管理、発送入力、成果集計の実装。
+
+### 2026-05-01 スタッフ側注釈対応
+
+- 対象:
+  - `admin-login.html`
+  - `staff/staff-dashboard.html`
+  - `staff/staff-reservations.html`
+  - `css/rebuild-ui.css`
+  - `js/admin-auth.js`
+  - `js/staff-dashboard-page.js`
+  - `js/admin-reservations-page.js`
+- 背景:
+  - ユーザー注釈で、共通ログイン・スタッフダッシュボード・スタッフ予約一覧が参照画像と大きく乖離していると指摘された。
+  - スタッフ側は1ページずつ参照画像を確認し、ノートPC/タブレット幅でも収まりやすい構成へ寄せる方針となった。
+- 実装:
+  - 共通ログインは、スタッフ/管理者をカード上部のタブで切り替える構成へ変更した。
+  - スタッフダッシュボードは、ヘッダー表示を `Staff Dashboard` に整理し、スタッフ名をページ見出し側へ移動した。
+  - スタッフダッシュボードは、KPI・予約リスト・通知をノートPC幅で収まりやすい密度に調整した。
+  - スタッフ予約一覧は、絞り込みを1ロウ4カラムへ変更し、予約テーブルとサマリーの構成へ寄せた。
+  - 認証、ステータス変更、予約詳細リンクに関わる既存ID/data属性は維持した。
+- 確認:
+  - `node --check js/admin-auth.js`
+  - `node --check js/staff-dashboard-page.js`
+  - `node --check js/admin-reservations-page.js`
+  - Edge/Playwrightで検証用スタブを使い、ログインなしでスタッフダッシュボードと予約一覧の表示確認を行った。
