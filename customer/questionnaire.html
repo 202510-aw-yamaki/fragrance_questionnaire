@@ -1183,8 +1183,7 @@ img {
     <div class="header-inner page-header-inner site-container">
       <a class="brand" id="brand-link" href="../index.html" aria-label="トップへ戻る">
         <picture>
-          <source media="(max-width: 47.9375em)" srcset="../img/TOP/吟ロゴ.png">
-          <img src="../img/TOP/roherarogo.png" alt="FRAGRANCE WORKSHOP">
+          <img src="../img/questionnaire-v11/吟ロゴ.png" alt="FRAGRANCE WORKSHOP">
         </picture>
       </a>
       <nav class="main-nav" aria-label="ページメニュー">
@@ -1527,10 +1526,36 @@ img {
     });
 
     const step1OptionVisuals = {
-      A: 'url("../img/questionnaire-v11/step1-b-fresh.png")',
-      B: 'url("../img/questionnaire-v11/step1-a-floral.png")',
-      C: 'url("../img/questionnaire-v11/step1-c-woody.png")',
-      D: 'url("../img/questionnaire-v11/step1-d-warm.png")'
+      Q1: {
+        A: 'url("../img/questionnaire-v11/step1-b-fresh.png")',
+        B: 'url("../img/questionnaire-v11/step1-a-floral.png")',
+        C: 'url("../img/questionnaire-v11/step1-c-woody.png")',
+        D: 'url("../img/questionnaire-v11/step1-d-warm.png")'
+      },
+      Q2: {
+        A: 'url("../img/questionnaire-v11/step1-q2-a.png")',
+        B: 'url("../img/questionnaire-v11/step1-q2-b.png")',
+        C: 'url("../img/questionnaire-v11/step1-q2-c.png")',
+        D: 'url("../img/questionnaire-v11/step1-q2-d.png")'
+      },
+      Q3: {
+        A: 'url("../img/questionnaire-v11/step1-q3-a.png")',
+        B: 'url("../img/questionnaire-v11/step1-q3-b.png")',
+        C: 'url("../img/questionnaire-v11/step1-q3-c.png")',
+        D: 'url("../img/questionnaire-v11/step1-q3-d.png")'
+      },
+      Q4: {
+        A: 'url("../img/questionnaire-v11/step1-q4-a.png")',
+        B: 'url("../img/questionnaire-v11/step1-q4-b.png")',
+        C: 'url("../img/questionnaire-v11/step1-q4-c.png")',
+        D: 'url("../img/questionnaire-v11/step1-q4-d.png")'
+      },
+      Q5: {
+        A: 'url("../img/questionnaire-v11/step1-q5-a.png")',
+        B: 'url("../img/questionnaire-v11/step1-q5-b.png")',
+        C: 'url("../img/questionnaire-v11/step1-q5-c.png")',
+        D: 'url("../img/questionnaire-v11/step1-q5-d.png")'
+      }
     };
 
     const questions = [
@@ -1946,7 +1971,7 @@ img {
         button.classList.add(`option-key-${String(option.key).toLowerCase()}`);
         if (option.cardClass) button.classList.add(option.cardClass);
         if (answerKeys[question.id] === option.key) button.classList.add("selected");
-        const optionVisual = option.visual || step1OptionVisuals[option.key];
+        const optionVisual = option.visual || step1OptionVisuals[question.id]?.[option.key];
         if (optionVisual) button.style.backgroundImage = optionVisual;
         else button.style.removeProperty("background-image");
         button.style.backgroundColor = option.color || "#fffdfa";

@@ -195,3 +195,15 @@
   - STEP1のA/B/C/Dカードに、`deep-research-report-ver.1.1.md` の方向性に合わせた新規生成背景を割り当て。
   - 旧 `img/questionnaire/` は参照せず、文字可読性を保つために淡い写真背景の上へ白系グラデーションを重ねるCSSに調整。
   - STEP2は `survey-step2-page` として分離し、画像背景を強制的に使わない状態を維持。
+
+### STEP1/STEP2カード画像とSTEP2傾向表示の追加
+
+- 対象: `customer/questionnaire.html`, `customer/questionnaire_step2.html`, `css/customer-survey-layout.css`, `img/questionnaire-v11/`
+- 追加:
+  - STEP1 Q2〜Q5 の A/B/C/D カード背景を設問別に分けた。
+  - STEP2 の A/B/C カード背景を branch 別に分け、縦長カードとして表示する。
+  - `img/questionnaire-v11/吟ロゴ.png` を STEP1/STEP2 のヘッダーロゴとして使用する。
+  - STEP2 の右側パネルは豆知識ではなく、現在の5軸傾向をスライダー表示に変更した。
+- 補足:
+  - STEP2 の5軸傾向表示は `scoreStep2Answers` の結果プレビューのみで、管理画面の配点や保存ロジックは変更していない。
+  - レイアウト画像は直接参照せず、生成画像とCSSで近づける方針を継続する。

@@ -1239,8 +1239,7 @@ img {
     <div class="header-inner page-header-inner site-container">
       <a class="brand" id="brand-link" href="../index.html" aria-label="トップへ戻る">
         <picture>
-          <source media="(max-width: 47.9375em)" srcset="../img/TOP/吟ロゴ.png">
-          <img src="../img/TOP/roherarogo.png" alt="FRAGRANCE WORKSHOP">
+          <img src="../img/questionnaire-v11/吟ロゴ.png" alt="FRAGRANCE WORKSHOP">
         </picture>
       </a>
       <nav class="main-nav" aria-label="ページメニュー">
@@ -1284,6 +1283,7 @@ img {
           <p class="question-caption" id="question-caption"></p>
         </div>
         <div class="option-list" id="option-list"></div>
+        <div class="step2-status" id="step2-status" aria-label="STEP2の現在位置"></div>
         <div class="sub-options" id="sub-options"></div>
       </section>
       <aside class="panel side-panel page-panel">
@@ -1291,9 +1291,9 @@ img {
           <strong>提案の空気感</strong>
           <span>STEP2 では、工房の奥にある提案カウンターに少し近づくイメージです。静かな器具や無地ボトルが見える、落ち着いた空気感を添えています。</span>
         </div>
-        <div class="side-card">
+        <div class="side-card axis-preview-card">
           <strong id="note-title"></strong>
-          <p id="note-body"></p>
+          <div class="axis-preview-list" id="axis-preview"></div>
         </div>
         <div class="return-card">
           <p>STEP2 の途中で戻ると、ここまでの深掘り回答は保存されません。</p>
@@ -1368,6 +1368,37 @@ img {
         { id: "Q7", nav: "余韻の残り方", title: "余韻はどう残ってほしいですか？", caption: "余韻の残り方で、同じ woody でも落ち着きの印象は大きく変わります。", helper: "残り方に近いものを選んでください", noteTitle: "豆知識＜ラストノート＞", noteBody: "ウッディ系は、最後にどう残るかで“重い”にも“上品”にも感じ方が変わる。", footer: "ここでは、深みがどんな余韻で続いてほしいかを見ています。", options: [{ key: "A", title: "すっと消えて軽やか", desc: "深みはあるが抜け感もある木と光。後味が軽い静かな構図。", color: "#F1EEE8", cardClass: "option-card-image-right" }, { key: "B", title: "じんわり変化してほしい", desc: "木の質感とやわらかな陰影。少しずつ表情が変わる落ち着いた余韻。", color: "#EEE9E1", cardClass: "option-card-image-right" }, { key: "C", title: "最後に深く残ってほしい", desc: "深いブラウンと整った影。最後に静かな深さが残る方向。", color: "#ECE5DD", cardClass: "option-card-image-right" }], subOptions: ["全部好き", "この中にはない"] },
         commonQ8
       ]
+    };
+
+    const step2OptionVisuals = {
+      floral: {
+        A: 'url("../img/questionnaire-v11/step2-floral-soft.png")',
+        B: 'url("../img/questionnaire-v11/step2-sweet-warm.png")',
+        C: 'url("../img/questionnaire-v11/step2-elegant-calm.png")'
+      },
+      fresh: {
+        A: 'url("../img/questionnaire-v11/step2-fresh-water.png")',
+        B: 'url("../img/questionnaire-v11/step2-clean-linen.png")',
+        C: 'url("../img/questionnaire-v11/step2-sharp-glass.png")'
+      },
+      woody: {
+        A: 'url("../img/questionnaire-v11/step2-woody-warm.png")',
+        B: 'url("../img/questionnaire-v11/step2-woody-calm.png")',
+        C: 'url("../img/questionnaire-v11/step2-spice-accent.png")'
+      },
+      Q8: {
+        A: 'url("../img/questionnaire-v11/step2-fresh-water.png")',
+        B: 'url("../img/questionnaire-v11/step2-sweet-warm.png")',
+        C: 'url("../img/questionnaire-v11/step2-elegant-calm.png")'
+      }
+    };
+
+    const axisLabels = {
+      floral: "フローラル",
+      fresh: "フレッシュ",
+      woody: "ウッディ",
+      spicy: "スパイシー",
+      sweet: "スウィート"
     };
     // このファイルでは score state を読み、STEP2 の反映と最終確定のみ行います。
     // 通常の配点編集は admin-scoring.html から scoring_configs に保存します。
@@ -1508,6 +1539,7 @@ img {
     let activeBranchKey = "floral";
     const navList = document.getElementById("nav-list");
     const optionList = document.getElementById("option-list");
+    const step2Status = document.getElementById("step2-status");
     const subOptions = document.getElementById("sub-options");
     const questionIndex = document.getElementById("question-index");
     const helperText = document.getElementById("helper-text");
@@ -1516,7 +1548,7 @@ img {
     const questionTitle = document.getElementById("question-title");
     const questionCaption = document.getElementById("question-caption");
     const noteTitle = document.getElementById("note-title");
-    const noteBody = document.getElementById("note-body");
+    const axisPreview = document.getElementById("axis-preview");
     const brandLink = document.getElementById("brand-link");
     const returnTopBtn = document.getElementById("return-top-btn");
     const returnTopBtnMobile = document.getElementById("return-top-btn-mobile");
@@ -1824,20 +1856,54 @@ img {
         navList.appendChild(button);
       });
     }
+    function getStep2OptionVisual(question, option) {
+      if (question.id === "Q8") return step2OptionVisuals.Q8?.[option.key] || option.visual || "";
+      return step2OptionVisuals[activeBranchKey]?.[option.key] || option.visual || "";
+    }
     function renderOptions(question) {
       optionList.innerHTML = "";
       question.options.forEach((option) => {
         const button = document.createElement("button");
         button.type = "button";
         button.className = "option-card";
+        button.classList.add(`option-key-${String(option.key).toLowerCase()}`);
         if (option.cardClass) button.classList.add(option.cardClass);
         if (answerKeys[question.id] === option.key) button.classList.add("selected");
-        button.style.removeProperty("background-image");
+        const optionVisual = getStep2OptionVisual(question, option);
+        if (optionVisual) button.style.backgroundImage = optionVisual;
+        else button.style.removeProperty("background-image");
         button.style.backgroundColor = option.color || "#fffdfa";
         button.innerHTML = `<div class="option-copy"><span class="option-label">${option.key}</span><span class="option-title">${option.title}</span><span class="option-desc">${option.desc}</span></div>`;
         button.addEventListener("click", () => selectAnswer(question, option.title, option.key));
         optionList.appendChild(button);
       });
+    }
+    function renderStep2Status(questions) {
+      step2Status.innerHTML = questions.map((question, index) => {
+        const state = index === currentIndex ? "current" : (answers[question.id] ? "done" : "pending");
+        return `<span class="step2-status-item ${state}"><b>${index + 1}</b><small>${question.nav}</small></span>`;
+      }).join("");
+    }
+    function getPreviewAxes() {
+      const config = getScoringConfig();
+      const scoreState = getScoreState();
+      const baseAxes = scoreState.axesAfterStep1 || createInitialAxes(config);
+      return scoreStep2Answers(baseAxes, activeBranchKey, answerKeys, config);
+    }
+    function renderAxisPreview() {
+      const config = getScoringConfig();
+      const axes = getPreviewAxes();
+      noteTitle.textContent = "現在の香りの傾向";
+      axisPreview.innerHTML = config.axisOrder.map((axis) => {
+        const value = clampValue(axes[axis] ?? config.initialAxisScore);
+        return `
+          <div class="axis-preview-row">
+            <span>${axisLabels[axis] || axis}</span>
+            <i><b style="width: ${value}%"></b></i>
+            <em>${value}</em>
+          </div>
+        `;
+      }).join("");
     }
     function renderSubOptions(question) {
       subOptions.innerHTML = "";
@@ -1867,6 +1933,7 @@ img {
       const progress = ((currentIndex + 1) / questions.length) * 100;
       renderNav();
       renderOptions(question);
+      renderStep2Status(questions);
       renderSubOptions(question);
       questionIndex.textContent = `${question.id} / STEP2`;
       helperText.textContent = question.helper;
@@ -1874,8 +1941,7 @@ img {
       progressLabel.textContent = `${currentIndex + 1} / ${questions.length}`;
       questionTitle.textContent = question.title;
       questionCaption.textContent = question.caption;
-      noteTitle.textContent = question.noteTitle;
-      noteBody.textContent = question.noteBody;
+      renderAxisPreview();
       updateButtons();
     }
     brandLink.addEventListener("click", (event) => { event.preventDefault(); returnToTop(); });
