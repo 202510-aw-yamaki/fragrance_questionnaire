@@ -430,3 +430,8 @@
   - 文章と連絡先を分け、電話番号/受付時間を `.contact-lines` として2カラム表示にした。
   - 小さい幅では1カラムに戻るようにした。
   - `shop-phone`, `business-hours`, `qr-request-form`, `submit-request` などのJS参照IDは維持した。
+
+## 2026-05-01 レイアウト画像ベース再構築
+- ユーザー指示に基づき、`レイアウトimg`（00-1/00-2除く）を参照して主要ページを再構築。
+- 既存HTML/CSS/JS（Supabase接続設定を除く）を `docs/archived/legacy/` 配下へ退避。
+- Supabase接続ファイル `js/supabase-config.js` / `js/supabase-client.js` は現行配置で維持。
