@@ -376,3 +376,17 @@
   - 管理者設定、配点、原料ページの見出しを、完成イメージに近い管理画面の言い方へ寄せた。
   - `admin-header`, `data-login-role`, `data-login-tab`, `reservation-rows`, `reservation-empty`, `staff-detail-form`, `product-name`, `personal-info-consent`, `third-party-order-consent`, `recipe-list`, `qr-product-settings-form`, `scoring-form` など、現行JS参照IDは維持した。
   - QR作成可否、発送先入力、発送完了、通知対応済み操作は実装していない。
+
+### QR依頼一覧ページの確認専用レイアウト整理
+
+- 対象:
+  - `staff/staff-qr-requests.html`
+  - `admin/admin-qr-requests.html`
+- 背景:
+  - QR依頼は管理者/スタッフの運用上確認が必要だが、作成可否・発送先入力・発送完了・通知対応済み操作は次フェーズとして扱う。
+  - 現時点では一覧取得と読み取り確認に限定する。
+- 実装:
+  - スタッフ用と管理者用で、確認範囲を示すガイドカードを追加した。
+  - 背景、カード角丸、見出し、フィルタ配置を他の管理画面に近づけた。
+  - `qr-request-filter-form`, `qr-request-status-filter`, `qr-request-keyword-filter`, `qr-request-rows`, `qr-request-empty`, `qr-request-count` は維持した。
+  - 状態変更ボタンやメール送信ボタンは追加していない。

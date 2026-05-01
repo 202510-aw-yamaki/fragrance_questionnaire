@@ -15,6 +15,7 @@
       --accent: #8f5f3e;
       --accent-soft: #f0e1d4;
       --danger-soft: #fae8df;
+      --green: #6f8465;
       --container: min(1180px, calc(100vw - 32px));
     }
 
@@ -28,7 +29,11 @@
       min-height: 100vh;
       font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
       color: var(--text);
-      background: var(--bg);
+      background:
+        linear-gradient(135deg, rgba(255, 253, 248, .96), rgba(247, 241, 234, .9)),
+        radial-gradient(circle at 12% 16%, rgba(143, 95, 62, .12), transparent 24rem),
+        radial-gradient(circle at 86% 6%, rgba(111, 132, 101, .16), transparent 22rem),
+        var(--bg);
       line-height: 1.7;
     }
 
@@ -103,26 +108,26 @@
     .admin-main {
       padding: 32px 0 48px;
       display: grid;
-      gap: 18px;
+      gap: 22px;
     }
 
     .admin-panel {
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: 14px;
       background: var(--panel);
       box-shadow: 0 16px 36px rgba(75, 51, 33, 0.08);
     }
 
     .portal-hero,
     .qr-request-list-section {
-      padding: clamp(20px, 4vw, 32px);
+      padding: clamp(22px, 4vw, 34px);
     }
 
     .portal-hero {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 20px;
-      align-items: end;
+      grid-template-columns: minmax(0, 1fr) minmax(260px, .36fr);
+      gap: clamp(20px, 3vw, 34px);
+      align-items: stretch;
     }
 
     .portal-hero-label {
@@ -141,9 +146,47 @@
 
     h1 {
       margin-bottom: 10px;
-      font-size: clamp(1.9rem, 4vw, 3rem);
+      font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+      font-size: clamp(2.2rem, 4vw, 3.8rem);
+      font-weight: 500;
       line-height: 1.15;
       letter-spacing: 0;
+    }
+
+    .qr-requests-guide {
+      display: grid;
+      gap: 12px;
+      align-content: center;
+      padding: 18px;
+      border: 1px solid rgba(143, 95, 62, .18);
+      border-radius: 12px;
+      background: rgba(255, 250, 244, .82);
+    }
+
+    .qr-requests-guide strong {
+      color: var(--text);
+      font-size: 1.05rem;
+    }
+
+    .qr-requests-guide ul {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .qr-requests-guide li::before {
+      content: "";
+      display: inline-block;
+      width: .5em;
+      height: .5em;
+      margin-right: .65em;
+      border-radius: 50%;
+      background: var(--green);
+      vertical-align: .1em;
     }
 
     .admin-note {
@@ -153,6 +196,7 @@
 
     .portal-filter-form {
       display: flex;
+      grid-column: 1 / -1;
       align-items: end;
       justify-content: flex-end;
       gap: 12px;
@@ -275,7 +319,7 @@
   </style>
 </head>
 
-<body class="page-canvas admin-page qr-requests-page">
+<body class="page-canvas admin-page qr-requests-page qr-requests-manager-page">
   <header class="admin-header" id="admin-header"></header>
   <main class="admin-main site-container">
     <section class="admin-panel portal-hero">
@@ -284,6 +328,14 @@
         <h1>QR依頼一覧</h1>
         <p class="admin-note">QR商品作成依頼を読み取り専用で確認します。作成可否・発送先・発送完了の操作は後続フェーズです。</p>
       </div>
+      <aside class="qr-requests-guide" aria-label="管理者確認の要点">
+        <strong>管理者確認の範囲</strong>
+        <ul>
+          <li>未対応件数と期限超過を確認</li>
+          <li>スタッフ担当とQRアクセスを確認</li>
+          <li>対応操作は次フェーズで実装</li>
+        </ul>
+      </aside>
       <form class="portal-filter-form" id="qr-request-filter-form">
         <label>状態
           <select id="qr-request-status-filter">
