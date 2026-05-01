@@ -117,3 +117,18 @@ QR発行条件、QR依頼対応、発送先入力、発送完了、通知対応�
 - ただし、DB・認証・QRコード関連の曖昧な構造は放置しない。
 - 見た目だけを整える実装を優先しない。
 - 既存のQR関連処理がある場合は、流用前に必ず設計方針と照合する。
+
+## 2026-05-01 UI再構築後の現状
+
+- 旧HTMLページと旧レイアウトCSSは `archived/layout-rebuild-20260501/` に退避済み。
+- 現行HTMLは `レイアウトimg/` の参照画像を基準に再構築し、共通CSSは `css/rebuild-ui.css` に統合した。
+- `supabase/`、`js/supabase-config.js`、`js/supabase-client.js`、`js/public-data.js`、`js/admin-data.js`、`js/admin-auth.js`、`js/fragrance-master-data.js` は接続・保存・認証の維持対象として残した。
+- 顧客アンケート、結果、予約完了の軽量な画面制御は `js/rebuild-customer-flow.js` に整理した。
+- 会員ログイン/会員トップの画面制御は `js/customer-auth-page.js` に整理した。
+- 共通ログイン画面のタブ切替と送信制御は `js/admin-login-page.js` に整理した。
+- Edge/Playwrightで20ページをデスクトップ幅・スマホ幅の計40表示確認し、ローカルJSエラーなしを確認済み。
+
+残作業:
+- Supabase実接続状態でのログイン、保存、予約、QR依頼送信の結合確認。
+- QR依頼の作成可否判断、通知、メール、期限管理の運用実装。
+- QR発送入力、発送完了、成果集計、期限超過集計の実装。

@@ -22,88 +22,68 @@
 - `docs/06_OPEN_ISSUES.md`
 - `docs/UI_REBUILD_PLAN.md`
 
-UI再構築については `docs/UI_REBUILD_PLAN.md` を作業計画の正本として扱います。
+UI再構築は2026-05-01に完了しました。
+
+完了内容は以下に退避しました。
+
+`docs/archive/20260501_05_IMPLEMENTATION_ROADMAP_ui_rebuild_completed.md`
 
 ## 現在の最優先作業
 
-### 1. ページレイアウト再構築
+### 1. Supabase実接続での結合確認
 
-目的は、既存レイアウトの混在を解消し、`レイアウトimg` の参照画像を基準に全ページの表示層を作り直すことです。
-
-実施内容:
-
-- 現行ページを `archived/layout-rebuild-20260501/` に退避する。
-- Supabase接続、認証、RPC、DB保存に関わるファイルは退避しない。
-- HTML/CSSは参照画像を単に貼り付けず、パーツ単位で再構築する。
-- 必要な画像素材は既存素材または生成素材を使う。
-- ページ内に、実装メモ、クライアント説明用注釈、後続フェーズ説明を表示しない。
-
-### 2. Supabase接続契約の維持
-
-UI再構築中も、既存JSが参照しているID、name属性、data属性、script順、DB操作入口を壊さない。
-
-維持対象の中心:
-
-- `js/supabase-config.js`
-- `js/supabase-client.js`
-- `js/public-data.js`
-- `js/admin-data.js`
-- `js/admin-auth.js`
-- `js/fragrance-master-data.js`
-- `supabase/`
-
-### 3. 顧客ページ再構築
-
-対象:
-
-- `index.html`
-- `customer/customer-login.html`
-- `customer/index.html`
-- `customer/questionnaire.html`
-- `customer/questionnaire_step2.html`
-- `customer/fragrance-graph.html`
-- `customer/reservation.html`
-- `customer/reservation-complete.html`
-- `customer/product-reservation.html`
-
-`customer/shipping-info.html` は参照画像があるが、発送先入力フローが未確定のため、勝手に実装しない。
-
-### 4. スタッフページ再構築
-
-対象:
-
-- `staff/staff-dashboard.html`
-- `staff/staff-reservations.html`
-- `staff/staff-slots.html`
-- `staff/staff-customer-detail.html`
-- `staff/staff-qr-requests.html`
-
-QR作成可否判断、発送先入力、発送完了、通知対応済み操作は、UI再構築とは別タスクとして扱う。
-
-### 5. 管理者ページ再構築
-
-対象:
-
-- `admin-login.html`
-- `admin/admin-dashboard.html`
-- `admin/admin-settings.html`
-- `admin/admin-scoring.html`
-- `admin/admin-materials.html`
-- `admin/admin-qr-requests.html`
-
-`admin/admin-qr-settings.html` は参照画像があるが、現行では `admin/admin-settings.html` のQR設定と役割が重なるため、分離するかどうかを確認してから扱う。
-
-### 6. ブラウザ確認
-
-再構築後に、主要ページをブラウザで確認する。
+再構築後のHTMLが、実DB・認証・RPCと破綻なくつながるかを確認する。
 
 確認対象:
 
-- 参照画像との大きな乖離がないこと
-- テキストやUIが重ならないこと
-- モバイル幅で破綻しないこと
-- Supabase未設定時のエラー表示が崩れないこと
-- ログイン、アンケート、予約、QR依頼、管理画面の主要導線が壊れていないこと
+- 顧客ログイン、会員トップ、アンケート結果保存、予約作成。
+- スタッフログイン、予約一覧、予約枠作成、顧客詳細保存。
+- 管理者ログイン、基本設定、配点、原料ポイント、QR依頼一覧。
+- QR商品作成依頼の表示、数量入力、メールアドレス入力、依頼保存。
+
+### 2. QR商品作成依頼の運用処理
+
+作成依頼は購入ではなく「作成依頼」として扱う。
+
+実装対象:
+
+- スタッフによる作成可能/作成不可判断。
+- 受付メール、作成可能メール、作成不可メール、再案内メール、期限切れメール。
+- 3営業日以内の判断期限。
+- 期限超過未対応の管理者記録。
+- 管理者側の通知・集計。
+
+### 3. 発送先入力・発送完了・成果集計
+
+発送先入力ページは参照画像があるが、保存項目・個人情報保持・削除方針の確認後に扱う。
+
+実装対象:
+
+- 発送先入力。
+- 発送完了登録。
+- 発送完了時点でのスタッフ成果Bカウント。
+- 作成可能メール送信後3日後の再案内、7日後の期限切れ。
+
+### 4. 会員ページ整理
+
+会員導線とQR第三者導線を混ぜない。
+
+実装対象:
+
+- 会員登録DB接続の結合確認。
+- 会員ページでの前回完成品表示。
+- アンケート経由予約時の前回完成品との差分表示。
+- 予約履歴・制作履歴と完成品の紐づけ確認。
+
+### 5. 管理者設定・通知・期限管理
+
+運用に必要な設定を管理画面から扱えるようにする。
+
+実装対象:
+
+- QR商品価格設定の実運用確認。
+- 通知イベントとメールイベントの状態管理。
+- 期限超過、無効化、アクセス急増通知の集計。
 
 ## 未確定のため実装しない項目
 
@@ -130,11 +110,9 @@ QR作成可否判断、発送先入力、発送完了、通知対応済み操作
 
 ## チェックリスト
 
-- [ ] 現行ページを退避する
-- [ ] 共通UI土台を作る
-- [ ] 顧客ページを再構築する
-- [ ] スタッフページを再構築する
-- [ ] 管理者ページを再構築する
-- [ ] 主要ページをブラウザで確認する
-- [ ] UI再構築後に `docs/01_CURRENT_STATE.md` と `docs/UI_REBUILD_PLAN.md` を更新する
-
+- [ ] Supabase実接続で顧客・スタッフ・管理者の主要導線を結合確認する
+- [ ] QR商品作成依頼の作成可能/作成不可判断を実装する
+- [ ] QR依頼の受付・作成可否・再案内・期限切れメールを実装する
+- [ ] 発送先入力、発送完了、スタッフ成果B集計を実装する
+- [ ] 会員ページの完成品履歴・差分表示を整理する
+- [ ] 通知、期限超過、QR無効化、アクセス急増の管理者集計を実装する

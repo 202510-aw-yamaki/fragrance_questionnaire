@@ -117,14 +117,22 @@
 
 - [x] 契約棚卸しを完了する
   → 参照画像一覧と、HTML/JS/Supabase 接続に必要な主要ID・data属性・依存テーブルを読み取りで棚卸しした。
-- [ ] 退避対象と維持対象をユーザー確認する
-- [ ] 現行ページを `archived/layout-rebuild-20260501/` に退避する
-- [ ] 共通UI土台を作る
-- [ ] 顧客ページを再構築する
-- [ ] スタッフページを再構築する
-- [ ] 管理者ページを再構築する
-- [ ] ブラウザ確認を行う
-- [ ] 関連ドキュメントに結果を追記する
+- [x] 退避対象と維持対象をユーザー確認する
+  → ユーザー承認後、Supabase接続・認証・DB系JSを維持し、HTMLと旧レイアウトCSSを退避対象として作業した。
+- [x] 現行ページを `archived/layout-rebuild-20260501/` に退避する
+  → `index.html`、`admin-login.html`、`customer/*.html`、`staff/*.html`、`admin/*.html`、旧CSSを同フォルダへ退避した。
+- [x] 共通UI土台を作る
+  → `css/rebuild-ui.css` を作成し、顧客・スタッフ・管理者ページの共通トーン、カード、フォーム、ナビ、レスポンシブを統合した。
+- [x] 顧客ページを再構築する
+  → トップ、会員ログイン、会員トップ、アンケート、結果、予約、予約完了、QR商品作成依頼を再構築した。
+- [x] スタッフページを再構築する
+  → ダッシュボード、予約一覧、予約枠作成、顧客詳細、QR依頼一覧を再構築した。
+- [x] 管理者ページを再構築する
+  → 共通ログイン、管理者ダッシュボード、基本設定、配点、原料、QR依頼一覧を再構築した。
+- [x] ブラウザ確認を行う
+  → Edge/Playwrightで20ページをデスクトップ幅・スマホ幅の計40表示確認し、ローカルJSエラーなしを確認した。
+- [x] 関連ドキュメントに結果を追記する
+  → 2026-05-01の再構築結果として、本計画書、`docs/01_CURRENT_STATE.md`、`docs/IMPLEMENTATION_LOG.md` に追記した。
 
 ## 2026-05-01 契約棚卸し追記
 
@@ -160,4 +168,3 @@
 - 公開導線: `scoring_configs`、`material_points`、`questionnaire_results`、`reservation_slots`、`reservations`、`customers`、`admin_settings`、`product_qr_codes`、`fragrance_products`、`qr_product_requests`。
 - 管理/スタッフ導線: `reservations`、`reservation_slots`、`scoring_configs`、`material_points`、`admin_settings`、`notification_events`、`email_events`、`staff_profiles`、`workshop_sessions`、`fragrance_products`、`product_qr_codes`、`qr_product_requests`。
 - RPC: `create_questionnaire_result`、`update_questionnaire_result_by_token`、`create_public_reservation`、`fetch_reservation_by_code`、`fetch_customer_portal_summary`、`record_qr_product_access`。
-

@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>お客様ログイン | Fragrance Workshop</title>
+  <meta name="description" content="メールアドレスをIDとして、作成した香りの最終軸グラフを確認するためのお客様専用ページです。">
+  <style>
+    :root {
+      --bg: #fcf8f3;
+      --line: #e6ddd2;
+      --text: #2f2925;
+      --muted: #6f665f;
+      --accent: #ba8155;
+      --accent-deep: #9c6740;
+      --panel: rgba(255, 255, 255, .9);
+      --shadow: 0 16px 34px rgba(80, 63, 48, .14);
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --container: min(1160px, calc(100% - 32px));
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 360px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-width: 360px;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+      line-height: 1.7;
+      letter-spacing: .02em;
+      background:
+        radial-gradient(circle at top left, rgba(239, 219, 199, .58), transparent 28%),
+        radial-gradient(circle at top right, rgba(222, 233, 222, .58), transparent 30%),
+        linear-gradient(180deg, #f9f4ed 0%, #fcf8f3 38%, #fffdf9 100%);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    img,
+    svg {
+      display: block;
+      max-width: 100%;
+    }
+
+    .site-container {
+      width: var(--container);
+      margin: 0 auto;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-bottom: 1px solid rgba(230, 221, 210, .88);
+      background: rgba(252, 248, 243, .82);
+      backdrop-filter: blur(14px);
+    }
+
+    .header-inner {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+    }
+
+    .brand img {
+      width: auto;
+      height: auto;
+      max-height: 48px;
+      max-width: 100%;
+    }
+
+    .btn {
+      appearance: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 18px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      text-decoration: none;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .btn:hover,
+    .btn:focus-visible {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 34px rgba(80, 63, 48, .14);
+    }
+
+    .btn-primary {
+      background: linear-gradient(180deg, var(--accent), var(--accent-deep));
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(156, 103, 64, .24);
+    }
+
+    .btn-secondary {
+      border-color: var(--line);
+      background: rgba(255, 255, 255, .8);
+      color: var(--text);
+    }
+
+    main {
+      padding: 34px 0 62px;
+    }
+
+    .customer-layout {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: 1fr;
+      align-items: stretch;
+    }
+
+    .hero-card,
+    .login-card,
+    .graph-card,
+    .history-card {
+      border: 1px solid rgba(230, 221, 210, .92);
+      border-radius: var(--radius-lg);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      min-height: 420px;
+      display: grid;
+      align-content: end;
+      overflow: hidden;
+      padding: 28px;
+      background:
+        linear-gradient(180deg, rgba(47, 41, 37, .08), rgba(47, 41, 37, .58)),
+        url("../img/TOP/hero-visual.png");
+      background-size: cover;
+      background-position: center;
+      color: #fffdfb;
+    }
+
+    .eyebrow,
+    .overline {
+      display: inline-flex;
+      align-items: center;
+      justify-self: start;
+      min-height: 32px;
+      padding: 0 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .hero-card .eyebrow {
+      background: rgba(255, 255, 255, .86);
+      color: var(--accent-deep);
+    }
+
+    .overline {
+      background: rgba(200, 137, 114, .14);
+      color: var(--accent-deep);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    .hero-card h1 {
+      max-width: 620px;
+      margin: 14px 0 12px;
+      font-size: clamp(2rem, 5vw, 4rem);
+      line-height: 1.08;
+    }
+
+    .hero-card p {
+      max-width: 660px;
+      margin-bottom: 0;
+      color: rgba(255, 253, 251, .88);
+    }
+
+    .login-card,
+    .graph-card,
+    .history-card {
+      padding: 26px;
+    }
+
+    .login-card {
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .login-card h2,
+    .graph-card h2,
+    .history-card h2 {
+      margin: 10px 0 8px;
+      font-size: clamp(1.45rem, 3vw, 2rem);
+      line-height: 1.25;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .login-form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+      font-weight: 700;
+    }
+
+    input {
+      min-height: 48px;
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255, 253, 249, .96);
+      padding: 0 14px;
+      color: var(--text);
+      font: inherit;
+    }
+
+    input:focus-visible {
+      outline: 3px solid rgba(186, 129, 85, .22);
+      border-color: rgba(156, 103, 64, .62);
+    }
+
+    .form-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .form-actions .btn {
+      min-width: 176px;
+    }
+
+    .status-note {
+      margin: 0;
+      padding: 12px 14px;
+      border: 1px solid rgba(230, 221, 210, .92);
+      border-radius: var(--radius-md);
+      background: rgba(248, 242, 235, .78);
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .portal-points {
+      list-style: none;
+      display: grid;
+      gap: 9px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .portal-points li {
+      position: relative;
+      padding-left: 18px;
+      color: var(--muted);
+    }
+
+    .portal-points li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: .72em;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(186, 129, 85, .78);
+      transform: translateY(-50%);
+    }
+
+    .graph-card {
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .graph-frame {
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: linear-gradient(180deg, rgba(255, 255, 255, .88), rgba(244, 238, 232, .8));
+      padding: 18px;
+      overflow: hidden;
+    }
+
+    .axis-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .axis-list li {
+      display: grid;
+      grid-template-columns: 82px 1fr 38px;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .axis-bar {
+      height: 8px;
+      border-radius: 999px;
+      background: #e5d9ce;
+      overflow: hidden;
+    }
+
+    .axis-bar span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), #d8b091);
+    }
+
+    .history-card {
+      display: grid;
+      gap: 14px;
+    }
+
+    .history-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(230, 221, 210, .78);
+      color: var(--muted);
+    }
+
+    .history-row:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .history-row strong {
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .site-footer {
+      padding: 24px 0 36px;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      border-top: 1px solid rgba(230, 221, 210, .92);
+      padding-top: 18px;
+    }
+
+    .footer-inner p {
+      margin: 0;
+    }
+
+    @media (min-width: 68.75em) {
+      .customer-layout {
+        grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr);
+      }
+
+      .hero-card {
+        grid-row: span 2;
+      }
+
+      .graph-card,
+      .history-card {
+        min-height: 300px;
+      }
+    }
+
+    @media (min-width: 48em) and (max-width: 68.6875em) {
+      .customer-layout {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .hero-card {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 47.9375em) {
+      .header-inner {
+        min-height: auto;
+        padding: 10px 0;
+      }
+
+      .brand img {
+        max-height: 44px;
+      }
+
+      main {
+        padding-top: 18px;
+      }
+
+      .hero-card {
+        min-height: 360px;
+        padding: 22px;
+      }
+
+      .login-card,
+      .graph-card,
+      .history-card {
+        padding: 22px;
+      }
+
+      .form-actions {
+        align-items: stretch;
+      }
+
+      .form-actions .btn {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .axis-list li {
+        grid-template-columns: 76px 1fr 34px;
+        gap: 8px;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="../css/customer-portal-layout.css">
+</head>
+
+<body class="customer-login-page">
+  <header class="site-header">
+    <div class="header-inner site-container">
+      <a class="brand" href="../index.html" aria-label="トップページへ戻る">
+        <picture>
+          <source media="(max-width: 47.9375em)" srcset="../img/TOP/吟ロゴ.png">
+          <img src="../img/TOP/roherarogo.png" alt="FRAGRANCE WORKSHOP">
+        </picture>
+      </a>
+      <a class="btn btn-secondary" href="../index.html">TOP</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="customer-layout site-container">
+      <section class="hero-card" aria-labelledby="customer-title">
+        <span class="eyebrow" id="entrance-label">Customer Entrance</span>
+        <h1 id="customer-title">会員ページでできること</h1>
+        <p>制作履歴や次回予約へ戻るための入口です。QR商品作成依頼とは別の、会員本人向けページとして扱います。</p>
+      </section>
+
+      <section class="login-card" aria-labelledby="login-title">
+        <div>
+          <span class="overline">Login</span>
+          <h2 id="login-title">メールアドレスでログイン</h2>
+          <p class="muted">初期IDはメールアドレスです。パスワード設定後、過去に作成した香りの記録へ進める想定です。</p>
+        </div>
+        <form class="login-form" id="customer-login-form">
+          <label class="field">
+            会員ID または メールアドレス
+            <input type="email" name="email" autocomplete="email" placeholder="sample@example.com" required>
+          </label>
+          <label class="field">
+            パスワード
+            <input type="password" name="password" autocomplete="current-password" placeholder="パスワード" required>
+          </label>
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit">ログイン</button>
+            <button class="btn btn-secondary" type="button" id="setup-button">初回ログイン・パスワード設定</button>
+          </div>
+          <p class="status-note" id="login-status" aria-live="polite" hidden></p>
+        </form>
+        <ul class="portal-points" aria-label="表示内容">
+          <li>作成した香りの最終軸グラフを表示します</li>
+          <li>原料割合やレシピ詳細は表示しません</li>
+          <li>再来店時に前回の方向性を確認できるページとして使います</li>
+        </ul>
+      </section>
+
+      <section class="portal-feature-grid" aria-label="会員ページの機能">
+        <article class="portal-feature-card">
+          <span class="feature-icon">01</span>
+          <h2 id="history-title">制作履歴を見る</h2>
+        </article>
+        <article class="portal-feature-card">
+          <span class="feature-icon">02</span>
+          <h2>過去の香水を再予約</h2>
+        </article>
+        <article class="portal-feature-card">
+          <span class="feature-icon">03</span>
+          <h2>再度アンケートから予約</h2>
+        </article>
+        <article class="portal-feature-card">
+          <span class="feature-icon">04</span>
+          <h2 id="graph-title">前回の香りと比較</h2>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner site-container">
+      <p>Fragrance Workshop Customer Page</p>
+      <p>最終的な香りは店舗でスタッフと一緒に仕上げます。</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/public-data.js"></script>
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var entranceLabel = document.getElementById("entrance-label");
+      if (params.get("mode") === "return" && entranceLabel) {
+        entranceLabel.textContent = "Return Visit";
+      }
+
+      var form = document.getElementById("customer-login-form");
+      var setupButton = document.getElementById("setup-button");
+      var status = document.getElementById("login-status");
+
+      function showStatus(message) {
+        if (!status) return;
+        status.textContent = message;
+        status.hidden = false;
+      }
+
+      function formatAuthError(error, fallback) {
+        var message = String(error?.message || "").toLowerCase();
+        if (message.includes("invalid login credentials")) {
+          return "メールアドレスまたはパスワードが正しくありません。入力内容をご確認ください。";
+        }
+        if (message.includes("email not confirmed")) {
+          return "メールアドレスの確認が完了していません。確認メールをご確認ください。";
+        }
+        if (message.includes("user already registered") || message.includes("already registered")) {
+          return "このメールアドレスはすでに登録されています。ログインをお試しください。";
+        }
+        return fallback;
+      }
+
+      function readCredentials() {
+        var formData = new FormData(form);
+        return {
+          email: String(formData.get("email") || "").trim(),
+          password: String(formData.get("password") || "")
+        };
+      }
+
+      function setBusy(isBusy) {
+        form?.querySelectorAll("input, button").forEach(function (element) {
+          element.disabled = isBusy;
+        });
+      }
+
+      form?.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        var credentials = readCredentials();
+        if (!window.FragrancePublicData?.signInCustomer) {
+          showStatus("Supabase接続が未設定のため、ログインできません。");
+          return;
+        }
+        setBusy(true);
+        showStatus("ログインしています。");
+        try {
+          var result = await window.FragrancePublicData.signInCustomer(credentials.email, credentials.password);
+          var displayName = result.customer?.display_name || credentials.email;
+          showStatus(displayName + " としてログインしました。会員情報をDBに接続済みです。");
+          window.setTimeout(function () {
+            window.location.href = "index.html";
+          }, 500);
+        } catch (error) {
+          showStatus(formatAuthError(error, "ログインできませんでした。入力内容をご確認のうえ、もう一度お試しください。"));
+        } finally {
+          setBusy(false);
+        }
+      });
+
+      setupButton?.addEventListener("click", async function () {
+        var credentials = readCredentials();
+        if (!credentials.email || !credentials.password) {
+          showStatus("メールアドレスとパスワードを入力してください。");
+          return;
+        }
+        if (!window.FragrancePublicData?.signUpCustomer) {
+          showStatus("Supabase接続が未設定のため、初回設定できません。");
+          return;
+        }
+        setBusy(true);
+        showStatus("会員アカウントを作成しています。");
+        try {
+          var result = await window.FragrancePublicData.signUpCustomer(credentials.email, credentials.password);
+          if (result.needsEmailConfirmation) {
+            showStatus("確認メールを送信しました。メール確認後にログインしてください。");
+            return;
+          }
+          showStatus("会員アカウントを作成し、customersに紐づけました。");
+          window.setTimeout(function () {
+            window.location.href = "index.html";
+          }, 500);
+        } catch (error) {
+          showStatus(formatAuthError(error, "初回パスワード設定ができませんでした。入力内容をご確認のうえ、もう一度お試しください。"));
+        } finally {
+          setBusy(false);
+        }
+      });
+    })();
+  </script>
+</body>
+
+</html>

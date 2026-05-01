@@ -430,3 +430,30 @@
   - 文章と連絡先を分け、電話番号/受付時間を `.contact-lines` として2カラム表示にした。
   - 小さい幅では1カラムに戻るようにした。
   - `shop-phone`, `business-hours`, `qr-request-form`, `submit-request` などのJS参照IDは維持した。
+
+### 2026-05-01 レイアウト再構築
+
+- 対象:
+  - `index.html`
+  - `admin-login.html`
+  - `customer/*.html`
+  - `staff/*.html`
+  - `admin/*.html`
+  - `css/rebuild-ui.css`
+  - `js/rebuild-customer-flow.js`
+  - `js/customer-auth-page.js`
+  - `js/admin-login-page.js`
+- 背景:
+  - 旧ページレイアウトの混在を解消し、`レイアウトimg/` の参照画像を基準にページ単位で作り直す方針となった。
+  - Supabase接続、認証、DB保存に関わる既存JSと `supabase/` は維持対象とした。
+- 実装:
+  - 旧HTMLと旧レイアウトCSSを `archived/layout-rebuild-20260501/` に退避した。
+  - 顧客・スタッフ・管理者ページを共通CSS `css/rebuild-ui.css` ベースに再構築した。
+  - 顧客フロー用に `js/rebuild-customer-flow.js`、会員導線用に `js/customer-auth-page.js`、共通ログイン用に `js/admin-login-page.js` を追加した。
+  - 既存JSが参照する主要ID、name、data属性は維持した。
+- 確認:
+  - `node --check` で追加JSの構文確認を行った。
+  - Edge/Playwrightで20ページをデスクトップ幅・スマホ幅の計40表示確認し、ローカルJSエラーなしを確認した。
+- 残作業:
+  - Supabase実接続でのログイン、保存、予約、QR依頼送信の結合確認。
+  - QR依頼の作成可否判断、通知、メール、期限管理、発送入力、成果集計の実装。
