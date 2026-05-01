@@ -261,3 +261,17 @@
   - フロントが期待する戻り値 `{ id, result_code }` は維持する。
   - `on conflict (result_code)` を `on conflict on constraint questionnaire_results_result_code_key` に変更し、曖昧な列参照を避ける。
   - SQL Editor で適用できる内容をユーザー設定フォルダに追加した。
+
+### questionnaire_result RPC の PL/pgSQL 変数衝突ガード追加
+
+- 対象:
+  - `supabase/schema.sql`
+  - `supabase/migrations/20260501112000_harden_questionnaire_result_rpc_variable_conflict.sql`
+  - `ユーザー設定フォルダ/20260501_questionnaire_result_rpc_variable_conflict_guard.txt`
+- 背景:
+  - 前回SQL適用後もアンケート送信が失敗する報告があった。
+  - `returns table(id uuid, result_code text)` の `result_code` は戻り値変数としても扱われるため、関数内の同名列と衝突する余地が残る。
+- 実装:
+  - `create_questionnaire_result` に `#variable_conflict use_column` を追加した。
+  - 既存の戻り値 `{ id, result_code }` とフロント側の呼び出し契約は変更していない。
+  - 前回SQL適用済みでも重ねて実行できるSQLをユーザー設定フォルダに追加した。

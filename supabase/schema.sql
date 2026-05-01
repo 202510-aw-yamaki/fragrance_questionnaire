@@ -446,6 +446,7 @@ language plpgsql
 security definer
 set search_path = public
 as $$
+#variable_conflict use_column
 declare
   v_result_code text := coalesce(
     nullif(p_payload ->> 'result_code', ''),
