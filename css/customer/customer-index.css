@@ -1,0 +1,586 @@
+body[data-page="customer-portal"] {
+  background: #fff9f1;
+  color: var(--ink);
+}
+
+body[data-page="customer-portal"] .site-header {
+  background: rgba(255, 252, 247, 0.94);
+  border-bottom: 1px solid rgba(202, 142, 52, 0.38);
+}
+
+body[data-page="customer-portal"] .site-header-inner {
+  width: min(100% - 72px, 1540px);
+}
+
+body[data-page="customer-portal"] .brand-logo-mark {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+}
+
+body[data-page="customer-portal"] .brand-logo-mark img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.customer-portal-nav {
+  gap: 0;
+}
+
+.customer-portal-logout {
+  min-height: 42px;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.customer-portal-main {
+  min-height: calc(100vh - 78px);
+  padding: 0 0 26px;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 247, 0.22), rgba(255, 250, 243, 0.92) 46%, rgba(255, 250, 243, 0.98)),
+    url("../../img/costomer/会員ページの背景.png") top center / cover no-repeat;
+}
+
+.customer-portal-main > .status-note,
+.customer-portal-login-link {
+  width: min(100% - 72px, 1540px);
+  margin: 0 auto 14px;
+}
+
+.customer-portal-hero {
+  min-height: 218px;
+  display: flex;
+  align-items: center;
+  padding-top: 34px;
+}
+
+.customer-portal-heading {
+  position: relative;
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  align-items: center;
+  gap: 22px;
+}
+
+.customer-portal-heading::before {
+  content: "";
+  position: absolute;
+  left: 34px;
+  top: 74px;
+  width: 1px;
+  height: 88px;
+  background: linear-gradient(180deg, transparent, rgba(202, 142, 52, 0.78), transparent);
+}
+
+.customer-portal-heading-mark,
+.customer-portal-card-mark {
+  display: inline-block;
+  width: 34px;
+  height: 34px;
+  background:
+    radial-gradient(circle at center, transparent 0 28%, #d6922d 30% 36%, transparent 38%),
+    conic-gradient(from 0deg, transparent 0 8%, #d6922d 8% 12%, transparent 12% 20%, #d6922d 20% 24%, transparent 24% 32%, #d6922d 32% 36%, transparent 36% 44%, #d6922d 44% 48%, transparent 48% 56%, #d6922d 56% 60%, transparent 60% 68%, #d6922d 68% 72%, transparent 72% 80%, #d6922d 80% 84%, transparent 84% 92%, #d6922d 92% 96%, transparent 96%);
+  border-radius: 50%;
+}
+
+.customer-portal-heading h1 {
+  margin: 0 0 14px;
+  font-family: var(--serif);
+  font-size: clamp(44px, 5vw, 66px);
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+
+.customer-portal-greeting,
+.customer-portal-copy {
+  margin: 0;
+  font-family: var(--serif);
+  color: #4c3424;
+}
+
+.customer-portal-greeting {
+  font-size: clamp(24px, 2.5vw, 34px);
+  line-height: 1.45;
+}
+
+.customer-portal-copy {
+  margin-top: 8px;
+  font-size: clamp(16px, 1.3vw, 20px);
+}
+
+.customer-portal-member {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.customer-portal-member span {
+  min-height: 44px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid rgba(232, 208, 180, 0.78);
+  border-radius: 999px;
+  background: rgba(255, 253, 249, 0.72);
+  color: #7a6758;
+  font-size: 13px;
+}
+
+.customer-portal-member strong {
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.customer-portal-dashboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.84fr) minmax(0, 1.2fr);
+  gap: 22px;
+  align-items: stretch;
+}
+
+.customer-portal-card,
+.customer-compare-card {
+  border: 1px solid rgba(232, 208, 180, 0.9);
+  border-radius: 18px;
+  background: rgba(255, 253, 249, 0.84);
+  box-shadow: 0 24px 60px rgba(98, 65, 36, 0.08);
+}
+
+.customer-portal-card {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.customer-portal-card-title {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(202, 142, 52, 0.38);
+}
+
+.customer-portal-card-title h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(24px, 2vw, 32px);
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+.customer-portal-card-title--row {
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+}
+
+.customer-portal-card-title--row > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #7a4b19;
+  font-weight: 700;
+}
+
+.customer-last-fragrance {
+  display: grid;
+  grid-template-columns: minmax(130px, 42%) minmax(0, 1fr);
+  gap: 20px;
+  padding-top: 14px;
+  flex: 1;
+}
+
+.customer-last-fragrance-image {
+  width: 100%;
+  height: clamp(240px, 24vw, 360px);
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.customer-last-fragrance-detail {
+  display: grid;
+  align-content: center;
+  gap: 12px;
+}
+
+.customer-last-fragrance-detail h3 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(28px, 2.8vw, 38px);
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.customer-last-meta {
+  margin: 0;
+  display: grid;
+  gap: 8px;
+  color: #5a4231;
+}
+
+.customer-last-meta div {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 8px;
+}
+
+.customer-last-meta dt,
+.customer-last-meta dd {
+  margin: 0;
+}
+
+.customer-last-fragrance-detail p {
+  margin: 0;
+  line-height: 1.7;
+}
+
+.customer-axis-preview {
+  width: min(220px, 100%);
+  margin: 0 auto;
+}
+
+.customer-axis-preview svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.customer-axis-preview .axis-grid {
+  fill: none;
+  stroke: rgba(202, 142, 52, 0.42);
+  stroke-width: 1.5;
+}
+
+.customer-axis-preview .axis-grid--inner {
+  stroke: rgba(202, 142, 52, 0.24);
+}
+
+.customer-axis-preview .axis-shape {
+  fill: rgba(223, 113, 117, 0.24);
+  stroke: #df7175;
+  stroke-width: 3;
+}
+
+.customer-axis-preview circle {
+  fill: #d6922d;
+}
+
+.customer-portal-primary-action,
+.customer-portal-secondary-action {
+  min-height: 64px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border-radius: 12px;
+  font-family: var(--serif);
+  font-size: clamp(20px, 1.8vw, 26px);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.customer-portal-primary-action {
+  margin-top: 16px;
+  background: linear-gradient(180deg, #ec8588, #d8666b);
+  color: #fff;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.28), 0 12px 22px rgba(216, 102, 107, 0.22);
+}
+
+.customer-portal-secondary-action {
+  margin-top: auto;
+  border: 1px solid #ca8e34;
+  background: rgba(255, 253, 249, 0.86);
+  color: #6f4216;
+}
+
+.customer-portal-card--new p {
+  width: min(100%, 250px);
+  margin: 24px auto 8px;
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.75;
+}
+
+.customer-new-fragrance-image {
+  width: min(100%, 310px);
+  margin: 0 auto 18px;
+  display: block;
+  object-fit: contain;
+}
+
+.customer-history-list {
+  display: grid;
+  gap: 14px;
+  padding-top: 14px;
+}
+
+.customer-history-item {
+  min-height: 126px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: clamp(72px, 6vw, 96px) minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgba(232, 208, 180, 0.82);
+  border-radius: 14px;
+  background: rgba(255, 253, 249, 0.72);
+}
+
+.customer-history-item img {
+  width: clamp(72px, 6vw, 96px);
+  height: clamp(72px, 6vw, 96px);
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.customer-history-item h3 {
+  margin: 0 0 8px;
+  font-family: var(--serif);
+  font-size: 24px;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+.customer-history-item p {
+  margin: 3px 0;
+  color: #5f4c3c;
+  line-height: 1.45;
+}
+
+.customer-history-item > span {
+  min-width: 76px;
+  min-height: 38px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgba(223, 113, 117, 0.38);
+  border-radius: 8px;
+  background: rgba(255, 228, 224, 0.72);
+  color: #7b382f;
+  font-family: var(--serif);
+  font-size: 18px;
+}
+
+.customer-history-item > a {
+  color: #ca8e34;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.customer-history-list .admin-empty {
+  min-height: 390px;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  border: 1px solid rgba(232, 208, 180, 0.82);
+  border-radius: 14px;
+  background: rgba(255, 253, 249, 0.72);
+}
+
+.customer-portal-compare {
+  margin-top: 22px;
+}
+
+.customer-compare-card {
+  min-height: 86px;
+  padding: 16px 34px;
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 22px;
+  color: var(--ink);
+}
+
+.customer-compare-icon {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(202, 142, 52, 0.58);
+  border-radius: 50%;
+  color: #ca8e34;
+  font-size: 24px;
+}
+
+.customer-compare-card strong {
+  font-family: var(--serif);
+  font-size: clamp(22px, 2vw, 30px);
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+
+.customer-compare-card > span:last-child {
+  color: #7a4b19;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@media (max-width: 1240px) {
+  body[data-page="customer-portal"] .site-header-inner,
+  .customer-portal-main > .status-note,
+  .customer-portal-login-link {
+    width: min(100% - 40px, 1100px);
+  }
+
+  .customer-portal-dashboard {
+    gap: 16px;
+  }
+
+  .customer-portal-card {
+    padding: 16px;
+  }
+
+  .customer-portal-card-title h2 {
+    font-size: 24px;
+  }
+
+  .customer-last-fragrance {
+    gap: 14px;
+  }
+
+  .customer-last-fragrance-detail h3 {
+    font-size: 28px;
+  }
+
+  .customer-last-meta {
+    font-size: 14px;
+  }
+
+  .customer-last-meta div {
+    grid-template-columns: 88px minmax(0, 1fr);
+  }
+
+  .customer-last-fragrance-detail p {
+    font-size: 14px;
+  }
+
+  .customer-portal-card--new p {
+    font-size: 17px;
+  }
+
+  .customer-portal-primary-action,
+  .customer-portal-secondary-action {
+    min-height: 56px;
+    font-size: 20px;
+  }
+
+  .customer-history-item {
+    min-height: 106px;
+    grid-template-columns: 60px minmax(0, 1fr) 56px 16px;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .customer-history-item img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .customer-history-item h3 {
+    font-size: 20px;
+  }
+
+  .customer-history-item p {
+    font-size: 13px;
+  }
+
+  .customer-history-item > span {
+    min-width: 54px;
+    min-height: 34px;
+    font-size: 15px;
+  }
+
+  .customer-history-item > a {
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 860px) {
+  body[data-page="customer-portal"] .site-header-inner,
+  .customer-portal-main > .status-note,
+  .customer-portal-login-link {
+    width: min(100% - 28px, 720px);
+  }
+
+  .customer-portal-main {
+    background-position: top right;
+  }
+
+  .customer-portal-hero {
+    min-height: 190px;
+    align-items: flex-end;
+    padding-bottom: 20px;
+  }
+
+  .customer-portal-heading {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .customer-portal-heading::before,
+  .customer-portal-heading-mark {
+    display: none;
+  }
+
+  .customer-portal-member,
+  .customer-portal-dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .customer-last-fragrance {
+    grid-template-columns: 1fr;
+  }
+
+  .customer-last-fragrance-image {
+    height: 320px;
+  }
+
+  .customer-new-fragrance-image {
+    max-height: 280px;
+  }
+
+  .customer-compare-card {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+}
+
+@media (max-width: 560px) {
+  body[data-page="customer-portal"] .brand {
+    font-size: 22px;
+  }
+
+  .customer-portal-logout {
+    padding: 0;
+    font-size: 14px;
+  }
+
+  .customer-portal-card {
+    padding: 16px;
+  }
+
+  .customer-history-item {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+
+  .customer-history-item img {
+    width: 76px;
+    height: 76px;
+  }
+
+  .customer-history-item > span,
+  .customer-history-item > a {
+    justify-self: start;
+  }
+}

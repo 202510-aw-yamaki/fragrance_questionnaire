@@ -5,40 +5,125 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>会員トップ | Fragrance Workshop</title>
   <link rel="stylesheet" href="../css/rebuild-ui.css">
+  <link rel="stylesheet" href="../css/customer/customer-index.css">
 </head>
 <body data-page="customer-portal">
   <header class="site-header">
     <div class="site-header-inner site-container">
-      <a class="brand" href="../index.html"><span class="brand-mark">✦</span><span>Fragrance Workshop</span></a>
-      <nav class="main-nav is-static"><a href="questionnaire.html">新しいアンケート</a><a href="reservation.html">予約</a><button class="admin-btn secondary" id="logout-button" type="button">ログアウト</button></nav>
+      <a class="brand" href="../index.html"><span class="brand-logo-mark"><img src="../img/costomer/吟ロゴ.png" alt=""></span><span>Fragrance Workshop</span></a>
+      <nav class="main-nav is-static customer-portal-nav"><button class="customer-portal-logout" id="logout-button" type="button" aria-label="ログアウト"><span aria-hidden="true">↪</span>ログアウト</button></nav>
     </div>
   </header>
-  <main class="admin-main">
-    <section class="admin-page-title">
-      <div>
-        <span class="eyebrow">Member Portal</span>
-        <h1><span id="member-name-inline">会員</span>ページ</h1>
+  <main class="customer-portal-main">
+    <section class="customer-portal-hero site-container">
+      <div class="customer-portal-heading">
+        <span class="customer-portal-heading-mark" aria-hidden="true"></span>
+        <div>
+          <h1>マイページ</h1>
+          <p class="customer-portal-greeting"><span id="member-name-inline">会員</span>さん、こんにちは</p>
+          <p class="customer-portal-copy">これまでの香りや次回の予約を確認できます。</p>
+        </div>
       </div>
-      <a class="btn primary" href="questionnaire.html">アンケートへ</a>
     </section>
     <p class="status-note" id="portal-status" hidden></p>
-    <a class="btn secondary" id="login-link" href="customer-login.html" hidden>ログインへ</a>
-    <section class="grid-3">
-      <article class="card"><p class="admin-note">お名前</p><strong id="member-name">-</strong></article>
-      <article class="card"><p class="admin-note">メール</p><strong id="member-email">-</strong></article>
-      <article class="card"><p class="admin-note">会員番号</p><strong id="member-code">-</strong></article>
+    <a class="btn secondary customer-portal-login-link" id="login-link" href="customer-login.html" hidden>ログインへ</a>
+    <section class="customer-portal-member site-container" aria-label="会員情報">
+      <span>お名前 <strong id="member-name">-</strong></span>
+      <span>メール <strong id="member-email">-</strong></span>
+      <span>会員番号 <strong id="member-code">-</strong></span>
     </section>
-    <section class="section">
-      <div class="grid-2">
-        <article>
-          <h2 class="section-title">制作履歴</h2>
-          <div class="record-list" id="product-list"></div>
-        </article>
-        <article>
-          <h2 class="section-title">予約履歴</h2>
-          <div class="record-list" id="reservation-list"></div>
-        </article>
-      </div>
+    <section class="customer-portal-dashboard site-container" aria-label="会員ページメニュー">
+      <article class="customer-portal-card customer-portal-card--last">
+        <div class="customer-portal-card-title">
+          <span class="customer-portal-card-mark" aria-hidden="true"></span>
+          <h2>前回作成した香水</h2>
+        </div>
+        <div class="customer-last-fragrance">
+          <img class="customer-last-fragrance-image" src="../img/costomer/台の上の瓶.png" alt="">
+          <div class="customer-last-fragrance-detail">
+            <h3 id="latest-product-name">月夜の余韻</h3>
+            <dl class="customer-last-meta">
+              <div><dt>来店日</dt><dd id="latest-product-date">2025.03.12</dd></div>
+              <div><dt>担当スタッフ</dt><dd id="latest-product-staff">佐藤</dd></div>
+            </dl>
+            <p id="latest-product-note">やさしく落ち着いた、ナイトフローラルの香り。</p>
+            <div class="customer-axis-preview" aria-label="香り5軸">
+              <svg viewBox="0 0 180 160" role="img" aria-labelledby="axis-preview-title">
+                <title id="axis-preview-title">香り5軸</title>
+                <polygon class="axis-grid" points="90,14 160,63 134,145 46,145 20,63"></polygon>
+                <polygon class="axis-grid axis-grid--inner" points="90,42 132,72 116,121 64,121 48,72"></polygon>
+                <polygon class="axis-shape" points="90,62 126,82 106,112 72,116 56,84"></polygon>
+                <circle cx="90" cy="62" r="3"></circle>
+                <circle cx="126" cy="82" r="3"></circle>
+                <circle cx="106" cy="112" r="3"></circle>
+                <circle cx="72" cy="116" r="3"></circle>
+                <circle cx="56" cy="84" r="3"></circle>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <a class="customer-portal-primary-action" href="reservation.html"><span aria-hidden="true">▣</span>もう一度この香りを予約する</a>
+      </article>
+
+      <article class="customer-portal-card customer-portal-card--new">
+        <div class="customer-portal-card-title">
+          <span class="customer-portal-card-mark" aria-hidden="true"></span>
+          <h2>新しく香りを作る</h2>
+        </div>
+        <p>今の気分に合わせて、もう一度アンケートから予約できます。</p>
+        <img class="customer-new-fragrance-image" src="../img/costomer/アンケートと小瓶.png" alt="">
+        <a class="customer-portal-secondary-action" href="questionnaire.html">アンケートに進む<span aria-hidden="true">›</span></a>
+      </article>
+
+      <article class="customer-portal-card customer-portal-card--history">
+        <div class="customer-portal-card-title customer-portal-card-title--row">
+          <span class="customer-portal-card-mark" aria-hidden="true"></span>
+          <h2>制作履歴</h2>
+          <a href="#product-list">すべて見る<span aria-hidden="true">›</span></a>
+        </div>
+        <div class="customer-history-list record-list" id="product-list">
+          <article class="customer-history-item">
+            <img src="../img/costomer/瓶単体.png" alt="">
+            <div>
+              <h3>月夜の余韻</h3>
+              <p>来店日　2025.03.12</p>
+              <p>スタッフ　佐藤</p>
+            </div>
+            <span>完成</span>
+            <a href="reservation.html" aria-label="月夜の余韻を予約する">›</a>
+          </article>
+          <article class="customer-history-item">
+            <img src="../img/costomer/瓶単体.png" alt="">
+            <div>
+              <h3>白花の庭</h3>
+              <p>来店日　2024.11.08</p>
+              <p>スタッフ　中村</p>
+            </div>
+            <span>完成</span>
+            <a href="reservation.html" aria-label="白花の庭を予約する">›</a>
+          </article>
+          <article class="customer-history-item">
+            <img src="../img/costomer/瓶単体.png" alt="">
+            <div>
+              <h3>陽だまりの雫</h3>
+              <p>来店日　2024.06.21</p>
+              <p>スタッフ　高橋</p>
+            </div>
+            <span>完成</span>
+            <a href="reservation.html" aria-label="陽だまりの雫を予約する">›</a>
+          </article>
+        </div>
+      </article>
+    </section>
+    <section class="customer-portal-compare site-container">
+      <a class="customer-compare-card" href="fragrance-graph.html">
+        <span class="customer-compare-icon" aria-hidden="true">↗</span>
+        <strong>前回の香りと今回のアンケート結果を比較できます</strong>
+        <span>比較ページを開く　›</span>
+      </a>
+    </section>
+    <section class="customer-portal-hidden-records" hidden>
+      <div class="record-list" id="reservation-list"></div>
     </section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

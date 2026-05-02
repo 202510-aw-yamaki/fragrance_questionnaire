@@ -116,10 +116,78 @@
     setupButton?.addEventListener("click", () => submit("setup"));
   }
 
+  function formatPortalDate(value) {
+    if (!value) return "-";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return String(value).slice(0, 10).replaceAll("-", ".");
+    return [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, "0"),
+      String(date.getDate()).padStart(2, "0")
+    ].join(".");
+  }
+
+  function getPortalProductName(row) {
+    return row?.product_name || row?.summary_headline || row?.reservation_code || "香り";
+  }
+
+  function getPortalProductDate(row) {
+    return formatPortalDate(row?.visit_date || row?.completed_at || row?.created_at || row?.updated_at || row?.slot_label);
+  }
+
+  function getPortalStaffName(row) {
+    return row?.staff_name || row?.created_by_staff_name || row?.instructor_name || row?.staff || "-";
+  }
+
+  function getPortalProductNote(row) {
+    return row?.product_note || row?.summary_body || row?.profile_label || row?.profile_key || "その日の気分に合わせて調香した香りです。";
+  }
+
+  function getPortalStatusLabel(row) {
+    const status = String(row?.status || "").toLowerCase();
+    if (["complete", "completed", "done", "finished"].includes(status)) return "完成";
+    if (["cancelled", "canceled"].includes(status)) return "取消";
+    if (["reserved", "booked"].includes(status)) return "予約";
+    return row?.status || "完成";
+  }
+
+  function renderLatestProduct(row) {
+    if (!$("latest-product-name")) return;
+    if (!row) {
+      $("latest-product-name").textContent = "まだ制作履歴はありません";
+      $("latest-product-date").textContent = "-";
+      $("latest-product-staff").textContent = "-";
+      $("latest-product-note").textContent = "新しく香りを作るカードからアンケートへ進めます。";
+      return;
+    }
+    $("latest-product-name").textContent = getPortalProductName(row);
+    $("latest-product-date").textContent = getPortalProductDate(row);
+    $("latest-product-staff").textContent = getPortalStaffName(row);
+    $("latest-product-note").textContent = getPortalProductNote(row);
+  }
+
   function renderRecordList(mount, rows, emptyText, type) {
     if (!mount) return;
     if (!rows?.length) {
       mount.innerHTML = `<p class="admin-empty">${escapeHtml(emptyText)}</p>`;
+      return;
+    }
+    if (type === "product") {
+      mount.innerHTML = rows.slice(0, 3).map((row) => {
+        const name = getPortalProductName(row);
+        return `
+          <article class="customer-history-item">
+            <img src="../img/costomer/瓶単体.png" alt="">
+            <div>
+              <h3>${escapeHtml(name)}</h3>
+              <p>来店日　${escapeHtml(getPortalProductDate(row))}</p>
+              <p>スタッフ　${escapeHtml(getPortalStaffName(row))}</p>
+            </div>
+            <span>${escapeHtml(getPortalStatusLabel(row))}</span>
+            <a href="../customer/reservation.html" aria-label="${escapeHtml(name)}を予約する">›</a>
+          </article>
+        `;
+      }).join("");
       return;
     }
     mount.innerHTML = rows.map((row) => `
@@ -157,6 +225,7 @@
       if ($("member-name-inline")) $("member-name-inline").textContent = customer.display_name || "会員";
       if ($("member-email")) $("member-email").textContent = customer.email || "-";
       if ($("member-code")) $("member-code").textContent = customer.customer_code || "-";
+      renderLatestProduct((data.products || [])[0] || null);
       renderRecordList($("product-list"), data.products || [], "制作履歴はまだありません。", "product");
       renderRecordList($("reservation-list"), data.reservations || [], "予約履歴はまだありません。", "reservation");
       if (status) status.hidden = true;
