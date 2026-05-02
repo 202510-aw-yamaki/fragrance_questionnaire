@@ -84,7 +84,7 @@ body[data-page="customer-login"] .site-header {
 .customer-login-card .login-form {
   position: relative;
   z-index: 1;
-  gap: 18px;
+  gap: 10px;
 }
 
 .customer-login-card .login-form label {
@@ -100,7 +100,7 @@ body[data-page="customer-login"] .site-header {
 .customer-login-save {
   min-height: 22px;
   display: inline-flex;
-  justify-self: flex-start;
+  justify-self: flex-end;
   grid-template-columns: none;
   grid-auto-flow: column;
   align-items: center;
