@@ -1913,6 +1913,11 @@ details.card .admin-note {
   .staff-detail-header-inner {
     min-height: 68px;
   }
+  .hero-media{
+   position: relative;
+   height 280px;
+   order: -1;
+  }
 
   .brand,
   .admin-brand,
