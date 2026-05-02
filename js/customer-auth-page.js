@@ -228,15 +228,37 @@
   }
 
   function renderPortalAxisPreview(axes) {
+    const mount = $("latest-axis-preview");
+    if (!mount) return;
+    if (!axes) {
+      mount.hidden = true;
+      mount.innerHTML = "";
+      return;
+    }
+    mount.hidden = false;
+    if (!$("latest-axis-shape")) {
+      mount.innerHTML = `
+        <svg viewBox="0 0 180 160" role="img" aria-labelledby="axis-preview-title">
+          <title id="axis-preview-title">香り5軸</title>
+          <polygon class="axis-grid" points="90,14 160,63 134,145 46,145 20,63"></polygon>
+          <polygon class="axis-grid axis-grid--inner" points="90,42 132,72 116,121 64,121 48,72"></polygon>
+          <polygon class="axis-shape" id="latest-axis-shape"></polygon>
+          <circle data-axis="floral" r="3"></circle>
+          <circle data-axis="citrus" r="3"></circle>
+          <circle data-axis="woody" r="3"></circle>
+          <circle data-axis="spicy" r="3"></circle>
+          <circle data-axis="musk" r="3"></circle>
+        </svg>
+      `;
+    }
     const shape = $("latest-axis-shape");
     if (!shape) return;
-    const values = axes || { floral: 32, citrus: 32, woody: 32, spicy: 32, musk: 32 };
-    const points = PORTAL_AXIS_KEYS.map((key) => getPortalAxisPoint(key, values[key]));
+    const points = PORTAL_AXIS_KEYS.map((key) => getPortalAxisPoint(key, axes[key]));
     shape.setAttribute("points", points.map(([x, y]) => `${x},${y}`).join(" "));
     document.querySelectorAll(".customer-axis-preview [data-axis]").forEach((circle) => {
       const axis = circle.dataset.axis;
       if (!PORTAL_AXIS_KEYS.includes(axis)) return;
-      const [x, y] = getPortalAxisPoint(axis, values[axis]);
+      const [x, y] = getPortalAxisPoint(axis, axes[axis]);
       circle.setAttribute("cx", String(x));
       circle.setAttribute("cy", String(y));
     });

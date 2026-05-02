@@ -17,7 +17,7 @@
   <main class="customer-portal-main">
     <section class="customer-portal-hero site-container">
       <div class="customer-portal-heading">
-        <span class="customer-portal-heading-mark" aria-hidden="true"></span>
+        <span class="customer-portal-heading-mark" aria-hidden="true"><img src="../img/costomer/会員ページの記号.png" alt=""></span>
         <h1>マイページ</h1>
         <div class="customer-portal-heading-copy">
           <p class="customer-portal-greeting"><span id="member-name-inline">会員</span>さん、こんにちは</p>
@@ -66,19 +66,7 @@
                 <dd id="latest-product-summary">制作履歴が入ると、香りの傾向が表示されます。</dd>
               </div>
             </dl>
-            <div class="customer-axis-preview" aria-label="香り5軸">
-              <svg viewBox="0 0 180 160" role="img" aria-labelledby="axis-preview-title">
-                <title id="axis-preview-title">香り5軸</title>
-                <polygon class="axis-grid" points="90,14 160,63 134,145 46,145 20,63"></polygon>
-                <polygon class="axis-grid axis-grid--inner" points="90,42 132,72 116,121 64,121 48,72"></polygon>
-                <polygon class="axis-shape" id="latest-axis-shape" points="90,66 112,82 104,108 76,108 68,82"></polygon>
-                <circle data-axis="floral" cx="90" cy="66" r="3"></circle>
-                <circle data-axis="citrus" cx="112" cy="82" r="3"></circle>
-                <circle data-axis="woody" cx="104" cy="108" r="3"></circle>
-                <circle data-axis="spicy" cx="76" cy="108" r="3"></circle>
-                <circle data-axis="musk" cx="68" cy="82" r="3"></circle>
-              </svg>
-            </div>
+            <div class="customer-axis-preview" id="latest-axis-preview" aria-label="香り5軸" hidden></div>
           </div>
         </div>
         <a class="customer-portal-primary-action" href="reservation.html"><span aria-hidden="true">▣</span>もう一度この香りを予約する</a>
@@ -100,38 +88,7 @@
           <h2>制作履歴</h2>
           <a href="#product-list">すべて見る<span aria-hidden="true">›</span></a>
         </div>
-        <div class="customer-history-list record-list" id="product-list">
-          <article class="customer-history-item">
-            <img src="../img/costomer/瓶単体.png" alt="">
-            <div>
-              <h3>月夜の余韻</h3>
-              <p>来店日　2025.03.12</p>
-              <p>スタッフ　佐藤</p>
-            </div>
-            <span>完成</span>
-            <a href="reservation.html" aria-label="月夜の余韻を予約する">›</a>
-          </article>
-          <article class="customer-history-item">
-            <img src="../img/costomer/瓶単体.png" alt="">
-            <div>
-              <h3>白花の庭</h3>
-              <p>来店日　2024.11.08</p>
-              <p>スタッフ　中村</p>
-            </div>
-            <span>完成</span>
-            <a href="reservation.html" aria-label="白花の庭を予約する">›</a>
-          </article>
-          <article class="customer-history-item">
-            <img src="../img/costomer/瓶単体.png" alt="">
-            <div>
-              <h3>陽だまりの雫</h3>
-              <p>来店日　2024.06.21</p>
-              <p>スタッフ　高橋</p>
-            </div>
-            <span>完成</span>
-            <a href="reservation.html" aria-label="陽だまりの雫を予約する">›</a>
-          </article>
-        </div>
+        <div class="customer-history-list record-list" id="product-list"></div>
       </article>
     </section>
     <section class="customer-portal-compare site-container">

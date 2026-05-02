@@ -83,13 +83,22 @@ body[data-page="customer-portal"] .brand-logo-mark img {
 }
 
 .customer-portal-heading-mark {
-  display: inline-block;
   width: 34px;
   height: 34px;
-  background:
-    radial-gradient(circle at center, transparent 0 28%, #d6922d 30% 36%, transparent 38%),
-    conic-gradient(from 0deg, transparent 0 8%, #d6922d 8% 12%, transparent 12% 20%, #d6922d 20% 24%, transparent 24% 32%, #d6922d 32% 36%, transparent 36% 44%, #d6922d 44% 48%, transparent 48% 56%, #d6922d 56% 60%, transparent 60% 68%, #d6922d 68% 72%, transparent 72% 80%, #d6922d 80% 84%, transparent 84% 92%, #d6922d 92% 96%, transparent 96%);
-  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.customer-portal-heading-mark img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  filter: none;
+  opacity: 1;
 }
 
 .customer-portal-heading h1 {
@@ -155,7 +164,7 @@ body[data-page="customer-portal"] .brand-logo-mark img {
 .customer-portal-card-title h2 {
   margin: 0;
   font-family: var(--serif);
-  font-size: clamp(24px, 2vw, 32px);
+  font-size: 18px;
   line-height: 1.25;
   letter-spacing: 0;
 }
@@ -177,6 +186,9 @@ body[data-page="customer-portal"] .brand-logo-mark img {
   width: 36px;
   height: 36px;
   place-items: center;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 .customer-portal-card-mark img {
@@ -184,6 +196,8 @@ body[data-page="customer-portal"] .brand-logo-mark img {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  filter: none;
+  opacity: 1;
 }
 
 .customer-last-fragrance {
@@ -210,7 +224,7 @@ body[data-page="customer-portal"] .brand-logo-mark img {
 .customer-last-fragrance-detail h3 {
   margin: 0;
   font-family: var(--serif);
-  font-size: clamp(28px, 2.8vw, 38px);
+  font-size: 18px;
   line-height: 1.2;
   letter-spacing: 0;
 }
@@ -224,6 +238,8 @@ body[data-page="customer-portal"] .brand-logo-mark img {
 
 .customer-last-meta-row {
   display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
   gap: 4px;
   padding-bottom: 9px;
   border-bottom: 1px solid rgba(202, 142, 52, 0.18);
@@ -264,7 +280,6 @@ body[data-page="customer-portal"] .brand-logo-mark img {
 }
 
 .customer-last-meta dd {
-  padding-left: 32px;
   font-weight: 700;
 }
 
@@ -423,7 +438,7 @@ body[data-page="customer-portal"] .brand-logo-mark img {
   gap: 22px;
   color: var(--ink);
   background:
-    linear-gradient(90deg, rgba(255, 253, 249, 0.96), rgba(255, 253, 249, 0.7)),
+    linear-gradient(90deg, rgba(255, 253, 249, 0.76), rgba(255, 253, 249, 0.24)),
     url("../../img/costomer/会員ページのbottom背景.png") center / cover no-repeat;
 }
 
@@ -470,7 +485,7 @@ body[data-page="customer-portal"] .brand-logo-mark img {
   }
 
   .customer-portal-card-title h2 {
-    font-size: 24px;
+    font-size: 18px;
   }
 
   .customer-last-fragrance {
@@ -478,7 +493,7 @@ body[data-page="customer-portal"] .brand-logo-mark img {
   }
 
   .customer-last-fragrance-detail h3 {
-    font-size: 28px;
+    font-size: 18px;
   }
 
   .customer-last-meta {
