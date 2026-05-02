@@ -270,13 +270,13 @@ body[data-page="questionnaire"] .option-label {
 
 body[data-page="questionnaire"] .option-button[style] .option-label {
   width: 100%;
-  border-radius: 20px;
+  border-radius: 10px;
   background: rgb(255 255 255 / 50%);
   font-size: clamp(16px, 1.8vw, 24px);
   line-height: 1.45;
   text-align: center;
   font-weight: bold;
-  pdding: 10px;
+  padding: 10px;
 }
 
 body[data-page="questionnaire"] .option-check {
