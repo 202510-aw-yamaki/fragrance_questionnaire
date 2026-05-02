@@ -24,6 +24,26 @@
   async function initLogin() {
     const form = $("customer-login-form");
     const setupButton = $("setup-button");
+    const toggle = document.querySelector(".menu-toggle");
+    const menu = $("customer-login-menu");
+    toggle?.addEventListener("click", () => {
+      const isOpen = menu?.classList.toggle("is-open");
+      toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    });
+    menu?.querySelectorAll('a[href^="#"]').forEach((link) => {
+      link.addEventListener("click", (event) => {
+        const href = link.getAttribute("href");
+        const target = href ? document.querySelector(href) : null;
+        if (!target) return;
+        event.preventDefault();
+        const headerHeight = document.querySelector(".site-header")?.getBoundingClientRect().height || 0;
+        const top = target.getBoundingClientRect().top + window.scrollY - headerHeight;
+        window.scrollTo({ top, behavior: "smooth" });
+        window.history.pushState(null, "", href);
+        menu.classList.remove("is-open");
+        toggle?.setAttribute("aria-expanded", "false");
+      });
+    });
     if (!form) return;
     if (!window.isSupabaseConfigured?.()) {
       setStatus("会員機能の設定が未完了です。", "error");
