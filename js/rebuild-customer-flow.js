@@ -271,10 +271,42 @@
   async function initQuestionnaireStep1() {
     const config = await cacheActiveConfig();
     let current = 0;
-    const answers = readJson(STEP1_ANSWERS_KEY, {});
+    const answers = {};
+    let keepStep1Result = false;
+    let confirmedDiscard = false;
     const optionList = $("option-list");
     const nextBtn = $("header-next-btn");
     const prevBtn = $("header-prev-btn");
+    const discardMessage = "回答途中です。このページを離れると、選択中の回答は保存されません。離れてもよろしいですか？";
+
+    window.sessionStorage.removeItem(STEP1_ANSWERS_KEY);
+
+    function hasDraftAnswers() {
+      return Object.keys(answers).length > 0;
+    }
+
+    function clearStep1Draft() {
+      window.sessionStorage.removeItem(STEP1_ANSWERS_KEY);
+      const state = readJson(SCORE_STATE_KEY, null);
+      if (state && !state.questionnaireCompletedAt && state.step1AnswerKeys && !state.step2AnswerKeys) {
+        window.sessionStorage.removeItem(SCORE_STATE_KEY);
+      }
+    }
+
+    function confirmDiscardDraft() {
+      if (!hasDraftAnswers() || keepStep1Result) return true;
+      const confirmed = window.confirm(discardMessage);
+      if (confirmed) {
+        confirmedDiscard = true;
+        clearStep1Draft();
+      }
+      return confirmed;
+    }
+
+    function navigateAfterDiscardCheck(url) {
+      if (!confirmDiscardDraft()) return;
+      window.location.href = url;
+    }
 
     function render() {
       const question = getStep1Question(STEP1_QUESTIONS[current], config);
@@ -296,7 +328,6 @@
         optionList.querySelectorAll("[data-answer-key]").forEach((button) => {
           button.addEventListener("click", () => {
             answers[question.id] = button.dataset.answerKey;
-            writeJson(STEP1_ANSWERS_KEY, answers);
             render();
           });
         });
@@ -315,7 +346,6 @@
       const question = getStep1Question(STEP1_QUESTIONS[current], config);
       if (!answers[question.id]) {
         answers[question.id] = question.options[0][0];
-        writeJson(STEP1_ANSWERS_KEY, answers);
       }
       if (current < STEP1_QUESTIONS.length - 1) {
         current += 1;
@@ -324,17 +354,42 @@
       }
       const axesAfterStep1 = calculateStep1(config, answers);
       const branchKey = getBranchFromAxes(axesAfterStep1);
+      keepStep1Result = true;
+      window.sessionStorage.removeItem(STEP1_ANSWERS_KEY);
       writeJson(SCORE_STATE_KEY, {
-        step1Answers: answers,
-        step1AnswerKeys: answers,
+        step1Answers: { ...answers },
+        step1AnswerKeys: { ...answers },
         axesAfterStep1,
         branchKey,
         startedAt: new Date().toISOString()
       });
       window.location.href = "questionnaire_step2.html";
     });
-    $("return-top-btn")?.addEventListener("click", () => { window.location.href = "../index.html"; });
-    $("return-top-btn-mobile")?.addEventListener("click", () => { window.location.href = "../index.html"; });
+    $("return-top-btn")?.addEventListener("click", () => { navigateAfterDiscardCheck("../index.html"); });
+    $("return-top-btn-mobile")?.addEventListener("click", () => { navigateAfterDiscardCheck("../index.html"); });
+    document.querySelectorAll("a[href]").forEach((link) => {
+      link.addEventListener("click", (event) => {
+        const href = link.getAttribute("href");
+        if (!href || href.startsWith("#") || link.target === "_blank") return;
+        if (!hasDraftAnswers() || keepStep1Result) return;
+        event.preventDefault();
+        navigateAfterDiscardCheck(link.href);
+      });
+    });
+    window.addEventListener("beforeunload", (event) => {
+      if (!hasDraftAnswers() || keepStep1Result || confirmedDiscard) return;
+      event.preventDefault();
+      event.returnValue = "";
+    });
+    window.addEventListener("pagehide", () => {
+      if (hasDraftAnswers() && !keepStep1Result) clearStep1Draft();
+    });
+    window.addEventListener("pageshow", (event) => {
+      if (!event.persisted || keepStep1Result) return;
+      Object.keys(answers).forEach((key) => { delete answers[key]; });
+      current = 0;
+      render();
+    });
     render();
   }
 
