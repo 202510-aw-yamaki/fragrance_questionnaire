@@ -67,9 +67,9 @@ body[data-page="customer-portal"] .brand-logo-mark img {
 .customer-portal-heading {
   position: relative;
   display: grid;
-  grid-template-columns: 72px minmax(0, 1fr);
+  grid-template-columns: 72px auto minmax(0, 1fr);
   align-items: center;
-  gap: 22px;
+  gap: 22px 28px;
 }
 
 .customer-portal-heading::before {
@@ -82,8 +82,7 @@ body[data-page="customer-portal"] .brand-logo-mark img {
   background: linear-gradient(180deg, transparent, rgba(202, 142, 52, 0.78), transparent);
 }
 
-.customer-portal-heading-mark,
-.customer-portal-card-mark {
+.customer-portal-heading-mark {
   display: inline-block;
   width: 34px;
   height: 34px;
@@ -94,11 +93,17 @@ body[data-page="customer-portal"] .brand-logo-mark img {
 }
 
 .customer-portal-heading h1 {
-  margin: 0 0 14px;
+  margin: 0;
   font-family: var(--serif);
   font-size: clamp(44px, 5vw, 66px);
   line-height: 1.15;
   letter-spacing: 0;
+}
+
+.customer-portal-heading-copy {
+  display: grid;
+  gap: 8px;
+  align-content: center;
 }
 
 .customer-portal-greeting,
@@ -114,39 +119,12 @@ body[data-page="customer-portal"] .brand-logo-mark img {
 }
 
 .customer-portal-copy {
-  margin-top: 8px;
   font-size: clamp(16px, 1.3vw, 20px);
-}
-
-.customer-portal-member {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-bottom: 18px;
-}
-
-.customer-portal-member span {
-  min-height: 44px;
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  border: 1px solid rgba(232, 208, 180, 0.78);
-  border-radius: 999px;
-  background: rgba(255, 253, 249, 0.72);
-  color: #7a6758;
-  font-size: 13px;
-}
-
-.customer-portal-member strong {
-  color: var(--ink);
-  overflow-wrap: anywhere;
 }
 
 .customer-portal-dashboard {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.84fr) minmax(0, 1.2fr);
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
   gap: 22px;
   align-items: stretch;
 }
@@ -194,6 +172,20 @@ body[data-page="customer-portal"] .brand-logo-mark img {
   font-weight: 700;
 }
 
+.customer-portal-card-mark {
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+}
+
+.customer-portal-card-mark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .customer-last-fragrance {
   display: grid;
   grid-template-columns: minmax(130px, 42%) minmax(0, 1fr);
@@ -226,14 +218,15 @@ body[data-page="customer-portal"] .brand-logo-mark img {
 .customer-last-meta {
   margin: 0;
   display: grid;
-  gap: 8px;
+  gap: 10px;
   color: #5a4231;
 }
 
-.customer-last-meta div {
+.customer-last-meta-row {
   display: grid;
-  grid-template-columns: 92px minmax(0, 1fr);
-  gap: 8px;
+  gap: 4px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid rgba(202, 142, 52, 0.18);
 }
 
 .customer-last-meta dt,
@@ -241,9 +234,38 @@ body[data-page="customer-portal"] .brand-logo-mark img {
   margin: 0;
 }
 
-.customer-last-fragrance-detail p {
-  margin: 0;
-  line-height: 1.7;
+.customer-last-meta dt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #a47643;
+  font-weight: 700;
+}
+
+.customer-last-meta-icon {
+  width: 24px;
+  height: 24px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgba(202, 142, 52, 0.5);
+  border-radius: 50%;
+  background: rgba(255, 247, 235, 0.78);
+}
+
+.customer-last-meta-icon svg {
+  width: 15px;
+  height: 15px;
+  display: block;
+  fill: none;
+  stroke: #c98b35;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.customer-last-meta dd {
+  padding-left: 32px;
+  font-weight: 700;
 }
 
 .customer-axis-preview {
@@ -400,17 +422,23 @@ body[data-page="customer-portal"] .brand-logo-mark img {
   align-items: center;
   gap: 22px;
   color: var(--ink);
+  background:
+    linear-gradient(90deg, rgba(255, 253, 249, 0.96), rgba(255, 253, 249, 0.7)),
+    url("../../img/costomer/会員ページのbottom背景.png") center / cover no-repeat;
 }
 
 .customer-compare-icon {
-  width: 58px;
-  height: 58px;
+  width: 64px;
+  height: 64px;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(202, 142, 52, 0.58);
-  border-radius: 50%;
-  color: #ca8e34;
-  font-size: 24px;
+}
+
+.customer-compare-icon img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
 }
 
 .customer-compare-card strong {
@@ -454,14 +482,6 @@ body[data-page="customer-portal"] .brand-logo-mark img {
   }
 
   .customer-last-meta {
-    font-size: 14px;
-  }
-
-  .customer-last-meta div {
-    grid-template-columns: 88px minmax(0, 1fr);
-  }
-
-  .customer-last-fragrance-detail p {
     font-size: 14px;
   }
 
@@ -526,6 +546,8 @@ body[data-page="customer-portal"] .brand-logo-mark img {
   .customer-portal-heading {
     grid-template-columns: 1fr;
     gap: 12px;
+    text-align: center;
+    justify-items: center;
   }
 
   .customer-portal-heading::before,
@@ -533,7 +555,6 @@ body[data-page="customer-portal"] .brand-logo-mark img {
     display: none;
   }
 
-  .customer-portal-member,
   .customer-portal-dashboard {
     grid-template-columns: 1fr;
   }

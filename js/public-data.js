@@ -463,13 +463,24 @@
       }
     }
     try {
-      const { data, error } = await client
-        .from("reservations")
-        .select("id, reservation_code, slot_label, visit_type, guest_count, summary_headline, profile_key, status, created_at, updated_at")
-        .eq("customer_id", customer.id)
-        .order("updated_at", { ascending: false });
-      if (error) throw error;
-      return normalizeCustomerPortalPayload({ reservations: data || [] }, customer);
+      const [reservationResult, productResult] = await Promise.all([
+        client
+          .from("reservations")
+          .select("id, reservation_code, slot_label, visit_type, guest_count, summary_headline, profile_key, status, created_at, updated_at")
+          .eq("customer_id", customer.id)
+          .order("updated_at", { ascending: false }),
+        client
+          .from("fragrance_products")
+          .select("id, product_name, status, reservation_id, questionnaire_result_id, final_axes, created_by_staff_id, created_at, updated_at")
+          .eq("customer_id", customer.id)
+          .order("updated_at", { ascending: false })
+      ]);
+      if (reservationResult.error) throw reservationResult.error;
+      if (productResult.error) throw productResult.error;
+      return normalizeCustomerPortalPayload({
+        reservations: reservationResult.data || [],
+        products: productResult.data || []
+      }, customer);
     } catch (error) {
       console.error("Failed to load customer reservation fallback.", error);
       return normalizeCustomerPortalPayload(null, customer);

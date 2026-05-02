@@ -18,8 +18,8 @@
     <section class="customer-portal-hero site-container">
       <div class="customer-portal-heading">
         <span class="customer-portal-heading-mark" aria-hidden="true"></span>
-        <div>
-          <h1>マイページ</h1>
+        <h1>マイページ</h1>
+        <div class="customer-portal-heading-copy">
           <p class="customer-portal-greeting"><span id="member-name-inline">会員</span>さん、こんにちは</p>
           <p class="customer-portal-copy">これまでの香りや次回の予約を確認できます。</p>
         </div>
@@ -27,37 +27,56 @@
     </section>
     <p class="status-note" id="portal-status" hidden></p>
     <a class="btn secondary customer-portal-login-link" id="login-link" href="customer-login.html" hidden>ログインへ</a>
-    <section class="customer-portal-member site-container" aria-label="会員情報">
-      <span>お名前 <strong id="member-name">-</strong></span>
-      <span>メール <strong id="member-email">-</strong></span>
-      <span>会員番号 <strong id="member-code">-</strong></span>
-    </section>
     <section class="customer-portal-dashboard site-container" aria-label="会員ページメニュー">
       <article class="customer-portal-card customer-portal-card--last">
         <div class="customer-portal-card-title">
-          <span class="customer-portal-card-mark" aria-hidden="true"></span>
+          <span class="customer-portal-card-mark" aria-hidden="true"><img src="../img/costomer/会員ページの記号.png" alt=""></span>
           <h2>前回作成した香水</h2>
         </div>
         <div class="customer-last-fragrance">
           <img class="customer-last-fragrance-image" src="../img/costomer/台の上の瓶.png" alt="">
           <div class="customer-last-fragrance-detail">
-            <h3 id="latest-product-name">月夜の余韻</h3>
+            <h3 id="latest-product-name">未作成</h3>
             <dl class="customer-last-meta">
-              <div><dt>来店日</dt><dd id="latest-product-date">2025.03.12</dd></div>
-              <div><dt>担当スタッフ</dt><dd id="latest-product-staff">佐藤</dd></div>
+              <div class="customer-last-meta-row">
+                <dt>
+                  <span class="customer-last-meta-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false"><path d="M7 3v3M17 3v3M4.5 9h15M6 5h12a1.5 1.5 0 0 1 1.5 1.5v12A1.5 1.5 0 0 1 18 20H6a1.5 1.5 0 0 1-1.5-1.5v-12A1.5 1.5 0 0 1 6 5Z"></path></svg>
+                  </span>
+                  <span>来店日</span>
+                </dt>
+                <dd id="latest-product-date">-</dd>
+              </div>
+              <div class="customer-last-meta-row">
+                <dt>
+                  <span class="customer-last-meta-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4.5 20a7.5 7.5 0 0 1 15 0"></path></svg>
+                  </span>
+                  <span>スタッフ</span>
+                </dt>
+                <dd id="latest-product-staff">-</dd>
+              </div>
+              <div class="customer-last-meta-row">
+                <dt>
+                  <span class="customer-last-meta-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false"><path d="M5 4.5h14v15H5v-15ZM8 8h8M8 12h8M8 16h5"></path></svg>
+                  </span>
+                  <span>説明</span>
+                </dt>
+                <dd id="latest-product-summary">制作履歴が入ると、香りの傾向が表示されます。</dd>
+              </div>
             </dl>
-            <p id="latest-product-note">やさしく落ち着いた、ナイトフローラルの香り。</p>
             <div class="customer-axis-preview" aria-label="香り5軸">
               <svg viewBox="0 0 180 160" role="img" aria-labelledby="axis-preview-title">
                 <title id="axis-preview-title">香り5軸</title>
                 <polygon class="axis-grid" points="90,14 160,63 134,145 46,145 20,63"></polygon>
                 <polygon class="axis-grid axis-grid--inner" points="90,42 132,72 116,121 64,121 48,72"></polygon>
-                <polygon class="axis-shape" points="90,62 126,82 106,112 72,116 56,84"></polygon>
-                <circle cx="90" cy="62" r="3"></circle>
-                <circle cx="126" cy="82" r="3"></circle>
-                <circle cx="106" cy="112" r="3"></circle>
-                <circle cx="72" cy="116" r="3"></circle>
-                <circle cx="56" cy="84" r="3"></circle>
+                <polygon class="axis-shape" id="latest-axis-shape" points="90,66 112,82 104,108 76,108 68,82"></polygon>
+                <circle data-axis="floral" cx="90" cy="66" r="3"></circle>
+                <circle data-axis="citrus" cx="112" cy="82" r="3"></circle>
+                <circle data-axis="woody" cx="104" cy="108" r="3"></circle>
+                <circle data-axis="spicy" cx="76" cy="108" r="3"></circle>
+                <circle data-axis="musk" cx="68" cy="82" r="3"></circle>
               </svg>
             </div>
           </div>
@@ -67,7 +86,7 @@
 
       <article class="customer-portal-card customer-portal-card--new">
         <div class="customer-portal-card-title">
-          <span class="customer-portal-card-mark" aria-hidden="true"></span>
+          <span class="customer-portal-card-mark" aria-hidden="true"><img src="../img/costomer/会員ページの記号.png" alt=""></span>
           <h2>新しく香りを作る</h2>
         </div>
         <p>今の気分に合わせて、もう一度アンケートから予約できます。</p>
@@ -77,7 +96,7 @@
 
       <article class="customer-portal-card customer-portal-card--history">
         <div class="customer-portal-card-title customer-portal-card-title--row">
-          <span class="customer-portal-card-mark" aria-hidden="true"></span>
+          <span class="customer-portal-card-mark" aria-hidden="true"><img src="../img/costomer/会員ページの記号.png" alt=""></span>
           <h2>制作履歴</h2>
           <a href="#product-list">すべて見る<span aria-hidden="true">›</span></a>
         </div>
@@ -117,7 +136,7 @@
     </section>
     <section class="customer-portal-compare site-container">
       <a class="customer-compare-card" href="fragrance-graph.html">
-        <span class="customer-compare-icon" aria-hidden="true">↗</span>
+        <span class="customer-compare-icon" aria-hidden="true"><img src="../img/costomer/会員ページbottomの記号.png" alt=""></span>
         <strong>前回の香りと今回のアンケート結果を比較できます</strong>
         <span>比較ページを開く　›</span>
       </a>

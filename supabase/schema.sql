@@ -684,6 +684,10 @@ begin
         'status', fp.status,
         'reservation_id', fp.reservation_id,
         'questionnaire_result_id', fp.questionnaire_result_id,
+        'final_axes', fp.final_axes,
+        'visit_date', rs.slot_date,
+        'slot_label', coalesce(rs.slot_label, r.slot_label),
+        'staff_name', coalesce(sp.display_name, sp.staff_name, rs.instructor_name),
         'summary_headline', r.summary_headline,
         'profile_key', r.profile_key,
         'created_at', fp.created_at,
@@ -696,6 +700,8 @@ begin
   into v_products
   from public.fragrance_products fp
   left join public.reservations r on r.id = fp.reservation_id
+  left join public.reservation_slots rs on rs.id = r.slot_id
+  left join public.staff_profiles sp on sp.id = fp.created_by_staff_id
   where fp.customer_id = v_customer_id;
 
   return jsonb_build_object(

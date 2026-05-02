@@ -127,20 +127,129 @@
     ].join(".");
   }
 
-  function getPortalProductName(row) {
-    return row?.product_name || row?.summary_headline || row?.reservation_code || "香り";
+  function getPortalProductName(row, fallback = "香り") {
+    return row?.product_name || row?.summary_headline || row?.reservation_code || fallback;
   }
 
   function getPortalProductDate(row) {
-    return formatPortalDate(row?.visit_date || row?.completed_at || row?.created_at || row?.updated_at || row?.slot_label);
+    return formatPortalDate(row?.visit_date || row?.slot_date || row?.reservation?.slot_date || row?.completed_at || row?.created_at || row?.updated_at || row?.slot_label || row?.reservation?.slot_label);
   }
 
   function getPortalStaffName(row) {
-    return row?.staff_name || row?.created_by_staff_name || row?.instructor_name || row?.staff || "-";
+    return row?.staff_name || row?.staff_display_name || row?.created_by_staff_name || row?.instructor_name || row?.staff?.display_name || row?.staff?.staff_name || row?.staff || "-";
   }
 
   function getPortalProductNote(row) {
     return row?.product_note || row?.summary_body || row?.profile_label || row?.profile_key || "その日の気分に合わせて調香した香りです。";
+  }
+
+  const PORTAL_AXIS_KEYS = ["floral", "citrus", "woody", "spicy", "musk"];
+  const PORTAL_AXIS_LABELS = {
+    floral: "フローラル",
+    citrus: "シトラス",
+    woody: "ウッディ",
+    spicy: "スパイシー",
+    musk: "ムスク"
+  };
+  const PORTAL_AXIS_ALIASES = {
+    floral: ["floral", "floral_score", "フローラル"],
+    citrus: ["citrus", "citrus_score", "fresh", "fresh_score", "シトラス", "フレッシュ"],
+    woody: ["woody", "woody_score", "ウッディ"],
+    spicy: ["spicy", "spicy_score", "スパイシー"],
+    musk: ["musk", "musk_score", "sweet", "sweet_score", "ムスク", "スウィート", "スイート"]
+  };
+  const PORTAL_AXIS_MAX_POINTS = {
+    floral: [90, 14],
+    citrus: [160, 63],
+    woody: [134, 145],
+    spicy: [46, 145],
+    musk: [20, 63]
+  };
+  const PORTAL_AXIS_CENTER = [90, 91];
+
+  function parsePortalAxisSource(value) {
+    if (!value) return null;
+    if (typeof value === "string") {
+      try {
+        return JSON.parse(value);
+      } catch (_) {
+        return null;
+      }
+    }
+    return typeof value === "object" ? value : null;
+  }
+
+  function normalizePortalAxes(source) {
+    const data = parsePortalAxisSource(source);
+    if (!data) return null;
+    const axes = {};
+    let hasValue = false;
+    PORTAL_AXIS_KEYS.forEach((key) => {
+      const aliases = PORTAL_AXIS_ALIASES[key];
+      const foundKey = aliases.find((alias) => data[alias] !== undefined && data[alias] !== null);
+      const value = foundKey ? Number(data[foundKey]) : NaN;
+      if (Number.isFinite(value)) {
+        axes[key] = Math.max(0, Math.min(100, value));
+        hasValue = true;
+      } else {
+        axes[key] = 50;
+      }
+    });
+    return hasValue ? axes : null;
+  }
+
+  function getPortalAxes(row) {
+    const sources = [
+      row?.final_axes,
+      row?.adjusted_axes,
+      row?.axes,
+      row?.axis_scores,
+      row?.fragrance_axes,
+      row?.result_axes,
+      row?.point_axes,
+      row?.axes_json,
+      row?.final_axes_json,
+      row?.questionnaire_result?.final_axes,
+      row?.questionnaire_result?.axes
+    ];
+    for (const source of sources) {
+      const axes = normalizePortalAxes(source);
+      if (axes) return axes;
+    }
+    return null;
+  }
+
+  function getPortalAxisPoint(axis, value) {
+    const maxPoint = PORTAL_AXIS_MAX_POINTS[axis];
+    const ratio = Math.max(0, Math.min(100, Number(value) || 0)) / 100;
+    const x = PORTAL_AXIS_CENTER[0] + (maxPoint[0] - PORTAL_AXIS_CENTER[0]) * ratio;
+    const y = PORTAL_AXIS_CENTER[1] + (maxPoint[1] - PORTAL_AXIS_CENTER[1]) * ratio;
+    return [Math.round(x), Math.round(y)];
+  }
+
+  function renderPortalAxisPreview(axes) {
+    const shape = $("latest-axis-shape");
+    if (!shape) return;
+    const values = axes || { floral: 32, citrus: 32, woody: 32, spicy: 32, musk: 32 };
+    const points = PORTAL_AXIS_KEYS.map((key) => getPortalAxisPoint(key, values[key]));
+    shape.setAttribute("points", points.map(([x, y]) => `${x},${y}`).join(" "));
+    document.querySelectorAll(".customer-axis-preview [data-axis]").forEach((circle) => {
+      const axis = circle.dataset.axis;
+      if (!PORTAL_AXIS_KEYS.includes(axis)) return;
+      const [x, y] = getPortalAxisPoint(axis, values[axis]);
+      circle.setAttribute("cx", String(x));
+      circle.setAttribute("cy", String(y));
+    });
+  }
+
+  function getPortalAxisSummary(row) {
+    const axes = getPortalAxes(row);
+    if (!axes) return getPortalProductNote(row);
+    const sorted = Object.entries(axes).sort((a, b) => b[1] - a[1]);
+    const first = sorted[0];
+    const second = sorted[1];
+    if (!first || first[1] < 45) return "穏やかで均整の取れた香りです。";
+    return `${PORTAL_AXIS_LABELS[first[0]]}を軸に、${PORTAL_AXIS_LABELS[second[0]]}がそっと重なる香りです。`;
   }
 
   function getPortalStatusLabel(row) {
@@ -154,16 +263,18 @@
   function renderLatestProduct(row) {
     if (!$("latest-product-name")) return;
     if (!row) {
-      $("latest-product-name").textContent = "まだ制作履歴はありません";
+      $("latest-product-name").textContent = "未作成";
       $("latest-product-date").textContent = "-";
       $("latest-product-staff").textContent = "-";
-      $("latest-product-note").textContent = "新しく香りを作るカードからアンケートへ進めます。";
+      $("latest-product-summary").textContent = "制作履歴が入ると、香りの傾向が表示されます。";
+      renderPortalAxisPreview(null);
       return;
     }
-    $("latest-product-name").textContent = getPortalProductName(row);
+    $("latest-product-name").textContent = getPortalProductName(row, "未作成");
     $("latest-product-date").textContent = getPortalProductDate(row);
     $("latest-product-staff").textContent = getPortalStaffName(row);
-    $("latest-product-note").textContent = getPortalProductNote(row);
+    $("latest-product-summary").textContent = getPortalAxisSummary(row);
+    renderPortalAxisPreview(getPortalAxes(row));
   }
 
   function renderRecordList(mount, rows, emptyText, type) {
@@ -174,7 +285,7 @@
     }
     if (type === "product") {
       mount.innerHTML = rows.slice(0, 3).map((row) => {
-        const name = getPortalProductName(row);
+        const name = getPortalProductName(row, "香り");
         return `
           <article class="customer-history-item">
             <img src="../img/costomer/瓶単体.png" alt="">
@@ -221,10 +332,7 @@
         if (loginLink) loginLink.hidden = false;
         return;
       }
-      if ($("member-name")) $("member-name").textContent = customer.display_name || "-";
       if ($("member-name-inline")) $("member-name-inline").textContent = customer.display_name || "会員";
-      if ($("member-email")) $("member-email").textContent = customer.email || "-";
-      if ($("member-code")) $("member-code").textContent = customer.customer_code || "-";
       renderLatestProduct((data.products || [])[0] || null);
       renderRecordList($("product-list"), data.products || [], "制作履歴はまだありません。", "product");
       renderRecordList($("reservation-list"), data.reservations || [], "予約履歴はまだありません。", "reservation");
