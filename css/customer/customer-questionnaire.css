@@ -219,7 +219,7 @@ body[data-page="questionnaire"] .option-button[style] {
   display: flex;
   align-items: flex-end;
   padding: 20px;
-  background-image: var(--option-image);
+  background-color: rgba(255, 255, 255, 0.08);
   background-size: cover;
   background-position: center;
 }
@@ -240,7 +240,13 @@ body[data-page="questionnaire"] .option-button:focus-visible {
 
 body[data-page="questionnaire"] .option-button.is-selected {
   border-color: #d98f2c;
-  background: rgba(255, 239, 233, 0.88);
+  background-color: rgba(255, 239, 233, 0.18);
+}
+
+body[data-page="questionnaire"] .option-button[style].is-selected {
+  background-color: rgba(255, 239, 233, 0.18);
+  background-size: cover;
+  background-position: center;
 }
 
 body[data-page="questionnaire"] .option-art {

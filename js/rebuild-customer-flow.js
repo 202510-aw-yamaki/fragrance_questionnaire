@@ -282,7 +282,9 @@
       renderProgress(current + 1, STEP1_QUESTIONS.length);
       if (optionList) {
         optionList.innerHTML = question.options.map(([key, label, image]) => {
-          const imageStyle = image ? ` style="--option-image: url('${imagePath(image)}');"` : "";
+          const imageStyle = image
+            ? ` style="background-image: url('${imagePath(image)}'); --option-image: url('${imagePath(image)}');"`
+            : "";
           return `
           <button class="option-button ${answers[question.id] === key ? "is-selected" : ""}" type="button" data-answer-key="${key}"${imageStyle}>
             ${image ? `<span class="option-art" aria-hidden="true"></span>` : ""}
