@@ -1769,6 +1769,9 @@ details.card .admin-note {
   .admin-login-shell {
     width: min(100% - 28px, 720px);
   }
+  .section{
+  padding: 0;
+  }
 
   .menu-toggle,
   .admin-menu-toggle {
