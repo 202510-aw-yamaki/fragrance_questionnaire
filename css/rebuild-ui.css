@@ -1804,12 +1804,6 @@ details.card .admin-note {
     min-height: auto;
   }
 
-  .hero-media {
-    position: relative;
-    height: 280px;
-    order: -1;
-  }
-
   .hero-media::after {
     background: linear-gradient(180deg, rgba(255, 247, 237, 0.1), rgba(255, 247, 237, 0.84));
   }
