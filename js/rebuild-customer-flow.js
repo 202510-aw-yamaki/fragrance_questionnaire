@@ -14,6 +14,12 @@
   const CONFIRMATION_KEY = "fragranceReservationConfirmation";
   const DEFAULT_AXES = { floral: 56, fresh: 58, woody: 45, spicy: 36, sweet: 52 };
   const ANSWER_ORDER = ["A", "B", "C", "D", "ALL", "NONE"];
+  const STEP1_TRIVIA_IMAGES = {
+    Q2: "Trivia_Q2.png",
+    Q3: "Trivia_Q3.png",
+    Q4: "Trivia_Q4.png",
+    Q5: "Trivia_Q5.png"
+  };
 
   const STEP1_QUESTIONS = [
     {
@@ -277,6 +283,8 @@
     const optionList = $("option-list");
     const nextBtn = $("header-next-btn");
     const prevBtn = $("header-prev-btn");
+    const aside = document.querySelector(".page-hero-aside");
+    const defaultAsideHtml = aside?.innerHTML || "";
     const discardMessage = "回答途中です。このページを離れると、選択中の回答は保存されません。離れてもよろしいですか？";
 
     window.sessionStorage.removeItem(STEP1_ANSWERS_KEY);
@@ -308,6 +316,22 @@
       window.location.href = url;
     }
 
+    function renderAside(question, axes) {
+      if (!aside) {
+        renderMiniRadar(axes);
+        return;
+      }
+      const triviaImage = STEP1_TRIVIA_IMAGES[question.id];
+      if (triviaImage) {
+        aside.classList.add("is-trivia");
+        aside.innerHTML = `<img class="questionnaire-trivia-image" src="../img/costomer/${triviaImage}" alt="">`;
+        return;
+      }
+      aside.classList.remove("is-trivia");
+      if (aside.innerHTML !== defaultAsideHtml) aside.innerHTML = defaultAsideHtml;
+      renderMiniRadar(axes);
+    }
+
     function render() {
       const question = getStep1Question(STEP1_QUESTIONS[current], config);
       setQuestionText(question);
@@ -335,7 +359,7 @@
       if (prevBtn) prevBtn.disabled = current === 0;
       if (nextBtn) nextBtn.textContent = current === STEP1_QUESTIONS.length - 1 ? "次へ" : "次へ";
       const axes = calculateStep1(config, answers);
-      renderMiniRadar(axes);
+      renderAside(question, axes);
     }
 
     prevBtn?.addEventListener("click", () => {

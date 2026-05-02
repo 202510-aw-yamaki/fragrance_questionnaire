@@ -386,6 +386,22 @@ body[data-page="questionnaire"] .page-hero-aside {
   text-align: center;
 }
 
+body[data-page="questionnaire"] .page-hero-aside.is-trivia {
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+body[data-page="questionnaire"] .questionnaire-trivia-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
 body[data-page="questionnaire"] .page-hero-aside h2 {
   display: flex;
   align-items: center;
