@@ -29,7 +29,18 @@
         </div>
         <form class="login-form" id="customer-login-form">
           <label>メールアドレス<input type="email" name="email" autocomplete="email" placeholder="member@example.com" required></label>
-          <label>パスワード<input type="password" name="password" autocomplete="current-password" placeholder="パスワードを入力" required></label>
+          <label class="customer-login-save"><span>入力を保存する</span><input type="checkbox" id="save-email-checkbox"></label>
+          <label>パスワード
+            <span class="customer-password-field">
+              <input type="password" name="password" id="customer-password-input" autocomplete="current-password" placeholder="パスワードを入力" required>
+              <button class="customer-password-toggle" type="button" id="password-toggle-button" aria-label="パスワードを表示" aria-pressed="false">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M2.8 12s3.4-6 9.2-6 9.2 6 9.2 6-3.4 6-9.2 6-9.2-6-9.2-6Z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </span>
+          </label>
           <button class="btn primary customer-login-submit" type="submit">ログイン</button>
           <div class="customer-login-links">
             <button class="customer-login-text-button" type="button" id="setup-button">初回ログイン・パスワード設定</button>

@@ -97,6 +97,68 @@ body[data-page="customer-login"] .site-header {
   background: rgba(255, 255, 255, 0.76);
 }
 
+.customer-login-save {
+  min-height: 22px;
+  display: inline-flex;
+  justify-self: flex-start;
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: -8px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.customer-login-save input {
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+  margin: 0;
+  accent-color: var(--gold);
+}
+
+.customer-password-field {
+  position: relative;
+  display: block;
+}
+
+.customer-password-field input {
+  padding-right: 52px;
+}
+
+.customer-password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #9a826d;
+  cursor: pointer;
+}
+
+.customer-password-toggle:hover,
+.customer-password-toggle:focus-visible {
+  background: rgba(202, 142, 52, 0.12);
+  color: var(--ink);
+}
+
+.customer-password-toggle svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .customer-login-submit {
   width: 100%;
   min-height: 62px;

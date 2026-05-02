@@ -24,8 +24,46 @@
   async function initLogin() {
     const form = $("customer-login-form");
     const setupButton = $("setup-button");
+    const emailInput = form?.elements?.email;
+    const saveEmailCheckbox = $("save-email-checkbox");
+    const passwordInput = $("customer-password-input");
+    const passwordToggle = $("password-toggle-button");
     const toggle = document.querySelector(".menu-toggle");
     const menu = $("customer-login-menu");
+    const savedEmailKey = "fragranceCustomerLoginEmail";
+    function readSavedEmail() {
+      try {
+        return window.localStorage?.getItem(savedEmailKey) || "";
+      } catch (_) {
+        return "";
+      }
+    }
+    function writeSavedEmail(value) {
+      try {
+        if (value) window.localStorage?.setItem(savedEmailKey, value);
+        else window.localStorage?.removeItem(savedEmailKey);
+      } catch (_) {
+        // localStorage can be unavailable in strict privacy modes.
+      }
+    }
+    const savedEmail = readSavedEmail();
+    if (emailInput && saveEmailCheckbox && savedEmail) {
+      emailInput.value = savedEmail;
+      saveEmailCheckbox.checked = true;
+    }
+    saveEmailCheckbox?.addEventListener("change", () => {
+      writeSavedEmail(saveEmailCheckbox.checked ? emailInput?.value?.trim() : "");
+    });
+    emailInput?.addEventListener("input", () => {
+      if (saveEmailCheckbox?.checked) writeSavedEmail(emailInput.value.trim());
+    });
+    passwordToggle?.addEventListener("click", () => {
+      if (!passwordInput) return;
+      const willShow = passwordInput.type === "password";
+      passwordInput.type = willShow ? "text" : "password";
+      passwordToggle.setAttribute("aria-pressed", willShow ? "true" : "false");
+      passwordToggle.setAttribute("aria-label", willShow ? "パスワードを隠す" : "パスワードを表示");
+    });
     toggle?.addEventListener("click", () => {
       const isOpen = menu?.classList.toggle("is-open");
       toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
@@ -57,6 +95,7 @@
         setStatus("メールアドレスとパスワードを入力してください。", "error");
         return;
       }
+      writeSavedEmail(saveEmailCheckbox?.checked ? String(email).trim() : "");
       setStatus("確認しています。");
       try {
         if (mode === "setup") {
