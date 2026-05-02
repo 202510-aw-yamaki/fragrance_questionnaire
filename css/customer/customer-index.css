@@ -50,6 +50,14 @@ body[data-page="customer-portal"] .brand-logo-mark img {
   cursor: pointer;
 }
 
+.customer-portal-logout.customer-portal-logout--mobile {
+  display: none;
+}
+
+.customer-portal-logout.customer-portal-logout--desktop {
+  display: inline-flex;
+}
+
 .customer-portal-main {
   min-height: calc(100vh - 78px);
   padding: 0 0 26px;
@@ -202,7 +210,7 @@ body[data-page="customer-portal"] .brand-logo-mark img {
   grid-template-columns: minmax(130px, 42%) minmax(0, 1fr);
   gap: 20px;
   flex: 1;
-  align-content: center
+  align-content: center;
 }
 
 .customer-last-fragrance-image {
@@ -327,6 +335,8 @@ body[data-page="customer-portal"] .brand-logo-mark img {
   font-size: clamp(20px, 1.8vw, 26px);
   font-weight: 700;
   letter-spacing: 0;
+  padding: 0 16px;
+  white-space: nowrap;
 }
 
 .customer-portal-primary-action {
@@ -555,6 +565,66 @@ body[data-page="customer-portal"] .brand-logo-mark img {
   }
 }
 
+@media (min-width: 861px) and (max-width: 980px) {
+  body[data-page="customer-portal"] .site-container,
+  body[data-page="customer-portal"] .site-header-inner {
+    width: min(100% - 32px, 940px);
+  }
+
+  body[data-page="customer-portal"] .customer-portal-nav {
+    position: static;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .customer-portal-menu-toggle,
+  .customer-portal-menu-link,
+  .customer-portal-logout.customer-portal-logout--mobile {
+    display: none;
+  }
+
+  .customer-portal-logout.customer-portal-logout--desktop {
+    display: inline-flex;
+  }
+
+  .customer-portal-dashboard {
+    gap: 12px;
+  }
+
+  .customer-portal-card {
+    padding: 14px;
+  }
+
+  .customer-portal-card--new p {
+    width: 100%;
+    padding: 0 4px;
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  .customer-new-fragrance-image {
+    width: min(100%, 210px);
+  }
+
+  .customer-portal-primary-action,
+  .customer-portal-secondary-action {
+    min-height: 52px;
+    padding: 0 12px;
+    font-size: 16px;
+  }
+
+  .customer-compare-card {
+    padding-inline: 44px;
+  }
+}
+
 @media (max-width: 860px) {
   body[data-page="customer-portal"] .site-header-inner,
   .customer-portal-main > .status-note,
@@ -605,7 +675,7 @@ body[data-page="customer-portal"] .brand-logo-mark img {
   }
 
   .customer-portal-menu-link,
-  .customer-portal-logout--mobile {
+  .customer-portal-logout.customer-portal-logout--mobile {
     min-height: 44px;
     display: flex;
     align-items: center;
@@ -624,7 +694,7 @@ body[data-page="customer-portal"] .brand-logo-mark img {
     border-bottom: 0;
   }
 
-  .customer-portal-logout--desktop {
+  .customer-portal-logout.customer-portal-logout--desktop {
     display: none;
   }
 
@@ -635,12 +705,27 @@ body[data-page="customer-portal"] .brand-logo-mark img {
   }
 
   .customer-portal-heading {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    text-align: center;
-    justify-items: center;
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 8px 12px;
+    text-align: left;
+    justify-items: start;
   }
 
+  .customer-portal-heading-mark {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: center;
+  }
+
+  .customer-portal-heading h1 {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .customer-portal-heading-copy {
+    grid-column: 2;
+    grid-row: 2;
+  }
 
   .customer-portal-dashboard {
     grid-template-columns: 1fr;
@@ -654,13 +739,79 @@ body[data-page="customer-portal"] .brand-logo-mark img {
     height: 320px;
   }
 
+  .customer-last-fragrance-detail {
+    grid-template-columns: minmax(0, 1fr) minmax(132px, 0.8fr);
+    align-items: start;
+    gap: 10px 12px;
+  }
+
+  .customer-last-fragrance-detail h3 {
+    grid-column: 1 / -1;
+  }
+
+  .customer-last-meta {
+    grid-column: 1;
+  }
+
+  .customer-axis-preview {
+    grid-column: 2;
+    width: 100%;
+    align-self: center;
+  }
+
+  .customer-axis-preview svg {
+    width: 100%;
+  }
+
+  .customer-portal-card--new {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(120px, 0.9fr);
+    align-items: center;
+    gap: 12px;
+  }
+
+  .customer-portal-card--new .customer-portal-card-title {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .customer-portal-card--new p {
+    grid-column: 1;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    align-self: center;
+  }
+
   .customer-new-fragrance-image {
+    grid-column: 2;
+    width: 100%;
     max-height: 280px;
+    margin: 0;
+    align-self: center;
+  }
+
+  .customer-portal-secondary-action {
+    grid-column: 1 / -1;
+    width: 100%;
   }
 
   .customer-compare-card {
-    grid-template-columns: 1fr;
-    justify-items: start;
+    grid-template-columns: 64px minmax(0, 1fr);
+    justify-items: stretch;
+    gap: 14px;
+    padding: 12px 18px;
+  }
+
+  .customer-compare-icon {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    align-self: center;
+  }
+
+  .customer-compare-card strong,
+  .customer-compare-card > span:last-child {
+    grid-column: 2;
   }
 }
 
@@ -669,7 +820,7 @@ body[data-page="customer-portal"] .brand-logo-mark img {
     font-size: 22px;
   }
 
-  .customer-portal-logout {
+  .customer-portal-logout.customer-portal-logout--desktop {
     padding: 0;
     font-size: 14px;
   }
