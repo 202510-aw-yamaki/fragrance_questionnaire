@@ -149,7 +149,7 @@
     citrus: "シトラス",
     woody: "ウッディ",
     spicy: "スパイシー",
-    musk: "ムスク"
+    musk: "スウィート"
   };
   const PORTAL_AXIS_ALIASES = {
     floral: ["floral", "floral_score", "フローラル"],
@@ -249,7 +249,7 @@
           <text class="axis-label" x="198" y="80" text-anchor="middle">シトラス</text>
           <text class="axis-label" x="154" y="184" text-anchor="middle">ウッディ</text>
           <text class="axis-label" x="66" y="184" text-anchor="middle">スパイシー</text>
-          <text class="axis-label" x="22" y="80" text-anchor="middle">ムスク</text>
+          <text class="axis-label" x="22" y="80" text-anchor="middle">スウィート</text>
         </svg>
       `;
     }

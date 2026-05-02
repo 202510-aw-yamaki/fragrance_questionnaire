@@ -494,7 +494,7 @@
     { material_code: "assamTea", material_name: "アッサムティー", category: "Middle", point_axes: { floral: 10, fresh: 25, woody: 35, spicy: 20, sweet: 10 }, note: "深みと温かいスパイス感を補うテンプレート。", is_active: true, sort_order: 70 },
     { material_code: "cassis", material_name: "カシス", category: "Middle", point_axes: { floral: 5, fresh: 25, woody: 5, spicy: 15, sweet: 50 }, note: "果実感と甘さのアクセントを持つテンプレート。", is_active: true, sort_order: 80 },
     { material_code: "magnolia", material_name: "マグノリア", category: "Middle", point_axes: { floral: 55, fresh: 15, woody: 10, spicy: 10, sweet: 10 }, note: "透明感を残しつつ華やかさを出すテンプレート。", is_active: true, sort_order: 90 },
-    { material_code: "musk", material_name: "ムスク", category: "Last", point_axes: { floral: 10, fresh: 25, woody: 10, spicy: 5, sweet: 50 }, note: "やわらかな余韻と甘さを支えるラスト寄りテンプレート。", is_active: true, sort_order: 100 },
+    { material_code: "musk", material_name: "スウィート", category: "Last", point_axes: { floral: 10, fresh: 25, woody: 10, spicy: 5, sweet: 50 }, note: "やわらかな余韻と甘さを支えるラスト寄りテンプレート。", is_active: true, sort_order: 100 },
     { material_code: "amber", material_name: "アンバー", category: "Last", point_axes: { floral: 5, fresh: 15, woody: 35, spicy: 20, sweet: 25 }, note: "温かみのある深さを作るテンプレート。", is_active: true, sort_order: 110 },
     { material_code: "sandalwood", material_name: "サンダルウッド", category: "Last", point_axes: { floral: 5, fresh: 5, woody: 55, spicy: 10, sweet: 25 }, note: "落ち着いた木質感とやわらかな甘さを持つテンプレート。", is_active: true, sort_order: 120 },
     { material_code: "squash", material_name: "スカッシュ", category: "Top", point_axes: { floral: 10, fresh: 65, woody: 3, spicy: 2, sweet: 20 }, note: "限定素材を想定した軽快なフレッシュテンプレート。", is_active: true, sort_order: 130 },

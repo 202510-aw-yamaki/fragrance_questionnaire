@@ -235,7 +235,7 @@
           <article class="member-card featured">
             <span>前回の完成品</span>
             <h2>月夜の余韻</h2>
-            <p>フローラル 32% / ウッディ 28% / ムスク 24%</p>
+            <p>フローラル 32% / ウッディ 28% / スウィート 24%</p>
             <button class="outline-button">比較して見る</button>
           </article>
           <article class="member-card">
@@ -401,7 +401,7 @@
         <p class="mini-ornament">BALANCE ADJUST</p>
         <h1>香りのバランス調整</h1>
         <div class="slider-list">
-          ${[["フローラル", 82], ["ウッディ", 68], ["シトラス", 46], ["ムスク", 73]].map(([label, value]) => `
+          ${[["フローラル", 82], ["ウッディ", 68], ["シトラス", 46], ["スウィート", 73]].map(([label, value]) => `
             <label class="slider-row"><span>${label}</span><input type="range" value="${value}" min="0" max="100"><strong>${value}</strong></label>
           `).join("")}
         </div>

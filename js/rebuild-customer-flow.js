@@ -5,7 +5,7 @@
     fresh: "シトラス",
     woody: "ウッディ",
     spicy: "スパイシー",
-    sweet: "ムスク"
+    sweet: "スウィート"
   };
   const SCORING_CONFIG_KEY = "fragranceScoringConfig";
   const SCORE_STATE_KEY = "fragranceScoreState";
