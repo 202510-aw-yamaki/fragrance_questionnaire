@@ -22,10 +22,10 @@
       caption: "直感で近いものを選んでください。",
       imageBase: "step1",
       options: [
-        ["A", "華やかで明るい", "step1-a-floral.png"],
-        ["B", "爽やかで軽やか", "step1-b-fresh.png"],
-        ["C", "深みがあり落ち着く", "step1-c-woody.png"],
-        ["D", "やわらかく甘い", "step1-d-warm.png"]
+        ["A", "華やかで明るい", "Q1-A.png"],
+        ["B", "爽やかで軽やか", "Q1-B.png"],
+        ["C", "深みがあり落ち着く", "Q1-C.png"],
+        ["D", "やわらかく甘い", "Q1-D.png"]
       ]
     },
     {
@@ -239,6 +239,13 @@
       <svg class="radar" viewBox="0 0 200 200" aria-label="香り5軸">
         <polygon points="100,28 168,78 142,160 58,160 32,78" fill="none" stroke="#e3c99d" />
         <polygon points="${points}" fill="rgba(220,119,119,.24)" stroke="#d77777" stroke-width="3" />
+        <g class="radar-labels">
+          <text x="100" y="17">${AXIS_LABELS.floral}</text>
+          <text x="180" y="78">${AXIS_LABELS.fresh}</text>
+          <text x="148" y="182">${AXIS_LABELS.woody}</text>
+          <text x="52" y="182">${AXIS_LABELS.spicy}</text>
+          <text x="20" y="78">${AXIS_LABELS.sweet}</text>
+        </g>
       </svg>
       <div class="plain-list">
         ${AXES.map((axis, idx) => `<span>${AXIS_LABELS[axis]} ${values[idx]}</span>`).join("")}
@@ -249,10 +256,15 @@
   function setQuestionText(question) {
     if ($("question-title")) $("question-title").textContent = question.title;
     if ($("question-caption")) $("question-caption").textContent = question.caption || "";
-    if ($("helper-text")) $("helper-text").textContent = "選んだ内容は香り5軸に反映されます。";
+    if ($("question-reflection-note")) {
+      $("question-reflection-note").textContent = "香り5軸に反映されます";
+    } else if ($("helper-text")) {
+      $("helper-text").textContent = "選んだ内容は香り5軸に反映されます。";
+    }
   }
 
   function imagePath(name) {
+    if (/^Q\d+-[A-D]\.png$/.test(name)) return `../img/costomer/${name}`;
     return `../img/questionnaire-v11/${name}`;
   }
 
@@ -269,12 +281,16 @@
       setQuestionText(question);
       renderProgress(current + 1, STEP1_QUESTIONS.length);
       if (optionList) {
-        optionList.innerHTML = question.options.map(([key, label, image]) => `
-          <button class="option-button ${answers[question.id] === key ? "is-selected" : ""}" type="button" data-answer-key="${key}">
-            ${image ? `<img class="option-art" src="${imagePath(image)}" alt="">` : ""}
-            <span>${label}</span>
+        optionList.innerHTML = question.options.map(([key, label, image]) => {
+          const imageStyle = image ? ` style="--option-image: url('${imagePath(image)}');"` : "";
+          return `
+          <button class="option-button ${answers[question.id] === key ? "is-selected" : ""}" type="button" data-answer-key="${key}"${imageStyle}>
+            ${image ? `<span class="option-art" aria-hidden="true"></span>` : ""}
+            <span class="option-label">${label}</span>
+            <span class="option-check" aria-hidden="true"></span>
           </button>
-        `).join("");
+        `;
+        }).join("");
         optionList.querySelectorAll("[data-answer-key]").forEach((button) => {
           button.addEventListener("click", () => {
             answers[question.id] = button.dataset.answerKey;

@@ -5,21 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>香りのアンケート | Fragrance Workshop</title>
   <link rel="stylesheet" href="../css/rebuild-ui.css">
+  <link rel="stylesheet" href="../css/customer/customer-questionnaire.css">
 </head>
 <body data-page="questionnaire">
   <header class="site-header">
     <div class="site-header-inner site-container">
-      <a class="brand" id="brand-link" href="../index.html"><span class="brand-mark">✦</span><span>Fragrance Workshop</span></a>
-      <div class="progress-card"><strong id="question-index">1 / 5</strong><div class="progress-track"><span class="progress-fill" id="progress-bar"></span></div><div id="question-stepper"></div></div>
+      <a class="brand" id="brand-link" href="../index.html"><span class="brand-logo-mark"><img src="../img/costomer/吟ロゴ.png" alt=""></span><span>Fragrance Workshop</span></a>
     </div>
   </header>
-  <main class="page-hero">
-    <div class="page-shell">
-      <h1>香りのアンケート</h1>
-      <p class="page-copy" id="helper-text">今の気分や好きな雰囲気から、香りの方向性を見つけます。</p>
+  <main class="page-hero questionnaire-main">
+    <div class="page-shell questionnaire-shell">
+      <div class="questionnaire-hero">
+        <div class="questionnaire-heading">
+          <h1>香りのアンケート</h1>
+          <p class="page-copy" id="helper-text">今の気分や好きな雰囲気から、あなたの香りの方向性を見つけます。</p>
+        </div>
+        <div class="progress-card questionnaire-progress-card">
+          <span class="questionnaire-progress-mark" aria-hidden="true"></span>
+          <strong id="question-index">1 / 5</strong>
+          <div class="progress-track"><span class="progress-fill" id="progress-bar"></span></div>
+          <div id="question-stepper"></div>
+        </div>
+      </div>
       <div class="question-layout">
         <section class="question-card">
           <p class="eyebrow" id="progress-label">1 / 5</p>
+          <span class="question-card-divider" aria-hidden="true"></span>
           <h2 id="question-title"></h2>
           <p class="admin-note" id="question-caption"></p>
           <div class="option-grid" id="option-list"></div>
@@ -27,11 +38,12 @@
           <div class="question-footer">
             <button class="btn secondary" id="header-prev-btn" type="button">戻る</button>
             <button class="btn primary" id="header-next-btn" type="button">次へ</button>
+            <p class="question-reflection-note" id="question-reflection-note">香り5軸に反映されます</p>
           </div>
         </section>
         <aside class="page-hero-aside">
-          <h2 id="note-title">香り5軸</h2>
-          <p class="admin-note" id="note-body">選んだ内容が5軸に反映されます。</p>
+          <h2 id="note-title">香り5軸とは？</h2>
+          <p class="admin-note" id="note-body">あなたの感性を5つの軸で分析し、ぴったりの香りの方向性を導き出します。</p>
           <div id="axis-preview"></div>
         </aside>
       </div>
