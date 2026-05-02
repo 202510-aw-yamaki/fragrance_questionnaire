@@ -10,6 +10,7 @@ body[data-page="customer-portal"] .site-header {
 
 body[data-page="customer-portal"] .site-header-inner {
   width: min(100% - 72px, 1540px);
+  position: relative;
 }
 
 body[data-page="customer-portal"] .brand-logo-mark {
@@ -27,6 +28,12 @@ body[data-page="customer-portal"] .brand-logo-mark img {
 
 .customer-portal-nav {
   gap: 0;
+}
+
+.customer-portal-menu-toggle,
+.customer-portal-menu-link,
+.customer-portal-logout--mobile {
+  display: none;
 }
 
 .customer-portal-logout {
@@ -270,7 +277,7 @@ body[data-page="customer-portal"] .brand-logo-mark img {
 }
 
 .customer-axis-preview {
-  width: min(220px, 100%);
+  width: min(260px, 100%);
   margin: 0 auto;
 }
 
@@ -298,6 +305,13 @@ body[data-page="customer-portal"] .brand-logo-mark img {
 
 .customer-axis-preview circle {
   fill: #d6922d;
+}
+
+.customer-axis-preview .axis-label {
+  fill: #4c3424;
+  font-family: var(--serif);
+  font-size: 12px;
+  letter-spacing: 0;
 }
 
 .customer-portal-primary-action,
@@ -409,6 +423,20 @@ body[data-page="customer-portal"] .brand-logo-mark img {
   border: 1px solid rgba(232, 208, 180, 0.82);
   border-radius: 14px;
   background: rgba(255, 253, 249, 0.72);
+}
+
+.customer-history-more {
+  min-height: 46px;
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(202, 142, 52, 0.54);
+  border-radius: 12px;
+  color: #7a4b19;
+  font-weight: 700;
+  text-decoration: none;
 }
 
 .customer-portal-compare {
@@ -535,6 +563,68 @@ body[data-page="customer-portal"] .brand-logo-mark img {
 
   .customer-portal-main {
     background-position: top right;
+  }
+
+  .customer-portal-menu-toggle {
+    width: 44px;
+    height: 44px;
+    display: inline-grid;
+    place-items: center;
+    gap: 5px;
+    padding: 10px;
+    border: 1px solid rgba(202, 142, 52, 0.54);
+    border-radius: 10px;
+    background: rgba(255, 253, 249, 0.94);
+  }
+
+  .customer-portal-menu-toggle span {
+    width: 20px;
+    height: 2px;
+    display: block;
+    background: #4c3424;
+  }
+
+  .customer-portal-nav {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    z-index: 20;
+    width: min(320px, calc(100vw - 28px));
+    display: none;
+    gap: 0;
+    padding: 10px;
+    border: 1px solid rgba(232, 208, 180, 0.9);
+    border-radius: 12px;
+    background: rgba(255, 253, 249, 0.98);
+    box-shadow: 0 18px 36px rgba(98, 65, 36, 0.14);
+  }
+
+  .customer-portal-nav.is-open {
+    display: grid;
+  }
+
+  .customer-portal-menu-link,
+  .customer-portal-logout--mobile {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0 12px;
+    border: 0;
+    border-bottom: 1px solid rgba(232, 208, 180, 0.62);
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-weight: 700;
+    text-align: left;
+  }
+
+  .customer-portal-logout--mobile {
+    border-bottom: 0;
+  }
+
+  .customer-portal-logout--desktop {
+    display: none;
   }
 
   .customer-portal-hero {

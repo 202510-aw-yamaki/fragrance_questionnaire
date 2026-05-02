@@ -11,7 +11,19 @@
   <header class="site-header">
     <div class="site-header-inner site-container">
       <a class="brand" href="../index.html"><span class="brand-logo-mark"><img src="../img/costomer/吟ロゴ.png" alt=""></span><span>Fragrance Workshop</span></a>
-      <nav class="main-nav is-static customer-portal-nav"><button class="customer-portal-logout" id="logout-button" type="button" aria-label="ログアウト"><span aria-hidden="true">↪</span>ログアウト</button></nav>
+      <button class="customer-portal-menu-toggle" id="customer-portal-menu-toggle" type="button" aria-controls="customer-portal-menu" aria-expanded="false" aria-label="メニュー">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="main-nav is-static customer-portal-nav" id="customer-portal-menu">
+        <button class="customer-portal-menu-link" type="button" data-scroll-target="top">to the top</button>
+        <button class="customer-portal-menu-link" type="button" data-scroll-target="predecessor-card">Predecessor</button>
+        <button class="customer-portal-menu-link" type="button" data-scroll-target="new-work-card">New work</button>
+        <button class="customer-portal-menu-link" type="button" data-scroll-target="history-card">history</button>
+        <button class="customer-portal-logout customer-portal-logout--mobile" type="button" data-customer-logout>Log Out</button>
+        <button class="customer-portal-logout customer-portal-logout--desktop" id="logout-button" type="button" aria-label="ログアウト" data-customer-logout><span aria-hidden="true">↪</span>ログアウト</button>
+      </nav>
     </div>
   </header>
   <main class="customer-portal-main">
@@ -28,7 +40,7 @@
     <p class="status-note" id="portal-status" hidden></p>
     <a class="btn secondary customer-portal-login-link" id="login-link" href="customer-login.html" hidden>ログインへ</a>
     <section class="customer-portal-dashboard site-container" aria-label="会員ページメニュー">
-      <article class="customer-portal-card customer-portal-card--last">
+      <article class="customer-portal-card customer-portal-card--last" id="predecessor-card">
         <div class="customer-portal-card-title">
           <span class="customer-portal-card-mark" aria-hidden="true"><img src="../img/costomer/会員ページの記号.png" alt=""></span>
           <h2>前回作成した香水</h2>
@@ -72,7 +84,7 @@
         <a class="customer-portal-primary-action" href="reservation.html"><span aria-hidden="true">▣</span>もう一度この香りを予約する</a>
       </article>
 
-      <article class="customer-portal-card customer-portal-card--new">
+      <article class="customer-portal-card customer-portal-card--new" id="new-work-card">
         <div class="customer-portal-card-title">
           <span class="customer-portal-card-mark" aria-hidden="true"><img src="../img/costomer/会員ページの記号.png" alt=""></span>
           <h2>新しく香りを作る</h2>
@@ -82,13 +94,13 @@
         <a class="customer-portal-secondary-action" href="questionnaire.html">アンケートに進む<span aria-hidden="true">›</span></a>
       </article>
 
-      <article class="customer-portal-card customer-portal-card--history">
-        <div class="customer-portal-card-title customer-portal-card-title--row">
+      <article class="customer-portal-card customer-portal-card--history" id="history-card">
+        <div class="customer-portal-card-title">
           <span class="customer-portal-card-mark" aria-hidden="true"><img src="../img/costomer/会員ページの記号.png" alt=""></span>
           <h2>制作履歴</h2>
-          <a href="#product-list">すべて見る<span aria-hidden="true">›</span></a>
         </div>
         <div class="customer-history-list record-list" id="product-list"></div>
+        <a class="customer-history-more" href="#product-list">すべて見る<span aria-hidden="true">›</span></a>
       </article>
     </section>
     <section class="customer-portal-compare site-container">

@@ -159,13 +159,14 @@
     musk: ["musk", "musk_score", "sweet", "sweet_score", "ムスク", "スウィート", "スイート"]
   };
   const PORTAL_AXIS_MAX_POINTS = {
-    floral: [90, 14],
-    citrus: [160, 63],
-    woody: [134, 145],
-    spicy: [46, 145],
-    musk: [20, 63]
+    floral: [110, 30],
+    citrus: [178, 80],
+    woody: [150, 160],
+    spicy: [70, 160],
+    musk: [42, 80]
   };
-  const PORTAL_AXIS_CENTER = [90, 91];
+  const PORTAL_AXIS_CENTER = [110, 96];
+  const PORTAL_SAMPLE_AXES = { floral: 68, citrus: 55, woody: 45, spicy: 50, musk: 62 };
 
   function parsePortalAxisSource(value) {
     if (!value) return null;
@@ -230,35 +231,36 @@
   function renderPortalAxisPreview(axes) {
     const mount = $("latest-axis-preview");
     if (!mount) return;
-    if (!axes) {
-      mount.hidden = true;
-      mount.innerHTML = "";
-      return;
-    }
+    const values = axes || PORTAL_SAMPLE_AXES;
     mount.hidden = false;
     if (!$("latest-axis-shape")) {
       mount.innerHTML = `
-        <svg viewBox="0 0 180 160" role="img" aria-labelledby="axis-preview-title">
+        <svg viewBox="0 0 220 190" role="img" aria-labelledby="axis-preview-title">
           <title id="axis-preview-title">香り5軸</title>
-          <polygon class="axis-grid" points="90,14 160,63 134,145 46,145 20,63"></polygon>
-          <polygon class="axis-grid axis-grid--inner" points="90,42 132,72 116,121 64,121 48,72"></polygon>
+          <polygon class="axis-grid" points="110,30 178,80 150,160 70,160 42,80"></polygon>
+          <polygon class="axis-grid axis-grid--inner" points="110,60 145,86 130,127 90,127 75,86"></polygon>
           <polygon class="axis-shape" id="latest-axis-shape"></polygon>
           <circle data-axis="floral" r="3"></circle>
           <circle data-axis="citrus" r="3"></circle>
           <circle data-axis="woody" r="3"></circle>
           <circle data-axis="spicy" r="3"></circle>
           <circle data-axis="musk" r="3"></circle>
+          <text class="axis-label" x="110" y="18" text-anchor="middle">フローラル</text>
+          <text class="axis-label" x="198" y="80" text-anchor="middle">シトラス</text>
+          <text class="axis-label" x="154" y="184" text-anchor="middle">ウッディ</text>
+          <text class="axis-label" x="66" y="184" text-anchor="middle">スパイシー</text>
+          <text class="axis-label" x="22" y="80" text-anchor="middle">ムスク</text>
         </svg>
       `;
     }
     const shape = $("latest-axis-shape");
     if (!shape) return;
-    const points = PORTAL_AXIS_KEYS.map((key) => getPortalAxisPoint(key, axes[key]));
+    const points = PORTAL_AXIS_KEYS.map((key) => getPortalAxisPoint(key, values[key]));
     shape.setAttribute("points", points.map(([x, y]) => `${x},${y}`).join(" "));
     document.querySelectorAll(".customer-axis-preview [data-axis]").forEach((circle) => {
       const axis = circle.dataset.axis;
       if (!PORTAL_AXIS_KEYS.includes(axis)) return;
-      const [x, y] = getPortalAxisPoint(axis, axes[axis]);
+      const [x, y] = getPortalAxisPoint(axis, values[axis]);
       circle.setAttribute("cx", String(x));
       circle.setAttribute("cy", String(y));
     });
@@ -332,6 +334,39 @@
     `).join("");
   }
 
+  function closePortalMenu() {
+    const menu = $("customer-portal-menu");
+    const toggle = $("customer-portal-menu-toggle");
+    menu?.classList.remove("is-open");
+    toggle?.setAttribute("aria-expanded", "false");
+  }
+
+  function scrollPortalTarget(target) {
+    if (target === "top") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    document.getElementById(target)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function initPortalMenu() {
+    const menu = $("customer-portal-menu");
+    const toggle = $("customer-portal-menu-toggle");
+    toggle?.addEventListener("click", () => {
+      const isOpen = menu?.classList.toggle("is-open");
+      toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    });
+    document.querySelectorAll("[data-scroll-target]").forEach((button) => {
+      button.addEventListener("click", () => {
+        scrollPortalTarget(button.dataset.scrollTarget);
+        closePortalMenu();
+      });
+    });
+    document.querySelectorAll("[data-customer-logout]").forEach((button) => {
+      button.addEventListener("click", () => window.FragrancePublicData?.signOutCustomer?.());
+    });
+  }
+
   async function initPortal() {
     const status = $("portal-status");
     if (!window.isSupabaseConfigured?.()) {
@@ -366,13 +401,15 @@
         status.dataset.tone = "error";
       }
     }
-    $("logout-button")?.addEventListener("click", () => window.FragrancePublicData?.signOutCustomer?.());
   }
 
   function init() {
     const page = document.body?.dataset.page;
     if (page === "customer-login") initLogin();
-    if (page === "customer-portal") initPortal();
+    if (page === "customer-portal") {
+      initPortalMenu();
+      initPortal();
+    }
   }
 
   if (document.readyState === "loading") {
