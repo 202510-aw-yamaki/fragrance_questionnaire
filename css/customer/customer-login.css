@@ -21,7 +21,7 @@ body[data-page="customer-login"] .site-header {
 
 .customer-login-main {
   min-height: calc(100vh - 78px);
-  padding: 64px 0 72px;
+  padding: 16px 0px;
   background:
     linear-gradient(90deg, rgba(255, 251, 245, 0.18), rgba(255, 251, 245, 0.28)),
     url("../../img/costomer/customer_back.png") center / cover no-repeat;
@@ -126,8 +126,7 @@ body[data-page="customer-login"] .site-header {
 .customer-login-setup-note {
   max-width: 330px;
   margin: 0;
-  color: var(--muted);
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.8;
   text-align: center;
 }
