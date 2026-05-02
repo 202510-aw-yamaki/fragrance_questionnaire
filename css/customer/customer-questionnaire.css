@@ -192,7 +192,6 @@ body[data-page="questionnaire"] .option-button {
   grid-template-columns: 96px minmax(0, 1fr);
   gap: 22px;
   align-items: center;
-  padding: 20px 30px;
   overflow: hidden;
   border: 1px solid rgba(222, 185, 133, 0.56);
   border-radius: 9px;
@@ -215,10 +214,7 @@ body[data-page="questionnaire"] .option-button::before {
 
 body[data-page="questionnaire"] .option-button[style] {
   min-height: 0;
-  aspect-ratio: 1.08 / 1;
   display: flex;
-  align-items: flex-end;
-  padding: 20px;
   background-color: rgba(255, 255, 255, 0.08);
   background-size: cover;
   background-position: center;
@@ -274,12 +270,13 @@ body[data-page="questionnaire"] .option-label {
 
 body[data-page="questionnaire"] .option-button[style] .option-label {
   width: 100%;
-  padding: 10px 12px;
-  border-radius: 0;
-  background: transparent;
-  font-size: clamp(18px, 1.8vw, 24px);
+  border-radius: 20px;
+  background: rgb(255 255 255 / 50%);
+  font-size: clamp(16px, 1.8vw, 24px);
   line-height: 1.45;
-  text-align: left;
+  text-align: center;
+  font-weight: bold;
+  pdding: 10px;
 }
 
 body[data-page="questionnaire"] .option-check {
@@ -316,6 +313,8 @@ body[data-page="questionnaire"] .option-button:not([style]) {
   grid-template-columns: 1fr;
   background: rgba(255, 255, 255, 0.52);
   box-shadow: none;
+  display: flex;
+  justify-content: center;
 }
 
 body[data-page="questionnaire"] .option-button:not([style]) .option-label {
@@ -365,7 +364,6 @@ body[data-page="questionnaire"] .question-reflection-note {
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.74);
   color: #4d3a30;
-  font-size: 18px;
   font-weight: 600;
 }
 
@@ -383,8 +381,8 @@ body[data-page="questionnaire"] .question-reflection-note::before {
 }
 
 body[data-page="questionnaire"] .page-hero-aside {
-  padding: 28px 22px 26px;
-  align-self: start;
+  padding: 12px 0px 12px;
+  align-self: flex-end;
   text-align: center;
 }
 
@@ -392,10 +390,7 @@ body[data-page="questionnaire"] .page-hero-aside h2 {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  margin: 0 0 14px;
   font-family: var(--serif);
-  font-size: 28px;
   font-weight: 500;
   color: #332017;
 }
@@ -410,7 +405,7 @@ body[data-page="questionnaire"] .page-hero-aside h2::after {
 
 body[data-page="questionnaire"] .page-hero-aside .admin-note {
   margin: 0 auto 18px;
-  max-width: 300px;
+  max-width: 270px;
   color: #574234;
   font-size: 16px;
   line-height: 1.8;
