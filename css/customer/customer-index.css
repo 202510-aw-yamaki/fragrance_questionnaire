@@ -201,7 +201,6 @@ body[data-page="customer-portal"] .brand-logo-mark img {
   display: grid;
   grid-template-columns: minmax(130px, 42%) minmax(0, 1fr);
   gap: 20px;
-  padding-top: 14px;
   flex: 1;
   align-content: center
 }
@@ -279,10 +278,12 @@ body[data-page="customer-portal"] .brand-logo-mark img {
 .customer-axis-preview {
   width: min(260px, 100%);
   margin: 0 auto;
+  display: flex;
+  justify-content: center;
 }
 
 .customer-axis-preview svg {
-  width: 100%;
+  width: 60%;
   height: auto;
   overflow: visible;
 }
@@ -416,10 +417,10 @@ body[data-page="customer-portal"] .brand-logo-mark img {
 }
 
 .customer-history-list .admin-empty {
-  min-height: 390px;
+  min-height: 320px;
   display: grid;
   place-items: center;
-  margin: 0;
+  margin: 0px 0px 12px 0px;
   border: 1px solid rgba(232, 208, 180, 0.82);
   border-radius: 14px;
   background: rgba(255, 253, 249, 0.72);
