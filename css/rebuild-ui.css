@@ -1700,6 +1700,8 @@ details.card .admin-note {
   overflow: hidden;
   background: #fffdf8;
   border-radius:26px;
+  padding: 0px;
+  width: stretch;
 }
 
 .final-cta-card::before {
