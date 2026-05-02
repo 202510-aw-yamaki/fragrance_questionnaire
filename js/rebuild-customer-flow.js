@@ -13,6 +13,7 @@
   const DRAFT_KEY = "fragranceReservationDraft";
   const CONFIRMATION_KEY = "fragranceReservationConfirmation";
   const DEFAULT_AXES = { floral: 56, fresh: 58, woody: 45, spicy: 36, sweet: 52 };
+  const ANSWER_ORDER = ["A", "B", "C", "D", "ALL", "NONE"];
 
   const STEP1_QUESTIONS = [
     {
@@ -189,6 +190,42 @@
     }
   }
 
+  function getQuestionTextOverride(config, kind, questionId, branch) {
+    const root = config?.questionTextOverrides || config?.questionOverrides || {};
+    if (kind === "step2") {
+      return root.step2?.[branch]?.[questionId] || root.step2?.[questionId] || null;
+    }
+    if (kind === "q8") {
+      return root.q8?.[questionId] || root.q8 || null;
+    }
+    return root.step1?.[questionId] || root[questionId] || null;
+  }
+
+  function mergeOptionsWithOverride(options, override) {
+    const optionMap = new Map(options.map(([key, label, image]) => [key, { key, label, image }]));
+    const overrideAnswers = override?.answers || {};
+    Object.keys(overrideAnswers).forEach((key) => {
+      if (!optionMap.has(key)) optionMap.set(key, { key, label: "", image: "" });
+    });
+    return Array.from(optionMap.values())
+      .sort((a, b) => {
+        const orderA = ANSWER_ORDER.indexOf(a.key);
+        const orderB = ANSWER_ORDER.indexOf(b.key);
+        return (orderA === -1 ? 99 : orderA) - (orderB === -1 ? 99 : orderB);
+      })
+      .map(({ key, label, image }) => [key, overrideAnswers[key] || label, image]);
+  }
+
+  function getStep1Question(question, config) {
+    const override = getQuestionTextOverride(config, "step1", question.id);
+    return {
+      ...question,
+      title: override?.title || question.title,
+      caption: override?.caption || question.caption,
+      options: mergeOptionsWithOverride(question.options, override)
+    };
+  }
+
   function renderMiniRadar(axes, targetId = "axis-preview") {
     const mount = $(targetId);
     if (!mount) return;
@@ -228,13 +265,13 @@
     const prevBtn = $("header-prev-btn");
 
     function render() {
-      const question = STEP1_QUESTIONS[current];
+      const question = getStep1Question(STEP1_QUESTIONS[current], config);
       setQuestionText(question);
       renderProgress(current + 1, STEP1_QUESTIONS.length);
       if (optionList) {
         optionList.innerHTML = question.options.map(([key, label, image]) => `
           <button class="option-button ${answers[question.id] === key ? "is-selected" : ""}" type="button" data-answer-key="${key}">
-            <img class="option-art" src="${imagePath(image)}" alt="">
+            ${image ? `<img class="option-art" src="${imagePath(image)}" alt="">` : ""}
             <span>${label}</span>
           </button>
         `).join("");
@@ -257,7 +294,7 @@
       render();
     });
     nextBtn?.addEventListener("click", () => {
-      const question = STEP1_QUESTIONS[current];
+      const question = getStep1Question(STEP1_QUESTIONS[current], config);
       if (!answers[question.id]) {
         answers[question.id] = question.options[0][0];
         writeJson(STEP1_ANSWERS_KEY, answers);
@@ -289,6 +326,23 @@
     return { id, title, caption: "仕上がりの印象に近いものを選んでください。", options };
   }
 
+  function step2OptionsWithOverride(branch, index, config) {
+    const question = step2Options(branch, index);
+    if (!question) return null;
+    const override = getQuestionTextOverride(
+      config,
+      question.id === "Q8" ? "q8" : "step2",
+      question.id,
+      branch
+    );
+    return {
+      ...question,
+      title: override?.title || question.title,
+      caption: question.caption,
+      options: mergeOptionsWithOverride(question.options, override)
+    };
+  }
+
   async function initQuestionnaireStep2() {
     const config = await cacheActiveConfig();
     let state = readJson(SCORE_STATE_KEY, {});
@@ -304,7 +358,8 @@
     const prevBtn = $("header-prev-btn");
 
     function render() {
-      const question = step2Options(branch, current);
+      const question = step2OptionsWithOverride(branch, current, config);
+      if (!question) return;
       setQuestionText(question);
       renderProgress(current + 1, total);
       if ($("step2-status")) $("step2-status").textContent = `現在の方向性: ${AXIS_LABELS[branch] || "フローラル"}`;
@@ -373,7 +428,8 @@
       render();
     });
     nextBtn?.addEventListener("click", async () => {
-      const question = step2Options(branch, current);
+      const question = step2OptionsWithOverride(branch, current, config);
+      if (!question) return;
       if (!answers[question.id]) answers[question.id] = question.options[0][0];
       if (current < total - 1) {
         current += 1;

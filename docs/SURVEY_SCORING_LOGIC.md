@@ -80,6 +80,12 @@
 実装初期値は `js/fragrance-master-data.js` の `SCORING_LOGIC_SOURCE = deep-research-report-ver.1.1.md`、`SCORING_LOGIC_VERSION = 2026-04-29` を正とする。
 公開ページは Supabase の active `scoring_configs` を優先するため、DB側に古い active config が残っている場合は、この初期値を管理画面から保存し直す必要がある。
 
+### 2026-05-02 追記: Question_template.md の表示文言
+
+ユーザー要望により、`docs/Question_template.md` の質問文と回答文は `scoring_configs.config_json.questionTextOverrides` に保持する。
+配点の内部キーは `A` / `B` / `C` / `D` / `ALL` / `NONE` のまま維持し、公開アンケート画面は active `scoring_configs` の `questionTextOverrides` を優先して表示する。
+`questionTextOverrides` がない場合は、画面側のローカル定義へ fallback する。
+
 | 設問 | 回答キー | floral | fresh | woody | spicy | sweet |
 |---|---|---:|---:|---:|---:|---:|
 | Q1 最初の香り立ち | A せっけんや水のようにみずみずしい | +1 | +8 | -2 | -2 | 0 |
