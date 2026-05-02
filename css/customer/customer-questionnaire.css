@@ -440,7 +440,7 @@ body[data-page="questionnaire"] #axis-preview .plain-list {
   }
 
   body[data-page="questionnaire"] .page-hero-aside {
-    max-width: 420px;
+    display: none;
   }
 }
 
