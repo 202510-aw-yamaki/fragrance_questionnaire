@@ -426,7 +426,10 @@ body[data-page="questionnaire-step2"] #return-top-btn-mobile {
 }
 
 body[data-page="questionnaire-step2"] .questionnaire-step2-aside {
-  padding: 22px 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 30px 22px 28px;
   align-self: end;
   text-align: center;
 }
@@ -461,7 +464,7 @@ body[data-page="questionnaire-step2"] .questionnaire-step2-aside .admin-note {
 
 body[data-page="questionnaire-step2"] #axis-preview {
   display: grid;
-  gap: 16px;
+  gap: 18px;
 }
 
 body[data-page="questionnaire-step2"] #axis-preview .radar {
@@ -470,7 +473,7 @@ body[data-page="questionnaire-step2"] #axis-preview .radar {
 
 body[data-page="questionnaire-step2"] #axis-preview .plain-list {
   display: grid;
-  gap: 14px;
+  gap: 22px;
   text-align: left;
 }
 
@@ -495,11 +498,11 @@ body[data-page="questionnaire-step2"] #axis-preview .axis-meter {
   --axis-end: #e78b8b;
   --axis-marker: #d98080;
   position: relative;
-  height: 18px;
+  height: 22px;
   display: block;
   background:
-    linear-gradient(90deg, var(--axis-start), var(--axis-end)) left 50% / var(--axis-value, 50%) 4px no-repeat,
-    linear-gradient(var(--axis-track), var(--axis-track)) left 50% / 100% 4px no-repeat;
+    linear-gradient(90deg, var(--axis-start), var(--axis-end)) left 50% / var(--axis-value, 50%) 7px no-repeat,
+    linear-gradient(var(--axis-track), var(--axis-track)) left 50% / 100% 12px no-repeat;
   border-radius: 999px;
 }
 
@@ -538,10 +541,10 @@ body[data-page="questionnaire-step2"] #axis-preview .axis-meter::after {
   position: absolute;
   top: 50%;
   left: var(--axis-value, 50%);
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   transform: translate(-50%, -50%);
-  border: 1.5px solid var(--axis-marker);
+  border: 2px solid var(--axis-marker);
   border-radius: 999px;
   background: rgba(255, 250, 246, 0.95);
   box-shadow: 0 1px 4px rgba(132, 81, 50, 0.12);
