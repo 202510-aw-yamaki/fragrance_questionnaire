@@ -990,6 +990,7 @@ body[data-page="staff-slots"] .staff-main::before {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+  margin-top: 80px;
 }
 
 .staff-slot-actions .admin-btn {
@@ -1393,6 +1394,10 @@ body[data-page="staff-slots"] .staff-main::before {
 
   .staff-slots-list-panel {
     grid-column: auto;
+  }
+
+  .staff-slot-actions {
+    margin-top: 0;
   }
 
   .staff-bulk-form-grid {
