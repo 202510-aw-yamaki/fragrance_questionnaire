@@ -374,7 +374,8 @@ body[data-page="questionnaire-step2"] #step2-status {
 
 body[data-page="questionnaire-step2"] .question-footer {
   display: grid;
-  grid-template-columns: minmax(240px, 460px);
+  grid-template-columns: minmax(240px, 460px) minmax(220px, 320px);
+  gap: 28px;
   justify-content: center;
   align-items: center;
   margin-top: 34px;
@@ -390,6 +391,33 @@ body[data-page="questionnaire-step2"] #header-next-btn {
   font-size: 32px;
   letter-spacing: 0;
   box-shadow: 0 12px 26px rgba(201, 102, 109, 0.24);
+}
+
+body[data-page="questionnaire-step2"] .question-reflection-note {
+  min-height: 62px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0;
+  border: 1px solid rgba(218, 181, 130, 0.62);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.74);
+  color: #4d3a30;
+  font-weight: 600;
+}
+
+body[data-page="questionnaire-step2"] .question-reflection-note::before {
+  content: "i";
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #cda56f;
+  border-radius: 50%;
+  font-family: var(--serif);
+  color: #a1713a;
 }
 
 body[data-page="questionnaire-step2"] #return-top-btn,
