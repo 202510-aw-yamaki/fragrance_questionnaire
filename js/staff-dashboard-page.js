@@ -10,6 +10,8 @@
   const nextButton = document.getElementById("staff-day-next");
   const kpiTodayEl = document.getElementById("staff-kpi-today");
   const kpiWeekEl = document.getElementById("staff-kpi-week");
+  const unconfirmedCountEl = document.getElementById("staff-unconfirmed-count");
+  const shippingPendingCountEl = document.getElementById("staff-shipping-pending-count");
   const missingPrimaryEl = document.getElementById("staff-missing-primary");
   const missingSecondaryEl = document.getElementById("staff-missing-secondary");
   const missingNoteEl = document.getElementById("staff-missing-note");
@@ -30,6 +32,7 @@
   let reservations = [];
   let slots = [];
   let qrNotifications = [];
+  let qrRequests = [];
   let openQrCount = 0;
 
   function createLocalDate(date) {
@@ -326,10 +329,14 @@
 
     const reservationSlotMap = new Map(activeSlots.map((slot) => [slot.id, slot]));
     const todayReservations = activeReservations.filter((row) => reservationSlotMap.get(row.slot_id)?.slot_date === todayKey);
+    const unconfirmedReservations = todayReservations.filter((row) => row.status === "confirmed" || row.status === "requested" || !row.status);
     const todaySlots = activeSlots.filter((slot) => slot.slot_date === todayKey);
+    const shippingPendingRows = qrRequests.filter((row) => row.status === "shipping_pending");
 
     kpiTodayEl.textContent = String(todayReservations.length);
+    if (unconfirmedCountEl) unconfirmedCountEl.textContent = String(unconfirmedReservations.length);
     kpiWeekEl.textContent = `${todayReservations.length}/${todaySlots.length}`;
+    if (shippingPendingCountEl) shippingPendingCountEl.textContent = String(shippingPendingRows.length);
   }
 
   function renderQrNotifications() {
@@ -361,7 +368,7 @@
   }
 
   async function loadBaseData() {
-    const [reservationRows, slotRows, notificationRows] = await Promise.all([
+    const [reservationRows, slotRows, notificationRows, requestRows] = await Promise.all([
       window.AdminData.listRows("reservations", { orders: [{ column: "created_at", ascending: false }] }).catch(() => []),
       window.AdminData.listRows("reservation_slots", {
         orders: [{ column: "slot_date", ascending: true }, { column: "slot_time", ascending: true }]
@@ -373,11 +380,17 @@
         ],
         orders: [{ column: "created_at", ascending: false }],
         limit: 5
+      }).catch(() => []),
+      window.AdminData.listRows("qr_product_requests", {
+        filters: [{ operator: "eq", column: "status", value: "shipping_pending" }],
+        orders: [{ column: "created_at", ascending: false }],
+        select: "id, status, fragrance_product_id, created_at"
       }).catch(() => [])
     ]);
     reservations = reservationRows || [];
     slots = slotRows || [];
     qrNotifications = notificationRows || [];
+    qrRequests = requestRows || [];
   }
 
   prevButton.addEventListener("click", () => {

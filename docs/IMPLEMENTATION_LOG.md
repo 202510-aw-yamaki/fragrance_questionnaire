@@ -852,3 +852,20 @@
 - 確認:
   - `node --check js/staff-dashboard-page.js`
   - Playwrightでスタブデータを使い、QR通知0件時は右上0/下部空表示、QR通知2件時は右上2/下部2件表示、予約枠利用の `予約数/枠数` 表示、390px表示を確認。
+
+### 2026-05-03 スタッフダッシュボードの未確認予約KPI復帰と発送準備中追加
+- 対象:
+  - `staff/staff-dashboard.html`
+  - `css/rebuild-ui.css`
+  - `js/staff-dashboard-page.js`
+- 背景:
+  - ユーザー確認で、前回調整により未確認予約のKPIが見えなくなったため、おおもとの未確認予約も残す要望があった。
+  - KPIが5枚になる場合はレスポンシブで扱いづらいため、「発送準備中」カードを追加して6枚構成にする要望があった。
+- 実装:
+  - KPIを `本日の予約 / 未確認予約 / 予約枠利用 / QR作成依頼 / 発送準備中 / 予約枠未作成` の6枚構成へ変更した。
+  - 未確認予約は当日予約のうち `confirmed`、`requested`、またはstatus未設定の件数として表示する。
+  - 発送準備中は `qr_product_requests.status = shipping_pending` を既存RLSの範囲で取得して表示する。
+  - デスクトップのKPIグリッドを3列2行に変更し、偶数枚でレスポンシブしやすい構成にした。
+- 確認:
+  - `node --check js/staff-dashboard-page.js`
+  - Playwrightでスタブデータを使い、1674px / 1100px / 390px の6枚KPI、未確認予約、予約枠利用、発送準備中、通知件数一致を確認。

@@ -1358,7 +1358,7 @@ body[data-page="staff-dashboard"] .dashboard-grid {
 
 body[data-page="staff-dashboard"] .kpi-grid {
   gap: 12px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 body[data-page="staff-dashboard"] .kpi-card {
