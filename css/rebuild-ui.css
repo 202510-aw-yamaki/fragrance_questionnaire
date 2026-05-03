@@ -610,7 +610,7 @@ body[data-page="home"] .hero-copy {
   position: relative;
   min-height: 100vh;
   overflow: hidden;
-  padding: 24px 0 46px;
+  padding: 0 0 46px;
 }
 
 .admin-login-bg {
@@ -2081,7 +2081,7 @@ details.card .admin-note {
   }
 
   .admin-login-stage {
-    padding-top: 14px;
+    padding-top: 0;
   }
 
   .admin-login-topbar {
