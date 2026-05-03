@@ -342,7 +342,6 @@ body[data-page="questionnaire"] #return-top-btn-mobile {
 }
 
 body[data-page="questionnaire"] #header-next-btn {
-  min-height: 78px;
   border-radius: 12px;
   border: 1px solid rgba(245, 207, 173, 0.78);
   background: linear-gradient(180deg, #e69691, #cf686f);
