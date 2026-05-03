@@ -413,8 +413,8 @@
       brandText: "Staff Dashboard",
       roleLabel: "",
       links: [
-        { href: "staff-slots.html", label: "予約枠作成", key: "slots" },
-        { href: "staff-reservations.html", label: "予約情報一覧", key: "reservations" }
+        { href: "staff-reservations.html", label: "予約一覧", key: "reservations" },
+        { href: "staff-slots.html", label: "予約枠", key: "slots" }
       ]
     });
     await loadBaseData();

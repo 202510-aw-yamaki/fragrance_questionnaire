@@ -1257,6 +1257,7 @@ body[data-page="staff-dashboard"] .staff-main::before {
 }
 
 .staff-dashboard-title,
+body[data-page="staff-dashboard"] .staff-kpi-alert-layout,
 body[data-page="staff-dashboard"] .kpi-grid,
 body[data-page="staff-dashboard"] .dashboard-grid {
   position: relative;
@@ -1354,6 +1355,13 @@ body[data-page="staff-dashboard"] .dashboard-grid {
 .staff-date-switcher strong {
   min-width: 120px;
   text-align: center;
+}
+
+body[data-page="staff-dashboard"] .staff-kpi-alert-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  gap: 14px;
+  align-items: start;
 }
 
 body[data-page="staff-dashboard"] .kpi-grid {
@@ -1506,14 +1514,11 @@ body[data-page="staff-dashboard"] #staff-missing-secondary .admin-chip {
 }
 
 .staff-slot-alert {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: minmax(260px, 0.9fr) minmax(0, 1.4fr) minmax(240px, 0.8fr) auto;
-  gap: 18px;
-  align-items: center;
-  margin-top: 16px;
-  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: flex-start;
+  padding: 18px;
   border-color: rgba(211, 139, 44, 0.45);
   background: rgba(255, 247, 236, 0.96);
 }
@@ -1524,13 +1529,13 @@ body[data-page="staff-dashboard"] #staff-missing-secondary .admin-chip {
 
 .staff-slot-alert-head {
   display: flex;
-  align-items: center;
-  gap: 14px;
+  align-items: flex-start;
+  gap: 12px;
 }
 
 .staff-alert-icon {
-  width: 46px;
-  height: 46px;
+  width: 42px;
+  height: 42px;
   display: grid;
   place-items: center;
   flex: 0 0 auto;
@@ -1545,39 +1550,42 @@ body[data-page="staff-dashboard"] #staff-missing-secondary .admin-chip {
 }
 
 .staff-slot-alert-head p {
-  margin: 0 0 4px;
-  color: var(--gold-dark);
-  font-weight: 800;
+  display: none;
 }
 
 .staff-slot-alert-head strong {
   color: var(--ink);
   font-family: var(--serif);
-  font-size: 20px;
+  font-size: 18px;
+  line-height: 1.35;
 }
 
 .staff-missing-chip-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  display: grid;
+  gap: 7px;
 }
 
 body[data-page="staff-dashboard"] #staff-missing-secondary.staff-missing-chip-list .admin-chip {
-  width: auto;
+  width: 100%;
+  justify-content: center;
   border: 1px solid rgba(211, 139, 44, 0.3);
   border-radius: 999px;
   background: rgba(255, 253, 249, 0.92);
-  padding: 7px 11px;
+  padding: 7px 10px;
 }
 
 .staff-slot-alert .admin-note {
+  display: none;
   margin: 0;
   padding: 0;
   background: transparent;
-  line-height: 1.6;
 }
 
 .staff-slot-alert-action {
+  width: 100%;
+  min-height: 40px;
+  justify-content: center;
+  padding: 8px 12px;
   white-space: nowrap;
 }
 
@@ -2278,6 +2286,10 @@ details.card .admin-note {
 
   body[data-page="staff-dashboard"] .kpi-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body[data-page="staff-dashboard"] .staff-kpi-alert-layout {
+    grid-template-columns: 1fr;
   }
 
   body[data-page="staff-dashboard"] .dashboard-grid.section {
