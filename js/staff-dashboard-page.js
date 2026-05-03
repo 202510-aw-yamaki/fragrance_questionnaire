@@ -315,7 +315,10 @@
     }
 
     if (slotAlertEl) slotAlertEl.hidden = false;
-    missingSecondaryEl.innerHTML = missingDates.map((label) => `<span class="admin-chip">${label}</span>`).join("");
+    const displayDates = missingDates.length >= 4
+      ? missingDates.slice(0, 3).concat("要確認")
+      : missingDates;
+    missingSecondaryEl.innerHTML = displayDates.map((label) => `<span class="admin-chip">${label}</span>`).join("");
     if (missingNoteEl) {
       missingNoteEl.hidden = false;
       missingNoteEl.textContent = "向こう2週間のうち、担当日の予約枠が未作成の日があります。公開予約に出す前に枠を作成してください。";

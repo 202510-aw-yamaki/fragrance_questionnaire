@@ -889,3 +889,19 @@
   - `node --check js/staff-dashboard-page.js`
   - `git diff --check`
   - Playwrightで1024px表示時にKPI幅647px、アラート幅323pxの2:1配置、通知リンク非表示、未作成日チップの縦並び、補足p非表示を確認。
+
+### 2026-05-04 スタッフダッシュボードの未作成日チップ上限調整
+- 対象:
+  - `staff/staff-dashboard.html`
+  - `css/rebuild-ui.css`
+  - `js/staff-dashboard-page.js`
+- 背景:
+  - ユーザー確認で、予約枠作成アラートの見出しを「予約枠が未作成！」へ短縮し、日付表示は最大4枚の2行×2列にして、4日以上ある場合は4枚目に「要確認」を表示する要望があった。
+- 実装:
+  - アラート見出しを「予約枠が未作成！」へ変更した。
+  - 未作成日が4日以上ある場合、表示チップを先頭3日分と「要確認」の4枚に制限した。
+  - 未作成日チップを2列グリッド化し、アラートの余白を調整してKPIエリアと高さを揃えた。
+- 確認:
+  - `node --check js/staff-dashboard-page.js`
+  - `git diff --check`
+  - Playwrightで1024px表示時にKPI高さ212px、アラート高さ212px、2×2チップと「要確認」表示を確認。
