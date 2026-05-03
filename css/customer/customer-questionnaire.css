@@ -212,7 +212,7 @@ body[data-page="questionnaire"] .option-button::before {
 }
 
 body[data-page="questionnaire"] .option-button[style] {
-  min-height: 0;
+  min-height: 120px;
   display: flex;
   background-color: rgba(255, 255, 255, 0.08);
   background-size: cover;
