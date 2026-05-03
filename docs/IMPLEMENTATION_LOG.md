@@ -674,3 +674,21 @@
   - `node --check js/rebuild-customer-flow.js`
   - `git diff --check`
   - Playwright screenshot 913x909 / 820x1180
+
+### 2026-05-03 会員比較ページの前回データなし表示と初期値復帰
+- 対象:
+  - `customer/fragrance-compare.html`
+  - `css/customer/customer-fragrance-compare.css`
+  - `js/rebuild-customer-flow.js`
+  - `docs/SPEC.md`
+- 背景:
+  - ブラウザ注釈で、前回完成品の5軸データがない場合のページ見出し・説明文の切り替え、今回グラフ直下への「初期値に戻す」ボタン追加、詳細モーダルの縦積み順と前回データ非表示の要望があった。
+- 実装:
+  - 前回完成品の5軸データがない場合、ページ見出しを「今回のアンケート結果」に変更し、比較説明文を非表示にするJS制御を追加。
+  - 今回グラフ直下に「初期値に戻す」ボタンを追加し、`resetAxes` を優先してアンケート完了時点の5軸へ戻すようにした。
+  - 詳細モーダルの前回・今回グラフに専用クラスを付け、860px以下では今回を上、前回データなしでは前回を非表示にするCSSを追加。
+  - 仕様追記として、前回データなし表示、初期値復帰、詳細モーダルの表示順を `docs/SPEC.md` に追記。
+- 確認:
+  - `node --check js/rebuild-customer-flow.js`
+  - `git diff --check`
+  - Playwright screenshot 820x1180 / modal

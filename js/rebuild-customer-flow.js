@@ -1065,7 +1065,13 @@
 
   async function initCompare() {
     const state = readJson(SCORE_STATE_KEY, {});
+    const initialCurrentAxes = normalizeResultAxes(state?.resetAxes)
+      || normalizeResultAxes(state?.finalAxes)
+      || normalizeResultAxes(state?.axesAfterStep2)
+      || getCurrentResultAxes(state);
     let currentAxes = getCurrentResultAxes(state);
+    const pageTitleEl = $("compare-page-title");
+    const pageLeadEl = $("compare-page-lead");
     const statusEl = $("compare-status");
     const previousNameEl = $("compare-previous-name");
     const previousMetaEl = $("compare-previous-meta");
@@ -1076,6 +1082,7 @@
     const detailOpen = $("compare-detail-open");
     const detailModal = $("compare-detail-modal");
     const reserveLink = $("compare-reserve-link");
+    const resetButton = $("compare-reset-button");
     let previousProduct = null;
     let previousAxes = null;
 
@@ -1222,6 +1229,12 @@
       writeJson(SCORE_STATE_KEY, { ...readJson(SCORE_STATE_KEY, {}), adjustedAxes: currentAxes, finalAxes: currentAxes });
     }
 
+    function syncCompareHeading() {
+      const hasPrevious = Boolean(previousAxes);
+      if (pageTitleEl) pageTitleEl.textContent = hasPrevious ? "前回と今回の香り比較" : "今回のアンケート結果";
+      if (pageLeadEl) pageLeadEl.hidden = !hasPrevious;
+    }
+
     function renderModalDetails() {
       renderCompareRadar("compare-modal-previous", previousAxes);
       renderCompareRadar("compare-modal-current", currentAxes);
@@ -1239,10 +1252,12 @@
       previousProduct = (data?.products || []).find((row) => getProductAxes(row)) || null;
       previousAxes = getProductAxes(previousProduct);
       document.body?.classList.toggle("has-no-previous-axes", !previousAxes);
+      syncCompareHeading();
       setStatus([]);
     } catch (error) {
       console.error("Failed to load fragrance comparison data.", error);
       document.body?.classList.add("has-no-previous-axes");
+      syncCompareHeading();
       setStatus(["比較データを取得できませんでした。"], "error");
     }
 
@@ -1255,6 +1270,14 @@
     if (currentMetaEl) currentMetaEl.textContent = state.questionnaireCompletedAt ? `回答日 ${formatDate(state.questionnaireCompletedAt)}` : "アンケート回答後に表示されます";
     renderCompareRadar("compare-previous", previousAxes);
     renderCompareState();
+
+    if (resetButton) resetButton.hidden = !initialCurrentAxes;
+    resetButton?.addEventListener("click", () => {
+      if (!initialCurrentAxes) return;
+      currentAxes = { ...initialCurrentAxes };
+      persistCompareAxes();
+      renderCompareState();
+    });
 
     if (reserveLink && !currentAxes) {
       reserveLink.href = "questionnaire.html";

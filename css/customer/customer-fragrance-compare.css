@@ -205,6 +205,26 @@ body[data-page="fragrance-compare"] .compare-radar {
   overflow: visible;
 }
 
+body[data-page="fragrance-compare"] .compare-reset-button {
+  min-width: 126px;
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(223, 152, 83, 0.78);
+  border-radius: 8px;
+  background: rgba(255, 252, 247, 0.84);
+  color: #7a4b3d;
+  font-family: var(--serif);
+  font-size: 15px;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+body[data-page="fragrance-compare"] .compare-reset-button[hidden] {
+  display: none;
+}
+
 body[data-page="fragrance-compare"] .compare-radar polygon[id$="-grid"] polygon,
 body[data-page="fragrance-compare"] .compare-radar g[id$="-grid"] polygon {
   stroke-dasharray: 2 3;
@@ -426,6 +446,10 @@ body[data-page="fragrance-compare"] .compare-modal-radars article {
   min-width: 0;
 }
 
+body[data-page="fragrance-compare"].has-no-previous-axes .compare-modal-radar-panel--previous {
+  display: none;
+}
+
 body[data-page="fragrance-compare"] .compare-modal-comment {
   margin: 0;
   padding: 20px 22px;
@@ -577,6 +601,10 @@ body[data-page="fragrance-compare"] .compare-modal-comment {
   body[data-page="fragrance-compare"] .compare-modal-radars {
     grid-template-columns: 1fr;
     gap: 8px;
+  }
+
+  body[data-page="fragrance-compare"] .compare-modal-radar-panel--current {
+    order: -1;
   }
 
   body[data-page="fragrance-compare"] .compare-modal-radars .compare-radar {

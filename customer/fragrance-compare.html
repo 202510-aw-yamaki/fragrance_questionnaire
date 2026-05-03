@@ -18,8 +18,8 @@
   <main class="compare-main">
     <div class="compare-shell">
       <section class="compare-title">
-        <h1>前回と今回の香り比較</h1>
-        <p>前回の完成品と今回のアンケート結果を並べて、香りの変化を確認できます。</p>
+        <h1 id="compare-page-title">前回と今回の香り比較</h1>
+        <p id="compare-page-lead">前回の完成品と今回のアンケート結果を並べて、香りの変化を確認できます。</p>
       </section>
       <section class="compare-layout" aria-label="香り比較">
         <div class="compare-main-column">
@@ -48,6 +48,7 @@
                 <polygon id="compare-current-shape" fill="rgba(228,128,128,.23)" stroke="#e48188" stroke-width="3"></polygon>
                 <g id="compare-current-dots" fill="#e48188"></g>
               </svg>
+              <button class="compare-reset-button" id="compare-reset-button" type="button">初期値に戻す</button>
             </article>
           </section>
 
@@ -73,7 +74,7 @@
         <span class="compare-divider" aria-hidden="true"></span>
       </div>
       <div class="compare-modal-radars" aria-label="前回と今回の5軸グラフ">
-        <article>
+        <article class="compare-modal-radar-panel compare-modal-radar-panel--previous">
           <p class="compare-kicker">前回の完成品</p>
           <svg class="compare-radar" viewBox="0 0 360 360" role="img" aria-label="前回の詳細5軸">
             <g id="compare-modal-previous-grid" fill="none" stroke="#e5c08f"></g>
@@ -83,7 +84,7 @@
             <g id="compare-modal-previous-dots" fill="#89966e"></g>
           </svg>
         </article>
-        <article>
+        <article class="compare-modal-radar-panel compare-modal-radar-panel--current">
           <p class="compare-kicker">今回の診断結果</p>
           <svg class="compare-radar" viewBox="0 0 360 360" role="img" aria-label="今回の詳細5軸">
             <g id="compare-modal-current-grid" fill="none" stroke="#e5c08f"></g>
