@@ -195,16 +195,16 @@ body[data-page="questionnaire-step2"] .option-grid {
   gap: 18px;
 }
 
-body[data-page="questionnaire-step2"][data-step2-question="Q6"] .questionnaire-step2-options {
+body[data-page="questionnaire-step2"][data-step2-question] .questionnaire-step2-options {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
 }
 
-body[data-page="questionnaire-step2"][data-step2-question="Q6"] .option-grid {
+body[data-page="questionnaire-step2"][data-step2-question] .option-grid {
   display: contents;
 }
 
-body[data-page="questionnaire-step2"][data-step2-question="Q6"] .option-button {
+body[data-page="questionnaire-step2"][data-step2-question] .option-button {
   position: relative;
   min-height: 120px;
   display: flex;
@@ -220,7 +220,7 @@ body[data-page="questionnaire-step2"][data-step2-question="Q6"] .option-button {
   box-shadow: 0 14px 28px rgba(122, 83, 48, 0.05);
 }
 
-body[data-page="questionnaire-step2"][data-step2-question="Q6"] .option-button.has-option-background {
+body[data-page="questionnaire-step2"][data-step2-question] .option-button.has-option-background {
   min-height: 120px;
   display: flex;
   background-color: rgba(255, 255, 255, 0.08);
@@ -228,18 +228,18 @@ body[data-page="questionnaire-step2"][data-step2-question="Q6"] .option-button.h
   background-position: center;
 }
 
-body[data-page="questionnaire-step2"][data-step2-question="Q6"] .option-button:hover,
-body[data-page="questionnaire-step2"][data-step2-question="Q6"] .option-button:focus-visible {
+body[data-page="questionnaire-step2"][data-step2-question] .option-button:hover,
+body[data-page="questionnaire-step2"][data-step2-question] .option-button:focus-visible {
   border-color: #d49235;
   box-shadow: 0 14px 30px rgba(207, 121, 101, 0.12);
 }
 
-body[data-page="questionnaire-step2"][data-step2-question="Q6"] .option-button.is-selected {
+body[data-page="questionnaire-step2"][data-step2-question] .option-button.is-selected {
   border-color: #d98f2c;
   background-color: rgba(255, 239, 233, 0.18);
 }
 
-body[data-page="questionnaire-step2"][data-step2-question="Q6"] .option-label {
+body[data-page="questionnaire-step2"][data-step2-question] .option-label {
   position: relative;
   z-index: 1;
   width: 100%;
@@ -285,7 +285,7 @@ body[data-page="questionnaire-step2"] #sub-options {
   display: none;
 }
 
-body[data-page="questionnaire-step2"][data-step2-question="Q6"] #sub-options:not(:empty) {
+body[data-page="questionnaire-step2"][data-step2-question] #sub-options:not(:empty) {
   display: grid;
   grid-template-rows: repeat(2, minmax(0, 1fr));
   gap: 10px;
@@ -294,7 +294,7 @@ body[data-page="questionnaire-step2"][data-step2-question="Q6"] #sub-options:not
   margin-top: 0;
 }
 
-body[data-page="questionnaire-step2"][data-step2-question="Q6"] #sub-options .option-button {
+body[data-page="questionnaire-step2"][data-step2-question] #sub-options .option-button {
   min-height: 0;
   height: 100%;
   display: inline-flex;
@@ -309,19 +309,19 @@ body[data-page="questionnaire-step2"][data-step2-question="Q6"] #sub-options .op
   box-shadow: none;
 }
 
-body[data-page="questionnaire-step2"][data-step2-question="Q6"] #sub-options .option-button:hover,
-body[data-page="questionnaire-step2"][data-step2-question="Q6"] #sub-options .option-button:focus-visible {
+body[data-page="questionnaire-step2"][data-step2-question] #sub-options .option-button:hover,
+body[data-page="questionnaire-step2"][data-step2-question] #sub-options .option-button:focus-visible {
   border-color: #d49235;
 }
 
-body[data-page="questionnaire-step2"][data-step2-question="Q6"] #sub-options .option-button.is-selected {
+body[data-page="questionnaire-step2"][data-step2-question] #sub-options .option-button.is-selected {
   border-color: rgba(217, 143, 44, 0.62);
   background: rgba(255, 239, 233, 0.52);
   color: #8b5145;
   box-shadow: inset 0 0 0 1px rgba(217, 143, 44, 0.28);
 }
 
-body[data-page="questionnaire-step2"][data-step2-question="Q6"] #sub-options .option-label {
+body[data-page="questionnaire-step2"][data-step2-question] #sub-options .option-label {
   width: auto;
   padding: 0;
   background: transparent;
@@ -331,14 +331,14 @@ body[data-page="questionnaire-step2"][data-step2-question="Q6"] #sub-options .op
   box-shadow: none;
 }
 
-body[data-page="questionnaire-step2"][data-step2-question="Q6"] #sub-options .option-check {
+body[data-page="questionnaire-step2"][data-step2-question] #sub-options .option-check {
   right: 8px;
   bottom: 8px;
   width: 24px;
   height: 24px;
 }
 
-body[data-page="questionnaire-step2"][data-step2-question="Q6"] #sub-options .option-check::after {
+body[data-page="questionnaire-step2"][data-step2-question] #sub-options .option-check::after {
   left: 8px;
   top: 5px;
   width: 7px;
@@ -432,6 +432,23 @@ body[data-page="questionnaire-step2"] .questionnaire-step2-aside {
   padding: 30px 22px 28px;
   align-self: end;
   text-align: center;
+}
+
+body[data-page="questionnaire-step2"] .questionnaire-step2-aside.is-trivia {
+  display: block;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+body[data-page="questionnaire-step2"] .questionnaire-step2-aside .questionnaire-trivia-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
 }
 
 body[data-page="questionnaire-step2"] .questionnaire-step2-aside h2 {
@@ -566,21 +583,21 @@ body[data-page="questionnaire-step2"] #axis-preview .axis-meter::after {
     width: min(100% - 28px, 620px);
   }
 
-  body[data-page="questionnaire-step2"][data-step2-question="Q6"] .questionnaire-step2-options {
+  body[data-page="questionnaire-step2"][data-step2-question] .questionnaire-step2-options {
     grid-template-columns: 1fr;
   }
 
-  body[data-page="questionnaire-step2"][data-step2-question="Q6"] .option-button {
+  body[data-page="questionnaire-step2"][data-step2-question] .option-button {
     min-height: 118px;
   }
 
-  body[data-page="questionnaire-step2"][data-step2-question="Q6"] #sub-options:not(:empty) {
+  body[data-page="questionnaire-step2"][data-step2-question] #sub-options:not(:empty) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: auto;
     height: auto;
   }
 
-  body[data-page="questionnaire-step2"][data-step2-question="Q6"] #sub-options .option-button {
+  body[data-page="questionnaire-step2"][data-step2-question] #sub-options .option-button {
     min-height: 42px;
   }
 
@@ -644,7 +661,7 @@ body[data-page="questionnaire-step2"] #axis-preview .axis-meter::after {
     padding: 28px 18px;
   }
 
-  body[data-page="questionnaire-step2"][data-step2-question="Q6"] .option-button {
+  body[data-page="questionnaire-step2"][data-step2-question] .option-button {
     min-height: 112px;
   }
 }

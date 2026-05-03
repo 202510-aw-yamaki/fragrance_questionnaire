@@ -20,6 +20,13 @@
     Q4: "Trivia_Q4.png",
     Q5: "Trivia_Q5.png"
   };
+  const STEP2_TRIVIA_IMAGES = {
+    Q7: {
+      floral: "Trivia_Q7_floral.png",
+      fresh: "Trivia_Q7_flesh.png",
+      woody: "Trivia_Q7_woddy.png"
+    }
+  };
 
   const STEP1_QUESTIONS = [
     {
@@ -463,11 +470,16 @@
   }
 
   function getStep2OptionImage(questionId, branch, answerKey) {
+    if (!["A", "B", "C"].includes(answerKey)) return "";
+    if (questionId === "Q7") return `Q7-${branch}-${answerKey}.png`;
+    if (questionId === "Q8") return `Q8-${answerKey}.png`;
     if (questionId !== "Q6") return "";
     return STEP2_Q6_ASSETS[branch]?.options?.[answerKey] || "";
   }
 
   function getStep2BackgroundImage(questionId, branch) {
+    if (questionId === "Q7") return `Q7-back-${branch}.png`;
+    if (questionId === "Q8") return `Q8-back-${branch}.png`;
     if (questionId !== "Q6") return "";
     return STEP2_Q6_ASSETS[branch]?.background || "";
   }
@@ -504,6 +516,8 @@
     const subOptions = $("sub-options");
     const nextBtn = $("header-next-btn");
     const prevBtn = $("header-prev-btn");
+    const aside = document.querySelector(".questionnaire-step2-aside");
+    const defaultAsideHtml = aside?.innerHTML || "";
 
     function renderStep2OptionButton(question, key, label, isSubOption = false) {
       const optionImage = getStep2OptionImage(question.id, branch, key);
@@ -518,6 +532,22 @@
             <span class="option-check" aria-hidden="true"></span>
           </button>
         `;
+    }
+
+    function renderStep2Aside(question, axes) {
+      if (!aside) {
+        renderMiniRadar(axes);
+        return;
+      }
+      const triviaImage = STEP2_TRIVIA_IMAGES[question.id]?.[branch];
+      if (triviaImage) {
+        aside.classList.add("is-trivia");
+        aside.innerHTML = `<img class="questionnaire-trivia-image" src="${customerImagePath(triviaImage)}" alt="">`;
+        return;
+      }
+      aside.classList.remove("is-trivia");
+      if (aside.innerHTML !== defaultAsideHtml) aside.innerHTML = defaultAsideHtml;
+      renderMiniRadar(axes);
     }
 
     function render() {
@@ -535,10 +565,10 @@
       renderProgress(step2QuestionOffset + current + 1, totalQuestionCount);
       const axes = calculateStep2(config, state, answers);
       if ($("step2-status")) $("step2-status").textContent = describeStep2Tendency(axes, branch);
-      const mainOptions = question.id === "Q6"
+      const mainOptions = ["Q6", "Q7", "Q8"].includes(question.id)
         ? question.options.filter(([key]) => ["A", "B", "C"].includes(key))
         : question.options;
-      const supplementalOptions = question.id === "Q6"
+      const supplementalOptions = ["Q6", "Q7", "Q8"].includes(question.id)
         ? question.options.filter(([key]) => !["A", "B", "C"].includes(key))
         : [];
       if (optionList) {
@@ -561,7 +591,7 @@
       });
       if (prevBtn) prevBtn.disabled = current === 0;
       if (nextBtn) nextBtn.textContent = current === total - 1 ? "結果を見る" : "次へ";
-      renderMiniRadar(axes);
+      renderStep2Aside(question, axes);
     }
 
     async function finish() {
