@@ -527,7 +527,7 @@
       document.body.dataset.step2Branch = branch;
       const backgroundImage = getStep2BackgroundImage(question.id, branch);
       if (backgroundImage) {
-        document.body.style.setProperty("--step2-background-image", `url("${customerImagePath(backgroundImage)}")`);
+        document.body.style.setProperty("--step2-background-image", `url("../../img/costomer/${backgroundImage}")`);
       } else {
         document.body.style.removeProperty("--step2-background-image");
       }
