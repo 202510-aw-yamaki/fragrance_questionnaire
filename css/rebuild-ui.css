@@ -610,7 +610,7 @@ body[data-page="home"] .hero-copy {
   position: relative;
   min-height: 100vh;
   overflow: hidden;
-  padding: 22px 0 52px;
+  padding: 24px 0 46px;
 }
 
 .admin-login-bg {
@@ -643,6 +643,22 @@ body[data-page="home"] .hero-copy {
   color: var(--ink);
 }
 
+.admin-login-brand-logo {
+  width: 58px;
+  height: 58px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.admin-login-brand-logo img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
 .admin-login-brand strong {
   display: block;
   font-family: var(--serif);
@@ -662,11 +678,13 @@ body[data-page="home"] .hero-copy {
 }
 
 .admin-login-layout {
-  min-height: calc(100vh - 152px);
+  min-height: min(720px, calc(100vh - 148px));
   display: grid;
-  grid-template-columns: minmax(420px, 560px) minmax(320px, 1fr);
-  gap: 36px;
-  align-items: center;
+  grid-template-columns: minmax(430px, 610px) minmax(320px, 520px);
+  gap: 48px;
+  align-items: stretch;
+  justify-content: center;
+  padding-top: 22px;
 }
 
 .admin-login-card,
@@ -679,6 +697,8 @@ body[data-page="home"] .hero-copy {
 }
 
 .admin-login-card {
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
 
@@ -726,9 +746,12 @@ body[data-page="home"] .hero-copy {
 }
 
 .admin-login-panel {
-  display: grid;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: center;
   gap: 22px;
-  padding: 34px 34px 36px;
+  padding: 30px 54px 34px;
 }
 
 .admin-login-panel-head {
@@ -784,19 +807,36 @@ body[data-page="home"] .hero-copy {
 }
 
 .admin-login-guide {
-  display: grid;
-  gap: 20px;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 28px;
 }
 
 .admin-login-guide section {
-  padding: 28px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  backdrop-filter: none;
 }
 
 .admin-login-guide h2 {
-  margin: 8px 0 18px;
+  position: relative;
+  margin: 8px 0 16px;
   font-family: var(--serif);
-  font-size: 30px;
+  font-size: 24px;
   line-height: 1.25;
+}
+
+.admin-login-guide h2::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 1px;
+  margin-top: 14px;
+  background: linear-gradient(90deg, var(--gold), rgba(198, 142, 58, 0.16));
 }
 
 .admin-login-feature-list {
@@ -806,20 +846,42 @@ body[data-page="home"] .hero-copy {
 
 .admin-login-feature-list article {
   display: grid;
-  gap: 5px;
-  padding: 14px 16px;
+  grid-template-columns: 28px minmax(0, 1fr) 16px;
+  align-items: center;
+  gap: 12px;
+  min-height: 54px;
+  padding: 0 16px 0 18px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: rgba(255, 250, 243, 0.9);
+  background: rgba(255, 253, 249, 0.9);
+  box-shadow: 0 8px 18px rgba(92, 58, 26, 0.08);
+}
+
+.admin-login-feature-list article::before {
+  content: "";
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--gold);
+  border-radius: 6px;
+}
+
+.admin-login-feature-list article::after {
+  content: "›";
+  color: var(--gold-dark);
+  font-size: 24px;
+  line-height: 1;
 }
 
 .admin-login-feature-list strong {
+  min-width: 0;
   color: var(--ink);
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 700;
 }
 
 .admin-login-feature-list span {
-  color: var(--muted);
-  line-height: 1.65;
+  display: none;
 }
 
 .page-hero-aside,
