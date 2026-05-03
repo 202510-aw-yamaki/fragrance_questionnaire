@@ -150,7 +150,7 @@ body[data-page="questionnaire-step2"] #question-stepper span.is-active {
 
 body[data-page="questionnaire-step2"] .questionnaire-step2-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
   gap: clamp(20px, 2.4vw, 38px);
   align-items: start;
 }
@@ -280,24 +280,23 @@ body[data-page="questionnaire-step2"] #sub-options {
 body[data-page="questionnaire-step2"][data-step2-question="Q6"] #sub-options:not(:empty) {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
   justify-content: center;
   margin-top: 12px;
 }
 
 body[data-page="questionnaire-step2"][data-step2-question="Q6"] #sub-options .option-button {
-  min-height: 48px;
+  min-height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  flex: 0 1 210px;
-  padding: 10px 18px;
-  border: 1px solid rgba(222, 185, 133, 0.56);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.66);
-  color: #4d3a30;
-  box-shadow: 0 10px 20px rgba(122, 83, 48, 0.05);
+  flex: 0 1 190px;
+  padding: 6px 14px;
+  border: 1px solid rgba(222, 185, 133, 0.42);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.5);
+  color: rgba(58, 37, 28, 0.66);
+  box-shadow: none;
 }
 
 body[data-page="questionnaire-step2"][data-step2-question="Q6"] #sub-options .option-button:hover,
@@ -306,37 +305,15 @@ body[data-page="questionnaire-step2"][data-step2-question="Q6"] #sub-options .op
 }
 
 body[data-page="questionnaire-step2"][data-step2-question="Q6"] #sub-options .option-button.is-selected {
-  border-color: #d98f2c;
-  background: rgba(255, 239, 233, 0.72);
-  color: #9c3838;
-  box-shadow: inset 0 0 0 1px #d98f2c;
-}
-
-body[data-page="questionnaire-step2"][data-step2-question="Q6"] #sub-options .decor-icon {
-  width: 26px;
-  height: 26px;
-  display: inline-grid;
-  place-items: center;
-  flex: 0 0 auto;
-  border: 1px solid #d5ad73;
-  border-radius: 50%;
-  color: #c27657;
-  font-family: var(--serif);
-  font-size: 0;
-}
-
-body[data-page="questionnaire-step2"][data-step2-question="Q6"] #sub-options .decor-icon::before {
-  content: "";
-  width: 10px;
-  height: 10px;
-  display: block;
-  border-radius: 50%;
-  background: #d98868;
+  border-color: rgba(217, 143, 44, 0.62);
+  background: rgba(255, 239, 233, 0.52);
+  color: #8b5145;
+  box-shadow: inset 0 0 0 1px rgba(217, 143, 44, 0.28);
 }
 
 body[data-page="questionnaire-step2"][data-step2-question="Q6"] #sub-options .option-label {
   font-family: var(--serif);
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1.4;
 }
 
@@ -355,13 +332,13 @@ body[data-page="questionnaire-step2"][data-step2-question="Q6"] #sub-options .op
 }
 
 body[data-page="questionnaire-step2"] .questionnaire-step2-tendency {
-  min-height: 68px;
+  min-height: 64px;
   display: grid;
-  grid-template-columns: 54px minmax(0, 1fr) 130px;
-  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) 116px;
+  gap: 16px;
   align-items: center;
   margin-top: 20px;
-  padding: 14px 24px;
+  padding: 14px 20px;
   border: 1px solid rgba(222, 185, 133, 0.56);
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.66);
@@ -381,39 +358,39 @@ body[data-page="questionnaire-step2"] #step2-status {
   background: transparent;
   color: #3f2a20;
   font-family: var(--serif);
-  font-size: clamp(18px, 1.55vw, 25px);
+  font-size: clamp(17px, 1.32vw, 22px);
   line-height: 1.55;
 }
 
 body[data-page="questionnaire-step2"] .questionnaire-step2-tendency-bars {
-  width: 120px;
+  width: 110px;
   height: 46px;
   display: block;
   background:
     linear-gradient(#e99191, #e99191) 16px 22px / 22px 24px no-repeat,
     linear-gradient(#d9c2ac, #d9c2ac) 54px 30px / 22px 16px no-repeat,
     linear-gradient(#a5b28d, #a5b28d) 92px 26px / 22px 20px no-repeat,
-    linear-gradient(#d6b987, #d6b987) 0 45px / 120px 1px no-repeat;
+    linear-gradient(#d6b987, #d6b987) 0 45px / 110px 1px no-repeat;
   border-radius: 6px;
 }
 
 body[data-page="questionnaire-step2"] .question-footer {
   display: grid;
-  grid-template-columns: minmax(260px, 340px);
+  grid-template-columns: minmax(220px, 300px);
   justify-content: center;
   align-items: center;
-  margin-top: 24px;
+  margin-top: 22px;
 }
 
 body[data-page="questionnaire-step2"] #header-next-btn {
-  min-height: 78px;
-  border-radius: 12px;
+  min-height: 64px;
+  border-radius: 10px;
   border: 1px solid rgba(245, 207, 173, 0.78);
   background: linear-gradient(180deg, #e69691, #cf686f);
   font-family: var(--serif);
-  font-size: 32px;
+  font-size: 28px;
   letter-spacing: 0;
-  box-shadow: 0 12px 26px rgba(201, 102, 109, 0.24);
+  box-shadow: 0 10px 20px rgba(201, 102, 109, 0.2);
 }
 
 body[data-page="questionnaire-step2"] #return-top-btn,
@@ -422,7 +399,7 @@ body[data-page="questionnaire-step2"] #return-top-btn-mobile {
 }
 
 body[data-page="questionnaire-step2"] .questionnaire-step2-aside {
-  padding: 24px 26px;
+  padding: 22px 22px;
   align-self: end;
   text-align: center;
 }
@@ -486,13 +463,47 @@ body[data-page="questionnaire-step2"] #axis-preview .axis-name {
 }
 
 body[data-page="questionnaire-step2"] #axis-preview .axis-meter {
+  --axis-track: #ead8bf;
+  --axis-start: #d8aa6d;
+  --axis-end: #e78b8b;
+  --axis-marker: #d98080;
   position: relative;
-  height: 22px;
+  height: 18px;
   display: block;
   background:
-    linear-gradient(90deg, #d8aa6d, #e78b8b) left 50% / var(--axis-value, 50%) 5px no-repeat,
-    linear-gradient(#ead8bf, #ead8bf) left 50% / 100% 5px no-repeat;
+    linear-gradient(90deg, var(--axis-start), var(--axis-end)) left 50% / var(--axis-value, 50%) 4px no-repeat,
+    linear-gradient(var(--axis-track), var(--axis-track)) left 50% / 100% 4px no-repeat;
   border-radius: 999px;
+}
+
+body[data-page="questionnaire-step2"] #axis-preview .axis-row:nth-child(1) .axis-meter {
+  --axis-start: #f4c4d0;
+  --axis-end: #df8297;
+  --axis-marker: #dc7f93;
+}
+
+body[data-page="questionnaire-step2"] #axis-preview .axis-row:nth-child(2) .axis-meter {
+  --axis-start: #f2d985;
+  --axis-end: #e4a75a;
+  --axis-marker: #d99b43;
+}
+
+body[data-page="questionnaire-step2"] #axis-preview .axis-row:nth-child(3) .axis-meter {
+  --axis-start: #b9c79e;
+  --axis-end: #7f9c76;
+  --axis-marker: #7e9b76;
+}
+
+body[data-page="questionnaire-step2"] #axis-preview .axis-row:nth-child(4) .axis-meter {
+  --axis-start: #dfb17e;
+  --axis-end: #c56f5c;
+  --axis-marker: #c66f5d;
+}
+
+body[data-page="questionnaire-step2"] #axis-preview .axis-row:nth-child(5) .axis-meter {
+  --axis-start: #e8c3cf;
+  --axis-end: #c792b0;
+  --axis-marker: #c58bab;
 }
 
 body[data-page="questionnaire-step2"] #axis-preview .axis-meter::after {
@@ -500,13 +511,13 @@ body[data-page="questionnaire-step2"] #axis-preview .axis-meter::after {
   position: absolute;
   top: 50%;
   left: var(--axis-value, 50%);
-  width: 17px;
-  height: 17px;
+  width: 12px;
+  height: 12px;
   transform: translate(-50%, -50%);
-  border: 2px solid #d98080;
+  border: 1.5px solid var(--axis-marker);
   border-radius: 999px;
-  background: #fff8f2;
-  box-shadow: 0 2px 7px rgba(132, 81, 50, 0.16);
+  background: rgba(255, 250, 246, 0.95);
+  box-shadow: 0 1px 4px rgba(132, 81, 50, 0.12);
 }
 
 @media (max-width: 860px) {
