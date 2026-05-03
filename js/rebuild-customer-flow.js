@@ -1065,14 +1065,16 @@
 
   async function initCompare() {
     const state = readJson(SCORE_STATE_KEY, {});
-    const currentAxes = getCurrentResultAxes(state);
+    let currentAxes = getCurrentResultAxes(state);
     const statusEl = $("compare-status");
     const previousNameEl = $("compare-previous-name");
     const previousMetaEl = $("compare-previous-meta");
     const currentNameEl = $("compare-current-name");
     const currentMetaEl = $("compare-current-meta");
     const deltaListEl = $("compare-delta-list");
-    const commentEl = $("compare-comment");
+    const modalCommentEl = $("compare-modal-comment");
+    const detailOpen = $("compare-detail-open");
+    const detailModal = $("compare-detail-modal");
     const reserveLink = $("compare-reserve-link");
     let previousProduct = null;
     let previousAxes = null;
@@ -1186,36 +1188,74 @@
 
     function renderDeltas() {
       if (!deltaListEl) return;
-      if (!previousAxes || !currentAxes) {
-        deltaListEl.innerHTML = `<p class="compare-empty">比較には、前回の完成品と今回のアンケート結果が必要です。</p>`;
+      if (!currentAxes) {
+        deltaListEl.innerHTML = `<p class="compare-empty">アンケート回答後に5軸を調整できます。</p>`;
         return;
       }
       deltaListEl.innerHTML = RESULT_AXIS_ORDER.map((axis) => {
-        const previous = clamp(previousAxes[axis]);
+        const previous = previousAxes ? clamp(previousAxes[axis]) : null;
         const current = clamp(currentAxes[axis]);
-        const delta = current - previous;
+        const delta = previous === null ? null : current - previous;
         const meta = RESULT_AXIS_META[axis] || RESULT_AXIS_META.floral;
-        const sign = delta > 0 ? "+" : "";
-        const tone = delta === 0 ? "is-even" : delta > 0 ? "is-positive" : "is-negative";
+        const sign = delta && delta > 0 ? "+" : "";
+        const tone = delta === null ? "is-even" : delta === 0 ? "is-even" : delta > 0 ? "is-positive" : "is-negative";
         return `
-          <div class="compare-delta-row ${tone}" style="--axis-color:${meta.color}; --delta-width:${Math.min(50, Math.abs(delta) / 2)}%;">
-            <span class="compare-delta-label"><span aria-hidden="true">${meta.mark}</span>${RESULT_AXIS_LABELS[axis]}</span>
-            <span class="compare-delta-track" aria-hidden="true"><span></span></span>
-            <span class="compare-delta-score">${sign}${delta}</span>
+          <div class="compare-delta-row ${tone}" style="--axis-color:${meta.color};">
+            <label class="compare-delta-label" for="compare-axis-${axis}"><span aria-hidden="true">${meta.mark}</span>${RESULT_AXIS_LABELS[axis]}</label>
+            <input class="compare-delta-track" id="compare-axis-${axis}" name="${axis}" type="range" min="0" max="100" value="${current}" aria-label="${RESULT_AXIS_LABELS[axis]}">
+            <span class="compare-current-score" id="compare-axis-${axis}-score">${current}</span>
+            <span class="compare-delta-score">${delta === null ? "-" : `${sign}${delta}`}</span>
           </div>
         `;
       }).join("");
+      RESULT_AXIS_ORDER.forEach((axis) => {
+        const input = $(`compare-axis-${axis}`);
+        input?.addEventListener("input", (event) => {
+          currentAxes = { ...currentAxes, [axis]: clamp(event.target.value) };
+          const current = clamp(currentAxes[axis]);
+          const previous = previousAxes ? clamp(previousAxes[axis]) : null;
+          const delta = previous === null ? null : current - previous;
+          const score = $(`compare-axis-${axis}-score`);
+          const row = input.closest(".compare-delta-row");
+          const deltaScore = row?.querySelector(".compare-delta-score");
+          if (score) score.textContent = String(current);
+          if (deltaScore) deltaScore.textContent = delta === null ? "-" : `${delta > 0 ? "+" : ""}${delta}`;
+          if (row) {
+            row.classList.toggle("is-positive", delta !== null && delta > 0);
+            row.classList.toggle("is-negative", delta !== null && delta < 0);
+            row.classList.toggle("is-even", delta === null || delta === 0);
+          }
+          persistCompareAxes();
+          renderCompareRadar("compare-current", currentAxes);
+          renderAxisList("compare-current-axes", currentAxes);
+          renderModalDetails();
+        });
+      });
+    }
+
+    function persistCompareAxes() {
+      if (!currentAxes) return;
+      writeJson(SCORE_STATE_KEY, { ...readJson(SCORE_STATE_KEY, {}), adjustedAxes: currentAxes, finalAxes: currentAxes });
+    }
+
+    function renderModalDetails() {
+      renderCompareRadar("compare-modal-previous", previousAxes);
+      renderCompareRadar("compare-modal-current", currentAxes);
+      if (modalCommentEl) modalCommentEl.textContent = buildCompareComment();
+    }
+
+    function renderCompareState() {
+      renderCompareRadar("compare-current", currentAxes);
+      renderAxisList("compare-current-axes", currentAxes);
+      renderDeltas();
+      renderModalDetails();
     }
 
     try {
       const data = await window.FragrancePublicData?.loadCustomerPortalData?.();
       previousProduct = (data?.products || []).find((row) => getProductAxes(row)) || null;
       previousAxes = getProductAxes(previousProduct);
-      const messages = [];
-      if (!data?.customer) messages.push("会員ログイン情報を確認できないため、前回の完成品は取得していません。");
-      if (data?.customer && !previousAxes) messages.push("比較できる前回完成品の5軸データがまだありません。");
-      if (!currentAxes) messages.push("今回のアンケート結果がありません。");
-      setStatus(messages, messages.length ? "notice" : "");
+      setStatus([]);
     } catch (error) {
       console.error("Failed to load fragrance comparison data.", error);
       setStatus(["比較データを取得できませんでした。"], "error");
@@ -1226,16 +1266,25 @@
     if (currentNameEl) currentNameEl.textContent = currentAxes ? "今回のアンケート結果" : "今回の結果は未作成";
     if (currentMetaEl) currentMetaEl.textContent = state.questionnaireCompletedAt ? `回答日 ${formatDate(state.questionnaireCompletedAt)}` : "アンケート回答後に表示されます";
     renderCompareRadar("compare-previous", previousAxes);
-    renderCompareRadar("compare-current", currentAxes);
     renderAxisList("compare-previous-axes", previousAxes);
-    renderAxisList("compare-current-axes", currentAxes);
-    renderDeltas();
-    if (commentEl) commentEl.textContent = buildCompareComment();
+    renderCompareState();
 
     if (reserveLink && !currentAxes) {
       reserveLink.href = "questionnaire.html";
       reserveLink.textContent = "アンケートへ進む";
     }
+    detailOpen?.addEventListener("click", () => {
+      renderModalDetails();
+      if (detailModal) detailModal.hidden = false;
+    });
+    document.querySelectorAll("[data-compare-detail-close]").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (detailModal) detailModal.hidden = true;
+      });
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && detailModal && !detailModal.hidden) detailModal.hidden = true;
+    });
     reserveLink?.addEventListener("click", (event) => {
       if (!currentAxes) return;
       event.preventDefault();

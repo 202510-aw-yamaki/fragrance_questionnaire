@@ -616,3 +616,23 @@
   - `node --check js/rebuild-customer-flow.js`
   - `git diff --check`
   - Playwright screenshot 1674x940 / 390x844 full-page
+
+### 2026-05-03 会員比較ページの操作UI調整
+- 対象:
+  - `customer/fragrance-compare.html`
+  - `css/customer/customer-fragrance-compare.css`
+  - `js/rebuild-customer-flow.js`
+  - `docs/SPEC.md`
+- 背景:
+  - 比較不可時の案内文、右側の比較コメントカード、見出し「5つの軸の変化」を外し、詳細は下部ボタンからモーダルで確認したいという要望があった。
+  - 会員比較ページでも今回結果の5軸をスライダー調整できるようにしたいという要望があった。
+- 実装:
+  - 比較不可時の通常案内文と右側コメントカードを削除。
+  - 下部アクションに「通常結果ページへ戻る」と「詳細を確認する」を追加。
+  - 「詳細を確認する」クリックで、前回・今回の5軸グラフと比較テキストを表示するモーダルを追加。
+  - 今回結果の5軸スライダーを追加し、変更時にレーダー、数値、詳細モーダル、予約へ渡す `sessionStorage` を更新するようにした。
+  - 会員比較ページの操作仕様を `docs/SPEC.md` に追記。
+- 確認:
+  - `node --check js/rebuild-customer-flow.js`
+  - `git diff --check`
+  - Playwrightで直接アクセス、今回結果あり、スライダー変更、詳細モーダル、モバイル表示を確認。
