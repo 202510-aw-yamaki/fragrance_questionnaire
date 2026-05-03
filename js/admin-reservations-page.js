@@ -233,7 +233,7 @@
       brandText: "Staff Reservations",
       roleLabel: "",
       links: [
-        { href: "staff-reservations.html", label: "予約確認", key: "reservations" },
+        { href: "staff-dashboard.html", label: "ダッシュボード", key: "staff-dashboard" },
         { href: "staff-slots.html", label: "予約枠作成", key: "slots" }
       ]
     });

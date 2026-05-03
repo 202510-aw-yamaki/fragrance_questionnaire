@@ -671,7 +671,7 @@ body[data-page="staff-reservations"] .staff-main::before {
 
 .staff-reservation-filter-grid {
   display: grid;
-  grid-template-columns: minmax(170px, 0.9fr) minmax(170px, 0.9fr) minmax(220px, 1.1fr) minmax(260px, 0.9fr);
+  grid-template-columns: minmax(170px, 0.9fr) minmax(170px, 0.9fr) minmax(220px, 1.1fr) auto;
   gap: 18px;
   align-items: end;
 }
@@ -683,14 +683,30 @@ body[data-page="staff-reservations"] .staff-main::before {
   gap: 12px;
 }
 
-.staff-reservation-filter-actions .pill {
-  min-height: 44px;
-  border-radius: var(--radius);
-  white-space: nowrap;
-}
-
 .staff-reservation-filter-actions .admin-btn {
   min-width: 112px;
+}
+
+.staff-reservation-list-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.staff-reservation-list-head h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.staff-reservation-hide-toggle {
+  min-height: 40px;
+  justify-self: end;
+  border-radius: var(--radius);
+  white-space: nowrap;
 }
 
 .staff-reservation-layout.section {

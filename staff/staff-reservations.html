@@ -19,13 +19,16 @@
         <label class="field">状態<select id="filter-status"><option value="">すべて</option><option value="confirmed">予約済み</option><option value="completed">完了</option><option value="canceled">取消</option></select></label>
         <label class="field">検索<input id="filter-keyword" type="text" placeholder="お客様名・傾向"></label>
         <div class="staff-reservation-filter-actions">
-          <label class="pill"><input id="filter-hide-completed" type="checkbox"> 完了済みを隠す</label>
           <button class="admin-btn primary" type="submit">絞り込み</button>
         </div>
       </div>
     </form>
     <section class="staff-reservation-layout section">
       <article class="admin-panel staff-reservation-table">
+        <div class="staff-reservation-list-head">
+          <h2>予約一覧</h2>
+          <label class="pill staff-reservation-hide-toggle"><input id="filter-hide-completed" type="checkbox"> 完了済みを隠す</label>
+        </div>
         <div class="staff-reservation-table-head" aria-hidden="true">
           <span>時間</span><span>お客様名</span><span>メール</span><span>香り傾向</span><span>事前メモ</span><span>ステータス</span><span>操作</span>
         </div>
