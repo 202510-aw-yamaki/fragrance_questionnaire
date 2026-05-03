@@ -143,8 +143,8 @@ body[data-page="graph"] .graph-detail-card {
 body[data-page="graph"] .graph-balance-card {
   min-height: 362px;
   display: grid;
-  grid-template-columns: minmax(220px, 0.38fr) minmax(380px, 0.62fr);
-  gap: 14px;
+  grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr);
+  gap: 22px;
   padding: 20px 34px;
   align-items: center;
 }
@@ -592,8 +592,8 @@ body[data-page="graph"] .graph-help-link span {
   }
 
   body[data-page="graph"] .graph-balance-card {
-    grid-template-columns: minmax(280px, 0.42fr) minmax(245px, 0.58fr);
-    gap: 8px;
+    grid-template-columns: minmax(0, 2fr) minmax(180px, 1fr);
+    gap: 16px;
     min-height: 300px;
     padding: 18px 24px;
   }

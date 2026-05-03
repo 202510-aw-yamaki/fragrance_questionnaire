@@ -581,3 +581,17 @@
   - `node --check js/rebuild-customer-flow.js`
   - `git diff --check`
   - Playwright screenshot 1674x940 / 390x844 full-page
+
+### 2026-05-03 customer/fragrance-graph.html 香りバランスカード内比率の調整
+- 対象:
+  - `css/customer/customer-fragrance-graph.css`
+- 背景:
+  - `.graph-balance-card` 内でグラフ側が大きく見えるため、テキスト・テンプレート側を強くして 2:1 の比率にしたいという要望があった。
+- 実装:
+  - 通常幅の `.graph-balance-card` を、左のテキスト・テンプレート領域 `2fr`、右のレーダーグラフ領域 `1fr` に変更。
+  - 1160px以下かつ861px以上の表示でも同じ方向性になるよう、狭め幅用のグリッド比率を調整。
+  - 860px以下の縦積み表示は既存指定を維持。
+- 確認:
+  - `node --check js/rebuild-customer-flow.js`
+  - `git diff --check`
+  - Playwright screenshot 1674x940
