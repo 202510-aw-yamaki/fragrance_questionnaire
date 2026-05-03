@@ -158,3 +158,12 @@ QR商品ページのアクセス記録は `record_qr_product_access()` を入口
 - 初見客や未ログイン予約では `customer_id` は null のまま、予約連絡用情報として `reservations` 側に保持する
 - 香りバランス等は予約ページ上では表示しないが、`questionnaire_result_id` と `axes` は予約payloadで維持する
 - `create_public_reservation()` と `fetch_reservation_by_code()` は `customer_name` / `customer_email` を扱う
+
+## 2026-05-03 reservation duration note
+
+予約完了ページで、予約枠に設定された所要時間を表示する要望に合わせ、`reservations` に予約時点の所要時間を保持するnullable列を追加する。
+
+- `duration_minutes`: 来店予約時に選択した予約枠の所要時間（分）
+- 管理画面側の予約枠は `slot_label` に `11:00-12:00` のような時間幅を持つため、公開予約時にフロントで分数へ変換して保存する
+- `slot_label` は予約日時表示用として維持し、所要時間表示は `duration_minutes` を優先する
+- `create_public_reservation()` と `fetch_reservation_by_code()` は `duration_minutes` を扱う

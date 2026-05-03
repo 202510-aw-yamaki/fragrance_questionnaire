@@ -140,3 +140,7 @@ QR発行条件、QR依頼対応、発送先入力、発送完了、通知対応�
 - 予約ページ上では香りバランス等を表示しないが、予約確定payloadでは `questionnaire_result_id`、`axes`、`summary_*` を維持する。
 - 来店予約時の名前とメールアドレスは `reservations.customer_name` / `reservations.customer_email` に保存する。
 - 予約完了ページとスタッフ詳細ページは、保存済みの名前・メールを参照できる。
+
+2026-05-03追記:
+予約完了ページは `レイアウトimg/10. customer reservation-complete.html 予約完了ページ.png` に合わせ、吟ロゴヘッダーと完了カードの構成へ更新済み。
+予約完了メッセージには `reservations.customer_name` を表示し、所要時間は予約時に算出した `reservations.duration_minutes` を表示する。

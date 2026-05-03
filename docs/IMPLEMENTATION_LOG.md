@@ -720,6 +720,8 @@
 - 確認:
   - `node --check js/rebuild-customer-flow.js`
   - `node --check js/public-data.js`
+  - `git diff --check`
+  - Playwrightでモック予約データを使い、デスクトップ/スマホ幅の完了カード、名前、日時、所要時間、メール表示を確認。
   - `node --check js/staff-customer-detail-page.js`
   - `git diff --check`
   - Playwrightで `customer/reservation.html?source=direct` のデスクトップ/モバイル表示、香り軸非表示、入力欄プレースホルダーを確認。
@@ -736,3 +738,27 @@
 - 確認:
   - `git diff --check`
   - Playwrightで 1100px / 1000px の横並び維持と 860px の縦積み切替を確認。
+
+### 2026-05-03 予約完了ページの見本反映と所要時間保存
+- 対象:
+  - `customer/reservation-complete.html`
+  - `customer/reservation.html`
+  - `css/customer/customer-reservation-complete.css`
+  - `js/rebuild-customer-flow.js`
+  - `js/public-data.js`
+  - `supabase/schema.sql`
+  - `supabase/migrations/20260503100000_reservation_duration_minutes.sql`
+- 参照:
+  - `レイアウトimg/10. customer reservation-complete.html 予約完了ページ.png`
+- 背景:
+  - ユーザー要望で、予約完了ページを見本画像に寄せ、ヘッダーに吟ロゴを使用し、`○○○○` 部分へ予約時に入力した名前またはニックネームを表示する指示があった。
+  - 所要時間は予約枠で設定された時間を表示する指示があった。
+- 実装:
+  - 予約完了ページを中央カード型の完了表示へ更新し、日時、所要時間、香りの傾向、メールアドレスを表示する構成にした。
+  - 予約完了メッセージは `customer_name` を使って `○○様のご予約を受け付けました。` と表示する。
+  - 予約枠の `slot_label` に含まれる `11:00-12:00` 形式の時間幅から所要時間を算出し、予約payloadへ `duration_minutes` として保存する。
+  - `reservations.duration_minutes` を追加し、`create_public_reservation()` と `fetch_reservation_by_code()` で扱うようにした。
+  - 予約ページの選択中サマリーでも、選んだ予約枠の所要時間を表示するようにした。
+- 確認:
+  - `node --check js/rebuild-customer-flow.js`
+  - `node --check js/public-data.js`

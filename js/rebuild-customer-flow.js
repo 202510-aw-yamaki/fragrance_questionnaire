@@ -183,6 +183,44 @@
     })[char]);
   }
 
+  function parseTimeToMinutes(value) {
+    const match = String(value || "").match(/(\d{1,2}):(\d{2})/);
+    if (!match) return null;
+    const hours = Number(match[1]);
+    const minutes = Number(match[2]);
+    if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return null;
+    return hours * 60 + minutes;
+  }
+
+  function getSlotDurationMinutes(slot) {
+    const label = String(slot?.slot_label || "");
+    const rangeMatch = label.match(/(\d{1,2}:\d{2})\s*[-~－〜～–—]\s*(\d{1,2}:\d{2})/);
+    if (rangeMatch) {
+      const start = parseTimeToMinutes(rangeMatch[1]);
+      const end = parseTimeToMinutes(rangeMatch[2]);
+      if (start !== null && end !== null) {
+        const duration = end >= start ? end - start : end + 24 * 60 - start;
+        if (duration > 0) return duration;
+      }
+    }
+    return 60;
+  }
+
+  function formatDurationMinutes(value) {
+    const minutes = Number(value || 0);
+    if (!Number.isFinite(minutes) || minutes <= 0) return "約60分";
+    return `約${Math.round(minutes)}分`;
+  }
+
+  function formatReservationDateTime(value) {
+    const text = String(value || "");
+    const match = text.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{1,2}:\d{2}))?/);
+    if (!match) return text || "-";
+    const date = `${Number(match[2])}月${Number(match[3])}日`;
+    const year = `${match[1]}年`;
+    return match[4] ? `${year}${date} ${match[4]}` : `${year}${date}`;
+  }
+
   function parseAxisSource(value) {
     if (!value) return null;
     if (typeof value === "string") {
@@ -1325,6 +1363,7 @@
     const calendarMonthLabel = $("calendar-month-label");
     const selectedDateLabel = $("selected-date-label");
     const selectedStatus = $("selected-status");
+    const selectedDuration = $("selected-duration");
     const selectedStaff = $("selected-staff");
     const formStatus = $("reservation-form-status");
     const nameInput = $("customer-name");
@@ -1392,6 +1431,7 @@
           ? `${dateText} ${timeText}`
           : (slots.length ? `${dateText}の時間を選択してください。` : "予約枠が設定されていません。");
       }
+      if (selectedDuration) selectedDuration.textContent = selectedSlot ? formatDurationMinutes(getSlotDurationMinutes(selectedSlot)) : "-";
       if (selectedStaff) selectedStaff.textContent = selectedSlot?.instructor_name || "未定";
     }
 
@@ -1502,6 +1542,7 @@
       confirmButton.disabled = true;
       try {
         const synced = await window.FragrancePublicData?.syncQuestionnaireResultFromState?.(state);
+        const durationMinutes = selectedSlot ? getSlotDurationMinutes(selectedSlot) : 60;
         const payload = {
           questionnaire_result_id: synced?.id || state.questionnaireResultId || null,
           questionnaire_flow_status: synced?.id ? "linked" : (state.questionnaireCompletedAt ? "answered_unsaved" : "skipped"),
@@ -1510,6 +1551,7 @@
           customer_email: customerEmail,
           slot_id: selectedSlot?.id || null,
           slot_label: selectedSlot ? [selectedSlot.slot_date, String(selectedSlot.slot_time || "").slice(0, 5)].filter(Boolean).join(" ") : "店頭で日時相談",
+          duration_minutes: durationMinutes,
           visit_type: $("visit-type")?.value || "first",
           guest_count: $("guest-count")?.value || "1",
           staff_memo: $("staff-memo")?.value || "",
@@ -1538,12 +1580,17 @@
 
   async function initComplete() {
     const params = new URLSearchParams(window.location.search);
-    const code = params.get("code") || readJson(CONFIRMATION_KEY, {}).reservation_code;
+    const cached = readJson(CONFIRMATION_KEY, {});
+    const code = params.get("code") || cached.reservation_code;
     const remote = await window.FragrancePublicData?.fetchReservationByCode?.(code);
-    const data = remote || readJson(CONFIRMATION_KEY, {});
-    if ($("reservation-slot")) $("reservation-slot").textContent = data.slot_label || "-";
+    const data = { ...cached, ...(remote || {}) };
+    const customerName = data.customer_name || "お客様";
+    if ($("complete-customer-greeting")) $("complete-customer-greeting").textContent = `${customerName}様のご予約を受け付けました。`;
+    if ($("reservation-slot")) $("reservation-slot").textContent = formatReservationDateTime(data.slot_label);
     if ($("reservation-name")) $("reservation-name").textContent = data.customer_name || "-";
     if ($("reservation-email")) $("reservation-email").textContent = data.customer_email || "-";
+    if ($("reservation-duration")) $("reservation-duration").textContent = formatDurationMinutes(data.duration_minutes);
+    if ($("reservation-summary")) $("reservation-summary").textContent = data.summary_headline || "当日スタッフが確認します";
     if ($("reservation-guests")) $("reservation-guests").textContent = data.guest_count || "-";
     if ($("reservation-visit-type")) $("reservation-visit-type").textContent = data.visit_type || "-";
     if ($("reservation-memo")) $("reservation-memo").textContent = data.staff_memo || "";

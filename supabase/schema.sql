@@ -49,6 +49,7 @@ create table if not exists public.reservations (
   slot_label text,
   customer_name text,
   customer_email text,
+  duration_minutes integer,
   visit_type text,
   guest_count text,
   staff_memo text,
@@ -175,6 +176,9 @@ add column if not exists customer_name text;
 
 alter table public.reservations
 add column if not exists customer_email text;
+
+alter table public.reservations
+add column if not exists duration_minutes integer;
 
 alter table public.workshop_sessions
 add column if not exists staff_profile_id uuid references public.staff_profiles(id) on delete set null;
@@ -561,6 +565,7 @@ begin
     slot_label,
     customer_name,
     customer_email,
+    duration_minutes,
     visit_type,
     guest_count,
     staff_memo,
@@ -581,6 +586,7 @@ begin
     p_payload ->> 'slot_label',
     nullif(p_payload ->> 'customer_name', ''),
     nullif(p_payload ->> 'customer_email', ''),
+    nullif(p_payload ->> 'duration_minutes', '')::integer,
     p_payload ->> 'visit_type',
     p_payload ->> 'guest_count',
     p_payload ->> 'staff_memo',
@@ -602,6 +608,7 @@ returns table(
   customer_name text,
   customer_email text,
   slot_label text,
+  duration_minutes integer,
   visit_type text,
   guest_count text,
   staff_memo text,
@@ -623,6 +630,7 @@ as $$
     r.customer_name,
     r.customer_email,
     r.slot_label,
+    r.duration_minutes,
     r.visit_type,
     r.guest_count,
     r.staff_memo,
@@ -1457,6 +1465,7 @@ grant insert (
   slot_label,
   customer_name,
   customer_email,
+  duration_minutes,
   visit_type,
   guest_count,
   staff_memo,

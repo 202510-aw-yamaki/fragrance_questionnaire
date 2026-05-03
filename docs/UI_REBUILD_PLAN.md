@@ -178,3 +178,13 @@
 - `summary-headline`、`summary-body`、`axis-list` は既存JS契約と内部データ維持のためDOMに残すが、予約ページ上では香りバランス等を表示しない
 - 予約保存payloadは `questionnaire_result_id`、`axes`、`summary_*` を維持し、`customer_name`、`customer_email` を追加する
 - 追加CSS: `css/customer/customer-reservation.css`
+
+## 2026-05-03 予約完了ページ契約追記
+
+ユーザー要望により、`customer/reservation-complete.html` は参照画像の完了カード構成へ更新した。
+
+- 追加DOM契約: `complete-customer-greeting`、`reservation-duration`、`reservation-summary`
+- 維持DOM契約: `reservation-slot`、`reservation-name`、`reservation-email`、`reservation-guests`、`reservation-visit-type`、`reservation-memo`、`memo-item`、`countdown-seconds`、`stay-here-btn`、`detail-status-label`、`detail-toggle`
+- 予約完了メッセージは `customer_name` を使い、入力された名前またはニックネームを表示する
+- 所要時間は予約payloadの `duration_minutes` を表示する
+- 追加CSS: `css/customer/customer-reservation-complete.css`

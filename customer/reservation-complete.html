@@ -3,28 +3,50 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>予約完了 | Fragrance Workshop</title>
+  <title>ご予約完了 | Fragrance Workshop</title>
   <link rel="stylesheet" href="../css/rebuild-ui.css">
+  <link rel="stylesheet" href="../css/customer/customer-reservation-complete.css">
 </head>
 <body data-page="reservation-complete">
   <header class="site-header">
-    <div class="site-header-inner site-container"><a class="brand" href="../index.html"><span class="brand-mark">✦</span><span>Fragrance Workshop</span></a></div>
+    <div class="site-header-inner site-container">
+      <a class="brand complete-brand" href="../index.html"><span class="brand-logo-mark"><img src="../img/costomer/吟ロゴ.png" alt=""></span><span>Fragrance Workshop</span></a>
+    </div>
   </header>
-  <main class="page-hero">
-    <div class="page-shell grid-2">
-      <section>
-        <span class="eyebrow">Reservation Complete</span>
-        <h1>予約を受け付けました</h1>
-        <p class="page-copy">当日はアンケート結果をもとに、スタッフと一緒に香りを仕上げます。</p>
-        <a class="btn secondary" id="hero-map-link" href="../index.html#faq">アクセスを見る</a>
-      </section>
-      <section class="detail-card">
+  <main class="reservation-complete-main">
+    <section class="reservation-complete-card" aria-labelledby="reservation-complete-title">
+      <span class="complete-ornament complete-ornament-top" aria-hidden="true"></span>
+      <h1 id="reservation-complete-title">ご予約が完了<wbr>しました</h1>
+      <div class="complete-check" aria-hidden="true">&#10003;</div>
+      <p class="complete-greeting" id="complete-customer-greeting">お客様のご予約を受け付けました。</p>
+      <div class="complete-detail-box">
+        <dl>
+          <div>
+            <dt><span class="complete-detail-icon" aria-hidden="true">□</span>日時</dt>
+            <dd id="reservation-slot">-</dd>
+          </div>
+          <div>
+            <dt><span class="complete-detail-icon" aria-hidden="true">○</span>所要時間</dt>
+            <dd id="reservation-duration">-</dd>
+          </div>
+          <div>
+            <dt><span class="complete-detail-icon" aria-hidden="true">✽</span>香りの傾向</dt>
+            <dd id="reservation-summary">-</dd>
+          </div>
+          <div>
+            <dt><span class="complete-detail-icon" aria-hidden="true">✉</span>メールアドレス</dt>
+            <dd id="reservation-email">-</dd>
+          </div>
+        </dl>
+      </div>
+      <p class="complete-note">当日はスタッフがアンケート結果を確認しながら、香りのバランスを一緒に整えていきます。</p>
+      <a class="btn primary complete-home-link" id="hero-map-link" href="../index.html">トップへ戻る</a>
+      <span class="complete-ornament complete-ornament-bottom" aria-hidden="true"></span>
+      <section class="reservation-complete-legacy" hidden aria-hidden="true">
         <h2 id="detail-status-label">予約内容</h2>
         <button class="btn secondary" id="detail-toggle" type="button">詳細表示</button>
         <div id="detail-body">
-          <p>日時: <strong id="reservation-slot">-</strong></p>
           <p>お名前: <strong id="reservation-name">-</strong></p>
-          <p>メール: <strong id="reservation-email">-</strong></p>
           <p>種別: <strong id="reservation-visit-type">-</strong></p>
           <p>人数: <strong id="reservation-guests">-</strong></p>
           <p id="memo-item">メモ: <span id="reservation-memo"></span></p>
@@ -32,7 +54,7 @@
         <p class="admin-note">自動移動まで <span id="countdown-seconds">-</span></p>
         <button class="btn secondary" id="stay-here-btn" type="button">このページに留まる</button>
       </section>
-    </div>
+    </section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabase-config.js"></script>

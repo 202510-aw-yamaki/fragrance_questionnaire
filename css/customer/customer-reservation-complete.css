@@ -1,0 +1,308 @@
+body[data-page="reservation-complete"] {
+  background: #fff8f0;
+}
+
+body[data-page="reservation-complete"] .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  border-bottom: 1px solid #dc9f42;
+  background: rgba(255, 251, 246, 0.96);
+  box-shadow: none;
+  backdrop-filter: blur(18px);
+}
+
+body[data-page="reservation-complete"] .site-header-inner {
+  width: min(1626px, calc(100% - 48px));
+  min-height: 78px;
+  justify-content: flex-start;
+}
+
+body[data-page="reservation-complete"] .complete-brand {
+  gap: 14px;
+  font-family: var(--serif);
+  font-size: 30px;
+  color: #39251c;
+}
+
+body[data-page="reservation-complete"] .complete-brand .brand-logo-mark {
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+body[data-page="reservation-complete"] .complete-brand img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.reservation-complete-main {
+  position: relative;
+  min-height: calc(100vh - 78px);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  padding: 38px 0 46px;
+  background:
+    linear-gradient(90deg, rgba(255, 250, 244, 0.28) 0%, rgba(255, 250, 244, 0.82) 28%, rgba(255, 250, 244, 0.82) 72%, rgba(255, 250, 244, 0.24) 100%),
+    url("../../img/costomer/初回アンケート共通背景.png") center top / cover no-repeat;
+}
+
+.reservation-complete-main::before,
+.reservation-complete-main::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.reservation-complete-main::before {
+  inset: 0 auto 0 0;
+  width: min(34vw, 520px);
+  background: radial-gradient(ellipse at 14% 68%, rgba(232, 167, 129, 0.2), transparent 58%);
+}
+
+.reservation-complete-main::after {
+  inset: 0 0 0 auto;
+  width: min(32vw, 500px);
+  background: radial-gradient(ellipse at 82% 58%, rgba(232, 167, 129, 0.18), transparent 62%);
+}
+
+.reservation-complete-card {
+  position: relative;
+  z-index: 1;
+  width: min(890px, calc(100% - 64px));
+  min-height: 640px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid rgba(224, 181, 115, 0.24);
+  border-radius: 8px;
+  background: rgba(255, 253, 249, 0.94);
+  box-shadow: 0 22px 48px rgba(106, 70, 32, 0.14);
+  padding: 34px 90px 40px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+.complete-ornament {
+  display: block;
+  width: 250px;
+  height: 22px;
+  background:
+    linear-gradient(#d9b778, #d9b778) left 50% / calc(50% - 20px) 1px no-repeat,
+    linear-gradient(#d9b778, #d9b778) right 50% / calc(50% - 20px) 1px no-repeat,
+    url("../../img/costomer/会員ページの記号.png") center / 18px 18px no-repeat;
+}
+
+.complete-ornament-top {
+  width: 88px;
+  margin-bottom: 12px;
+}
+
+.complete-ornament-bottom {
+  margin-top: 24px;
+}
+
+.reservation-complete-card h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(38px, 3.4vw, 52px);
+  font-weight: 500;
+  line-height: 1.35;
+  color: #3a2419;
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
+
+.complete-check {
+  width: 90px;
+  height: 90px;
+  display: inline-grid;
+  place-items: center;
+  margin: 20px 0 16px;
+  border: 1px solid rgba(219, 157, 65, 0.52);
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, #fff9f5 0%, #f9e4db 100%);
+  color: #e4858e;
+  font-size: 56px;
+  line-height: 1;
+  box-shadow: inset 0 0 0 7px rgba(255, 250, 246, 0.72), 0 9px 16px rgba(115, 72, 33, 0.12);
+}
+
+.complete-greeting {
+  margin: 0 0 18px;
+  color: #3e281d;
+  font-family: var(--serif);
+  font-size: clamp(24px, 2vw, 30px);
+  line-height: 1.6;
+}
+
+.complete-detail-box {
+  width: min(620px, 100%);
+  position: relative;
+  border: 1px solid rgba(214, 158, 80, 0.35);
+  border-radius: 8px;
+  background: rgba(255, 252, 247, 0.88);
+  box-shadow: 0 10px 24px rgba(101, 65, 33, 0.08);
+  padding: 22px 70px;
+}
+
+.complete-detail-box::before,
+.complete-detail-box::after {
+  content: "";
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  pointer-events: none;
+}
+
+.complete-detail-box::before {
+  top: 10px;
+  left: 10px;
+  border-top: 1px solid #dca653;
+  border-left: 1px solid #dca653;
+}
+
+.complete-detail-box::after {
+  right: 10px;
+  bottom: 10px;
+  border-right: 1px solid #dca653;
+  border-bottom: 1px solid #dca653;
+}
+
+.complete-detail-box dl {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+}
+
+.complete-detail-box div {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  align-items: start;
+  gap: 14px;
+  text-align: left;
+}
+
+.complete-detail-box dt,
+.complete-detail-box dd {
+  margin: 0;
+  font-family: var(--serif);
+  color: #3d281d;
+  line-height: 1.55;
+}
+
+.complete-detail-box dt {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+}
+
+.complete-detail-box dd {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: 700;
+}
+
+.complete-detail-icon {
+  width: 24px;
+  height: 24px;
+  display: inline-grid;
+  place-items: center;
+  color: #d89b47;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.complete-note {
+  margin: 22px 0 20px;
+  color: #3b281f;
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.85;
+}
+
+.complete-home-link {
+  width: min(310px, 100%);
+  min-height: 64px;
+  border-radius: 8px;
+  font-family: var(--serif);
+  font-size: 24px;
+  letter-spacing: 0;
+}
+
+@media (max-width: 860px) {
+  body[data-page="reservation-complete"] .site-header-inner {
+    width: min(100% - 32px, 820px);
+    min-height: 66px;
+  }
+
+  body[data-page="reservation-complete"] .complete-brand {
+    font-size: 24px;
+  }
+
+  body[data-page="reservation-complete"] .complete-brand .brand-logo-mark {
+    width: 40px;
+    height: 40px;
+  }
+
+  .reservation-complete-main {
+    min-height: calc(100vh - 66px);
+    padding: 28px 0 34px;
+  }
+
+  .reservation-complete-card {
+    width: min(100% - 32px, 720px);
+    min-height: 0;
+    padding: 28px 30px 34px;
+  }
+
+  .complete-detail-box {
+    padding: 20px 28px;
+  }
+
+  .complete-detail-box div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 560px) {
+  body[data-page="reservation-complete"] .complete-brand {
+    gap: 10px;
+    font-size: 21px;
+  }
+
+  .reservation-complete-card {
+    padding: 24px 18px 30px;
+  }
+
+  .reservation-complete-card h1 {
+    font-size: 31px;
+  }
+
+  .complete-check {
+    width: 74px;
+    height: 74px;
+    font-size: 44px;
+  }
+
+  .complete-detail-box {
+    padding: 18px 20px;
+  }
+
+  .complete-ornament {
+    width: 210px;
+  }
+
+  .complete-home-link {
+    min-height: 58px;
+    font-size: 21px;
+  }
+}
