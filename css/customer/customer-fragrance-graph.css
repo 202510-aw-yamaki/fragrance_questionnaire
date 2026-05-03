@@ -492,7 +492,7 @@ body[data-page="graph"] .graph-actions {
   gap: 38px;
   align-items: center;
   max-width: 866px;
-  margin: 20px 0 0 190px;
+  margin: 20px 0 0 0px;
 }
 
 body[data-page="graph"] .graph-primary-action,
@@ -650,7 +650,6 @@ body[data-page="graph"] .graph-help-link span {
     grid-template-columns: minmax(260px, 360px) minmax(230px, 300px);
     gap: 20px;
     max-width: 680px;
-    margin-left: 178px;
     margin-top: 14px;
   }
 
