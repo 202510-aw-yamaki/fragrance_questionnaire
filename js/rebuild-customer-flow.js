@@ -25,6 +25,11 @@
       floral: "Trivia_Q7_floral.png",
       fresh: "Trivia_Q7_fresh.png",
       woody: "Trivia_Q7_woody.png"
+    },
+    Q8: {
+      floral: "Trivia_Q8.png",
+      fresh: "Trivia_Q8.png",
+      woody: "Trivia_Q8.png"
     }
   };
 
