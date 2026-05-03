@@ -1193,18 +1193,13 @@
         return;
       }
       deltaListEl.innerHTML = RESULT_AXIS_ORDER.map((axis) => {
-        const previous = previousAxes ? clamp(previousAxes[axis]) : null;
         const current = clamp(currentAxes[axis]);
-        const delta = previous === null ? null : current - previous;
         const meta = RESULT_AXIS_META[axis] || RESULT_AXIS_META.floral;
-        const sign = delta && delta > 0 ? "+" : "";
-        const tone = delta === null ? "is-even" : delta === 0 ? "is-even" : delta > 0 ? "is-positive" : "is-negative";
         return `
-          <div class="compare-delta-row ${tone}" style="--axis-color:${meta.color};">
+          <div class="compare-delta-row" style="--axis-color:${meta.color};">
             <label class="compare-delta-label" for="compare-axis-${axis}"><span aria-hidden="true">${meta.mark}</span>${RESULT_AXIS_LABELS[axis]}</label>
             <input class="compare-delta-track" id="compare-axis-${axis}" name="${axis}" type="range" min="0" max="100" value="${current}" aria-label="${RESULT_AXIS_LABELS[axis]}">
             <span class="compare-current-score" id="compare-axis-${axis}-score">${current}</span>
-            <span class="compare-delta-score">${delta === null ? "-" : `${sign}${delta}`}</span>
           </div>
         `;
       }).join("");
@@ -1213,18 +1208,8 @@
         input?.addEventListener("input", (event) => {
           currentAxes = { ...currentAxes, [axis]: clamp(event.target.value) };
           const current = clamp(currentAxes[axis]);
-          const previous = previousAxes ? clamp(previousAxes[axis]) : null;
-          const delta = previous === null ? null : current - previous;
           const score = $(`compare-axis-${axis}-score`);
-          const row = input.closest(".compare-delta-row");
-          const deltaScore = row?.querySelector(".compare-delta-score");
           if (score) score.textContent = String(current);
-          if (deltaScore) deltaScore.textContent = delta === null ? "-" : `${delta > 0 ? "+" : ""}${delta}`;
-          if (row) {
-            row.classList.toggle("is-positive", delta !== null && delta > 0);
-            row.classList.toggle("is-negative", delta !== null && delta < 0);
-            row.classList.toggle("is-even", delta === null || delta === 0);
-          }
           persistCompareAxes();
           renderCompareRadar("compare-current", currentAxes);
           renderModalDetails();
@@ -1253,9 +1238,11 @@
       const data = await window.FragrancePublicData?.loadCustomerPortalData?.();
       previousProduct = (data?.products || []).find((row) => getProductAxes(row)) || null;
       previousAxes = getProductAxes(previousProduct);
+      document.body?.classList.toggle("has-no-previous-axes", !previousAxes);
       setStatus([]);
     } catch (error) {
       console.error("Failed to load fragrance comparison data.", error);
+      document.body?.classList.add("has-no-previous-axes");
       setStatus(["比較データを取得できませんでした。"], "error");
     }
 

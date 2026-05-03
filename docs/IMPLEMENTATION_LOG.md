@@ -655,3 +655,22 @@
   - `node --check js/rebuild-customer-flow.js`
   - `git diff --check`
   - Playwright screenshot 913x909
+
+### 2026-05-03 会員比較ページの縦積みとスライダー行調整
+- 対象:
+  - `customer/fragrance-compare.html`
+  - `css/customer/customer-fragrance-compare.css`
+  - `js/rebuild-customer-flow.js`
+  - `docs/SPEC.md`
+- 背景:
+  - ブラウザ注釈で、下段5軸スライダーの前回値・差分表示削除、縦積み時の今回結果優先表示、前回完成品データなし時の前回カード非表示、スライダー1行表示の要望があった。
+- 実装:
+  - 下段5軸スライダーの差分列を削除し、「軸名・スライダー・今回値」の3列構成へ変更。
+  - 860px以下では今回のアンケート結果カードを前回カードより上に表示。
+  - 前回完成品の5軸データがない場合、860px以下では前回カードを非表示にする `has-no-previous-axes` クラス制御を追加。
+  - 縦積み表示でもスライダーが1行に収まるようCSSを調整。
+  - 仕様追記として、スライダー表示と縦積み時の表示順を `docs/SPEC.md` に追記。
+- 確認:
+  - `node --check js/rebuild-customer-flow.js`
+  - `git diff --check`
+  - Playwright screenshot 913x909 / 820x1180
