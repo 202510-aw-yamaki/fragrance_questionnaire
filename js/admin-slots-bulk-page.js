@@ -3,7 +3,6 @@
   const DEFAULT_CAPACITY = 6;
   const form = document.getElementById("slot-bulk-form");
   const statusEl = document.getElementById("slot-bulk-status-note");
-  const previewCountEl = document.getElementById("slot-bulk-preview-count");
   const previewRangeEl = document.getElementById("slot-bulk-preview-range");
   const duplicatePreviewEl = document.getElementById("slot-bulk-duplicate-preview");
   const modal = document.getElementById("slot-bulk-modal");
@@ -35,6 +34,7 @@
 
   function setStatus(message, kind = "note") {
     statusEl.textContent = message;
+    statusEl.hidden = !message;
     statusEl.className = kind === "error" ? "admin-error" : kind === "success" ? "admin-note admin-note-success" : "admin-note";
   }
 
@@ -43,6 +43,7 @@
     modal.hidden = false;
     document.body.classList.add("portal-modal-open");
     openButton?.setAttribute("aria-expanded", "true");
+    setStatus("");
     updatePreview();
     document.getElementById("slot-bulk-start-date")?.focus();
   }
@@ -181,17 +182,42 @@
   }
 
   function updatePreview() {
-    if (!previewCountEl || !previewRangeEl) return;
+    if (!previewRangeEl) return;
     try {
       const payloads = buildPayloads();
       const first = payloads[0];
       const last = payloads[payloads.length - 1];
-      previewCountEl.textContent = `${payloads.length}件の予約枠を作成予定です。`;
       previewRangeEl.textContent = `${formatMonthDay(first.slot_date)} ${String(first.slot_time || "").slice(0, 5)} から ${formatMonthDay(last.slot_date)} ${String(last.slot_time || "").slice(0, 5)} までを対象にします。`;
     } catch (error) {
-      previewCountEl.textContent = "未計算";
       previewRangeEl.textContent = error?.message || "開始日と終了日を指定すると表示されます。";
     }
+  }
+
+  function formatSelectedWeekdayLabels() {
+    const labels = ["\u65e5", "\u6708", "\u706b", "\u6c34", "\u6728", "\u91d1", "\u571f"];
+    return getSelectedWeekdays().map((day) => labels[day]).join("\u30fb") || "-";
+  }
+
+  function buildBulkConfirmMessage(payloads, conflictMessages) {
+    const first = payloads[0];
+    const last = payloads[payloads.length - 1];
+    const interval = document.getElementById("slot-bulk-interval").value || DEFAULT_INTERVAL;
+    const capacity = document.getElementById("slot-bulk-capacity").value || DEFAULT_CAPACITY;
+    const lines = [
+      "\u4ee5\u4e0b\u306e\u5185\u5bb9\u3067\u4e88\u7d04\u67a0\u3092\u307e\u3068\u3081\u3066\u4f5c\u6210\u3057\u307e\u3059\u3002",
+      "",
+      `\u4ef6\u6570: ${payloads.length}\u4ef6`,
+      `\u671f\u9593: ${formatMonthDay(first.slot_date)} \uff5e ${formatMonthDay(last.slot_date)}`,
+      `\u66dc\u65e5: ${formatSelectedWeekdayLabels()}`,
+      `\u958b\u59cb\u6642\u523b: ${String(first.slot_time || "").slice(0, 5)}`,
+      `\u67a0\u9593\u9694: ${interval}\u5206`,
+      `\u5b9a\u54e1: ${capacity}\u540d`
+    ];
+    if (conflictMessages.length) {
+      lines.push("", "\u91cd\u8907\u5019\u88dc\u304c\u3042\u308a\u307e\u3059\u3002", ...conflictMessages);
+    }
+    lines.push("", "\u5185\u5bb9\u306f\u6b63\u3057\u3044\u3067\u3059\u304b\uff1f");
+    return lines.join("\n");
   }
 
   async function findConflictingSlots(payloads) {
@@ -235,12 +261,9 @@
           ? conflictMessages.join(" / ")
           : "重複枠は見つかっていません。";
       }
-      if (conflictMessages.length) {
-        const popupMessage = `${conflictMessages.join("\n")}\n\n続けて登録しますか？`;
-        if (!window.confirm(popupMessage)) {
-          setStatus("一括作成を中止しました。", "note");
-          return;
-        }
+      if (!window.confirm(buildBulkConfirmMessage(payloads, conflictMessages))) {
+        setStatus("\u307e\u3068\u3081\u3066\u4f5c\u6210\u3092\u4e2d\u6b62\u3057\u307e\u3057\u305f\u3002", "note");
+        return;
       }
       await window.AdminData.upsertRow("reservation_slots", payloads, "slot_code");
       setStatus(`${payloads.length}\u4ef6\u306e\u4e88\u7d04\u67a0\u3092\u4f5c\u6210 / \u66f4\u65b0\u3057\u307e\u3057\u305f\u3002\u30da\u30fc\u30b8\u3092\u518d\u8aad\u307f\u8fbc\u307f\u3057\u307e\u3059\u3002`, "success");

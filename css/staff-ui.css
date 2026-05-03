@@ -986,34 +986,6 @@ body[data-page="staff-slots"] .staff-main::before {
   order: 4;
 }
 
-.staff-slot-preview {
-  display: grid;
-  gap: 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: rgba(255, 250, 243, 0.72);
-  padding: 14px;
-}
-
-.staff-slot-preview .admin-note {
-  margin: 0;
-}
-
-.staff-slot-preview-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.staff-slot-preview-grid strong {
-  min-width: 0;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--white);
-  padding: 10px 12px;
-  overflow-wrap: anywhere;
-}
-
 .staff-slot-actions {
   display: grid;
   gap: 10px;
@@ -1090,6 +1062,25 @@ body[data-page="staff-slots"] .staff-main::before {
 
 .staff-bulk-modal .portal-modal-dialog {
   width: min(760px, 100%);
+}
+
+.staff-bulk-form-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.staff-bulk-form-grid > label {
+  min-width: 0;
+}
+
+.staff-bulk-form-grid > label:nth-of-type(1),
+.staff-bulk-form-grid > label:nth-of-type(2) {
+  grid-column: span 3;
+}
+
+.staff-bulk-form-grid > label:nth-of-type(3),
+.staff-bulk-form-grid > label:nth-of-type(4),
+.staff-bulk-form-grid > label:nth-of-type(5) {
+  grid-column: span 2;
 }
 
 .staff-bulk-weekdays {
@@ -1395,11 +1386,18 @@ body[data-page="staff-slots"] .staff-main::before {
 
   .staff-week-controls,
   .staff-slots-form-grid,
-  .staff-slot-preview-grid,
   .staff-slot-secondary-actions,
   .staff-slots-list-panel .staff-slots-panel-head,
   .portal-slot-row {
     grid-template-columns: 1fr;
+  }
+
+  .staff-bulk-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .staff-bulk-form-grid > label {
+    grid-column: auto;
   }
 
   .staff-week-controls strong {

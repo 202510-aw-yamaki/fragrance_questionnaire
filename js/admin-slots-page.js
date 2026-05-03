@@ -4,10 +4,6 @@
   const rowsEl = document.getElementById("slot-rows");
   const form = document.getElementById("slot-form");
   const resetButton = document.getElementById("slot-reset");
-  const previewDateEl = document.getElementById("slot-preview-date");
-  const previewTimeEl = document.getElementById("slot-preview-time");
-  const previewIntervalEl = document.getElementById("slot-preview-interval");
-  const previewCapacityEl = document.getElementById("slot-preview-capacity");
   const previewFocusButton = document.getElementById("slot-preview-focus");
   const deleteButton = document.getElementById("slot-delete");
   const weekDaysEl = document.getElementById("slot-week-days");
@@ -195,12 +191,6 @@
     return activeRows.filter((row) => normalizeName(row.instructor_name) === normalizeName(staffName));
   }
 
-  function getStatusLabel(status) {
-    if (status === "recommended") return "おすすめ表示";
-    if (status === "closed") return "非公開";
-    return "公開中";
-  }
-
   function buildSlotCode(dateValue, timeValue) {
     const safeDate = String(dateValue || "").replaceAll("-", "");
     const safeTime = String(timeValue || "").replaceAll(":", "");
@@ -264,15 +254,10 @@
     const dateValue = document.getElementById("slot-date").value || "-";
     const timeValue = document.getElementById("slot-time").value || "-";
     const intervalValue = document.getElementById("slot-interval").value || DEFAULT_INTERVAL;
-    const capacityValue = document.getElementById("slot-capacity").value || DEFAULT_CAPACITY;
     const labelValue = buildSlotLabel(timeValue, intervalValue);
 
     document.getElementById("slot-code").value = buildSlotCode(dateValue, timeValue);
     document.getElementById("slot-label").value = labelValue;
-    previewDateEl.textContent = formatMonthDay(dateValue);
-    previewTimeEl.textContent = timeValue;
-    if (previewIntervalEl) previewIntervalEl.textContent = `${intervalValue}分`;
-    if (previewCapacityEl) previewCapacityEl.textContent = `${capacityValue}名`;
   }
 
   async function getAllSlots() {
@@ -373,11 +358,25 @@
     }) || null;
   }
 
+  function confirmSlotSubmit({ dateValue, timeValue, intervalValue, capacityValue, isEdit }) {
+    return window.confirm([
+      isEdit ? "\u4ee5\u4e0b\u306e\u5185\u5bb9\u3067\u4e88\u7d04\u67a0\u3092\u66f4\u65b0\u3057\u307e\u3059\u3002" : "\u4ee5\u4e0b\u306e\u5185\u5bb9\u3067\u4e88\u7d04\u67a0\u3092\u8ffd\u52a0\u3057\u307e\u3059\u3002",
+      "",
+      `\u65e5\u4ed8: ${formatMonthDay(dateValue)}`,
+      `\u5b9a\u54e1: ${capacityValue}\u540d`,
+      `\u6642\u523b: ${timeValue}`,
+      `\u6642\u9593: ${intervalValue}\u5206`,
+      "",
+      "\u5185\u5bb9\u306f\u6b63\u3057\u3044\u3067\u3059\u304b\uff1f"
+    ].join("\n"));
+  }
+
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const dateValue = document.getElementById("slot-date").value;
     const timeValue = document.getElementById("slot-time").value;
     const intervalValue = document.getElementById("slot-interval").value || DEFAULT_INTERVAL;
+    const capacityValue = document.getElementById("slot-capacity").value || DEFAULT_CAPACITY;
     const instructorValue = document.getElementById("slot-instructor").value.trim() || getDefaultInstructorName() || null;
     const id = document.getElementById("slot-id").value;
     const conflict = await findSlotConflict({
@@ -398,6 +397,9 @@
       ));
       return;
     }
+    if (!confirmSlotSubmit({ dateValue, timeValue, intervalValue, capacityValue, isEdit: Boolean(id) })) {
+      return;
+    }
     const payload = {
       slot_code: buildSlotCode(dateValue, timeValue),
       slot_date: dateValue,
@@ -405,7 +407,7 @@
       slot_label: buildSlotLabel(timeValue, intervalValue),
       instructor_name: instructorValue,
       status: document.getElementById("slot-status").value,
-      capacity: Number(document.getElementById("slot-capacity").value || DEFAULT_CAPACITY),
+      capacity: Number(capacityValue),
       sort_order: Number(document.getElementById("slot-sort").value || 0),
       is_active: document.getElementById("slot-active").checked,
       updated_at: new Date().toISOString()
