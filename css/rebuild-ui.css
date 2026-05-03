@@ -2019,6 +2019,338 @@ body[data-page="staff-reservations"] .staff-main::before {
   padding: 28px;
 }
 
+body.portal-modal-open {
+  overflow: hidden;
+}
+
+body[data-page="staff-slots"] {
+  overflow-x: hidden;
+}
+
+body[data-page="staff-slots"] .staff-main {
+  position: relative;
+  width: min(1320px, calc(100% - 32px));
+  overflow: hidden;
+  padding: 0 0 48px;
+}
+
+body[data-page="staff-slots"] .staff-main::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: max(-110px, calc((100vw - 1320px) / 2));
+  width: min(44vw, 600px);
+  height: 300px;
+  background: url("../img/TOP/Final_Call_hope.png") center / cover no-repeat;
+  opacity: 0.16;
+  pointer-events: none;
+}
+
+.staff-slots-title,
+.staff-slots-layout {
+  position: relative;
+  z-index: 1;
+}
+
+.staff-slots-title {
+  align-items: center;
+  min-height: 160px;
+  margin-bottom: 18px;
+  padding: 34px 0 14px;
+}
+
+.staff-slots-title .admin-note {
+  margin: 10px 0 0;
+}
+
+.staff-slots-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--gold-dark);
+  text-transform: none;
+}
+
+.staff-slots-eyebrow strong {
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 13px;
+  letter-spacing: 0;
+}
+
+.staff-slots-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.88fr) minmax(330px, 1.18fr) minmax(280px, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.staff-slots-layout > .admin-panel {
+  min-width: 0;
+  padding: 24px;
+}
+
+.staff-slots-panel-head {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.staff-slots-panel-head h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.staff-week-controls {
+  display: grid;
+  grid-template-columns: auto minmax(92px, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.staff-week-controls .admin-btn {
+  min-height: 36px;
+  padding: 8px 10px;
+  font-size: 13px;
+  box-shadow: none;
+}
+
+.staff-week-controls strong {
+  text-align: center;
+  font-family: var(--serif);
+  font-size: 18px;
+}
+
+.staff-week-days {
+  display: grid;
+  gap: 9px;
+}
+
+.staff-week-day {
+  display: grid;
+  grid-template-columns: 46px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  min-height: 56px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 253, 249, 0.92);
+  color: var(--ink);
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.staff-week-day:hover,
+.staff-week-day:focus-visible {
+  border-color: var(--gold);
+  box-shadow: 0 8px 20px rgba(162, 108, 35, 0.12);
+  outline: 0;
+}
+
+.staff-week-day.is-selected {
+  border-color: var(--gold);
+  background: linear-gradient(180deg, rgba(255, 249, 239, 0.98), rgba(255, 241, 219, 0.92));
+}
+
+.staff-week-day.has-slots small {
+  color: var(--green);
+}
+
+.staff-week-day-name {
+  border-right: 1px solid var(--line);
+  color: var(--gold-dark);
+  font-weight: 800;
+}
+
+.staff-week-day strong {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1;
+}
+
+.staff-week-day small {
+  white-space: nowrap;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.staff-slots-form-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.staff-slot-preview {
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 250, 243, 0.72);
+  padding: 14px;
+}
+
+.staff-slot-preview .admin-note {
+  margin: 0;
+}
+
+.staff-slot-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.staff-slot-preview-grid strong {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+  padding: 10px 12px;
+  overflow-wrap: anywhere;
+}
+
+.staff-slot-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.staff-slot-actions .admin-btn {
+  justify-content: center;
+  width: 100%;
+}
+
+.staff-slot-secondary-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.staff-slot-secondary-actions .admin-btn {
+  min-height: 40px;
+  padding: 8px;
+  font-size: 13px;
+  box-shadow: none;
+}
+
+.staff-slots-list-panel .portal-list-body {
+  max-height: 548px;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.staff-slots-list-panel .staff-slots-panel-head {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+}
+
+.portal-slot-row {
+  grid-template-columns: 1.2fr 0.82fr 0.7fr 0.7fr;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 253, 249, 0.94);
+  cursor: pointer;
+}
+
+.portal-slot-row:hover,
+.portal-slot-row:focus-visible,
+.portal-slot-row.is-selected {
+  border-color: var(--gold);
+  box-shadow: 0 8px 20px rgba(162, 108, 35, 0.1);
+  outline: 0;
+}
+
+.portal-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.portal-modal-head h2 {
+  margin: 0;
+}
+
+.portal-modal-close {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.staff-bulk-modal .portal-modal-dialog {
+  width: min(760px, 100%);
+}
+
+.staff-bulk-weekdays {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.staff-bulk-weekdays label {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--white);
+  padding: 8px 12px;
+}
+
+@media (max-width: 920px) {
+  .staff-slots-layout {
+    grid-template-columns: minmax(220px, 0.88fr) minmax(330px, 1.12fr);
+  }
+
+  .staff-slots-list-panel {
+    grid-column: 1 / -1;
+  }
+
+  .staff-slots-list-panel .portal-list-body {
+    max-height: none;
+  }
+}
+
+@media (max-width: 860px) {
+  body[data-page="staff-slots"] .staff-main {
+    width: min(720px, calc(100% - 24px));
+  }
+
+  .staff-slots-title {
+    align-items: flex-start;
+    min-height: 0;
+    padding: 28px 0 10px;
+  }
+
+  .staff-slots-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .staff-slots-list-panel {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .staff-week-controls,
+  .staff-slot-preview-grid,
+  .staff-slot-secondary-actions,
+  .staff-slots-list-panel .staff-slots-panel-head,
+  .portal-slot-row {
+    grid-template-columns: 1fr;
+  }
+
+  .staff-week-controls strong {
+    order: -1;
+  }
+}
+
 .staff-detail-header-inner-simple {
   width: min(1180px, calc(100% - 40px));
   margin: 0 auto;

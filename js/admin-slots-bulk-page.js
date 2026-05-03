@@ -6,6 +6,9 @@
   const previewCountEl = document.getElementById("slot-bulk-preview-count");
   const previewRangeEl = document.getElementById("slot-bulk-preview-range");
   const duplicatePreviewEl = document.getElementById("slot-bulk-duplicate-preview");
+  const modal = document.getElementById("slot-bulk-modal");
+  const openButton = document.getElementById("slot-bulk-open");
+  const closeButton = document.getElementById("slot-bulk-close");
 
   if (!form || !statusEl) return;
 
@@ -33,6 +36,23 @@
   function setStatus(message, kind = "note") {
     statusEl.textContent = message;
     statusEl.className = kind === "error" ? "admin-error" : kind === "success" ? "admin-note admin-note-success" : "admin-note";
+  }
+
+  function openBulkModal() {
+    if (!modal) return;
+    modal.hidden = false;
+    document.body.classList.add("portal-modal-open");
+    openButton?.setAttribute("aria-expanded", "true");
+    updatePreview();
+    document.getElementById("slot-bulk-start-date")?.focus();
+  }
+
+  function closeBulkModal() {
+    if (!modal) return;
+    modal.hidden = true;
+    document.body.classList.remove("portal-modal-open");
+    openButton?.setAttribute("aria-expanded", "false");
+    openButton?.focus();
   }
 
   function parseMinutes(timeText) {
@@ -249,6 +269,15 @@
   });
   document.querySelectorAll('input[name="slot-bulk-weekday"]').forEach((input) => {
     input.addEventListener("change", updatePreview);
+  });
+
+  openButton?.addEventListener("click", openBulkModal);
+  closeButton?.addEventListener("click", closeBulkModal);
+  modal?.querySelector("[data-close-bulk-modal]")?.addEventListener("click", closeBulkModal);
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && modal && !modal.hidden) {
+      closeBulkModal();
+    }
   });
 
   const bulkInstructorEl = document.getElementById("slot-bulk-instructor");

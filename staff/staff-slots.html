@@ -9,40 +9,84 @@
 <body class="staff-page" data-page="staff-slots">
   <header class="admin-header" id="admin-header"></header>
   <main class="staff-main">
-    <section class="admin-page-title"><div><span class="eyebrow">Slots</span><h1>予約枠作成</h1></div></section>
-    <section class="grid-2">
-      <article class="admin-panel">
-        <h2>予約枠</h2>
-        <div id="slot-rows" class="portal-list-body"></div>
+    <section class="admin-page-title staff-slots-title">
+      <div>
+        <span class="eyebrow staff-slots-eyebrow">SLOTS <strong id="staff-slots-staff-name" hidden></strong></span>
+        <h1>予約枠を作成</h1>
+        <p class="admin-note">スタッフの出勤スケジュールに合わせて予約枠を作成してください。</p>
+      </div>
+    </section>
+    <section class="staff-slots-layout" aria-label="予約枠作成">
+      <article class="admin-panel staff-slots-calendar-panel">
+        <div class="staff-slots-panel-head">
+          <h2>週カレンダー</h2>
+          <div class="staff-week-controls">
+            <button class="admin-btn secondary" id="slot-week-prev" type="button">前の週</button>
+            <strong id="slot-week-range">-</strong>
+            <button class="admin-btn secondary" id="slot-week-next" type="button">次の週</button>
+          </div>
+        </div>
+        <p class="admin-note">選択中の日付で予約枠を作成します。</p>
+        <div class="staff-week-days" id="slot-week-days"></div>
       </article>
-      <article class="admin-panel">
-        <h2>1枠ずつ作成</h2>
+
+      <article class="admin-panel staff-slots-form-panel">
+        <div class="staff-slots-panel-head">
+          <h2>予約枠作成フォーム</h2>
+        </div>
         <form class="admin-form-stack" id="slot-form">
           <input id="slot-id" type="hidden"><input id="slot-code" type="hidden"><input id="slot-label" type="hidden"><input id="slot-sort" type="hidden" value="0"><input id="slot-active" type="checkbox" checked hidden><input id="slot-instructor" type="hidden">
           <select id="slot-status" hidden><option value="open">open</option><option value="closed">closed</option></select>
-          <label>日付<input id="slot-date" type="date" required></label>
-          <label>開始時刻<input id="slot-time" type="time" required></label>
-          <label>枠時間<input id="slot-interval" type="number" min="15" step="15" value="120"></label>
-          <label>定員<input id="slot-capacity" type="number" min="1" value="6"></label>
-          <p class="admin-note" id="slot-preview-label">未入力</p>
-          <div class="grid-2">
-            <strong id="slot-preview-date">-</strong><strong id="slot-preview-time">-</strong><strong id="slot-preview-interval">120分</strong><strong id="slot-preview-capacity">6名</strong><strong id="slot-preview-staff">-</strong><strong id="slot-preview-status">-</strong>
+          <div class="staff-slots-form-grid">
+            <label>日付<input id="slot-date" type="date" required></label>
+            <label>開始時刻<input id="slot-time" type="time" required></label>
+            <label>枠時間<input id="slot-interval" type="number" min="15" step="15" value="120"></label>
+            <label>定員<input id="slot-capacity" type="number" min="1" value="6"></label>
           </div>
-          <div class="admin-actions"><button class="admin-btn primary" type="submit">保存</button><button class="admin-btn secondary" id="slot-reset" type="button">入力をクリア</button><button class="admin-btn secondary" id="slot-preview-focus" type="button">編集</button><button class="admin-btn secondary" id="slot-delete" type="button">枠削除</button></div>
+          <div class="staff-slot-preview">
+            <p class="admin-note" id="slot-preview-label">未入力</p>
+            <div class="staff-slot-preview-grid">
+              <strong id="slot-preview-date">-</strong><strong id="slot-preview-time">-</strong><strong id="slot-preview-interval">120分</strong><strong id="slot-preview-capacity">6名</strong><strong id="slot-preview-staff">-</strong><strong id="slot-preview-status">-</strong>
+            </div>
+          </div>
+          <div class="staff-slot-actions">
+            <button class="admin-btn primary staff-slot-submit" type="submit">予約枠を追加</button>
+            <button class="admin-btn secondary" id="slot-bulk-open" type="button" aria-controls="slot-bulk-modal" aria-expanded="false">まとめて作成</button>
+            <div class="staff-slot-secondary-actions">
+              <button class="admin-btn secondary" id="slot-reset" type="button">入力をクリア</button>
+              <button class="admin-btn secondary" id="slot-preview-focus" type="button">編集</button>
+              <button class="admin-btn secondary" id="slot-delete" type="button">枠削除</button>
+            </div>
+          </div>
         </form>
       </article>
+
+      <article class="admin-panel staff-slots-list-panel">
+        <div class="staff-slots-panel-head">
+          <h2>作成済み予約枠一覧</h2>
+          <span class="admin-chip" id="slot-list-date-label">-</span>
+        </div>
+        <div id="slot-rows" class="portal-list-body"></div>
+      </article>
     </section>
-    <section class="section admin-panel">
-      <h2>まとめて作成</h2>
-      <form class="admin-form-stack" id="slot-bulk-form">
-        <input id="slot-bulk-end-time" type="hidden"><input id="slot-bulk-instructor" type="hidden"><input id="slot-bulk-label" type="hidden" value="接客枠"><input id="slot-bulk-prefix" type="hidden" value="SHIFT"><input id="slot-bulk-sort-start" type="hidden" value="0">
-        <select id="slot-bulk-status" hidden><option value="open">open</option></select>
-        <div class="form-grid"><label>開始日<input id="slot-bulk-start-date" type="date" required></label><label>終了日<input id="slot-bulk-end-date" type="date" required></label><label>開始時刻<input id="slot-bulk-start-time" type="time" required></label><label>間隔<input id="slot-bulk-interval" type="number" min="15" step="15" value="120"></label><label>定員<input id="slot-bulk-capacity" type="number" min="1" step="1" value="6"></label></div>
-        <div class="action-row"><label><input type="checkbox" name="slot-bulk-weekday" value="1" checked> 月</label><label><input type="checkbox" name="slot-bulk-weekday" value="2" checked> 火</label><label><input type="checkbox" name="slot-bulk-weekday" value="3" checked> 水</label><label><input type="checkbox" name="slot-bulk-weekday" value="4" checked> 木</label><label><input type="checkbox" name="slot-bulk-weekday" value="5" checked> 金</label><label><input type="checkbox" name="slot-bulk-weekday" value="6"> 土</label><label><input type="checkbox" name="slot-bulk-weekday" value="0"> 日</label></div>
-        <p class="admin-note" id="slot-bulk-preview-count">未計算</p><p class="admin-note" id="slot-bulk-preview-range">日付を指定すると表示されます。</p><p class="admin-note" id="slot-bulk-duplicate-preview">作成時に重複日を確認します。</p><p class="admin-note" id="slot-bulk-status-note">作成後は一覧へ反映します。</p>
-        <button class="admin-btn primary" type="submit">まとめて作成</button>
-      </form>
-    </section>
+
+    <div class="portal-modal staff-bulk-modal" id="slot-bulk-modal" hidden>
+      <div class="portal-modal-backdrop" data-close-bulk-modal></div>
+      <section class="portal-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="slot-bulk-title">
+        <div class="portal-modal-head">
+          <h2 id="slot-bulk-title">まとめて作成</h2>
+          <button class="portal-modal-close" id="slot-bulk-close" type="button" aria-label="閉じる">×</button>
+        </div>
+        <form class="admin-form-stack" id="slot-bulk-form">
+          <input id="slot-bulk-end-time" type="hidden"><input id="slot-bulk-instructor" type="hidden"><input id="slot-bulk-label" type="hidden" value="接客枠"><input id="slot-bulk-prefix" type="hidden" value="SHIFT"><input id="slot-bulk-sort-start" type="hidden" value="0">
+          <select id="slot-bulk-status" hidden><option value="open">open</option></select>
+          <div class="form-grid"><label>開始日<input id="slot-bulk-start-date" type="date" required></label><label>終了日<input id="slot-bulk-end-date" type="date" required></label><label>開始時刻<input id="slot-bulk-start-time" type="time" required></label><label>枠間隔<input id="slot-bulk-interval" type="number" min="15" step="15" value="120"></label><label>定員<input id="slot-bulk-capacity" type="number" min="1" step="1" value="6"></label></div>
+          <div class="action-row staff-bulk-weekdays"><label><input type="checkbox" name="slot-bulk-weekday" value="1" checked> 月</label><label><input type="checkbox" name="slot-bulk-weekday" value="2" checked> 火</label><label><input type="checkbox" name="slot-bulk-weekday" value="3" checked> 水</label><label><input type="checkbox" name="slot-bulk-weekday" value="4" checked> 木</label><label><input type="checkbox" name="slot-bulk-weekday" value="5" checked> 金</label><label><input type="checkbox" name="slot-bulk-weekday" value="6"> 土</label><label><input type="checkbox" name="slot-bulk-weekday" value="0"> 日</label></div>
+          <p class="admin-note" id="slot-bulk-preview-count">未計算</p><p class="admin-note" id="slot-bulk-preview-range">日付を指定すると表示されます。</p><p class="admin-note" id="slot-bulk-duplicate-preview">作成時に重複日を確認します。</p><p class="admin-note" id="slot-bulk-status-note">作成後に一覧へ反映します。</p>
+          <button class="admin-btn primary" type="submit">まとめて作成</button>
+        </form>
+      </section>
+    </div>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabase-config.js"></script>

@@ -13,15 +13,65 @@
   const previewStatusEl = document.getElementById("slot-preview-status");
   const previewFocusButton = document.getElementById("slot-preview-focus");
   const deleteButton = document.getElementById("slot-delete");
+  const weekDaysEl = document.getElementById("slot-week-days");
+  const weekRangeEl = document.getElementById("slot-week-range");
+  const weekPrevButton = document.getElementById("slot-week-prev");
+  const weekNextButton = document.getElementById("slot-week-next");
+  const slotListDateLabelEl = document.getElementById("slot-list-date-label");
+  const staffNameEl = document.getElementById("staff-slots-staff-name");
 
   if (!rowsEl || !form || !resetButton) return;
 
   let reservations = [];
   let selectedSlotId = "";
+  let selectedDateKey = formatDateKey(new Date());
+  let calendarStartDate = getWeekStart(parseDateKey(selectedDateKey));
 
   function formatMonthDay(value) {
     if (!value) return "-";
     return value.replace(/-/g, "/");
+  }
+
+  function parseDateKey(value) {
+    const fallback = new Date();
+    const source = /^\d{4}-\d{2}-\d{2}$/.test(String(value || ""))
+      ? new Date(`${value}T00:00:00`)
+      : fallback;
+    if (Number.isNaN(source.getTime())) return fallback;
+    source.setHours(0, 0, 0, 0);
+    return source;
+  }
+
+  function formatDateKey(date) {
+    const source = date instanceof Date ? date : new Date(date);
+    if (Number.isNaN(source.getTime())) return "";
+    return [
+      source.getFullYear(),
+      String(source.getMonth() + 1).padStart(2, "0"),
+      String(source.getDate()).padStart(2, "0")
+    ].join("-");
+  }
+
+  function addDays(date, count) {
+    const next = new Date(date);
+    next.setDate(next.getDate() + count);
+    return next;
+  }
+
+  function getWeekStart(date) {
+    const source = parseDateKey(formatDateKey(date));
+    const day = source.getDay();
+    return addDays(source, day === 0 ? -6 : 1 - day);
+  }
+
+  function formatShortMonthDay(value) {
+    const [, month, day] = String(value || "").split("-");
+    if (!month || !day) return "-";
+    return `${Number(month)}/${Number(day)}`;
+  }
+
+  function formatWeekday(date) {
+    return new Intl.DateTimeFormat("ja-JP", { weekday: "short" }).format(date);
   }
 
   function getSelectedRole() {
@@ -44,6 +94,38 @@
     if (bulkInstructorEl && !bulkInstructorEl.value) {
       bulkInstructorEl.value = defaultInstructorName;
     }
+  }
+
+  function renderStaffNameLabel() {
+    if (!staffNameEl) return;
+    const staffName = getDefaultInstructorName();
+    staffNameEl.textContent = staffName ? `/ ${staffName}` : "";
+    staffNameEl.hidden = !staffName;
+  }
+
+  function clearSelectedSlot() {
+    selectedSlotId = "";
+    document.getElementById("slot-id").value = "";
+    document.getElementById("slot-code").value = "";
+    document.getElementById("slot-label").value = "";
+    setDeleteButtonState();
+  }
+
+  function syncSelectedDateToForm({ clearSlot = false } = {}) {
+    const dateInput = document.getElementById("slot-date");
+    if (dateInput && selectedDateKey) {
+      dateInput.value = selectedDateKey;
+    }
+    if (clearSlot) clearSelectedSlot();
+    renderPreview();
+  }
+
+  function selectCalendarDate(dateKey, { clearSlot = true } = {}) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(dateKey || ""))) return;
+    selectedDateKey = dateKey;
+    calendarStartDate = getWeekStart(parseDateKey(selectedDateKey));
+    syncSelectedDateToForm({ clearSlot });
+    renderRows();
   }
 
   function normalizeName(value) {
@@ -156,12 +238,17 @@
     document.getElementById("slot-sort").value = "0";
     document.getElementById("slot-active").checked = true;
     document.getElementById("slot-instructor").value = getDefaultInstructorName();
+    document.getElementById("slot-date").value = selectedDateKey;
     renderPreview();
     setDeleteButtonState();
   }
 
   function fillForm(row) {
     selectedSlotId = row.id || "";
+    if (row.slot_date) {
+      selectedDateKey = row.slot_date;
+      calendarStartDate = getWeekStart(parseDateKey(selectedDateKey));
+    }
     document.getElementById("slot-id").value = row.id || "";
     document.getElementById("slot-code").value = row.slot_code || "";
     document.getElementById("slot-date").value = row.slot_date || "";
@@ -212,20 +299,54 @@
     return window.AdminData.listRows("reservations").catch(() => []);
   }
 
+  function renderWeekCalendar(rows) {
+    if (!weekDaysEl || !weekRangeEl) return;
+    const slotCountByDate = rows.reduce((acc, row) => {
+      acc.set(row.slot_date, (acc.get(row.slot_date) || 0) + 1);
+      return acc;
+    }, new Map());
+    const weekEndDate = addDays(calendarStartDate, 6);
+    weekRangeEl.textContent = `${formatShortMonthDay(formatDateKey(calendarStartDate))} - ${formatShortMonthDay(formatDateKey(weekEndDate))}`;
+    weekDaysEl.innerHTML = "";
+
+    Array.from({ length: 7 }, (_, index) => addDays(calendarStartDate, index)).forEach((date) => {
+      const dateKey = formatDateKey(date);
+      const slotCount = slotCountByDate.get(dateKey) || 0;
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = `staff-week-day${dateKey === selectedDateKey ? " is-selected" : ""}${slotCount ? " has-slots" : ""}`;
+      button.setAttribute("aria-pressed", dateKey === selectedDateKey ? "true" : "false");
+      button.innerHTML = `
+        <span class="staff-week-day-name">${formatWeekday(date)}</span>
+        <strong>${formatShortMonthDay(dateKey)}</strong>
+        <small>${slotCount}件</small>
+      `;
+      button.addEventListener("click", () => selectCalendarDate(dateKey));
+      weekDaysEl.appendChild(button);
+    });
+  }
+
   async function renderRows() {
     const rows = getSlotRowsByRole(await getAllSlots()).sort(compareByNearestUpcoming);
+    renderWeekCalendar(rows);
+    if (slotListDateLabelEl) {
+      slotListDateLabelEl.textContent = formatMonthDay(selectedDateKey);
+    }
     const reservationCounts = reservations.reduce((acc, row) => {
       acc.set(row.slot_id, (acc.get(row.slot_id) || 0) + 1);
       return acc;
     }, new Map());
+    const selectedRows = rows
+      .filter((row) => row.slot_date === selectedDateKey)
+      .sort((left, right) => String(left.slot_time || "").localeCompare(String(right.slot_time || "")));
     rowsEl.innerHTML = "";
 
-    if (!rows.length) {
+    if (!selectedRows.length) {
       rowsEl.innerHTML = `<p class="admin-empty">表示できる予約枠はありません。</p>`;
       return;
     }
 
-    rows.forEach((row) => {
+    selectedRows.forEach((row) => {
       const article = document.createElement("article");
       article.className = `portal-list-row portal-slot-row${selectedSlotId === row.id ? " is-selected" : ""}`;
       article.tabIndex = 0;
@@ -236,7 +357,10 @@
         <span>${row.capacity || 1}名</span>
         <span>${reservationCounts.get(row.id) || 0}組</span>
       `;
-      const selectRow = () => fillForm(row);
+      const selectRow = () => {
+        fillForm(row);
+        renderRows();
+      };
       article.addEventListener("click", selectRow);
       article.addEventListener("keydown", (event) => {
         if (event.key === "Enter" || event.key === " ") {
@@ -313,9 +437,35 @@
 
   resetButton.addEventListener("click", resetForm);
 
+  if (weekPrevButton) {
+    weekPrevButton.addEventListener("click", () => {
+      calendarStartDate = addDays(calendarStartDate, -7);
+      selectedDateKey = formatDateKey(calendarStartDate);
+      syncSelectedDateToForm({ clearSlot: true });
+      renderRows();
+    });
+  }
+
+  if (weekNextButton) {
+    weekNextButton.addEventListener("click", () => {
+      calendarStartDate = addDays(calendarStartDate, 7);
+      selectedDateKey = formatDateKey(calendarStartDate);
+      syncSelectedDateToForm({ clearSlot: true });
+      renderRows();
+    });
+  }
+
   ["slot-date", "slot-time", "slot-interval", "slot-instructor", "slot-status", "slot-capacity"].forEach((id) => {
     document.getElementById(id)?.addEventListener("input", renderPreview);
     document.getElementById(id)?.addEventListener("change", renderPreview);
+  });
+
+  document.getElementById("slot-date")?.addEventListener("change", (event) => {
+    const nextDate = event.target.value;
+    if (!nextDate) return;
+    selectedDateKey = nextDate;
+    calendarStartDate = getWeekStart(parseDateKey(nextDate));
+    renderRows();
   });
 
   if (previewFocusButton) {
@@ -348,12 +498,16 @@
     window.__staffProfile = await window.AdminAuth.getStaffProfile?.(session);
     window.AdminAuth.persistPortalRole(role);
     syncDefaultInstructors();
-    window.AdminAuth.renderAdminHeader("slots", {
+    renderStaffNameLabel();
+    window.AdminAuth.renderAdminHeader("staff-slots", {
       role,
       session,
+      brandText: "Staff Slots",
+      roleLabel: "",
       links: [
-        { href: "staff-reservations.html", label: "予約情報一覧", key: "reservations" },
-        { href: "staff-slots.html", label: "予約枠作成", key: "slots" }
+        { href: "staff-dashboard.html", label: "ダッシュボード", key: "staff-dashboard" },
+        { href: "staff-reservations.html", label: "予約一覧", key: "reservations" },
+        { href: "staff-qr-requests.html", label: "通知", key: "qr-requests" }
       ]
     });
     reservations = await getAllReservations();

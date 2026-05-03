@@ -218,7 +218,7 @@
     const sessionRole = getSessionPortalRole(session);
     const optionLinks = normalizeHeaderLinks(options.links);
     const defaultLinks = getHeaderLinks(role).map(([href, label, key]) => ({ href, label, key }));
-    const staffLinks = activePage === "staff-dashboard" && optionLinks ? optionLinks : defaultLinks;
+    const staffLinks = optionLinks || defaultLinks;
     const baseLinks = (role === "staff" ? staffLinks : (optionLinks || defaultLinks))
       .filter(({ key }) => role !== "staff" || activePage !== "staff-dashboard" || key !== activePage);
     const portalSwitchLinks = sessionRole === "manager"
