@@ -101,6 +101,20 @@
       ["Q8", "仕上がりの印象は？", [["A", "軽やか"], ["B", "やわらか"], ["C", "印象強め"]]]
     ]
   };
+  const STEP2_Q6_ASSETS = {
+    floral: {
+      background: "Q6-back-floral.png",
+      options: { A: "Q6-floral-A.png", B: "Q6-floral-B.png", C: "Q6-floral-C.png" }
+    },
+    fresh: {
+      background: "Q6-back-fresh.png",
+      options: { A: "Q6-fresh-A.png", B: "Q6-fresh-B.png", C: "Q6-fresh-C.png" }
+    },
+    woody: {
+      background: "Q6-back-woody.png",
+      options: { A: "Q6-woody-A.png", B: "Q6-woody-B.png", C: "Q6-woody-C.png" }
+    }
+  };
 
   function $(id) {
     return document.getElementById(id);
@@ -236,6 +250,7 @@
     const mount = $(targetId);
     if (!mount) return;
     const values = AXES.map((axis) => clamp(axes?.[axis] ?? DEFAULT_AXES[axis]));
+    const useStep2AxisMeters = document.body?.dataset?.page === "questionnaire-step2" && targetId === "axis-preview";
     const points = values.map((value, index) => {
       const angle = (-90 + index * 72) * Math.PI / 180;
       const radius = 34 + value * 0.52;
@@ -254,7 +269,10 @@
         </g>
       </svg>
       <div class="plain-list">
-        ${AXES.map((axis, idx) => `<span>${AXIS_LABELS[axis]} ${values[idx]}</span>`).join("")}
+        ${AXES.map((axis, idx) => useStep2AxisMeters
+          ? `<span class="axis-row" style="--axis-value:${values[idx]}%" aria-label="${AXIS_LABELS[axis]} ${values[idx]}"><span class="axis-name">${AXIS_LABELS[axis]}</span><span class="axis-meter" aria-hidden="true"></span></span>`
+          : `<span>${AXIS_LABELS[axis]} ${values[idx]}</span>`
+        ).join("")}
       </div>
     `;
   }
@@ -272,6 +290,10 @@
   function imagePath(name) {
     if (/^Q\d+-[A-D]\.png$/.test(name)) return `../img/costomer/${name}`;
     return `../img/questionnaire-v11/${name}`;
+  }
+
+  function customerImagePath(name) {
+    return `../img/costomer/${name}`;
   }
 
   async function initQuestionnaireStep1() {
@@ -440,6 +462,32 @@
     };
   }
 
+  function getStep2OptionImage(questionId, branch, answerKey) {
+    if (questionId !== "Q6") return "";
+    return STEP2_Q6_ASSETS[branch]?.options?.[answerKey] || "";
+  }
+
+  function getStep2BackgroundImage(questionId, branch) {
+    if (questionId !== "Q6") return "";
+    return STEP2_Q6_ASSETS[branch]?.background || "";
+  }
+
+  function describeStep2Tendency(axes, branch) {
+    const level = (value, high, middle, low) => {
+      const numeric = Number(value || 0);
+      if (numeric >= 60) return high;
+      if (numeric >= 45) return middle;
+      return low;
+    };
+    if (branch === "fresh") {
+      return `現在の香り傾向: ${level(axes.fresh, "爽やかさ高め", "爽やかさ中程度", "爽やかさ控えめ")} / ${level(axes.floral, "やわらかさ高め", "やわらかさ中程度", "やわらかさ控えめ")} / ${level(axes.spicy, "シャープさ高め", "シャープさ中程度", "シャープさ低め")}`;
+    }
+    if (branch === "woody") {
+      return `現在の香り傾向: ${level(axes.woody, "深み高め", "深み中程度", "深み低め")} / ${level(axes.spicy, "余韻強め", "余韻中程度", "余韻控えめ")} / ${level(axes.sweet, "甘さ高め", "甘さ中程度", "甘さ控えめ")}`;
+    }
+    return `現在の香り傾向: ${level(axes.floral, "華やかさ高め", "華やかさ中程度", "華やかさ控えめ")} / ${level(axes.sweet, "甘さ高め", "甘さ中程度", "甘さ控えめ")} / ${level(axes.woody, "深み高め", "深み中程度", "深み低め")}`;
+  }
+
   async function initQuestionnaireStep2() {
     const config = await cacheActiveConfig();
     let state = readJson(SCORE_STATE_KEY, {});
@@ -448,26 +496,61 @@
     }
     const branch = state.branchKey || "floral";
     const total = (STEP2_QUESTIONS[branch] || STEP2_QUESTIONS.floral).length;
+    const totalQuestionCount = STEP1_QUESTIONS.length + total;
+    const step2QuestionOffset = STEP1_QUESTIONS.length;
     const answers = state.step2AnswerKeys || {};
     let current = 0;
     const optionList = $("option-list");
+    const subOptions = $("sub-options");
     const nextBtn = $("header-next-btn");
     const prevBtn = $("header-prev-btn");
+
+    function renderStep2OptionButton(question, key, label, isSubOption = false) {
+      const optionImage = getStep2OptionImage(question.id, branch, key);
+      const imageStyle = optionImage
+        ? ` style="background-image: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.18)), url('${customerImagePath(optionImage)}');"`
+        : "";
+      const imageClass = optionImage ? "has-option-background" : "";
+      return `
+          <button class="option-button step2-option-button ${isSubOption ? "is-sub-option" : ""} ${imageClass} ${answers[question.id] === key ? "is-selected" : ""}" type="button" data-answer-key="${key}"${imageStyle}>
+            ${optionImage || isSubOption ? "" : `<span class="decor-icon">${key}</span>`}
+            <span class="option-label">${label}</span>
+            <span class="option-check" aria-hidden="true"></span>
+          </button>
+        `;
+    }
 
     function render() {
       const question = step2OptionsWithOverride(branch, current, config);
       if (!question) return;
+      document.body.dataset.step2Question = question.id;
+      document.body.dataset.step2Branch = branch;
+      const backgroundImage = getStep2BackgroundImage(question.id, branch);
+      if (backgroundImage) {
+        document.body.style.setProperty("--step2-background-image", `url("${customerImagePath(backgroundImage)}")`);
+      } else {
+        document.body.style.removeProperty("--step2-background-image");
+      }
       setQuestionText(question);
-      renderProgress(current + 1, total);
-      if ($("step2-status")) $("step2-status").textContent = `現在の方向性: ${AXIS_LABELS[branch] || "フローラル"}`;
+      renderProgress(step2QuestionOffset + current + 1, totalQuestionCount);
+      const axes = calculateStep2(config, state, answers);
+      if ($("step2-status")) $("step2-status").textContent = describeStep2Tendency(axes, branch);
+      const mainOptions = question.id === "Q6"
+        ? question.options.filter(([key]) => ["A", "B", "C"].includes(key))
+        : question.options;
+      const supplementalOptions = question.id === "Q6"
+        ? question.options.filter(([key]) => !["A", "B", "C"].includes(key))
+        : [];
       if (optionList) {
-        optionList.innerHTML = question.options.map(([key, label]) => `
-          <button class="option-button ${answers[question.id] === key ? "is-selected" : ""}" type="button" data-answer-key="${key}">
-            <span class="decor-icon">${key}</span>
-            <span>${label}</span>
-          </button>
-        `).join("");
-        optionList.querySelectorAll("[data-answer-key]").forEach((button) => {
+        optionList.innerHTML = mainOptions.map(([key, label]) => renderStep2OptionButton(question, key, label)).join("");
+      }
+      if (subOptions) {
+        subOptions.innerHTML = supplementalOptions.length
+          ? supplementalOptions.map(([key, label]) => renderStep2OptionButton(question, key, label, true)).join("")
+          : "";
+      }
+      [optionList, subOptions].forEach((mount) => {
+        mount?.querySelectorAll("[data-answer-key]").forEach((button) => {
           button.addEventListener("click", () => {
             answers[question.id] = button.dataset.answerKey;
             state.step2AnswerKeys = answers;
@@ -475,9 +558,9 @@
             render();
           });
         });
-      }
+      });
       if (prevBtn) prevBtn.disabled = current === 0;
-      const axes = calculateStep2(config, state, answers);
+      if (nextBtn) nextBtn.textContent = current === total - 1 ? "結果を見る" : "次へ";
       renderMiniRadar(axes);
     }
 
