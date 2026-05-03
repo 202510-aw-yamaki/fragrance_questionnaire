@@ -961,7 +961,17 @@ body[data-page="staff-slots"] .staff-main::before {
 
 .staff-slots-form-grid {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
+}
+
+.staff-slots-form-grid > label {
+  min-width: 0;
+}
+
+.staff-slots-form-grid > label:nth-of-type(1),
+.staff-slots-form-grid > label:nth-of-type(2) {
+  grid-column: 1 / -1;
 }
 
 .staff-slot-preview {
@@ -1372,6 +1382,7 @@ body[data-page="staff-slots"] .staff-main::before {
   }
 
   .staff-week-controls,
+  .staff-slots-form-grid,
   .staff-slot-preview-grid,
   .staff-slot-secondary-actions,
   .staff-slots-list-panel .staff-slots-panel-head,

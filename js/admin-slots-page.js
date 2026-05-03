@@ -506,8 +506,7 @@
       roleLabel: "",
       links: [
         { href: "staff-dashboard.html", label: "ダッシュボード", key: "staff-dashboard" },
-        { href: "staff-reservations.html", label: "予約一覧", key: "reservations" },
-        { href: "staff-qr-requests.html", label: "通知", key: "qr-requests" }
+        { href: "staff-reservations.html", label: "予約一覧", key: "reservations" }
       ]
     });
     reservations = await getAllReservations();
