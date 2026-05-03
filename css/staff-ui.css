@@ -724,7 +724,7 @@ body[data-page="staff-reservations"] .staff-main::before {
 .staff-reservation-table-head,
 .portal-reservation-row {
   display: grid;
-  grid-template-columns: 80px 118px minmax(160px, 1fr) 110px 100px 130px 112px;
+  grid-template-columns: 80px 140px minmax(160px, 1fr) 110px 130px 112px;
   gap: 12px;
   align-items: center;
 }
@@ -752,7 +752,6 @@ body[data-page="staff-reservations"] .staff-main::before {
   font-size: 22px;
 }
 
-.portal-reservation-cell--email,
 .portal-reservation-cell--summary {
   color: var(--muted);
 }
@@ -1223,7 +1222,6 @@ body[data-page="staff-slots"] .staff-main::before {
     grid-template-columns: 90px 1fr 112px;
   }
 
-  .portal-reservation-cell--email,
   .portal-reservation-cell--summary,
   .portal-reservation-cell--memo {
     display: none;
@@ -1389,7 +1387,6 @@ body[data-page="staff-slots"] .staff-main::before {
     flex-direction: column;
   }
 
-  .portal-reservation-cell--email,
   .portal-reservation-cell--summary,
   .portal-reservation-cell--memo {
     display: block;

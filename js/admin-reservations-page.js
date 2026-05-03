@@ -76,10 +76,6 @@
     }[char]));
   }
 
-  function getCustomerEmail(row, draftCustomer) {
-    return draftCustomer?.email || row.customer_email || row.email || row.contact_email || "-";
-  }
-
   function renderSummary(rows) {
     if (!summaryTotalEl || !summaryOpenEl || !summaryMemoEl || !summaryCompletedEl) return;
     summaryTotalEl.textContent = String(rows.length);
@@ -160,7 +156,6 @@
       article.innerHTML = `
         <span class="portal-reservation-cell portal-reservation-cell--datetime" data-label="時間">${escapeHtml(formatSlotTime(row))}</span>
         <span class="portal-reservation-cell portal-reservation-cell--customer" data-label="お客様名">${escapeHtml(draftCustomer?.name || row.customer_name || "未入力")}</span>
-        <span class="portal-reservation-cell portal-reservation-cell--email" data-label="メール">${escapeHtml(getCustomerEmail(row, draftCustomer))}</span>
         <span class="portal-reservation-cell portal-reservation-cell--summary" data-label="香り傾向">${escapeHtml(formatBranchLabel(row))}</span>
         <span class="portal-reservation-cell portal-reservation-cell--memo ${memoLabel === "未記入" ? "is-empty" : ""}" data-label="事前メモ">${memoLabel}</span>
         <span class="portal-reservation-cell portal-reservation-cell--status">
