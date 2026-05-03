@@ -808,6 +808,7 @@
     let allowGraphLeave = false;
     let hasGraphAdjustment = false;
     const leaveMessage = "TOPページへ戻ると、このページで調整した内容は予約に反映されません。移動しますか？";
+    const pageTitle = $("graph-page-title");
     const balanceCopy = $("graph-balance-copy");
     const detailList = $("result-detail-list");
     const commentEl = $("result-comment");
@@ -855,7 +856,7 @@
         balanceCopy.innerHTML = `
           <h2>5つの軸による<br>あなたの香りバランス</h2>
           <span class="graph-divider" aria-hidden="true"></span>
-          <p>各軸のバランスから、あなたらしい香りの個性を可視化しました。</p>
+          <p>各軸のバランスから、あなたらしい香りの個性を可視化しました。<br>下のスライダーでお好みの軸を少しだけ動かすとよりあなたの好みに近くなります。</p>
         `;
         return;
       }
@@ -887,7 +888,7 @@
           <div class="graph-axis-row" style="--axis-value:${value}%; --axis-color:${meta.color};" aria-label="${RESULT_AXIS_LABELS[axis]} ${value} / 100">
             <span class="graph-axis-icon" aria-hidden="true">${meta.mark}</span>
             <label class="graph-axis-label" for="axis-${axis}">${RESULT_AXIS_LABELS[axis]}</label>
-            <input class="graph-axis-slider" id="axis-${axis}" name="${axis}" type="range" min="0" max="100" value="${value}" aria-label="${RESULT_AXIS_LABELS[axis]}">
+            <input class="graph-axis-slider" id="axis-${axis}" name="${axis}" type="range" min="0" max="100" value="${value}" aria-label="${RESULT_AXIS_LABELS[axis]}" ${hasQuestionnaireResult ? "" : "disabled"}>
             <span class="graph-axis-score" id="axis-${axis}-score">${value} <small>/ 100</small></span>
           </div>
         `;
@@ -948,6 +949,7 @@
       event.preventDefault();
       event.returnValue = "";
     });
+    if (pageTitle) pageTitle.textContent = hasQuestionnaireResult ? "あなたの香りの傾向" : "香りのバランスを選んでください";
     syncAdjustmentFlag();
     renderAll();
     $("reserve-link")?.addEventListener("click", async (event) => {

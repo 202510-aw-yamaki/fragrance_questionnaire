@@ -532,3 +532,21 @@
   - `git diff --check`
   - Playwright screenshot 1674x940 / 390x844 / 390x844 full-page
   - in-app browserでテンプレート切り替えと初期値復帰を確認
+
+### 2026-05-03 customer/fragrance-graph.html 通常結果ページの文言と未回答時制御
+- 対象:
+  - `customer/fragrance-graph.html`
+  - `css/customer/customer-fragrance-graph.css`
+  - `js/rebuild-customer-flow.js`
+- 背景:
+  - 結果ページ上部の説明文削除、回答済み時の説明文追加、未回答直接アクセス時のタイトル変更とスライダー操作不可の要望があった。
+- 実装:
+  - ページ上部の「5つの軸から、今のあなたに似合う香りの方向性をまとめました。」を削除。
+  - 回答済み時の説明文を「各軸のバランスから、あなたらしい香りの個性を可視化しました。下のスライダーでお好みの軸を少しだけ動かすとよりあなたの好みに近くなります。」に変更。
+  - 未回答で直接開いた場合のタイトルを「香りのバランスを選んでください」に変更。
+  - 未回答で直接開いた場合はテンプレート選択のみ可能とし、5軸スライダーを disabled にした。
+- 確認:
+  - `node --check js/rebuild-customer-flow.js`
+  - `git diff --check`
+  - Playwrightで未回答直接アクセス時のタイトル・テンプレート件数・スライダーdisabledを確認。
+  - Playwrightで回答済み状態のタイトル・説明文・スライダー操作可能状態を確認。

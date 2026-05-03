@@ -387,6 +387,16 @@ body[data-page="graph"] .graph-axis-slider {
   cursor: pointer;
 }
 
+body[data-page="graph"] .graph-axis-slider:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+body[data-page="graph"] .graph-axis-row:has(.graph-axis-slider:disabled) .graph-axis-label,
+body[data-page="graph"] .graph-axis-row:has(.graph-axis-slider:disabled) .graph-axis-score {
+  color: #8d7b6a;
+}
+
 body[data-page="graph"] .graph-axis-slider::-webkit-slider-runnable-track {
   height: 10px;
   border-radius: 999px;
