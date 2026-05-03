@@ -1,0 +1,26 @@
+{
+  "name": "fragrance_questionnaire",
+  "version": "1.0.0",
+  "description": "香りワークショップ向けの、アンケート・予約・スタッフ管理・管理者設定・QR商品導線を扱う静的HTMLベースの試作リポジトリです。",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/202510-aw-yamaki/fragrance_questionnaire.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/202510-aw-yamaki/fragrance_questionnaire/issues"
+  },
+  "homepage": "https://github.com/202510-aw-yamaki/fragrance_questionnaire#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^25.6.0"
+  }
+}
