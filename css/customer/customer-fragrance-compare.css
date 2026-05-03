@@ -153,7 +153,6 @@ body[data-page="fragrance-compare"] .compare-radar-card {
 body[data-page="fragrance-compare"] .compare-radar-panel {
   min-width: 0;
   display: grid;
-  grid-template-rows: auto auto auto minmax(220px, auto) auto;
   justify-items: center;
   align-content: start;
   gap: 8px;
