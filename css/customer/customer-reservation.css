@@ -418,7 +418,34 @@ body[data-page="reservation"] .reservation-brand img {
   letter-spacing: 0;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1160px) and (min-width: 861px) {
+  .reservation-hero,
+  .reservation-schedule,
+  .reservation-form-card {
+    width: min(100% - 48px, 1120px);
+  }
+
+  .reservation-card {
+    padding: 20px 18px 22px;
+  }
+
+  .reservation-day {
+    width: 40px;
+    height: 42px;
+  }
+
+  .reservation-time-grid .time-slot {
+    min-height: 70px;
+    font-size: 24px;
+  }
+
+  .reservation-form-card {
+    grid-template-columns: 320px minmax(0, 1fr);
+    padding: 22px 28px;
+  }
+}
+
+@media (max-width: 860px) {
   .reservation-schedule,
   .reservation-form-card {
     grid-template-columns: 1fr;
