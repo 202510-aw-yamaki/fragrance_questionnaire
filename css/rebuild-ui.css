@@ -639,13 +639,13 @@ body[data-page="home"] .hero-copy {
 .admin-login-brand {
   display: inline-flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   color: var(--ink);
 }
 
 .admin-login-brand-logo {
-  width: 58px;
-  height: 58px;
+  width: 42px;
+  height: 42px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -659,16 +659,22 @@ body[data-page="home"] .hero-copy {
   object-fit: contain;
 }
 
+.admin-login-brand-copy {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 12px;
+  white-space: nowrap;
+}
+
 .admin-login-brand strong {
-  display: block;
+  display: inline-block;
   font-family: var(--serif);
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 700;
 }
 
 .admin-login-brand small,
 .admin-login-topbar p,
-.admin-login-guide-kicker,
 .admin-login-panel-head p {
   margin: 0;
   color: var(--gold-dark);
@@ -811,10 +817,12 @@ body[data-page="home"] .hero-copy {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 28px;
+  gap: 26px;
 }
 
 .admin-login-guide section {
+  display: grid;
+  gap: 12px;
   border: 0;
   background: transparent;
   box-shadow: none;
@@ -822,21 +830,59 @@ body[data-page="home"] .hero-copy {
   backdrop-filter: none;
 }
 
-.admin-login-guide h2 {
+.admin-login-guide-role {
   position: relative;
-  margin: 8px 0 16px;
-  font-family: var(--serif);
-  font-size: 24px;
-  line-height: 1.25;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 12px;
 }
 
-.admin-login-guide h2::after {
+.admin-login-guide-role::after {
   content: "";
-  display: block;
-  width: 100%;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
   height: 1px;
-  margin-top: 14px;
   background: linear-gradient(90deg, var(--gold), rgba(198, 142, 58, 0.16));
+}
+
+.admin-login-role-icon {
+  width: 34px;
+  height: 34px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: rgba(255, 247, 236, 0.96);
+  color: var(--gold-dark);
+}
+
+.admin-login-guide-role p {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 23px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.admin-login-role-icon svg,
+.admin-login-feature-icon svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.admin-login-feature-icon svg {
+  width: 18px;
+  height: 18px;
 }
 
 .admin-login-feature-list {
@@ -846,23 +892,26 @@ body[data-page="home"] .hero-copy {
 
 .admin-login-feature-list article {
   display: grid;
-  grid-template-columns: 28px minmax(0, 1fr) 16px;
+  grid-template-columns: 30px minmax(0, 1fr) 16px;
   align-items: center;
-  gap: 12px;
-  min-height: 54px;
-  padding: 0 16px 0 18px;
+  gap: 11px;
+  min-height: 48px;
+  padding: 0 15px 0 14px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: rgba(255, 253, 249, 0.9);
   box-shadow: 0 8px 18px rgba(92, 58, 26, 0.08);
 }
 
-.admin-login-feature-list article::before {
-  content: "";
-  width: 22px;
-  height: 22px;
-  border: 2px solid var(--gold);
-  border-radius: 6px;
+.admin-login-feature-icon {
+  width: 30px;
+  height: 30px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgba(198, 142, 58, 0.45);
+  border-radius: 8px;
+  background: rgba(255, 247, 236, 0.95);
+  color: var(--gold-dark);
 }
 
 .admin-login-feature-list article::after {
@@ -876,11 +925,11 @@ body[data-page="home"] .hero-copy {
   min-width: 0;
   color: var(--ink);
   font-family: var(--serif);
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
 }
 
-.admin-login-feature-list span {
+.admin-login-feature-list article > span:not(.admin-login-feature-icon) {
   display: none;
 }
 
@@ -2036,15 +2085,36 @@ details.card .admin-note {
   }
 
   .admin-login-topbar {
-    align-items: flex-start;
-    flex-direction: column;
+    align-items: center;
+    flex-direction: row;
+    gap: 12px;
+    min-height: 68px;
+    padding: 0;
+  }
+
+  .admin-login-brand {
     gap: 10px;
-    min-height: auto;
-    padding: 10px 0 18px;
+  }
+
+  .admin-login-brand-logo,
+  .admin-login-brand-logo img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .admin-login-brand-copy {
+    gap: 8px;
+    flex-wrap: wrap;
+    white-space: normal;
   }
 
   .admin-login-brand strong {
     font-size: 22px;
+  }
+
+  .admin-login-brand small,
+  .admin-login-topbar p {
+    font-size: 10px;
   }
 
   .admin-login-panel {
@@ -2056,7 +2126,7 @@ details.card .admin-note {
   }
 
   .admin-login-guide section {
-    padding: 22px 18px;
+    padding: 0;
   }
 
   body[data-page="staff-dashboard"] .kpi-grid,
