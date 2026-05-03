@@ -374,15 +374,17 @@ body[data-page="questionnaire-step2"] #step2-status {
 
 body[data-page="questionnaire-step2"] .question-footer {
   display: grid;
-  grid-template-columns: minmax(240px, 460px) minmax(220px, 320px);
-  gap: 28px;
-  justify-content: center;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.72fr);
+  gap: clamp(16px, 4%, 28px);
+  justify-content: stretch;
   align-items: center;
   margin-top: 34px;
+  width: 100%;
 }
 
 body[data-page="questionnaire-step2"] #header-next-btn {
   width: 100%;
+  min-width: 0;
   border-radius: 12px;
   border: 1px solid rgba(245, 207, 173, 0.78);
   background: linear-gradient(180deg, #e69691, #cf686f);
@@ -402,16 +404,23 @@ body[data-page="questionnaire-step2"] #header-next-btn:disabled {
 
 body[data-page="questionnaire-step2"] .question-reflection-note {
   min-height: 62px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
   margin: 0;
+  padding: 0 14px;
   border: 1px solid rgba(218, 181, 130, 0.62);
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.74);
   color: #4d3a30;
   font-weight: 600;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  text-align: center;
 }
 
 body[data-page="questionnaire-step2"] .question-reflection-note::before {
