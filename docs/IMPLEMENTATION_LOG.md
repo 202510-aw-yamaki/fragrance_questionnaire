@@ -636,3 +636,22 @@
   - `node --check js/rebuild-customer-flow.js`
   - `git diff --check`
   - Playwrightで直接アクセス、今回結果あり、スライダー変更、詳細モーダル、モバイル表示を確認。
+
+### 2026-05-03 会員比較ページの注釈反映
+- 対象:
+  - `customer/fragrance-compare.html`
+  - `css/customer/customer-fragrance-compare.css`
+  - `js/rebuild-customer-flow.js`
+  - `docs/SPEC.md`
+- 背景:
+  - ブラウザ注釈で、上段の5軸リスト削除、前回日付欄への不足メッセージ集約、スライダー左側への3アクション配置、背景画像表示の要望があった。
+- 実装:
+  - 上段カード内の前回・今回5軸リストを削除し、下段スライダーとの重複を解消。
+  - 前回側の日付欄は、前回完成品の日付が取れる場合は日付、取れない場合は「表示できる５軸データがありません。」を表示するように変更。
+  - 下段カードを左1:右2の比率にし、左に「この香りで予約する」「通常結果ページへ戻る」「詳細を確認する」、右に5軸スライダーを配置。
+  - 比較ページ背景に通常結果ページと同系統の背景画像・右側ボトル表示を追加。
+  - 仕様追記として、会員比較ページの上段リスト非表示とアクション配置方針を `docs/SPEC.md` に追記。
+- 確認:
+  - `node --check js/rebuild-customer-flow.js`
+  - `git diff --check`
+  - Playwright screenshot 913x909

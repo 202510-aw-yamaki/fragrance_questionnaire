@@ -1227,7 +1227,6 @@
           }
           persistCompareAxes();
           renderCompareRadar("compare-current", currentAxes);
-          renderAxisList("compare-current-axes", currentAxes);
           renderModalDetails();
         });
       });
@@ -1246,7 +1245,6 @@
 
     function renderCompareState() {
       renderCompareRadar("compare-current", currentAxes);
-      renderAxisList("compare-current-axes", currentAxes);
       renderDeltas();
       renderModalDetails();
     }
@@ -1262,11 +1260,13 @@
     }
 
     if (previousNameEl) previousNameEl.textContent = getProductName(previousProduct, "前回の完成品");
-    if (previousMetaEl) previousMetaEl.textContent = previousProduct ? (getProductDate(previousProduct) || "制作日未登録") : "会員ページの完成品データを表示します";
+    if (previousMetaEl) {
+      const previousDate = previousProduct && previousAxes ? getProductDate(previousProduct) : "";
+      previousMetaEl.textContent = previousDate || "表示できる５軸データがありません。";
+    }
     if (currentNameEl) currentNameEl.textContent = currentAxes ? "今回のアンケート結果" : "今回の結果は未作成";
     if (currentMetaEl) currentMetaEl.textContent = state.questionnaireCompletedAt ? `回答日 ${formatDate(state.questionnaireCompletedAt)}` : "アンケート回答後に表示されます";
     renderCompareRadar("compare-previous", previousAxes);
-    renderAxisList("compare-previous-axes", previousAxes);
     renderCompareState();
 
     if (reserveLink && !currentAxes) {
