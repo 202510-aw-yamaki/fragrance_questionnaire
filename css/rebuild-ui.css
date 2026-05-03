@@ -1357,15 +1357,15 @@ body[data-page="staff-dashboard"] .dashboard-grid {
 }
 
 body[data-page="staff-dashboard"] .kpi-grid {
-  gap: 14px;
+  gap: 12px;
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 body[data-page="staff-dashboard"] .kpi-card {
-  min-height: 118px;
-  grid-template-columns: 76px 1fr;
-  gap: 18px;
-  padding: 24px 24px;
+  min-height: 92px;
+  grid-template-columns: 52px 1fr;
+  gap: 12px;
+  padding: 16px 18px;
   background: rgba(255, 253, 249, 0.94);
 }
 
@@ -1376,8 +1376,8 @@ body[data-page="staff-dashboard"] .kpi-card {
 }
 
 .staff-kpi-icon svg {
-  width: 56px;
-  height: 56px;
+  width: 42px;
+  height: 42px;
   stroke-width: 1.55;
 }
 
@@ -1385,19 +1385,19 @@ body[data-page="staff-dashboard"] .kpi-card p {
   margin: 0 0 4px;
   color: var(--ink);
   font-family: var(--serif);
-  font-size: 18px;
+  font-size: 16px;
   white-space: nowrap;
 }
 
 body[data-page="staff-dashboard"] .kpi-value {
   display: inline-block;
-  font-size: 42px;
+  font-size: 34px;
 }
 
 .kpi-unit {
-  margin-left: 7px;
+  margin-left: 5px;
   font-family: var(--serif);
-  font-size: 20px;
+  font-size: 17px;
 }
 
 body[data-page="staff-dashboard"] .dashboard-grid.section {

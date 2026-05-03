@@ -31,7 +31,6 @@
   let slots = [];
   let qrNotifications = [];
   let openQrCount = 0;
-  let missingSlotDateCount = 0;
 
   function createLocalDate(date) {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -132,7 +131,7 @@
 
   function updateNotificationCount() {
     if (!notificationCountEl) return;
-    notificationCountEl.textContent = String(openQrCount + (missingSlotDateCount > 0 ? 1 : 0));
+    notificationCountEl.textContent = String(openQrCount);
   }
 
   function readAssignedStaffName() {
@@ -299,8 +298,6 @@
     }).filter(Boolean);
 
     if (!missingPrimaryEl || !missingSecondaryEl) return;
-    missingSlotDateCount = missingDates.length;
-    updateNotificationCount();
     missingPrimaryEl.hidden = false;
     missingPrimaryEl.textContent = String(missingDates.length);
 
@@ -329,10 +326,10 @@
 
     const reservationSlotMap = new Map(activeSlots.map((slot) => [slot.id, slot]));
     const todayReservations = activeReservations.filter((row) => reservationSlotMap.get(row.slot_id)?.slot_date === todayKey);
-    const unconfirmedReservations = todayReservations.filter((row) => row.status === "confirmed" || row.status === "requested" || !row.status);
+    const todaySlots = activeSlots.filter((slot) => slot.slot_date === todayKey);
 
     kpiTodayEl.textContent = String(todayReservations.length);
-    kpiWeekEl.textContent = String(unconfirmedReservations.length);
+    kpiWeekEl.textContent = `${todayReservations.length}/${todaySlots.length}`;
   }
 
   function renderQrNotifications() {
