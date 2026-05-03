@@ -512,12 +512,39 @@
     const step2QuestionOffset = STEP1_QUESTIONS.length;
     const answers = state.step2AnswerKeys || {};
     let current = 0;
+    let keepStep2Result = false;
+    let confirmedDiscard = false;
     const optionList = $("option-list");
     const subOptions = $("sub-options");
     const nextBtn = $("header-next-btn");
     const prevBtn = $("header-prev-btn");
     const aside = document.querySelector(".questionnaire-step2-aside");
     const defaultAsideHtml = aside?.innerHTML || "";
+    const discardMessage = "回答途中です。このページを離れると、アンケート途中の回答は保存されません。離れてもよろしいですか？";
+
+    function hasDraftAnswers() {
+      return Boolean(state.axesAfterStep1 && !state.questionnaireCompletedAt) || Object.keys(answers).length > 0;
+    }
+
+    function clearStep2Draft() {
+      window.sessionStorage.removeItem(STEP1_ANSWERS_KEY);
+      window.sessionStorage.removeItem(SCORE_STATE_KEY);
+    }
+
+    function confirmDiscardDraft() {
+      if (!hasDraftAnswers() || keepStep2Result) return true;
+      const confirmed = window.confirm(discardMessage);
+      if (confirmed) {
+        confirmedDiscard = true;
+        clearStep2Draft();
+      }
+      return confirmed;
+    }
+
+    function navigateAfterDiscardCheck(url) {
+      if (!confirmDiscardDraft()) return;
+      window.location.href = url;
+    }
 
     function renderStep2OptionButton(question, key, label, isSubOption = false) {
       const optionImage = getStep2OptionImage(question.id, branch, key);
@@ -630,6 +657,7 @@
       if (result?.id) {
         writeJson(SCORE_STATE_KEY, { ...nextState, questionnaireResultId: result.id, questionnaireResultCode: result.result_code || questionnaireResultCode });
       }
+      keepStep2Result = true;
       window.location.href = "fragrance-graph.html";
     }
 
@@ -650,10 +678,30 @@
       }
       await finish();
     });
-    $("questionnaire-sync-continue")?.addEventListener("click", () => { window.location.href = "fragrance-graph.html"; });
+    $("questionnaire-sync-continue")?.addEventListener("click", () => {
+      keepStep2Result = true;
+      window.location.href = "fragrance-graph.html";
+    });
     $("questionnaire-sync-retry")?.addEventListener("click", finish);
-    $("return-top-btn")?.addEventListener("click", () => { window.location.href = "../index.html"; });
-    $("return-top-btn-mobile")?.addEventListener("click", () => { window.location.href = "../index.html"; });
+    $("return-top-btn")?.addEventListener("click", () => { navigateAfterDiscardCheck("../index.html"); });
+    $("return-top-btn-mobile")?.addEventListener("click", () => { navigateAfterDiscardCheck("../index.html"); });
+    document.querySelectorAll("a[href]").forEach((link) => {
+      link.addEventListener("click", (event) => {
+        const href = link.getAttribute("href");
+        if (!href || href.startsWith("#") || link.target === "_blank") return;
+        if (!hasDraftAnswers() || keepStep2Result) return;
+        event.preventDefault();
+        navigateAfterDiscardCheck(link.href);
+      });
+    });
+    window.addEventListener("beforeunload", (event) => {
+      if (!hasDraftAnswers() || keepStep2Result || confirmedDiscard) return;
+      event.preventDefault();
+      event.returnValue = "";
+    });
+    window.addEventListener("pagehide", () => {
+      if (hasDraftAnswers() && !keepStep2Result) clearStep2Draft();
+    });
     render();
   }
 
