@@ -988,6 +988,7 @@ body[data-page="staff-slots"] .staff-main::before {
 
 .staff-slot-actions {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -998,6 +999,7 @@ body[data-page="staff-slots"] .staff-main::before {
 
 .staff-slot-secondary-actions {
   display: grid;
+  grid-column: 1 / -1;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
 }
@@ -1221,7 +1223,7 @@ body[data-page="staff-slots"] .staff-main::before {
 
 @media (max-width: 920px) {
   .staff-slots-layout {
-    grid-template-columns: minmax(220px, 0.88fr) minmax(330px, 1.12fr);
+    grid-template-columns: minmax(180px, 1fr) minmax(0, 2fr);
   }
 
   .staff-slots-list-panel {
@@ -1242,14 +1244,6 @@ body[data-page="staff-slots"] .staff-main::before {
     align-items: flex-start;
     min-height: 0;
     padding: 28px 0 10px;
-  }
-
-  .staff-slots-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .staff-slots-list-panel {
-    grid-column: auto;
   }
 }
 
@@ -1385,11 +1379,20 @@ body[data-page="staff-slots"] .staff-main::before {
   }
 
   .staff-week-controls,
+  .staff-slot-actions,
   .staff-slots-form-grid,
   .staff-slot-secondary-actions,
   .staff-slots-list-panel .staff-slots-panel-head,
   .portal-slot-row {
     grid-template-columns: 1fr;
+  }
+
+  .staff-slots-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .staff-slots-list-panel {
+    grid-column: auto;
   }
 
   .staff-bulk-form-grid {
