@@ -25,11 +25,6 @@
       floral: "Trivia_Q7_floral.png",
       fresh: "Trivia_Q7_fresh.png",
       woody: "Trivia_Q7_woody.png"
-    },
-    Q8: {
-      floral: "Trivia_Q8.png",
-      fresh: "Trivia_Q8.png",
-      woody: "Trivia_Q8.png"
     }
   };
 
@@ -570,6 +565,14 @@
     function renderStep2Aside(question, axes) {
       if (!aside) {
         renderMiniRadar(axes);
+        return;
+      }
+      aside.classList.remove("is-empty");
+      if (question.id === "Q8") {
+        aside.classList.remove("is-trivia");
+        if (aside.innerHTML !== defaultAsideHtml) aside.innerHTML = defaultAsideHtml;
+        renderMiniRadar(axes);
+        aside.classList.add("is-empty");
         return;
       }
       const triviaImage = STEP2_TRIVIA_IMAGES[question.id]?.[branch];
