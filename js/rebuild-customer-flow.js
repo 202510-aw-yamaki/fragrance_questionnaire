@@ -386,7 +386,10 @@
         });
       }
       if (prevBtn) prevBtn.disabled = current === 0;
-      if (nextBtn) nextBtn.textContent = current === STEP1_QUESTIONS.length - 1 ? "次へ" : "次へ";
+      if (nextBtn) {
+        nextBtn.textContent = current === STEP1_QUESTIONS.length - 1 ? "次へ" : "次へ";
+        nextBtn.disabled = !answers[question.id];
+      }
       const axes = calculateStep1(config, answers);
       renderAside(question, axes);
     }
@@ -397,9 +400,7 @@
     });
     nextBtn?.addEventListener("click", () => {
       const question = getStep1Question(STEP1_QUESTIONS[current], config);
-      if (!answers[question.id]) {
-        answers[question.id] = question.options[0][0];
-      }
+      if (!answers[question.id]) return;
       if (current < STEP1_QUESTIONS.length - 1) {
         current += 1;
         render();
@@ -617,7 +618,10 @@
         });
       });
       if (prevBtn) prevBtn.disabled = current === 0;
-      if (nextBtn) nextBtn.textContent = current === total - 1 ? "結果を見る" : "次へ";
+      if (nextBtn) {
+        nextBtn.textContent = current === total - 1 ? "結果を見る" : "次へ";
+        nextBtn.disabled = !answers[question.id];
+      }
       renderStep2Aside(question, axes);
     }
 
@@ -668,7 +672,7 @@
     nextBtn?.addEventListener("click", async () => {
       const question = step2OptionsWithOverride(branch, current, config);
       if (!question) return;
-      if (!answers[question.id]) answers[question.id] = question.options[0][0];
+      if (!answers[question.id]) return;
       if (current < total - 1) {
         current += 1;
         state.step2AnswerKeys = answers;
