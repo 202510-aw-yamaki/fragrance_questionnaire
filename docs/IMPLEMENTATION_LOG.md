@@ -511,3 +511,24 @@
 - 確認:
   - `node --check js/rebuild-customer-flow.js`
   - Playwright screenshot 1674x940 / 390x844 / 390x844 full-page
+
+### 2026-05-03 customer/fragrance-graph.html 通常結果ページの挙動調整
+- 対象:
+  - `customer/fragrance-graph.html`
+  - `css/customer/customer-fragrance-graph.css`
+  - `js/rebuild-customer-flow.js`
+- 背景:
+  - 通常結果ページについて、ヘッダー・TOP導線・5軸名称・未回答時テンプレート・スライダー調整・初期値復帰の追加要望があった。
+- 実装:
+  - ヘッダーのロゴを吟ロゴに変更し、サイト共通ヘッダーの見え方へ寄せた。
+  - 「もう一度回答する」を「TOPページへ戻る」に変更し、TOP遷移時に確認ダイアログを出すようにした。
+  - 「結果の活用方法はこちら」を削除した。
+  - 結果ページの5軸表記を `フローラル / フレッシュ / ウッディ / スパイシー / スウィート` に変更した。
+  - アンケート回答済みの場合は `resetAxes` または `finalAxes` を初期値として表示し、スライダー調整値を `adjustedAxes` として扱うようにした。
+  - 未回答で直接開いた場合は、左側説明文の代わりに `軽やか / バランス / 印象強め` のテンプレートボタンを表示し、クリックで5軸へ反映するようにした。
+  - 詳細バランスを直接スライダー操作できるようにし、「初期値」ボタンでアンケート由来の初期状態へ戻せるようにした。
+- 確認:
+  - `node --check js/rebuild-customer-flow.js`
+  - `git diff --check`
+  - Playwright screenshot 1674x940 / 390x844 / 390x844 full-page
+  - in-app browserでテンプレート切り替えと初期値復帰を確認

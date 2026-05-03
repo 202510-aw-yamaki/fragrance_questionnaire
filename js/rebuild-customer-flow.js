@@ -13,15 +13,29 @@
   const DRAFT_KEY = "fragranceReservationDraft";
   const CONFIRMATION_KEY = "fragranceReservationConfirmation";
   const DEFAULT_AXES = { floral: 56, fresh: 58, woody: 45, spicy: 36, sweet: 52 };
-  const RESULT_AXIS_ORDER = ["floral", "sweet", "fresh", "woody", "spicy"];
+  const RESULT_AXIS_ORDER = ["floral", "fresh", "woody", "spicy", "sweet"];
   const RESULT_AXIS_LABELS = {
-    floral: "華やかさ",
-    sweet: "甘さ",
-    fresh: "爽やかさ",
-    woody: "落ち着き",
-    spicy: "深み"
+    floral: "フローラル",
+    fresh: "フレッシュ",
+    woody: "ウッディ",
+    spicy: "スパイシー",
+    sweet: "スウィート"
   };
-  const RESULT_DEFAULT_AXES = { floral: 84, sweet: 68, fresh: 42, woody: 72, spicy: 56 };
+  const RESULT_DEFAULT_AXES = { floral: 64, fresh: 64, woody: 56, spicy: 48, sweet: 58 };
+  const RESULT_TEMPLATES = {
+    light: {
+      label: "軽やか",
+      axes: { floral: 58, fresh: 82, woody: 42, spicy: 34, sweet: 46 }
+    },
+    balance: {
+      label: "バランス",
+      axes: { floral: 62, fresh: 62, woody: 62, spicy: 54, sweet: 62 }
+    },
+    strong: {
+      label: "印象強め",
+      axes: { floral: 70, fresh: 46, woody: 74, spicy: 78, sweet: 66 }
+    }
+  };
   const RESULT_AXIS_META = {
     floral: { mark: "✿", color: "#df7f93" },
     sweet: { mark: "✤", color: "#de9b58" },
@@ -784,10 +798,33 @@
 
   async function initGraph() {
     const state = readJson(SCORE_STATE_KEY, {});
-    const axes = { ...RESULT_DEFAULT_AXES, ...(state.adjustedAxes || state.finalAxes || {}) };
+    const hasQuestionnaireResult = Boolean(state.questionnaireCompletedAt || state.finalAxes || state.resetAxes || state.axesAfterStep2);
+    const baseAxes = {
+      ...RESULT_DEFAULT_AXES,
+      ...(hasQuestionnaireResult ? (state.resetAxes || state.finalAxes || state.axesAfterStep2 || {}) : RESULT_TEMPLATES.balance.axes)
+    };
+    let axes = { ...baseAxes, ...(hasQuestionnaireResult ? (state.adjustedAxes || {}) : {}) };
+    let activeTemplateKey = hasQuestionnaireResult ? "" : "balance";
+    let allowGraphLeave = false;
+    let hasGraphAdjustment = false;
+    const leaveMessage = "TOPページへ戻ると、このページで調整した内容は予約に反映されません。移動しますか？";
+    const balanceCopy = $("graph-balance-copy");
     const detailList = $("result-detail-list");
     const commentEl = $("result-comment");
     const tagsEl = $("result-tags");
+
+    function axesEqual(a, b) {
+      return RESULT_AXIS_ORDER.every((axis) => clamp(a?.[axis]) === clamp(b?.[axis]));
+    }
+
+    function syncAdjustmentFlag() {
+      hasGraphAdjustment = !axesEqual(axes, baseAxes);
+    }
+
+    function persistAdjustedAxes() {
+      if (!hasQuestionnaireResult) return;
+      writeJson(SCORE_STATE_KEY, { ...readJson(SCORE_STATE_KEY, {}), adjustedAxes: axes });
+    }
 
     function getRankedAxes() {
       return RESULT_AXIS_ORDER
@@ -798,18 +835,47 @@
     function buildResultComment() {
       const ranked = getRankedAxes();
       const primaryAxis = ranked[0]?.axis || "floral";
-      const secondaryAxis = ranked[1]?.axis || "sweet";
+      const secondaryAxis = ranked[1]?.axis || "fresh";
       const comments = {
-        floral: "華やかさを中心に、やわらかな甘さと落ち着きが残る香りです。",
-        sweet: "やさしい甘さが前に出て、親しみやすく穏やかな印象の香りです。",
-        fresh: "爽やかさがすっと広がり、軽く澄んだ余韻を楽しめる香りです。",
-        woody: "落ち着きを軸に、静かに深まる余韻を感じやすい香りです。",
-        spicy: "深みのある印象を中心に、個性と余韻が残る香りです。"
+        floral: "フローラルを中心に、やわらかく華やかな印象が残る香りです。",
+        fresh: "フレッシュがすっと広がり、軽く澄んだ余韻を楽しめる香りです。",
+        woody: "ウッディを軸に、落ち着きと静かな奥行きを感じやすい香りです。",
+        spicy: "スパイシーな印象を中心に、個性と余韻が残る香りです。",
+        sweet: "スウィートが前に出て、親しみやすく穏やかな印象の香りです。"
       };
       return {
         text: comments[primaryAxis] || comments.floral,
         tags: [primaryAxis, secondaryAxis, ranked[2]?.axis || "woody"]
       };
+    }
+
+    function renderBalanceCopy() {
+      if (!balanceCopy) return;
+      if (hasQuestionnaireResult) {
+        balanceCopy.innerHTML = `
+          <h2>5つの軸による<br>あなたの香りバランス</h2>
+          <span class="graph-divider" aria-hidden="true"></span>
+          <p>各軸のバランスから、あなたらしい香りの個性を可視化しました。</p>
+        `;
+        return;
+      }
+      balanceCopy.innerHTML = `
+        <div class="graph-template-panel" aria-label="香りバランステンプレート">
+          ${Object.entries(RESULT_TEMPLATES).map(([key, template]) => `
+            <button class="graph-template-button ${activeTemplateKey === key ? "is-active" : ""}" type="button" data-result-template="${key}">${template.label}</button>
+          `).join("")}
+        </div>
+      `;
+      balanceCopy.querySelectorAll("[data-result-template]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const key = button.dataset.resultTemplate;
+          const template = RESULT_TEMPLATES[key] || RESULT_TEMPLATES.balance;
+          activeTemplateKey = key;
+          axes = { ...RESULT_DEFAULT_AXES, ...template.axes };
+          syncAdjustmentFlag();
+          renderAll();
+        });
+      });
     }
 
     function renderDetails() {
@@ -820,12 +886,29 @@
         return `
           <div class="graph-axis-row" style="--axis-value:${value}%; --axis-color:${meta.color};" aria-label="${RESULT_AXIS_LABELS[axis]} ${value} / 100">
             <span class="graph-axis-icon" aria-hidden="true">${meta.mark}</span>
-            <span class="graph-axis-label">${RESULT_AXIS_LABELS[axis]}</span>
-            <span class="graph-axis-meter" aria-hidden="true"></span>
-            <span class="graph-axis-score">${value} <small>/ 100</small></span>
+            <label class="graph-axis-label" for="axis-${axis}">${RESULT_AXIS_LABELS[axis]}</label>
+            <input class="graph-axis-slider" id="axis-${axis}" name="${axis}" type="range" min="0" max="100" value="${value}" aria-label="${RESULT_AXIS_LABELS[axis]}">
+            <span class="graph-axis-score" id="axis-${axis}-score">${value} <small>/ 100</small></span>
           </div>
         `;
       }).join("");
+      RESULT_AXIS_ORDER.forEach((axis) => {
+        const input = $(`axis-${axis}`);
+        input?.addEventListener("input", (event) => {
+          axes = { ...axes, [axis]: clamp(event.target.value) };
+          const value = clamp(axes[axis]);
+          const row = input.closest(".graph-axis-row");
+          const score = $(`axis-${axis}-score`);
+          row?.style.setProperty("--axis-value", `${value}%`);
+          if (score) score.innerHTML = `${value} <small>/ 100</small>`;
+          activeTemplateKey = "";
+          syncAdjustmentFlag();
+          persistAdjustedAxes();
+          drawRadar(axes);
+          renderComment();
+          renderBalanceCopy();
+        });
+      });
     }
 
     function renderComment() {
@@ -838,11 +921,38 @@
       }).join("");
     }
 
-    renderDetails();
-    renderComment();
-    drawRadar(axes);
+    function renderAll() {
+      renderBalanceCopy();
+      renderDetails();
+      renderComment();
+      drawRadar(axes);
+    }
+
+    $("result-reset-btn")?.addEventListener("click", () => {
+      axes = { ...baseAxes };
+      activeTemplateKey = hasQuestionnaireResult ? "" : "balance";
+      syncAdjustmentFlag();
+      persistAdjustedAxes();
+      renderAll();
+    });
+    ["top-link", "brand-link"].forEach((id) => {
+      $(id)?.addEventListener("click", (event) => {
+        event.preventDefault();
+        if (!window.confirm(leaveMessage)) return;
+        allowGraphLeave = true;
+        window.location.href = event.currentTarget.getAttribute("href") || "../index.html";
+      });
+    });
+    window.addEventListener("beforeunload", (event) => {
+      if (!hasGraphAdjustment || allowGraphLeave) return;
+      event.preventDefault();
+      event.returnValue = "";
+    });
+    syncAdjustmentFlag();
+    renderAll();
     $("reserve-link")?.addEventListener("click", async (event) => {
       event.preventDefault();
+      allowGraphLeave = true;
       const nextState = { ...readJson(SCORE_STATE_KEY, {}), adjustedAxes: axes, finalAxes: axes };
       const result = buildResultComment();
       const primaryAxis = result.tags[0] || "floral";

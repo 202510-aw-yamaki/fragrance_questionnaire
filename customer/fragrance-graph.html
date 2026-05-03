@@ -10,7 +10,7 @@
 <body data-page="graph" class="fragrance-graph-page">
   <header class="site-header">
     <div class="site-header-inner site-container">
-      <a class="brand graph-brand" id="brand-link" href="../index.html"><span class="graph-brand-mark" aria-hidden="true"></span><span>Fragrance Workshop</span></a>
+      <a class="brand graph-brand" id="brand-link" href="../index.html"><span class="brand-logo-mark"><img src="../img/costomer/吟ロゴ.png" alt=""></span><span>Fragrance Workshop</span></a>
     </div>
   </header>
   <main class="graph-main">
@@ -22,7 +22,7 @@
 
       <section class="graph-result-layout" aria-label="香り診断結果">
         <article class="graph-balance-card">
-          <div class="graph-balance-copy">
+          <div class="graph-balance-copy" id="graph-balance-copy">
             <h2>5つの軸による<br>あなたの香りバランス</h2>
             <span class="graph-divider" aria-hidden="true"></span>
             <p>各軸のバランスから、あなたらしい香りの個性を可視化しました。</p>
@@ -53,14 +53,14 @@
         <div class="graph-detail-heading">
           <h2>5つの軸の<br>詳細バランス</h2>
           <span class="graph-divider" aria-hidden="true"></span>
+          <button class="graph-reset-button" id="result-reset-btn" type="button">初期値</button>
         </div>
         <div class="graph-axis-list" id="result-detail-list"></div>
       </section>
 
       <div class="graph-actions">
         <a class="graph-primary-action" id="reserve-link" href="reservation.html"><span aria-hidden="true"></span>この香りで予約する</a>
-        <a class="graph-secondary-action" href="questionnaire.html"><span aria-hidden="true"></span>もう一度回答する</a>
-        <a class="graph-help-link" href="../index.html#flow"><span aria-hidden="true">i</span>結果の活用方法はこちら</a>
+        <a class="graph-secondary-action" id="top-link" href="../index.html"><span aria-hidden="true"></span>TOPページへ戻る</a>
       </div>
     </div>
   </main>
