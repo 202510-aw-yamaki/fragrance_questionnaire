@@ -243,7 +243,7 @@ body[data-page="graph"] #grid-polygons polygon:last-child {
 
 body[data-page="graph"] #axis-labels text {
   font-family: var(--serif);
-  font-size: 15px;
+  font-size: 26px;
   dominant-baseline: middle;
 }
 
