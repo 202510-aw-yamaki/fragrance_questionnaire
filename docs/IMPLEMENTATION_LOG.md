@@ -550,3 +550,34 @@
   - `git diff --check`
   - Playwrightで未回答直接アクセス時のタイトル・テンプレート件数・スライダーdisabledを確認。
   - Playwrightで回答済み状態のタイトル・説明文・スライダー操作可能状態を確認。
+
+### 2026-05-03 customer/fragrance-graph.html ヘッダーCTAと狭幅表示順の調整
+- 対象:
+  - `customer/fragrance-graph.html`
+  - `css/customer/customer-fragrance-graph.css`
+  - `js/rebuild-customer-flow.js`
+- 背景:
+  - 結果ページのヘッダー右側に予約CTAを追加し、860px以下では診断コメントを非表示にして表示順を `5つの軸` → `5つの軸の詳細バランス` にしたいという要望があった。
+- 実装:
+  - ヘッダー右側に「この香りで予約」ボタンを追加し、下部予約CTAと同じ予約データ受け渡し処理に接続。
+  - 560px以下ではヘッダー内に収めるため、結果ページのみブランド文字を隠して吟ロゴと予約CTAを表示。
+  - 860px以下では `.graph-comment-card` を非表示にし、`.graph-balance-card` の次に `.graph-detail-card` が続く表示にした。
+- 確認:
+  - `node --check js/rebuild-customer-flow.js`
+  - `git diff --check`
+  - Playwright screenshot 1674x940 / 390x844 full-page
+
+### 2026-05-03 customer/fragrance-graph.html 結果ページのカラム構造整理
+- 対象:
+  - `customer/fragrance-graph.html`
+  - `css/customer/customer-fragrance-graph.css`
+- 背景:
+  - 添付注釈のとおり、左列に香りバランスと詳細バランス、右列に診断コメントを置く単純な2カラム構造へ整理したいという要望があった。
+- 実装:
+  - `.graph-result-layout` 内に `.graph-main-column` を追加し、`.graph-balance-card` と `.graph-detail-card` を同じ左列に配置。
+  - `.graph-comment-card` は右列専用にし、PC幅で左列と右列が分かれる構造に整理。
+  - 詳細バランスカードの負の余白と固定的な横ずらし指定を外し、左列内で自然に縦積みされるCSSへ変更。
+- 確認:
+  - `node --check js/rebuild-customer-flow.js`
+  - `git diff --check`
+  - Playwright screenshot 1674x940 / 390x844 full-page

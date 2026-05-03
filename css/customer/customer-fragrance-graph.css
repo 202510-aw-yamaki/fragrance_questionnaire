@@ -30,6 +30,24 @@ body[data-page="graph"] .graph-brand .brand-logo-mark img {
   height: 42px;
 }
 
+body[data-page="graph"] .graph-header-reserve {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border: 1px solid #f2caa9;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #e89798, #cf676f);
+  box-shadow: 0 12px 22px rgba(191, 92, 91, 0.22);
+  padding: 10px 24px;
+  color: #fff;
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
 body[data-page="graph"] .graph-main {
   position: relative;
   min-height: calc(100vh - 78px);
@@ -100,10 +118,16 @@ body[data-page="graph"] .graph-title p {
 
 body[data-page="graph"] .graph-result-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(270px, 292px);
+  grid-template-columns: minmax(0, 884px) minmax(270px, 292px);
   gap: 32px;
   align-items: start;
   max-width: 1212px;
+}
+
+body[data-page="graph"] .graph-main-column {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
 }
 
 body[data-page="graph"] .graph-balance-card,
@@ -300,9 +324,7 @@ body[data-page="graph"] .graph-detail-card {
   grid-template-columns: 210px minmax(0, 1fr);
   gap: 24px;
   align-items: center;
-  max-width: 884px;
-  height: 192px;
-  margin-top: -112px;
+  min-height: 192px;
   padding: 12px 34px;
 }
 
@@ -614,10 +636,8 @@ body[data-page="graph"] .graph-help-link span {
 
   body[data-page="graph"] .graph-detail-card {
     grid-template-columns: 178px minmax(0, 1fr);
-    max-width: calc(100% - 270px);
-    height: auto;
+    max-width: none;
     min-height: 146px;
-    margin-top: -92px;
     padding: 12px 24px;
   }
 
@@ -665,9 +685,12 @@ body[data-page="graph"] .graph-help-link span {
     grid-template-columns: 1fr;
   }
 
+  body[data-page="graph"] .graph-main-column {
+    gap: 18px;
+  }
+
   body[data-page="graph"] .graph-comment-card {
-    max-width: 560px;
-    min-height: 0;
+    display: none;
   }
 
   body[data-page="graph"] .graph-title h1 {
@@ -707,9 +730,7 @@ body[data-page="graph"] .graph-help-link span {
   }
 
   body[data-page="graph"] .graph-detail-card {
-    height: auto;
     max-width: none;
-    margin-top: 18px;
   }
 
   body[data-page="graph"] .graph-axis-row {
@@ -731,9 +752,11 @@ body[data-page="graph"] .graph-help-link span {
 @media (max-width: 560px) {
   body[data-page="graph"] .site-header-inner {
     min-height: 64px;
+    width: min(100% - 28px, 1626px);
   }
 
   body[data-page="graph"] .graph-brand {
+    gap: 8px;
     font-size: 22px;
   }
 
@@ -741,6 +764,16 @@ body[data-page="graph"] .graph-help-link span {
   body[data-page="graph"] .graph-brand .brand-logo-mark img {
     width: 34px;
     height: 34px;
+  }
+
+  body[data-page="graph"] .graph-brand > span:last-child {
+    display: none;
+  }
+
+  body[data-page="graph"] .graph-header-reserve {
+    min-height: 40px;
+    padding: 8px 16px;
+    font-size: 15px;
   }
 
   body[data-page="graph"] .graph-main {

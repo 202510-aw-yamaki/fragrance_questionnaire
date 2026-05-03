@@ -11,6 +11,7 @@
   <header class="site-header">
     <div class="site-header-inner site-container">
       <a class="brand graph-brand" id="brand-link" href="../index.html"><span class="brand-logo-mark"><img src="../img/costomer/吟ロゴ.png" alt=""></span><span>Fragrance Workshop</span></a>
+      <a class="graph-header-reserve" id="header-reserve-link" href="reservation.html">この香りで予約</a>
     </div>
   </header>
   <main class="graph-main">
@@ -20,22 +21,33 @@
       </section>
 
       <section class="graph-result-layout" aria-label="香り診断結果">
-        <article class="graph-balance-card">
-          <div class="graph-balance-copy" id="graph-balance-copy">
-            <h2>5つの軸による<br>あなたの香りバランス</h2>
-            <span class="graph-divider" aria-hidden="true"></span>
-            <p>各軸のバランスから、あなたらしい香りの個性を可視化しました。</p>
-          </div>
-          <div class="graph-radar-panel">
-            <svg id="radar-graph" class="radar-graph" viewBox="0 0 360 360" role="img" aria-label="5軸グラフ">
-              <g id="grid-polygons" fill="none" stroke="#e5c08f"></g>
-              <g id="axis-lines" stroke="#e5c08f"></g>
-              <g id="axis-labels" fill="#4a3325" font-size="15" text-anchor="middle"></g>
-              <polygon id="radar-shape" fill="rgba(228,128,128,.23)" stroke="#e48188" stroke-width="3"></polygon>
-              <g id="vertex-dots" fill="#e48188"></g>
-            </svg>
-          </div>
-        </article>
+        <div class="graph-main-column">
+          <article class="graph-balance-card">
+            <div class="graph-balance-copy" id="graph-balance-copy">
+              <h2>5つの軸による<br>あなたの香りバランス</h2>
+              <span class="graph-divider" aria-hidden="true"></span>
+              <p>各軸のバランスから、あなたらしい香りの個性を可視化しました。</p>
+            </div>
+            <div class="graph-radar-panel">
+              <svg id="radar-graph" class="radar-graph" viewBox="0 0 360 360" role="img" aria-label="5軸グラフ">
+                <g id="grid-polygons" fill="none" stroke="#e5c08f"></g>
+                <g id="axis-lines" stroke="#e5c08f"></g>
+                <g id="axis-labels" fill="#4a3325" font-size="15" text-anchor="middle"></g>
+                <polygon id="radar-shape" fill="rgba(228,128,128,.23)" stroke="#e48188" stroke-width="3"></polygon>
+                <g id="vertex-dots" fill="#e48188"></g>
+              </svg>
+            </div>
+          </article>
+
+          <section class="graph-detail-card" aria-label="5つの軸の詳細バランス">
+            <div class="graph-detail-heading">
+              <h2>5つの軸の<br>詳細バランス</h2>
+              <span class="graph-divider" aria-hidden="true"></span>
+              <button class="graph-reset-button" id="result-reset-btn" type="button">初期値</button>
+            </div>
+            <div class="graph-axis-list" id="result-detail-list"></div>
+          </section>
+        </div>
 
         <aside class="graph-comment-card">
           <div class="graph-card-heading">
@@ -46,15 +58,6 @@
           <p id="result-comment">診断結果を読み込み中です。</p>
           <div class="graph-tag-list" id="result-tags" aria-label="香りの特徴"></div>
         </aside>
-      </section>
-
-      <section class="graph-detail-card" aria-label="5つの軸の詳細バランス">
-        <div class="graph-detail-heading">
-          <h2>5つの軸の<br>詳細バランス</h2>
-          <span class="graph-divider" aria-hidden="true"></span>
-          <button class="graph-reset-button" id="result-reset-btn" type="button">初期値</button>
-        </div>
-        <div class="graph-axis-list" id="result-detail-list"></div>
       </section>
 
       <div class="graph-actions">

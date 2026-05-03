@@ -952,7 +952,7 @@
     if (pageTitle) pageTitle.textContent = hasQuestionnaireResult ? "あなたの香りの傾向" : "香りのバランスを選んでください";
     syncAdjustmentFlag();
     renderAll();
-    $("reserve-link")?.addEventListener("click", async (event) => {
+    async function navigateToReservation(event) {
       event.preventDefault();
       allowGraphLeave = true;
       const nextState = { ...readJson(SCORE_STATE_KEY, {}), adjustedAxes: axes, finalAxes: axes };
@@ -971,6 +971,9 @@
         }, { adjusted_axes: axes, final_axes: axes, updated_at: new Date().toISOString() });
       }
       window.location.href = "reservation.html";
+    }
+    ["reserve-link", "header-reserve-link"].forEach((id) => {
+      $(id)?.addEventListener("click", navigateToReservation);
     });
   }
 
