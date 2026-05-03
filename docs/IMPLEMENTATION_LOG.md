@@ -497,3 +497,17 @@
 - 確認:
   - `node --check js/rebuild-customer-flow.js`
   - Playwright screenshot desktop/mobile/full-page
+
+### 2026-05-03 customer/fragrance-graph.html 通常結果ページの見本寄せ再調整
+- 対象:
+  - `css/customer/customer-fragrance-graph.css`
+- 背景:
+  - 見本画像に対して、初回実装がカード配置・背景小物・CTA位置の再現精度不足だったため、通常結果ページ専用CSSを追加調整した。
+- 実装:
+  - 1160px幅以下でも右側の診断コメントを早く下へ落とさず、見本の横並び構成を維持。
+  - デスクトップ基準でメインカード、詳細バランスカード、CTAの縦位置を見本に近づけた。
+  - 既存素材 `台の上の瓶.png` を背景右側へ重ね、見本の右側ボトル配置に寄せた。
+  - 固定ヘッダー指定を解除し、フルページ表示時のヘッダー重複を解消。
+- 確認:
+  - `node --check js/rebuild-customer-flow.js`
+  - Playwright screenshot 1674x940 / 390x844 / 390x844 full-page

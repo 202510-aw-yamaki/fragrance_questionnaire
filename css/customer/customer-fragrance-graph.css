@@ -3,7 +3,7 @@ body[data-page="graph"] {
 }
 
 body[data-page="graph"] .site-header {
-  position: sticky;
+  position: relative;
   top: 0;
   z-index: 20;
   background: rgba(255, 251, 246, 0.96);
@@ -36,8 +36,23 @@ body[data-page="graph"] .graph-main {
   overflow: hidden;
   padding: 34px 0 42px;
   background:
-    linear-gradient(90deg, rgba(255, 250, 244, 0.88) 0%, rgba(255, 250, 244, 0.74) 48%, rgba(255, 250, 244, 0.14) 100%),
-    url("../../img/costomer/customer_back.png") center / cover no-repeat;
+    linear-gradient(90deg, rgba(255, 250, 244, 0.84) 0%, rgba(255, 250, 244, 0.56) 50%, rgba(255, 250, 244, 0.04) 100%),
+    url("../../img/costomer/customer_back.png") center top / cover no-repeat;
+}
+
+body[data-page="graph"] .graph-main::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: -34px;
+  right: -26px;
+  width: min(30vw, 440px);
+  height: min(60vw, 610px);
+  pointer-events: none;
+  background: url("../../img/costomer/台の上の瓶.png") center top / 390px auto no-repeat;
+  opacity: 0.74;
+  -webkit-mask-image: radial-gradient(ellipse at 62% 34%, #000 0 58%, rgba(0, 0, 0, 0.64) 70%, transparent 86%);
+  mask-image: radial-gradient(ellipse at 62% 34%, #000 0 58%, rgba(0, 0, 0, 0.64) 70%, transparent 86%);
 }
 
 body[data-page="graph"] .graph-shell {
@@ -106,7 +121,7 @@ body[data-page="graph"] .graph-balance-card {
   display: grid;
   grid-template-columns: minmax(220px, 0.38fr) minmax(380px, 0.62fr);
   gap: 14px;
-  padding: 24px 34px;
+  padding: 20px 34px;
   align-items: center;
 }
 
@@ -155,13 +170,13 @@ body[data-page="graph"] .graph-divider-small {
 }
 
 body[data-page="graph"] .graph-radar-panel {
-  min-height: 300px;
+  min-height: 286px;
   display: grid;
   place-items: center;
 }
 
 body[data-page="graph"] .radar-graph {
-  width: min(100%, 330px);
+  width: min(100%, 320px);
   height: auto;
   overflow: visible;
 }
@@ -258,9 +273,9 @@ body[data-page="graph"] .graph-detail-card {
   gap: 24px;
   align-items: center;
   max-width: 884px;
-  min-height: 154px;
-  margin-top: -104px;
-  padding: 18px 34px;
+  height: 192px;
+  margin-top: -112px;
+  padding: 12px 34px;
 }
 
 body[data-page="graph"] .graph-detail-heading {
@@ -287,7 +302,7 @@ body[data-page="graph"] .graph-detail-heading .graph-divider {
 
 body[data-page="graph"] .graph-axis-list {
   display: grid;
-  gap: 8px;
+  gap: 5px;
 }
 
 body[data-page="graph"] .graph-axis-row {
@@ -298,6 +313,7 @@ body[data-page="graph"] .graph-axis-row {
   gap: 12px;
   align-items: center;
   color: #3f2b20;
+  min-height: 26px;
 }
 
 body[data-page="graph"] .graph-axis-icon {
@@ -348,8 +364,8 @@ body[data-page="graph"] .graph-actions {
   grid-template-columns: minmax(280px, 450px) minmax(260px, 378px) minmax(200px, 1fr);
   gap: 38px;
   align-items: center;
-  max-width: 1212px;
-  margin-top: 22px;
+  max-width: 1120px;
+  margin: 20px 0 0 190px;
 }
 
 body[data-page="graph"] .graph-primary-action,
@@ -401,6 +417,7 @@ body[data-page="graph"] .graph-help-link {
   font-family: var(--serif);
   font-size: 16px;
   line-height: 1.4;
+  white-space: nowrap;
   border-bottom: 1px dashed rgba(72, 48, 35, 0.54);
   padding-bottom: 8px;
 }
@@ -416,10 +433,127 @@ body[data-page="graph"] .graph-help-link span {
   font-size: 18px;
 }
 
-@media (max-width: 1160px) {
-  body[data-page="graph"] .graph-result-layout,
-  body[data-page="graph"] .graph-actions {
+@media (max-width: 1160px) and (min-width: 861px) {
+  body[data-page="graph"] .graph-main {
+    padding-top: 28px;
+  }
+
+  body[data-page="graph"] .graph-main::before {
+    width: 260px;
+    height: 420px;
+    right: -44px;
+    background-size: 320px auto;
+    opacity: 0.52;
+  }
+
+  body[data-page="graph"] .graph-shell {
+    width: calc(100% - 38px);
+  }
+
+  body[data-page="graph"] .graph-title h1 {
+    font-size: 42px;
+  }
+
+  body[data-page="graph"] .graph-title p {
+    font-size: 16px;
+  }
+
+  body[data-page="graph"] .graph-result-layout {
+    grid-template-columns: minmax(0, 1fr) 252px;
+    gap: 18px;
     max-width: none;
+  }
+
+  body[data-page="graph"] .graph-balance-card {
+    grid-template-columns: minmax(280px, 0.42fr) minmax(245px, 0.58fr);
+    gap: 8px;
+    min-height: 300px;
+    padding: 18px 24px;
+  }
+
+  body[data-page="graph"] .graph-balance-copy h2 {
+    font-size: 24px;
+  }
+
+  body[data-page="graph"] .graph-balance-copy p {
+    font-size: 15px;
+  }
+
+  body[data-page="graph"] .graph-radar-panel {
+    min-height: 238px;
+  }
+
+  body[data-page="graph"] .radar-graph {
+    width: min(100%, 264px);
+  }
+
+  body[data-page="graph"] .graph-comment-card {
+    min-height: 386px;
+    padding: 28px 20px 20px;
+  }
+
+  body[data-page="graph"] #result-comment {
+    min-height: 88px;
+    font-size: 18px;
+  }
+
+  body[data-page="graph"] .graph-tag-list {
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  body[data-page="graph"] .graph-result-tag {
+    min-height: 42px;
+    font-size: 15px;
+  }
+
+  body[data-page="graph"] .graph-detail-card {
+    grid-template-columns: 178px minmax(0, 1fr);
+    max-width: calc(100% - 270px);
+    height: auto;
+    min-height: 146px;
+    margin-top: -92px;
+    padding: 12px 24px;
+  }
+
+  body[data-page="graph"] .graph-axis-row {
+    grid-template-columns: 28px 86px minmax(120px, 1fr) 62px;
+    gap: 10px;
+  }
+
+  body[data-page="graph"] .graph-actions {
+    grid-template-columns: minmax(260px, 360px) minmax(230px, 300px) minmax(170px, 1fr);
+    gap: 20px;
+    max-width: none;
+    margin-left: 178px;
+    margin-top: 14px;
+  }
+
+  body[data-page="graph"] .graph-primary-action,
+  body[data-page="graph"] .graph-secondary-action {
+    min-height: 66px;
+    font-size: 22px;
+  }
+
+  body[data-page="graph"] .graph-primary-action span,
+  body[data-page="graph"] .graph-secondary-action span {
+    width: 34px;
+    height: 34px;
+  }
+
+  body[data-page="graph"] .graph-help-link {
+    justify-self: end;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 860px) {
+  body[data-page="graph"] .graph-main::before {
+    display: none;
+  }
+
+  body[data-page="graph"] .graph-shell {
+    width: min(100% - 28px, 660px);
   }
 
   body[data-page="graph"] .graph-result-layout {
@@ -428,26 +562,7 @@ body[data-page="graph"] .graph-help-link span {
 
   body[data-page="graph"] .graph-comment-card {
     max-width: 560px;
-  }
-
-  body[data-page="graph"] .graph-detail-card {
-    max-width: none;
-    margin-top: 18px;
-  }
-
-  body[data-page="graph"] .graph-actions {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px;
-  }
-
-  body[data-page="graph"] .graph-help-link {
-    justify-self: start;
-  }
-}
-
-@media (max-width: 860px) {
-  body[data-page="graph"] .graph-shell {
-    width: min(100% - 28px, 660px);
+    min-height: 0;
   }
 
   body[data-page="graph"] .graph-title h1 {
@@ -486,6 +601,12 @@ body[data-page="graph"] .graph-help-link span {
     border-bottom: 1px solid rgba(223, 188, 138, 0.72);
   }
 
+  body[data-page="graph"] .graph-detail-card {
+    height: auto;
+    max-width: none;
+    margin-top: 18px;
+  }
+
   body[data-page="graph"] .graph-axis-row {
     grid-template-columns: 30px 92px minmax(110px, 1fr) 62px;
     gap: 10px;
@@ -493,6 +614,8 @@ body[data-page="graph"] .graph-help-link span {
 
   body[data-page="graph"] .graph-actions {
     grid-template-columns: 1fr;
+    max-width: none;
+    margin-left: 0;
   }
 
   body[data-page="graph"] .graph-help-link {
