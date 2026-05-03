@@ -916,12 +916,13 @@ body[data-page="staff-slots"] .staff-main::before {
   gap: 12px;
   align-items: center;
   width: 100%;
-  min-height: 56px;
+  height: 36px;
+  min-height: 36px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: rgba(255, 253, 249, 0.92);
   color: var(--ink);
-  padding: 10px 12px;
+  padding: 5px 10px;
   cursor: pointer;
 }
 
@@ -969,9 +970,20 @@ body[data-page="staff-slots"] .staff-main::before {
   min-width: 0;
 }
 
-.staff-slots-form-grid > label:nth-of-type(1),
+.staff-slots-form-grid > label:nth-of-type(1) {
+  order: 1;
+}
+
+.staff-slots-form-grid > label:nth-of-type(4) {
+  order: 2;
+}
+
 .staff-slots-form-grid > label:nth-of-type(2) {
-  grid-column: 1 / -1;
+  order: 3;
+}
+
+.staff-slots-form-grid > label:nth-of-type(3) {
+  order: 4;
 }
 
 .staff-slot-preview {

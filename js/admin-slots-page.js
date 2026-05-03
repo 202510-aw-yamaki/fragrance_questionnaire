@@ -4,20 +4,16 @@
   const rowsEl = document.getElementById("slot-rows");
   const form = document.getElementById("slot-form");
   const resetButton = document.getElementById("slot-reset");
-  const previewLabelEl = document.getElementById("slot-preview-label");
   const previewDateEl = document.getElementById("slot-preview-date");
   const previewTimeEl = document.getElementById("slot-preview-time");
   const previewIntervalEl = document.getElementById("slot-preview-interval");
   const previewCapacityEl = document.getElementById("slot-preview-capacity");
-  const previewStaffEl = document.getElementById("slot-preview-staff");
-  const previewStatusEl = document.getElementById("slot-preview-status");
   const previewFocusButton = document.getElementById("slot-preview-focus");
   const deleteButton = document.getElementById("slot-delete");
   const weekDaysEl = document.getElementById("slot-week-days");
   const weekRangeEl = document.getElementById("slot-week-range");
   const weekPrevButton = document.getElementById("slot-week-prev");
   const weekNextButton = document.getElementById("slot-week-next");
-  const slotListDateLabelEl = document.getElementById("slot-list-date-label");
   const staffNameEl = document.getElementById("staff-slots-staff-name");
 
   if (!rowsEl || !form || !resetButton) return;
@@ -265,24 +261,18 @@
   }
 
   function renderPreview() {
-    if (!previewLabelEl) return;
     const dateValue = document.getElementById("slot-date").value || "-";
     const timeValue = document.getElementById("slot-time").value || "-";
     const intervalValue = document.getElementById("slot-interval").value || DEFAULT_INTERVAL;
     const capacityValue = document.getElementById("slot-capacity").value || DEFAULT_CAPACITY;
     const labelValue = buildSlotLabel(timeValue, intervalValue);
-    const staffValue = document.getElementById("slot-instructor").value.trim() || getDefaultInstructorName() || "未設定";
-    const statusValue = document.getElementById("slot-status").value || "-";
 
     document.getElementById("slot-code").value = buildSlotCode(dateValue, timeValue);
     document.getElementById("slot-label").value = labelValue;
-    previewLabelEl.textContent = labelValue;
     previewDateEl.textContent = formatMonthDay(dateValue);
     previewTimeEl.textContent = timeValue;
     if (previewIntervalEl) previewIntervalEl.textContent = `${intervalValue}分`;
     if (previewCapacityEl) previewCapacityEl.textContent = `${capacityValue}名`;
-    if (previewStaffEl) previewStaffEl.textContent = staffValue;
-    if (previewStatusEl) previewStatusEl.textContent = getStatusLabel(statusValue);
   }
 
   async function getAllSlots() {
@@ -329,9 +319,6 @@
   async function renderRows() {
     const rows = getSlotRowsByRole(await getAllSlots()).sort(compareByNearestUpcoming);
     renderWeekCalendar(rows);
-    if (slotListDateLabelEl) {
-      slotListDateLabelEl.textContent = formatMonthDay(selectedDateKey);
-    }
     const reservationCounts = reservations.reduce((acc, row) => {
       acc.set(row.slot_id, (acc.get(row.slot_id) || 0) + 1);
       return acc;
@@ -352,7 +339,7 @@
       article.tabIndex = 0;
       article.setAttribute("role", "button");
       article.innerHTML = `
-        <span>${formatMonthDay(row.slot_date || "")}</span>
+        <span>${formatShortMonthDay(row.slot_date || "")}</span>
         <span>${String(row.slot_time || "").slice(0, 5)}</span>
         <span>${row.capacity || 1}名</span>
         <span>${reservationCounts.get(row.id) || 0}組</span>
