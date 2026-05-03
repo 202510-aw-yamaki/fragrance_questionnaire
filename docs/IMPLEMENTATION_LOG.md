@@ -530,6 +530,7 @@
 - 確認:
   - `node --check js/rebuild-customer-flow.js`
   - `git diff --check`
+  - Playwright screenshot 1674x940 / 390x844 full-page
   - Playwright screenshot 1674x940 / 390x844 / 390x844 full-page
   - in-app browserでテンプレート切り替えと初期値復帰を確認
 
@@ -595,3 +596,23 @@
   - `node --check js/rebuild-customer-flow.js`
   - `git diff --check`
   - Playwright screenshot 1674x940
+
+### 2026-05-03 会員比較モードの別ページ化
+- 対象:
+  - `customer/fragrance-compare.html`
+  - `css/customer/customer-fragrance-compare.css`
+  - `customer/index.html`
+  - `js/rebuild-customer-flow.js`
+  - `docs/SPEC.md`
+- 背景:
+  - 通常結果ページに会員比較モードを混在させず、会員ログイン済みかつ前回完成品がある場合は別ページで比較する方針にした。
+- 実装:
+  - `customer/fragrance-compare.html` を新設し、前回完成品と今回アンケート結果を並べて5軸比較する画面を追加。
+  - `css/customer/customer-fragrance-compare.css` を新設し、比較ページ専用の2カラム・レスポンシブレイアウトを追加。
+  - 会員ページの比較リンクを `fragrance-compare.html` に変更。
+  - アンケートSTEP2完了時、会員ログイン済みかつ比較可能な前回完成品データがある場合のみ比較ページへ遷移するようにした。
+  - 通常結果ページと会員比較ページを分ける方針を `docs/SPEC.md` に追記。
+- 確認:
+  - `node --check js/rebuild-customer-flow.js`
+  - `git diff --check`
+  - Playwright screenshot 1674x940 / 390x844 full-page

@@ -1,0 +1,539 @@
+body[data-page="fragrance-compare"] {
+  min-height: 100vh;
+  color: #2f1d14;
+  background: #fff8ef;
+}
+
+body[data-page="fragrance-compare"] .site-header {
+  border-bottom: 1px solid rgba(201, 150, 82, 0.5);
+  background: rgba(255, 251, 245, 0.94);
+}
+
+body[data-page="fragrance-compare"] .site-header-inner {
+  min-height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+body[data-page="fragrance-compare"] .compare-brand {
+  min-width: 0;
+}
+
+body[data-page="fragrance-compare"] .brand-logo-mark {
+  width: 45px;
+  height: 45px;
+}
+
+body[data-page="fragrance-compare"] .brand-logo-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+body[data-page="fragrance-compare"] .compare-header-link {
+  min-width: 132px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(207, 126, 116, 0.76);
+  border-radius: 8px;
+  background: linear-gradient(180deg, #e77d84, #d76772);
+  color: #fff;
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.2;
+  text-decoration: none;
+  box-shadow: 0 10px 22px rgba(174, 81, 84, 0.2);
+}
+
+body[data-page="fragrance-compare"] .compare-main {
+  min-height: calc(100vh - 78px);
+  padding: 34px 0 72px;
+  background:
+    linear-gradient(90deg, rgba(255, 253, 248, 0.9), rgba(255, 250, 244, 0.68)),
+    url("../../img/costomer/customer_back.png") center top / cover no-repeat;
+}
+
+body[data-page="fragrance-compare"] .compare-shell {
+  width: min(100% - 40px, 1212px);
+  margin: 0 auto;
+}
+
+body[data-page="fragrance-compare"] .compare-title {
+  margin: 0 0 18px;
+}
+
+body[data-page="fragrance-compare"] .compare-title h1 {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 46px;
+  font-weight: 500;
+  line-height: 1.28;
+  color: #2f1d14;
+}
+
+body[data-page="fragrance-compare"] .compare-title h1::after,
+body[data-page="fragrance-compare"] .compare-divider {
+  content: "";
+  width: 126px;
+  height: 20px;
+  flex: 0 0 auto;
+  background:
+    linear-gradient(#d9b778, #d9b778) left 50% / 50px 1px no-repeat,
+    linear-gradient(#d9b778, #d9b778) right 50% / 50px 1px no-repeat,
+    url("../../img/costomer/会員ページの記号.png") center / 17px 17px no-repeat;
+}
+
+body[data-page="fragrance-compare"] .compare-title p {
+  margin: 10px 0 0;
+  color: #493427;
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+body[data-page="fragrance-compare"] .compare-status {
+  margin: 0 0 16px;
+}
+
+body[data-page="fragrance-compare"] .compare-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 884px) minmax(270px, 292px);
+  gap: 32px;
+  align-items: start;
+}
+
+body[data-page="fragrance-compare"] .compare-main-column {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+body[data-page="fragrance-compare"] .compare-radar-card,
+body[data-page="fragrance-compare"] .compare-delta-card,
+body[data-page="fragrance-compare"] .compare-comment-card {
+  border: 1px solid rgba(223, 188, 138, 0.58);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 22px 44px rgba(115, 77, 45, 0.08);
+  backdrop-filter: blur(5px);
+}
+
+body[data-page="fragrance-compare"] .compare-radar-card {
+  min-height: 430px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  padding: 26px 30px;
+}
+
+body[data-page="fragrance-compare"] .compare-radar-panel {
+  min-width: 0;
+  display: grid;
+  grid-template-rows: auto auto auto minmax(220px, auto) auto;
+  justify-items: center;
+  align-content: start;
+  gap: 8px;
+  padding: 0 26px;
+}
+
+body[data-page="fragrance-compare"] .compare-radar-panel + .compare-radar-panel {
+  border-left: 1px solid rgba(223, 188, 138, 0.58);
+}
+
+body[data-page="fragrance-compare"] .compare-kicker {
+  margin: 0;
+  color: #a46458;
+  font-family: var(--serif);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+body[data-page="fragrance-compare"] .compare-radar-panel h2,
+body[data-page="fragrance-compare"] .compare-card-heading h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 500;
+  color: #2f1d14;
+}
+
+body[data-page="fragrance-compare"] .compare-radar-panel h2 {
+  max-width: 100%;
+  min-height: 40px;
+  font-size: 24px;
+  line-height: 1.45;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+body[data-page="fragrance-compare"] .compare-radar-panel p:not(.compare-kicker) {
+  min-height: 24px;
+  margin: 0;
+  color: #6b5142;
+  font-family: var(--serif);
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+body[data-page="fragrance-compare"] .compare-radar {
+  width: min(100%, 252px);
+  height: auto;
+  overflow: visible;
+}
+
+body[data-page="fragrance-compare"] .compare-radar polygon[id$="-grid"] polygon,
+body[data-page="fragrance-compare"] .compare-radar g[id$="-grid"] polygon {
+  stroke-dasharray: 2 3;
+}
+
+body[data-page="fragrance-compare"] .compare-axis-list {
+  width: 100%;
+  display: grid;
+  gap: 8px;
+}
+
+body[data-page="fragrance-compare"] .compare-axis-chip {
+  min-height: 32px;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) 42px;
+  align-items: center;
+  gap: 8px;
+  color: #4a3528;
+  font-family: var(--serif);
+  font-size: 14px;
+}
+
+body[data-page="fragrance-compare"] .compare-axis-chip::after {
+  content: "";
+  grid-column: 2 / 4;
+  height: 6px;
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, var(--axis-color) var(--axis-value), rgba(233, 222, 208, 0.72) var(--axis-value));
+}
+
+body[data-page="fragrance-compare"] .compare-axis-chip span {
+  color: var(--axis-color);
+  font-size: 20px;
+  text-align: center;
+}
+
+body[data-page="fragrance-compare"] .compare-axis-chip strong {
+  font-weight: 500;
+}
+
+body[data-page="fragrance-compare"] .compare-axis-chip em {
+  color: #8a6d5a;
+  font-style: normal;
+  text-align: right;
+}
+
+body[data-page="fragrance-compare"] .compare-delta-card {
+  min-height: 190px;
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 26px;
+  align-items: center;
+  padding: 18px 34px;
+}
+
+body[data-page="fragrance-compare"] .compare-card-heading {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+body[data-page="fragrance-compare"] .compare-card-heading h2 {
+  font-size: 24px;
+  line-height: 1.55;
+}
+
+body[data-page="fragrance-compare"] .compare-delta-list {
+  display: grid;
+  gap: 14px;
+}
+
+body[data-page="fragrance-compare"] .compare-delta-row {
+  display: grid;
+  grid-template-columns: 130px minmax(120px, 1fr) 48px;
+  align-items: center;
+  gap: 14px;
+  color: #4a3528;
+  font-family: var(--serif);
+  font-size: 15px;
+}
+
+body[data-page="fragrance-compare"] .compare-delta-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+body[data-page="fragrance-compare"] .compare-delta-label span {
+  color: var(--axis-color);
+  font-size: 18px;
+}
+
+body[data-page="fragrance-compare"] .compare-delta-track {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(233, 222, 208, 0.8);
+}
+
+body[data-page="fragrance-compare"] .compare-delta-track::before {
+  content: "";
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  left: 50%;
+  width: 1px;
+  background: rgba(120, 91, 70, 0.35);
+}
+
+body[data-page="fragrance-compare"] .compare-delta-track span {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: var(--delta-width);
+  border-radius: 999px;
+  background: var(--axis-color);
+}
+
+body[data-page="fragrance-compare"] .compare-delta-row.is-positive .compare-delta-track span {
+  left: 50%;
+}
+
+body[data-page="fragrance-compare"] .compare-delta-row.is-negative .compare-delta-track span {
+  right: 50%;
+}
+
+body[data-page="fragrance-compare"] .compare-delta-row.is-even .compare-delta-track span {
+  display: none;
+}
+
+body[data-page="fragrance-compare"] .compare-delta-score {
+  color: #7a5c48;
+  text-align: right;
+}
+
+body[data-page="fragrance-compare"] .compare-comment-card {
+  min-height: 360px;
+  padding: 34px 28px;
+  display: grid;
+  align-content: start;
+  gap: 22px;
+}
+
+body[data-page="fragrance-compare"] .compare-comment-card p {
+  margin: 0;
+  color: #4f3a2c;
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 2;
+}
+
+body[data-page="fragrance-compare"] .compare-result-link {
+  min-height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(223, 188, 138, 0.72);
+  border-radius: 8px;
+  color: #4a3325;
+  font-family: var(--serif);
+  font-size: 16px;
+  text-decoration: none;
+  background: rgba(255, 252, 247, 0.82);
+}
+
+body[data-page="fragrance-compare"] .compare-empty {
+  margin: 0;
+  color: #7d6759;
+  font-family: var(--serif);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+body[data-page="fragrance-compare"] .compare-actions {
+  width: min(100%, 820px);
+  margin: 20px auto 0;
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(230px, 0.84fr);
+  gap: 34px;
+}
+
+body[data-page="fragrance-compare"] .compare-primary-action,
+body[data-page="fragrance-compare"] .compare-secondary-action {
+  min-height: 76px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-family: var(--serif);
+  font-size: 24px;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+body[data-page="fragrance-compare"] .compare-primary-action {
+  border: 1px solid #d5757c;
+  color: #fff;
+  background: linear-gradient(180deg, #e9818a, #d56570);
+  box-shadow: 0 16px 26px rgba(184, 86, 90, 0.2);
+}
+
+body[data-page="fragrance-compare"] .compare-secondary-action {
+  border: 1px solid rgba(223, 152, 83, 0.82);
+  color: #3c251a;
+  background: rgba(255, 252, 247, 0.78);
+}
+
+@media (max-width: 1160px) and (min-width: 861px) {
+  body[data-page="fragrance-compare"] .compare-title h1 {
+    font-size: 40px;
+  }
+
+  body[data-page="fragrance-compare"] .compare-layout {
+    grid-template-columns: minmax(0, 1fr) 252px;
+    gap: 18px;
+  }
+
+  body[data-page="fragrance-compare"] .compare-radar-card {
+    padding: 22px 18px;
+  }
+
+  body[data-page="fragrance-compare"] .compare-radar-panel {
+    padding: 0 18px;
+  }
+
+  body[data-page="fragrance-compare"] .compare-radar {
+    width: min(100%, 226px);
+  }
+
+  body[data-page="fragrance-compare"] .compare-delta-card {
+    grid-template-columns: 178px minmax(0, 1fr);
+    padding: 16px 24px;
+  }
+
+  body[data-page="fragrance-compare"] .compare-delta-row {
+    grid-template-columns: 110px minmax(110px, 1fr) 44px;
+    gap: 10px;
+  }
+
+  body[data-page="fragrance-compare"] .compare-comment-card {
+    padding: 28px 20px;
+  }
+}
+
+@media (max-width: 860px) {
+  body[data-page="fragrance-compare"] .compare-main {
+    padding: 28px 0 52px;
+  }
+
+  body[data-page="fragrance-compare"] .compare-shell {
+    width: min(100% - 28px, 660px);
+  }
+
+  body[data-page="fragrance-compare"] .compare-title h1 {
+    display: block;
+    font-size: 36px;
+  }
+
+  body[data-page="fragrance-compare"] .compare-title h1::after {
+    display: block;
+    margin-top: 12px;
+  }
+
+  body[data-page="fragrance-compare"] .compare-title p {
+    font-size: 15px;
+  }
+
+  body[data-page="fragrance-compare"] .compare-layout,
+  body[data-page="fragrance-compare"] .compare-radar-card,
+  body[data-page="fragrance-compare"] .compare-delta-card,
+  body[data-page="fragrance-compare"] .compare-actions {
+    grid-template-columns: 1fr;
+  }
+
+  body[data-page="fragrance-compare"] .compare-layout {
+    gap: 18px;
+  }
+
+  body[data-page="fragrance-compare"] .compare-radar-card {
+    padding: 24px 20px;
+    gap: 26px;
+  }
+
+  body[data-page="fragrance-compare"] .compare-radar-panel {
+    padding: 0;
+  }
+
+  body[data-page="fragrance-compare"] .compare-radar-panel + .compare-radar-panel {
+    padding-top: 24px;
+    border-left: 0;
+    border-top: 1px solid rgba(223, 188, 138, 0.58);
+  }
+
+  body[data-page="fragrance-compare"] .compare-delta-card {
+    padding: 24px 18px;
+  }
+
+  body[data-page="fragrance-compare"] .compare-delta-row {
+    grid-template-columns: 1fr 52px;
+    gap: 8px 12px;
+  }
+
+  body[data-page="fragrance-compare"] .compare-delta-track {
+    grid-column: 1 / 3;
+    grid-row: 2;
+  }
+
+  body[data-page="fragrance-compare"] .compare-comment-card {
+    min-height: 0;
+    padding: 28px 20px;
+  }
+
+  body[data-page="fragrance-compare"] .compare-actions {
+    gap: 14px;
+  }
+}
+
+@media (max-width: 560px) {
+  body[data-page="fragrance-compare"] .site-header-inner {
+    min-height: 64px;
+  }
+
+  body[data-page="fragrance-compare"] .compare-brand > span:last-child {
+    display: none;
+  }
+
+  body[data-page="fragrance-compare"] .compare-header-link {
+    min-width: 118px;
+    min-height: 40px;
+    font-size: 15px;
+  }
+
+  body[data-page="fragrance-compare"] .compare-title h1 {
+    font-size: 31px;
+  }
+
+  body[data-page="fragrance-compare"] .compare-radar {
+    width: min(100%, 244px);
+  }
+
+  body[data-page="fragrance-compare"] .compare-primary-action,
+  body[data-page="fragrance-compare"] .compare-secondary-action {
+    min-height: 64px;
+    font-size: 20px;
+  }
+}

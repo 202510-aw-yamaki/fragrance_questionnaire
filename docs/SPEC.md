@@ -193,4 +193,12 @@
   - `レイアウトimg/` を完成イメージの正として、ページ単位で新しい薄いHTML/CSSへ置き換える。
   - 新ページでDB連携が維持できることを確認した後、旧HTML/CSS/表示都合JSを `archived/legacy/` へ退避する。
 
+## 2026-05-03 会員比較モードのページ分離方針
+
+- 通常結果ページは `customer/fragrance-graph.html` とし、今回のアンケート結果の表示・5軸調整・予約への受け渡しを担当する。
+- 会員比較モードは `customer/fragrance-compare.html` とし、会員ログイン済みで前回完成品の5軸データがある場合に、前回完成品と今回アンケート結果を比較するページとして扱う。
+- 通常結果ページに `mode=compare` のような状態を混在させず、ページを分けることで通常結果、未回答テンプレート、会員比較の責務を分離する。
+- 会員ページの比較導線は `customer/fragrance-compare.html` に向ける。
+- アンケート完了時は、会員ログイン済みかつ比較可能な前回完成品データがある場合のみ `customer/fragrance-compare.html` へ遷移し、それ以外は `customer/fragrance-graph.html` へ遷移する。
+- レーダー描画、5軸名称、予約へ渡す `sessionStorage` の契約は通常結果ページと共通の考え方を使う。
 

@@ -173,6 +173,80 @@
     window.sessionStorage.setItem(key, JSON.stringify(value));
   }
 
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "\"": "&quot;",
+      "'": "&#39;"
+    })[char]);
+  }
+
+  function parseAxisSource(value) {
+    if (!value) return null;
+    if (typeof value === "string") {
+      try {
+        return JSON.parse(value);
+      } catch (_) {
+        return null;
+      }
+    }
+    return typeof value === "object" ? value : null;
+  }
+
+  function normalizeResultAxes(source) {
+    const data = parseAxisSource(source);
+    if (!data) return null;
+    const aliases = {
+      floral: ["floral", "floral_score", "フローラル"],
+      fresh: ["fresh", "fresh_score", "citrus", "citrus_score", "フレッシュ", "シトラス"],
+      woody: ["woody", "woody_score", "ウッディ"],
+      spicy: ["spicy", "spicy_score", "スパイシー"],
+      sweet: ["sweet", "sweet_score", "musk", "musk_score", "スウィート", "スイート", "ムスク"]
+    };
+    const axes = {};
+    let hasValue = false;
+    RESULT_AXIS_ORDER.forEach((axis) => {
+      const foundKey = aliases[axis].find((key) => data[key] !== undefined && data[key] !== null);
+      const value = foundKey ? Number(data[foundKey]) : NaN;
+      if (Number.isFinite(value)) {
+        axes[axis] = clamp(value);
+        hasValue = true;
+      } else {
+        axes[axis] = RESULT_DEFAULT_AXES[axis];
+      }
+    });
+    return hasValue ? axes : null;
+  }
+
+  function getProductAxes(row) {
+    const sources = [
+      row?.final_axes,
+      row?.adjusted_axes,
+      row?.axes,
+      row?.axis_scores,
+      row?.fragrance_axes,
+      row?.result_axes,
+      row?.axes_json,
+      row?.final_axes_json,
+      row?.questionnaire_result?.final_axes,
+      row?.questionnaire_result?.axes
+    ];
+    for (const source of sources) {
+      const axes = normalizeResultAxes(source);
+      if (axes) return axes;
+    }
+    return null;
+  }
+
+  function getCurrentResultAxes(state) {
+    return normalizeResultAxes(state?.adjustedAxes)
+      || normalizeResultAxes(state?.finalAxes)
+      || normalizeResultAxes(state?.resetAxes)
+      || normalizeResultAxes(state?.axesAfterStep2);
+  }
+
   function getConfig() {
     const cached = readJson(SCORING_CONFIG_KEY, null);
     const master = window.FragranceMasterData;
@@ -700,7 +774,7 @@
         writeJson(SCORE_STATE_KEY, { ...nextState, questionnaireResultId: result.id, questionnaireResultCode: result.result_code || questionnaireResultCode });
       }
       keepStep2Result = true;
-      window.location.href = "fragrance-graph.html";
+      window.location.href = await getPostQuestionnaireResultHref();
     }
 
     prevBtn?.addEventListener("click", () => {
@@ -720,9 +794,9 @@
       }
       await finish();
     });
-    $("questionnaire-sync-continue")?.addEventListener("click", () => {
+    $("questionnaire-sync-continue")?.addEventListener("click", async () => {
       keepStep2Result = true;
-      window.location.href = "fragrance-graph.html";
+      window.location.href = await getPostQuestionnaireResultHref();
     });
     $("questionnaire-sync-retry")?.addEventListener("click", finish);
     $("return-top-btn")?.addEventListener("click", () => { navigateAfterDiscardCheck("../index.html"); });
@@ -794,6 +868,18 @@
         return `<polygon points="${pts}"></polygon>`;
       }).join("");
     }
+  }
+
+  async function getPostQuestionnaireResultHref() {
+    try {
+      const data = await window.FragrancePublicData?.loadCustomerPortalData?.();
+      if (data?.customer && (data.products || []).some((row) => getProductAxes(row))) {
+        return "fragrance-compare.html";
+      }
+    } catch (error) {
+      console.error("Failed to decide questionnaire result page.", error);
+    }
+    return "fragrance-graph.html";
   }
 
   async function initGraph() {
@@ -977,6 +1063,193 @@
     });
   }
 
+  async function initCompare() {
+    const state = readJson(SCORE_STATE_KEY, {});
+    const currentAxes = getCurrentResultAxes(state);
+    const statusEl = $("compare-status");
+    const previousNameEl = $("compare-previous-name");
+    const previousMetaEl = $("compare-previous-meta");
+    const currentNameEl = $("compare-current-name");
+    const currentMetaEl = $("compare-current-meta");
+    const deltaListEl = $("compare-delta-list");
+    const commentEl = $("compare-comment");
+    const reserveLink = $("compare-reserve-link");
+    let previousProduct = null;
+    let previousAxes = null;
+
+    function setStatus(messages, tone = "") {
+      if (!statusEl) return;
+      const list = messages.filter(Boolean);
+      statusEl.hidden = list.length === 0;
+      statusEl.textContent = list.join(" ");
+      if (tone) statusEl.dataset.tone = tone;
+    }
+
+    function getProductName(row, fallback) {
+      return row?.product_name || row?.name || row?.title || fallback;
+    }
+
+    function formatDate(value) {
+      if (!value) return "";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return String(value).slice(0, 10);
+      return new Intl.DateTimeFormat("ja-JP", { year: "numeric", month: "2-digit", day: "2-digit" }).format(date);
+    }
+
+    function getProductDate(row) {
+      return formatDate(row?.updated_at || row?.created_at || row?.completed_at || row?.reservation_date);
+    }
+
+    function pointFor(value, index, radiusScale = 1) {
+      const center = 180;
+      const maxRadius = 120;
+      const angle = (-90 + index * 72) * Math.PI / 180;
+      const radius = maxRadius * radiusScale * (value / 100);
+      return [center + Math.cos(angle) * radius, center + Math.sin(angle) * radius];
+    }
+
+    function renderCompareRadar(prefix, axes) {
+      const shape = $(`${prefix}-shape`);
+      const dots = $(`${prefix}-dots`);
+      const labels = $(`${prefix}-labels`);
+      const lines = $(`${prefix}-lines`);
+      const grids = $(`${prefix}-grid`);
+      const values = RESULT_AXIS_ORDER.map((axis) => clamp(axes?.[axis] ?? 0));
+      if (shape) {
+        shape.setAttribute("points", axes ? values.map((value, index) => pointFor(value, index).join(",")).join(" ") : "");
+      }
+      if (dots) {
+        dots.innerHTML = axes ? values.map((value, index) => {
+          const [x, y] = pointFor(value, index);
+          return `<circle cx="${x}" cy="${y}" r="5"></circle>`;
+        }).join("") : "";
+      }
+      if (labels) {
+        labels.innerHTML = RESULT_AXIS_ORDER.map((axis, index) => {
+          const [x, y] = pointFor(100, index, 1.16);
+          return `<text x="${x}" y="${y}">${RESULT_AXIS_LABELS[axis]}</text>`;
+        }).join("");
+      }
+      if (lines) {
+        lines.innerHTML = RESULT_AXIS_ORDER.map((_, index) => {
+          const [x, y] = pointFor(100, index);
+          return `<line x1="180" y1="180" x2="${x}" y2="${y}"></line>`;
+        }).join("");
+      }
+      if (grids) {
+        grids.innerHTML = [0.25, 0.5, 0.75, 1].map((scale) => {
+          const points = RESULT_AXIS_ORDER.map((_, index) => {
+            const [x, y] = pointFor(100, index, scale);
+            return `${x},${y}`;
+          }).join(" ");
+          return `<polygon points="${points}"></polygon>`;
+        }).join("");
+      }
+    }
+
+    function renderAxisList(id, axes) {
+      const mount = $(id);
+      if (!mount) return;
+      if (!axes) {
+        mount.innerHTML = `<p class="compare-empty">表示できる5軸データがありません。</p>`;
+        return;
+      }
+      mount.innerHTML = RESULT_AXIS_ORDER.map((axis) => {
+        const meta = RESULT_AXIS_META[axis] || RESULT_AXIS_META.floral;
+        const value = clamp(axes[axis]);
+        return `
+          <div class="compare-axis-chip" style="--axis-color:${meta.color}; --axis-value:${value}%;">
+            <span aria-hidden="true">${meta.mark}</span>
+            <strong>${RESULT_AXIS_LABELS[axis]}</strong>
+            <em>${value}</em>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function buildCompareComment() {
+      if (!currentAxes && !previousAxes) return "今回のアンケート結果と前回の完成品がそろうと、香りの変化を比較できます。";
+      if (!currentAxes) return "今回のアンケート結果がまだありません。アンケート回答後に、前回の完成品との違いが表示されます。";
+      if (!previousAxes) return "前回の完成品データがまだありません。今回の香りは通常結果として確認できます。";
+      const deltas = RESULT_AXIS_ORDER
+        .map((axis) => ({ axis, delta: clamp(currentAxes[axis]) - clamp(previousAxes[axis]) }))
+        .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+      const primary = deltas[0];
+      const secondary = deltas[1];
+      if (!primary || Math.abs(primary.delta) < 8) {
+        return "前回の香りから大きく崩さず、全体のバランスを保った方向性です。細部の好みを調整しながら予約へ進めます。";
+      }
+      const primaryTone = primary.delta > 0 ? "強まり" : "控えめになり";
+      const secondaryTone = secondary?.delta > 0 ? "少し強まっています" : "少し落ち着いています";
+      return `前回より${RESULT_AXIS_LABELS[primary.axis]}が${primaryTone}、印象の軸が少し変わっています。${secondary ? `${RESULT_AXIS_LABELS[secondary.axis]}も${secondaryTone}。` : ""}今回の気分を反映した香りとして予約へ進めます。`;
+    }
+
+    function renderDeltas() {
+      if (!deltaListEl) return;
+      if (!previousAxes || !currentAxes) {
+        deltaListEl.innerHTML = `<p class="compare-empty">比較には、前回の完成品と今回のアンケート結果が必要です。</p>`;
+        return;
+      }
+      deltaListEl.innerHTML = RESULT_AXIS_ORDER.map((axis) => {
+        const previous = clamp(previousAxes[axis]);
+        const current = clamp(currentAxes[axis]);
+        const delta = current - previous;
+        const meta = RESULT_AXIS_META[axis] || RESULT_AXIS_META.floral;
+        const sign = delta > 0 ? "+" : "";
+        const tone = delta === 0 ? "is-even" : delta > 0 ? "is-positive" : "is-negative";
+        return `
+          <div class="compare-delta-row ${tone}" style="--axis-color:${meta.color}; --delta-width:${Math.min(50, Math.abs(delta) / 2)}%;">
+            <span class="compare-delta-label"><span aria-hidden="true">${meta.mark}</span>${RESULT_AXIS_LABELS[axis]}</span>
+            <span class="compare-delta-track" aria-hidden="true"><span></span></span>
+            <span class="compare-delta-score">${sign}${delta}</span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    try {
+      const data = await window.FragrancePublicData?.loadCustomerPortalData?.();
+      previousProduct = (data?.products || []).find((row) => getProductAxes(row)) || null;
+      previousAxes = getProductAxes(previousProduct);
+      const messages = [];
+      if (!data?.customer) messages.push("会員ログイン情報を確認できないため、前回の完成品は取得していません。");
+      if (data?.customer && !previousAxes) messages.push("比較できる前回完成品の5軸データがまだありません。");
+      if (!currentAxes) messages.push("今回のアンケート結果がありません。");
+      setStatus(messages, messages.length ? "notice" : "");
+    } catch (error) {
+      console.error("Failed to load fragrance comparison data.", error);
+      setStatus(["比較データを取得できませんでした。"], "error");
+    }
+
+    if (previousNameEl) previousNameEl.textContent = getProductName(previousProduct, "前回の完成品");
+    if (previousMetaEl) previousMetaEl.textContent = previousProduct ? (getProductDate(previousProduct) || "制作日未登録") : "会員ページの完成品データを表示します";
+    if (currentNameEl) currentNameEl.textContent = currentAxes ? "今回のアンケート結果" : "今回の結果は未作成";
+    if (currentMetaEl) currentMetaEl.textContent = state.questionnaireCompletedAt ? `回答日 ${formatDate(state.questionnaireCompletedAt)}` : "アンケート回答後に表示されます";
+    renderCompareRadar("compare-previous", previousAxes);
+    renderCompareRadar("compare-current", currentAxes);
+    renderAxisList("compare-previous-axes", previousAxes);
+    renderAxisList("compare-current-axes", currentAxes);
+    renderDeltas();
+    if (commentEl) commentEl.textContent = buildCompareComment();
+
+    if (reserveLink && !currentAxes) {
+      reserveLink.href = "questionnaire.html";
+      reserveLink.textContent = "アンケートへ進む";
+    }
+    reserveLink?.addEventListener("click", (event) => {
+      if (!currentAxes) return;
+      event.preventDefault();
+      const comment = buildCompareComment();
+      writeJson(SCORE_STATE_KEY, { ...readJson(SCORE_STATE_KEY, {}), adjustedAxes: currentAxes, finalAxes: currentAxes });
+      writeJson(DRAFT_KEY, {
+        axes: currentAxes,
+        summaryHeadline: "前回と比較した香りバランス",
+        summaryBody: comment
+      });
+      window.location.href = "reservation.html";
+    });
+  }
+
   async function initReservation() {
     const state = readJson(SCORE_STATE_KEY, {});
     const draft = readJson(DRAFT_KEY, {});
@@ -1106,6 +1379,7 @@
     if (page === "questionnaire") initQuestionnaireStep1();
     if (page === "questionnaire-step2") initQuestionnaireStep2();
     if (page === "graph") initGraph();
+    if (page === "fragrance-compare") initCompare();
     if (page === "reservation") initReservation();
     if (page === "reservation-complete") initComplete();
   }

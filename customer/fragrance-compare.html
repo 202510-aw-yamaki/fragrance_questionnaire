@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>会員比較モード | Fragrance Workshop</title>
+  <link rel="stylesheet" href="../css/rebuild-ui.css">
+  <link rel="stylesheet" href="../css/customer/customer-fragrance-compare.css">
+</head>
+<body data-page="fragrance-compare" class="fragrance-compare-page">
+  <header class="site-header">
+    <div class="site-header-inner site-container">
+      <a class="brand compare-brand" href="../index.html"><span class="brand-logo-mark"><img src="../img/costomer/吟ロゴ.png" alt=""></span><span>Fragrance Workshop</span></a>
+      <a class="compare-header-link" href="index.html">会員TOP</a>
+    </div>
+  </header>
+
+  <main class="compare-main">
+    <div class="compare-shell">
+      <section class="compare-title">
+        <h1>前回と今回の香り比較</h1>
+        <p>前回の完成品と今回のアンケート結果を並べて、香りの変化を確認できます。</p>
+      </section>
+
+      <p class="status-note compare-status" id="compare-status" hidden></p>
+
+      <section class="compare-layout" aria-label="香り比較">
+        <div class="compare-main-column">
+          <section class="compare-radar-card" aria-label="前回と今回の5軸比較">
+            <article class="compare-radar-panel">
+              <p class="compare-kicker">前回の完成品</p>
+              <h2 id="compare-previous-name">前回の完成品</h2>
+              <p id="compare-previous-meta">会員ページの完成品データを表示します</p>
+              <svg class="compare-radar" viewBox="0 0 360 360" role="img" aria-label="前回の香り5軸">
+                <g id="compare-previous-grid" fill="none" stroke="#e5c08f"></g>
+                <g id="compare-previous-lines" stroke="#e5c08f"></g>
+                <g id="compare-previous-labels" fill="#4a3325" font-size="15" text-anchor="middle"></g>
+                <polygon id="compare-previous-shape" fill="rgba(137,150,110,.18)" stroke="#89966e" stroke-width="3"></polygon>
+                <g id="compare-previous-dots" fill="#89966e"></g>
+              </svg>
+              <div class="compare-axis-list" id="compare-previous-axes"></div>
+            </article>
+
+            <article class="compare-radar-panel compare-radar-panel--current">
+              <p class="compare-kicker">今回の診断結果</p>
+              <h2 id="compare-current-name">今回のアンケート結果</h2>
+              <p id="compare-current-meta">アンケート回答後に表示されます</p>
+              <svg class="compare-radar" viewBox="0 0 360 360" role="img" aria-label="今回の香り5軸">
+                <g id="compare-current-grid" fill="none" stroke="#e5c08f"></g>
+                <g id="compare-current-lines" stroke="#e5c08f"></g>
+                <g id="compare-current-labels" fill="#4a3325" font-size="15" text-anchor="middle"></g>
+                <polygon id="compare-current-shape" fill="rgba(228,128,128,.23)" stroke="#e48188" stroke-width="3"></polygon>
+                <g id="compare-current-dots" fill="#e48188"></g>
+              </svg>
+              <div class="compare-axis-list" id="compare-current-axes"></div>
+            </article>
+          </section>
+
+          <section class="compare-delta-card" aria-label="5軸の変化">
+            <div class="compare-card-heading">
+              <h2>5つの軸の変化</h2>
+              <span class="compare-divider" aria-hidden="true"></span>
+            </div>
+            <div class="compare-delta-list" id="compare-delta-list"></div>
+          </section>
+        </div>
+
+        <aside class="compare-comment-card">
+          <div class="compare-card-heading">
+            <h2>比較コメント</h2>
+            <span class="compare-divider" aria-hidden="true"></span>
+          </div>
+          <p id="compare-comment">比較データを読み込んでいます。</p>
+          <a class="compare-result-link" href="fragrance-graph.html">通常結果ページを見る</a>
+        </aside>
+      </section>
+
+      <div class="compare-actions">
+        <a class="compare-primary-action" id="compare-reserve-link" href="reservation.html">この香りで予約する</a>
+        <a class="compare-secondary-action" href="index.html">会員TOPへ戻る</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/fragrance-master-data.js"></script>
+  <script src="../js/public-data.js"></script>
+  <script src="../js/rebuild-customer-flow.js"></script>
+</body>
+</html>
