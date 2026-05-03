@@ -15,6 +15,13 @@
   const missingNoteEl = document.getElementById("staff-missing-note");
   const qrRequestCountEl = document.getElementById("staff-qr-request-count");
   const qrRequestListEl = document.getElementById("staff-qr-request-list");
+  const notificationCountEl = document.getElementById("staff-notification-count");
+  const slotAlertEl = document.getElementById("staff-slot-alert");
+  const nextActionEl = document.getElementById("staff-next-action");
+  const nextActionTimeEl = document.getElementById("staff-next-action-time");
+  const nextActionNameEl = document.getElementById("staff-next-action-name");
+  const nextActionFragranceEl = document.getElementById("staff-next-action-fragrance");
+  const nextActionLinkEl = document.getElementById("staff-next-action-link");
 
   if (!timelineEl || !eventsEl || !dateLabelEl) return;
 
@@ -23,6 +30,8 @@
   let reservations = [];
   let slots = [];
   let qrNotifications = [];
+  let openQrCount = 0;
+  let missingSlotDateCount = 0;
 
   function createLocalDate(date) {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -93,6 +102,11 @@
     }[char]));
   }
 
+  function formatCustomerLabel(value, fallback = "お客様") {
+    const name = String(value || fallback).trim();
+    return name.endsWith("様") ? name : `${name}様`;
+  }
+
   function parsePayload(row) {
     const payload = row?.payload || {};
     if (typeof payload !== "string") return payload;
@@ -108,6 +122,17 @@
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return "期限未設定";
     return `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+  }
+
+  function formatTimeOnly(value) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "--:--";
+    return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+  }
+
+  function updateNotificationCount() {
+    if (!notificationCountEl) return;
+    notificationCountEl.textContent = String(openQrCount + (missingSlotDateCount > 0 ? 1 : 0));
   }
 
   function readAssignedStaffName() {
@@ -154,6 +179,11 @@
         if (status === "completed") color = "success";
         else if (status === "confirmed" || status === "recommended") color = "primary";
         else if (status === "canceled" || status === "closed") color = "danger";
+        const customerName = reservation ? formatCustomerLabel(reservation.customer_name) : "予約枠未予約";
+        const fragranceLabel = reservation?.summary_headline || (reservation ? "香り傾向未設定" : "予約受付可能");
+        const memoLabel = reservation
+          ? (reservation.staff_memo ? "事前メモあり" : "事前メモなし")
+          : "空き枠";
         return {
           slot,
           reservation,
@@ -161,7 +191,10 @@
           startMinutes,
           endMinutes,
           timeRange: formatTimeRange(startMinutes, endMinutes),
-          title: reservation?.summary_headline || "予約枠未予約",
+          title: customerName,
+          customerName,
+          fragranceLabel,
+          memoLabel,
           location: slot.slot_label || "接客枠",
           attendees: reservation?.guest_count || "空き"
         };
@@ -181,16 +214,41 @@
     return `
       <article class="day-event ${event.color}">
         <div class="day-event-time"><span>&#128337;</span><strong>${event.timeRange.split("-")[0]}</strong></div>
-        <h3 class="day-event-title">${event.title}</h3>
-        <div class="day-event-location"><span>&#128205;</span><span>${event.location}</span></div>
+        <h3 class="day-event-title"><span>&#128100;</span><strong>${escapeHtml(event.customerName)}</strong></h3>
+        <div class="day-event-location"><span>&#10048;</span><span>香り傾向：${escapeHtml(event.fragranceLabel)}</span></div>
         <div class="day-event-attendees">
-          <span>&#128101;</span>
-          <span>${event.attendees}</span>
-          ${createAvatarGroup(event.attendees)}
+          <span>&#128462;</span>
+          <span>${escapeHtml(event.memoLabel)}</span>
         </div>
         ${options.includeAction ? `<div class="admin-actions"><a class="admin-btn secondary" href="${actionHref}">${actionLabel}</a></div>` : ""}
       </article>
     `;
+  }
+
+  function renderNextAction(events) {
+    if (!nextActionEl) return;
+    const now = new Date();
+    const selectedKey = formatDateKey(selectedDate);
+    const todayKey = formatDateKey(now);
+    const currentMinutes = (now.getHours() * 60) + now.getMinutes();
+    const candidates = events
+      .filter((event) => event.reservation)
+      .filter((event) => selectedKey !== todayKey || event.startMinutes >= currentMinutes);
+    const nextEvent = candidates[0] || events.find((event) => event.reservation);
+    if (!nextEvent) {
+      nextActionEl.hidden = true;
+      return;
+    }
+    nextActionEl.hidden = false;
+    if (nextActionTimeEl) nextActionTimeEl.textContent = nextEvent.timeRange.split("-")[0];
+    if (nextActionNameEl) nextActionNameEl.textContent = nextEvent.customerName;
+    if (nextActionFragranceEl) nextActionFragranceEl.textContent = nextEvent.fragranceLabel;
+    if (nextActionLinkEl) {
+      nextActionLinkEl.href = window.AdminAuth.appendRoleToHref(
+        `staff-customer-detail.html?reservation=${encodeURIComponent(nextEvent.reservation.id)}`,
+        "staff"
+      );
+    }
   }
 
   function renderTimeline() {
@@ -213,9 +271,11 @@
 
     if (!events.length) {
       eventsEl.innerHTML = `<p class="admin-empty">この日の予約枠または予約はありません。</p>`;
+      renderNextAction([]);
       return;
     }
     eventsEl.innerHTML = events.map((event) => buildEventMarkup(event, { includeAction: true })).join("");
+    renderNextAction(events);
   }
 
   function renderMissingDates() {
@@ -239,54 +299,68 @@
     }).filter(Boolean);
 
     if (!missingPrimaryEl || !missingSecondaryEl) return;
+    missingSlotDateCount = missingDates.length;
+    updateNotificationCount();
     missingPrimaryEl.hidden = false;
     missingPrimaryEl.textContent = String(missingDates.length);
-    if (missingNoteEl) {
-      missingNoteEl.hidden = true;
-      missingNoteEl.textContent = "";
-    }
 
     if (!missingDates.length) {
-      missingSecondaryEl.innerHTML = `<span class="admin-chip">向こう二週間は作成済み</span>`;
+      if (slotAlertEl) slotAlertEl.hidden = true;
+      missingSecondaryEl.innerHTML = "";
+      if (missingNoteEl) {
+        missingNoteEl.hidden = true;
+        missingNoteEl.textContent = "";
+      }
       return;
     }
 
+    if (slotAlertEl) slotAlertEl.hidden = false;
     missingSecondaryEl.innerHTML = missingDates.map((label) => `<span class="admin-chip">${label}</span>`).join("");
+    if (missingNoteEl) {
+      missingNoteEl.hidden = false;
+      missingNoteEl.textContent = "向こう2週間のうち、担当日の予約枠が未作成の日があります。公開予約に出す前に枠を作成してください。";
+    }
   }
 
   function renderKpis() {
     const activeReservations = getAssignedReservations().filter((row) => row.status !== "canceled");
     const activeSlots = getAssignedSlots().filter((slot) => slot.is_active !== false);
     const todayKey = formatDateKey(new Date());
-    const limitDate = addDays(createLocalDate(new Date()), 6);
-    const limitKey = formatDateKey(limitDate);
 
     const reservationSlotMap = new Map(activeSlots.map((slot) => [slot.id, slot]));
     const todayReservations = activeReservations.filter((row) => reservationSlotMap.get(row.slot_id)?.slot_date === todayKey);
-    const weeklyReservations = activeReservations.filter((row) => {
-      const dateKey = reservationSlotMap.get(row.slot_id)?.slot_date || "";
-      return dateKey >= todayKey && dateKey <= limitKey;
-    });
-    const weeklySlots = activeSlots.filter((slot) => slot.slot_date >= todayKey && slot.slot_date <= limitKey);
+    const unconfirmedReservations = todayReservations.filter((row) => row.status === "confirmed" || row.status === "requested" || !row.status);
 
     kpiTodayEl.textContent = String(todayReservations.length);
-    kpiWeekEl.textContent = `${weeklyReservations.length}/${weeklySlots.length}`;
+    kpiWeekEl.textContent = String(unconfirmedReservations.length);
   }
 
   function renderQrNotifications() {
     if (!qrRequestCountEl || !qrRequestListEl) return;
     const openRows = qrNotifications.filter((row) => row.status === "open");
+    openQrCount = openRows.length;
+    updateNotificationCount();
     qrRequestCountEl.textContent = String(openRows.length);
     if (!openRows.length) {
-      qrRequestListEl.innerHTML = `<span class="admin-chip">未対応なし</span>`;
+      qrRequestListEl.innerHTML = `<p class="admin-empty">未対応の通知はありません。</p>`;
       return;
     }
     qrRequestListEl.innerHTML = openRows.slice(0, 3).map((row) => {
       const payload = parsePayload(row);
       const productName = payload.product_name || "QR商品";
       const totalVolume = payload.total_volume_ml ? `${payload.total_volume_ml}ml` : "容量未設定";
-      return `<span class="admin-chip">${escapeHtml(productName)} / ${escapeHtml(totalVolume)} / ${escapeHtml(formatDueDate(payload.availability_due_at))}</span>`;
-    }).join("") + `<a class="admin-chip" href="${window.AdminAuth.appendRoleToHref("staff-qr-requests.html", "staff")}">QR依頼一覧</a>`;
+      return `
+        <article class="staff-notification-row">
+          <span class="staff-notification-dot" aria-hidden="true"></span>
+          <div>
+            <strong>QR作成依頼が入りました</strong>
+            <small>${escapeHtml(productName)} / ${escapeHtml(totalVolume)} / ${escapeHtml(formatDueDate(payload.availability_due_at))}</small>
+          </div>
+          <time>${escapeHtml(formatTimeOnly(row.created_at))}</time>
+          <a href="${window.AdminAuth.appendRoleToHref("staff-qr-requests.html", "staff")}" aria-label="QR依頼一覧へ">›</a>
+        </article>
+      `;
+    }).join("") + `<a class="staff-notification-more" href="${window.AdminAuth.appendRoleToHref("staff-qr-requests.html", "staff")}">すべての通知を見る <span>›</span></a>`;
   }
 
   async function loadBaseData() {

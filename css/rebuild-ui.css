@@ -1182,6 +1182,20 @@ body.staff-page .admin-brand {
   line-height: 1;
 }
 
+.admin-brand-logo {
+  width: 42px;
+  height: 42px;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.admin-brand-logo img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
 body.staff-page .admin-header-actions--staff {
   display: flex;
   align-items: center;
@@ -1227,7 +1241,7 @@ body.staff-page .admin-logout--staff {
 body[data-page="staff-dashboard"] .staff-main {
   position: relative;
   overflow: hidden;
-  padding: 28px 0 38px;
+  padding: 0 0 38px;
 }
 
 body[data-page="staff-dashboard"] .staff-main::before {
@@ -1235,10 +1249,10 @@ body[data-page="staff-dashboard"] .staff-main::before {
   position: absolute;
   top: 0;
   right: max(-80px, calc((100vw - 1180px) / 2));
-  width: min(42vw, 520px);
-  height: 260px;
+  width: min(48vw, 640px);
+  height: 320px;
   background: url("../img/TOP/Final_Call_hope.png") center / cover no-repeat;
-  opacity: 0.2;
+  opacity: 0.24;
   pointer-events: none;
 }
 
@@ -1251,7 +1265,9 @@ body[data-page="staff-dashboard"] .dashboard-grid {
 
 .staff-dashboard-title {
   align-items: center;
-  margin-bottom: 18px;
+  min-height: 168px;
+  margin-bottom: 20px;
+  padding: 34px 0 18px;
 }
 
 .staff-dashboard-title .eyebrow {
@@ -1267,6 +1283,55 @@ body[data-page="staff-dashboard"] .dashboard-grid {
 
 .staff-dashboard-title .admin-note {
   margin: 10px 0 0;
+}
+
+.staff-dashboard-controls {
+  display: grid;
+  justify-items: end;
+  gap: 14px;
+}
+
+.staff-notification-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 48px;
+  border: 1px solid rgba(58, 104, 56, 0.5);
+  border-radius: 999px;
+  background: rgba(250, 255, 248, 0.92);
+  color: var(--green);
+  padding: 9px 20px;
+}
+
+.staff-notification-pill span,
+.staff-notification-pill svg {
+  width: 22px;
+  height: 22px;
+}
+
+.staff-notification-pill svg,
+.staff-kpi-icon svg,
+.staff-alert-icon svg,
+.staff-next-action-label svg {
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.staff-notification-pill p {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.staff-notification-pill strong {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1;
 }
 
 .staff-date-switcher {
@@ -1293,13 +1358,14 @@ body[data-page="staff-dashboard"] .dashboard-grid {
 
 body[data-page="staff-dashboard"] .kpi-grid {
   gap: 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 body[data-page="staff-dashboard"] .kpi-card {
-  min-height: 92px;
-  grid-template-columns: 54px 1fr;
-  gap: 14px;
-  padding: 18px 22px;
+  min-height: 118px;
+  grid-template-columns: 76px 1fr;
+  gap: 18px;
+  padding: 24px 24px;
   background: rgba(255, 253, 249, 0.94);
 }
 
@@ -1307,9 +1373,12 @@ body[data-page="staff-dashboard"] .kpi-card {
   display: grid;
   place-items: center;
   color: var(--gold);
-  font-family: var(--serif);
-  font-size: 31px;
-  line-height: 1;
+}
+
+.staff-kpi-icon svg {
+  width: 56px;
+  height: 56px;
+  stroke-width: 1.55;
 }
 
 body[data-page="staff-dashboard"] .kpi-card p {
@@ -1322,7 +1391,7 @@ body[data-page="staff-dashboard"] .kpi-card p {
 
 body[data-page="staff-dashboard"] .kpi-value {
   display: inline-block;
-  font-size: 40px;
+  font-size: 42px;
 }
 
 .kpi-unit {
@@ -1334,11 +1403,11 @@ body[data-page="staff-dashboard"] .kpi-value {
 body[data-page="staff-dashboard"] .dashboard-grid.section {
   padding: 16px 0 0;
   gap: 16px;
-  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.9fr);
+  grid-template-columns: minmax(0, 1.6fr) minmax(320px, 0.75fr);
 }
 
 .staff-list-panel {
-  padding: 20px 22px;
+  padding: 22px 24px;
 }
 
 .staff-list-panel h2 {
@@ -1354,13 +1423,13 @@ body[data-page="staff-dashboard"] .dashboard-grid.section {
 
 .day-event {
   display: grid;
-  grid-template-columns: 78px 1fr 1fr 54px 94px;
-  gap: 12px;
+  grid-template-columns: 92px 112px minmax(0, 1fr) 118px 104px;
+  gap: 10px;
   align-items: center;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: rgba(255, 253, 249, 0.96);
-  padding: 10px 12px;
+  padding: 11px 14px;
 }
 
 .day-event-time,
@@ -1375,13 +1444,39 @@ body[data-page="staff-dashboard"] .dashboard-grid.section {
 .day-event-time strong {
   color: var(--ink);
   font-family: var(--serif);
-  font-size: 23px;
+  font-size: 25px;
 }
 
 .day-event-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
   margin: 0;
   font-family: var(--sans);
   font-size: 16px;
+}
+
+.day-event-title strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.day-event-location,
+.day-event-attendees {
+  min-width: 0;
+}
+
+.day-event-location span:last-child,
+.day-event-attendees span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .day-event .admin-actions {
@@ -1390,7 +1485,7 @@ body[data-page="staff-dashboard"] .dashboard-grid.section {
 
 .day-event .admin-btn {
   min-height: 34px;
-  padding: 7px 12px;
+  padding: 7px 10px;
   box-shadow: none;
   white-space: nowrap;
 }
@@ -1408,6 +1503,217 @@ body[data-page="staff-dashboard"] #staff-missing-secondary .admin-chip {
   border-radius: 0;
   background: transparent;
   padding: 12px 0;
+}
+
+.staff-slot-alert {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(260px, 0.9fr) minmax(0, 1.4fr) minmax(240px, 0.8fr) auto;
+  gap: 18px;
+  align-items: center;
+  margin-top: 16px;
+  padding: 18px 22px;
+  border-color: rgba(211, 139, 44, 0.45);
+  background: rgba(255, 247, 236, 0.96);
+}
+
+.staff-slot-alert[hidden] {
+  display: none;
+}
+
+.staff-slot-alert-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.staff-alert-icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: rgba(255, 253, 249, 0.9);
+  color: var(--gold-dark);
+}
+
+.staff-alert-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.staff-slot-alert-head p {
+  margin: 0 0 4px;
+  color: var(--gold-dark);
+  font-weight: 800;
+}
+
+.staff-slot-alert-head strong {
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 20px;
+}
+
+.staff-missing-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+body[data-page="staff-dashboard"] #staff-missing-secondary.staff-missing-chip-list .admin-chip {
+  width: auto;
+  border: 1px solid rgba(211, 139, 44, 0.3);
+  border-radius: 999px;
+  background: rgba(255, 253, 249, 0.92);
+  padding: 7px 11px;
+}
+
+.staff-slot-alert .admin-note {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  line-height: 1.6;
+}
+
+.staff-slot-alert-action {
+  white-space: nowrap;
+}
+
+.staff-notification-panel .portal-list-body {
+  display: grid;
+  gap: 0;
+}
+
+.staff-notification-row {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr) 52px 20px;
+  gap: 14px;
+  align-items: center;
+  padding: 17px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.staff-notification-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--green);
+}
+
+.staff-notification-row strong {
+  display: block;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.staff-notification-row small {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.staff-notification-row time {
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 15px;
+}
+
+.staff-notification-row a,
+.staff-notification-more span {
+  color: var(--gold-dark);
+  font-size: 24px;
+  line-height: 1;
+}
+
+.staff-notification-more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 12px;
+  color: var(--green);
+  font-weight: 700;
+}
+
+.staff-next-action {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: center;
+  margin-top: 16px;
+  padding: 22px 28px;
+  background:
+    linear-gradient(90deg, rgba(255, 253, 249, 0.98), rgba(255, 253, 249, 0.86)),
+    url("../img/TOP/Final_Call_hope.png") right center / 360px auto no-repeat;
+}
+
+.staff-next-action[hidden] {
+  display: none;
+}
+
+.staff-next-action-label {
+  display: grid;
+  grid-template-columns: 62px 1fr;
+  gap: 16px;
+  align-items: center;
+  padding-right: 22px;
+  border-right: 1px solid var(--line-strong);
+}
+
+.staff-next-action-label span {
+  width: 62px;
+  height: 62px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #f6f0e5;
+  color: var(--green);
+}
+
+.staff-next-action-label svg {
+  width: 31px;
+  height: 31px;
+}
+
+.staff-next-action-label p {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.staff-next-action-label small {
+  color: var(--muted);
+}
+
+.staff-next-action-body {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  min-width: 0;
+  color: var(--green);
+}
+
+.staff-next-action-body strong {
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 40px;
+  line-height: 1;
+}
+
+.staff-next-action-body span {
+  min-width: 0;
+  font-family: var(--serif);
+  font-size: 27px;
+  white-space: nowrap;
 }
 
 body[data-page="staff-reservations"] .staff-main {
@@ -1592,6 +1898,17 @@ body[data-page="staff-reservations"] .staff-main::before {
 @media (max-width: 1120px) {
   .staff-reservation-layout.section {
     grid-template-columns: 1fr;
+  }
+
+  .staff-slot-alert,
+  .staff-next-action {
+    grid-template-columns: 1fr;
+  }
+
+  .staff-next-action-label {
+    border-right: 0;
+    border-bottom: 1px solid var(--line-strong);
+    padding: 0 0 18px;
   }
 }
 
@@ -1967,6 +2284,17 @@ details.card .admin-note {
     grid-template-columns: 1fr;
   }
 
+  .staff-dashboard-title {
+    align-items: flex-start;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .staff-dashboard-controls {
+    justify-items: start;
+    width: 100%;
+  }
+
   .staff-reservation-filter-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2056,6 +2384,12 @@ details.card .admin-note {
     height: 34px;
   }
 
+  .admin-brand-logo,
+  .admin-brand-logo img {
+    width: 34px;
+    height: 34px;
+  }
+
   .home-hero-actions {
     grid-template-columns: 1fr;
   }
@@ -2134,10 +2468,26 @@ details.card .admin-note {
     grid-template-columns: 1fr;
   }
 
+  .staff-notification-pill,
+  .staff-slot-alert-action {
+    width: 100%;
+    justify-content: center;
+  }
+
   .staff-date-switcher {
     align-items: stretch;
     flex-direction: column;
     border-radius: var(--radius);
+  }
+
+  .staff-next-action-body {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .staff-next-action-body span {
+    white-space: normal;
   }
 
   .staff-reservation-filter-grid,

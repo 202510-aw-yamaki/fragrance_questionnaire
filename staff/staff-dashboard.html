@@ -15,21 +15,69 @@
         <h1 id="staff-dashboard-heading">本日のワークショップ</h1>
         <p class="admin-note" id="staff-dashboard-note"></p>
       </div>
-      <div class="staff-date-switcher">
-        <button class="admin-btn secondary" id="staff-day-prev" type="button">前日</button>
-        <strong id="staff-day-current-label">-</strong>
-        <button class="admin-btn secondary" id="staff-day-next" type="button">翌日</button>
+      <div class="staff-dashboard-controls">
+        <div class="staff-notification-pill" aria-label="通知件数">
+          <span aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 7h18s-3 0-3-7"></path><path d="M10 21h4"></path></svg>
+          </span>
+          <p>通知</p>
+          <strong id="staff-notification-count">0</strong>
+        </div>
+        <div class="staff-date-switcher">
+          <button class="admin-btn secondary" id="staff-day-prev" type="button">前日</button>
+          <strong id="staff-day-current-label">-</strong>
+          <button class="admin-btn secondary" id="staff-day-next" type="button">翌日</button>
+        </div>
       </div>
     </section>
     <section class="kpi-grid">
-      <article class="admin-panel kpi-card"><span class="staff-kpi-icon" aria-hidden="true">日</span><div><p>本日の予約</p><strong class="kpi-value" id="staff-kpi-today">0</strong><span class="kpi-unit">件</span></div></article>
-      <article class="admin-panel kpi-card"><span class="staff-kpi-icon" aria-hidden="true">週</span><div><p>今週の予約</p><strong class="kpi-value" id="staff-kpi-week">0</strong><span class="kpi-unit">件</span></div></article>
-      <article class="admin-panel kpi-card"><span class="staff-kpi-icon" aria-hidden="true">枠</span><div><p>未作成枠</p><strong class="kpi-value" id="staff-missing-primary">0</strong><span class="kpi-unit">件</span></div></article>
-      <article class="admin-panel kpi-card"><span class="staff-kpi-icon" aria-hidden="true">QR</span><div><p>QR作成依頼</p><strong class="kpi-value" id="staff-qr-request-count">0</strong><span class="kpi-unit">件</span></div></article>
+      <article class="admin-panel kpi-card">
+        <span class="staff-kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M8 3v4M16 3v4M4 10h16M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01M16 17h.01"></path></svg></span>
+        <div><p>本日の予約</p><strong class="kpi-value" id="staff-kpi-today">0</strong><span class="kpi-unit">件</span></div>
+      </article>
+      <article class="admin-panel kpi-card">
+        <span class="staff-kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="8" r="4"></circle><path d="M5 21a7 7 0 0 1 14 0"></path></svg></span>
+        <div><p>未確認予約</p><strong class="kpi-value" id="staff-kpi-week">0</strong><span class="kpi-unit">件</span></div>
+      </article>
+      <article class="admin-panel kpi-card">
+        <span class="staff-kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><rect x="4" y="4" width="5" height="5" rx="1"></rect><rect x="15" y="4" width="5" height="5" rx="1"></rect><rect x="4" y="15" width="5" height="5" rx="1"></rect><path d="M14 14h6v6h-6zM12 7h1M7 12v1M12 17h1M17 12v1"></path></svg></span>
+        <div><p>QR作成依頼</p><strong class="kpi-value" id="staff-qr-request-count">0</strong><span class="kpi-unit">件</span></div>
+      </article>
+      <article class="admin-panel kpi-card">
+        <span class="staff-kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 9v4"></path><path d="M12 17h.01"></path><path d="M10.3 3.8 2.8 18a2 2 0 0 0 1.8 3h14.8a2 2 0 0 0 1.8-3L13.7 3.8a2 2 0 0 0-3.4 0Z"></path></svg></span>
+        <div><p>予約枠未作成</p><strong class="kpi-value" id="staff-missing-primary">0</strong><span class="kpi-unit">件</span></div>
+      </article>
+    </section>
+    <section class="admin-panel staff-slot-alert" id="staff-slot-alert" hidden>
+      <div class="staff-slot-alert-head">
+        <span class="staff-alert-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 9v4"></path><path d="M12 17h.01"></path><path d="M10.3 3.8 2.8 18a2 2 0 0 0 1.8 3h14.8a2 2 0 0 0 1.8-3L13.7 3.8a2 2 0 0 0-3.4 0Z"></path></svg></span>
+        <div>
+          <p>予約枠作成アラート</p>
+          <strong>予約枠が未作成の日があります</strong>
+        </div>
+      </div>
+      <div class="staff-missing-chip-list" id="staff-missing-secondary"></div>
+      <p class="admin-note" id="staff-missing-note"></p>
+      <a class="admin-btn primary staff-slot-alert-action" href="staff-slots.html?role=staff">予約枠を作成する</a>
     </section>
     <section class="dashboard-grid section">
       <article class="admin-panel staff-list-panel"><h2>本日の予約リスト</h2><div id="staff-day-timeline"></div><div id="staff-day-events" class="portal-list-body"></div></article>
-      <article class="admin-panel staff-list-panel"><h2>通知</h2><div id="staff-qr-request-list" class="portal-list-body"></div><p class="admin-note" id="staff-missing-secondary"></p><p class="admin-note" id="staff-missing-note"></p></article>
+      <article class="admin-panel staff-list-panel staff-notification-panel"><h2>通知</h2><div id="staff-qr-request-list" class="portal-list-body"></div></article>
+    </section>
+    <section class="admin-panel staff-next-action" id="staff-next-action" hidden>
+      <div class="staff-next-action-label">
+        <span aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M8 3h8v4H8z"></path><path d="M6 7h12v14H6z"></path><path d="m9 14 2 2 4-5"></path></svg></span>
+        <div>
+          <p>次の対応</p>
+          <small id="staff-next-action-note">事前準備を確認してください</small>
+        </div>
+      </div>
+      <div class="staff-next-action-body">
+        <strong id="staff-next-action-time">-</strong>
+        <span id="staff-next-action-name">-</span>
+        <span id="staff-next-action-fragrance">-</span>
+      </div>
+      <a class="admin-btn secondary" id="staff-next-action-link" href="staff-reservations.html?role=staff">詳細を見る</a>
     </section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

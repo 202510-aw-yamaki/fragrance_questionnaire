@@ -237,7 +237,7 @@
     mount.innerHTML = `
       <div class="admin-header-inner site-container ${role === "staff" ? "admin-header-inner--staff" : "admin-header-inner--manager"}">
         <a class="admin-brand" href="${brandHref}">
-          ${role === "staff" ? `<span class="admin-brand-mark" aria-hidden="true">\u2725</span>` : ""}
+          ${role === "staff" ? `<span class="admin-brand-logo" aria-hidden="true"><img src="${ROOT_PREFIX}img/TOP/吟ロゴ.png" alt=""></span>` : ""}
           <span>${brandName}</span>
           ${roleLabel ? `<small class="admin-brand-meta">${roleLabel}</small>` : ""}
         </a>
