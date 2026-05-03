@@ -23,8 +23,8 @@
   const STEP2_TRIVIA_IMAGES = {
     Q7: {
       floral: "Trivia_Q7_floral.png",
-      fresh: "Trivia_Q7_flesh.png",
-      woody: "Trivia_Q7_woddy.png"
+      fresh: "Trivia_Q7_fresh.png",
+      woody: "Trivia_Q7_woody.png"
     }
   };
 
