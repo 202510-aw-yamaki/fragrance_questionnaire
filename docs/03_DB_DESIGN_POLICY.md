@@ -147,3 +147,14 @@ QR商品ページのアクセス記録は `record_qr_product_access()` を入口
 - 返却するのは会員情報、予約履歴、制作履歴の表示に必要な限定項目のみとする
 - QR第三者、スタッフ、管理者は会員ページの履歴取得対象にしない
 - 過去完成品との差分計算や再予約生成は、このRPCとは分けて後続フェーズで扱う
+
+## 2026-05-03 reservation contact fields note
+
+来店予約ページで名前とメールアドレスを入力する要望に合わせ、`reservations` に予約連絡用のnullable列を追加する。
+
+- `customer_name`: 来店予約時に入力された識別名。ニックネームも許容する
+- `customer_email`: 来店予約時に入力された連絡先メールアドレス
+- 会員ログイン中の予約では、従来通り `customer_id` は `current_customer_profile_id()` で本人に紐づける
+- 初見客や未ログイン予約では `customer_id` は null のまま、予約連絡用情報として `reservations` 側に保持する
+- 香りバランス等は予約ページ上では表示しないが、`questionnaire_result_id` と `axes` は予約payloadで維持する
+- `create_public_reservation()` と `fetch_reservation_by_code()` は `customer_name` / `customer_email` を扱う

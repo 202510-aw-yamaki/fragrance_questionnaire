@@ -692,3 +692,35 @@
   - `node --check js/rebuild-customer-flow.js`
   - `git diff --check`
   - Playwright screenshot 820x1180 / modal
+
+### 2026-05-03 来店予約ページのカレンダー化と連絡先保存
+- 対象:
+  - `customer/reservation.html`
+  - `customer/reservation-complete.html`
+  - `css/customer/customer-reservation.css`
+  - `js/rebuild-customer-flow.js`
+  - `js/public-data.js`
+  - `js/staff-customer-detail-page.js`
+  - `supabase/schema.sql`
+  - `supabase/migrations/20260503090000_reservation_contact_fields.sql`
+  - `docs/03_DB_DESIGN_POLICY.md`
+  - `docs/01_CURRENT_STATE.md`
+  - `docs/UI_REBUILD_PLAN.md`
+- 背景:
+  - ユーザー要望で、見本画像 `レイアウトimg/09. customer reservation.html 来店予約ページ.png` に寄せ、左側カレンダーから予約枠作成済みの日付を選び、その日の時間を選べるようにする指示があった。
+  - 予約ページでは香りバランス等を表示しないが、予約確定時に必要な内部データは保持する方針。
+  - 名前とメールアドレス入力欄を設け、名前欄にはニックネーム可が伝わるプレースホルダーを入れる指示があった。
+- 実装:
+  - ヘッダーは吟ロゴ画像と `Fragrance Workshop` のブランド表示にし、右側メニューは置かない構成へ変更。
+  - `reservation_slots` を日付ごとに集約し、カレンダー上では予約枠がある日だけ選択可能にした。
+  - 日付選択後、`slot-list` にはその日の時間枠だけを表示し、選択中日時と担当スタッフ表示を更新するようにした。
+  - `summary-headline`、`summary-body`、`axis-list` は既存契約としてDOMに残しつつ非表示にし、payloadの `axes`、`questionnaire_result_id`、`summary_*` は維持。
+  - `customer_name`、`customer_email` を予約payloadに追加し、`reservations` のnullable列として保存できるようにした。
+  - 予約完了ページとスタッフ詳細ページで、保存済みの名前・メールを参照できるようにした。
+- 確認:
+  - `node --check js/rebuild-customer-flow.js`
+  - `node --check js/public-data.js`
+  - `node --check js/staff-customer-detail-page.js`
+  - `git diff --check`
+  - Playwrightで `customer/reservation.html?source=direct` のデスクトップ/モバイル表示、香り軸非表示、入力欄プレースホルダーを確認。
+  - Playwrightのモック予約枠で、5月12日の 11:00 / 13:00 表示、13:00 選択、選択中日時・担当スタッフ更新を確認。

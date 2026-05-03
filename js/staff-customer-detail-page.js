@@ -270,7 +270,7 @@
     if (!profileEl) return;
     customerDraft = readCustomerDraft();
     const name = customerDraft?.name || reservation?.customer_name || "未入力";
-    const email = customerDraft?.email || "未入力";
+    const email = customerDraft?.email || reservation?.customer_email || "未入力";
     const phone = customerDraft?.phone || "任意";
     const consent = customerDraft?.consent ? "同意済み" : "未取得";
     const productName = fragranceProduct?.product_name || getProductName() || "未登録";
@@ -924,7 +924,7 @@
     customerEditOpenEl?.addEventListener("click", () => {
       customerDraft = readCustomerDraft() || {};
       customerNameEl.value = customerDraft.name || reservation?.customer_name || "";
-      customerEmailEl.value = customerDraft.email || "";
+      customerEmailEl.value = customerDraft.email || reservation?.customer_email || "";
       customerPhoneEl.value = customerDraft.phone || "";
       customerConsentEl.checked = Boolean(customerDraft.consent);
       customerModalEl.hidden = false;

@@ -47,6 +47,8 @@ create table if not exists public.reservations (
   questionnaire_sync_error text,
   slot_id uuid references public.reservation_slots(id) on delete set null,
   slot_label text,
+  customer_name text,
+  customer_email text,
   visit_type text,
   guest_count text,
   staff_memo text,
@@ -167,6 +169,12 @@ add column if not exists staff_profile_id uuid references public.staff_profiles(
 
 alter table public.reservations
 add column if not exists customer_id uuid references public.customers(id) on delete set null;
+
+alter table public.reservations
+add column if not exists customer_name text;
+
+alter table public.reservations
+add column if not exists customer_email text;
 
 alter table public.workshop_sessions
 add column if not exists staff_profile_id uuid references public.staff_profiles(id) on delete set null;
@@ -551,6 +559,8 @@ begin
     questionnaire_sync_error,
     slot_id,
     slot_label,
+    customer_name,
+    customer_email,
     visit_type,
     guest_count,
     staff_memo,
@@ -569,6 +579,8 @@ begin
     p_payload ->> 'questionnaire_sync_error',
     nullif(p_payload ->> 'slot_id', '')::uuid,
     p_payload ->> 'slot_label',
+    nullif(p_payload ->> 'customer_name', ''),
+    nullif(p_payload ->> 'customer_email', ''),
     p_payload ->> 'visit_type',
     p_payload ->> 'guest_count',
     p_payload ->> 'staff_memo',
@@ -587,6 +599,8 @@ create or replace function public.fetch_reservation_by_code(p_reservation_code t
 returns table(
   id uuid,
   reservation_code text,
+  customer_name text,
+  customer_email text,
   slot_label text,
   visit_type text,
   guest_count text,
@@ -606,6 +620,8 @@ as $$
   select
     r.id,
     r.reservation_code,
+    r.customer_name,
+    r.customer_email,
     r.slot_label,
     r.visit_type,
     r.guest_count,
@@ -1439,6 +1455,8 @@ grant insert (
   questionnaire_sync_error,
   slot_id,
   slot_label,
+  customer_name,
+  customer_email,
   visit_type,
   guest_count,
   staff_memo,

@@ -168,3 +168,13 @@
 - 公開導線: `scoring_configs`、`material_points`、`questionnaire_results`、`reservation_slots`、`reservations`、`customers`、`admin_settings`、`product_qr_codes`、`fragrance_products`、`qr_product_requests`。
 - 管理/スタッフ導線: `reservations`、`reservation_slots`、`scoring_configs`、`material_points`、`admin_settings`、`notification_events`、`email_events`、`staff_profiles`、`workshop_sessions`、`fragrance_products`、`product_qr_codes`、`qr_product_requests`。
 - RPC: `create_questionnaire_result`、`update_questionnaire_result_by_token`、`create_public_reservation`、`fetch_reservation_by_code`、`fetch_customer_portal_summary`、`record_qr_product_access`。
+
+## 2026-05-03 予約ページ契約追記
+
+ユーザー要望により、`customer/reservation.html` は参照画像の左側カレンダー構成に寄せ、予約枠作成済みの日付と時間を選ぶ画面へ更新した。
+
+- 追加DOM契約: `calendar-prev`、`calendar-next`、`calendar-month-label`、`calendar-days`、`selected-date-label`、`selected-staff`、`customer-name`、`customer-email`、`reservation-form-status`
+- 維持DOM契約: `summary-headline`、`summary-body`、`axis-list`、`slot-list`、`selected-status`、`visit-type`、`guest-count`、`staff-memo`、`confirm-btn`、`slot-modal` 系
+- `summary-headline`、`summary-body`、`axis-list` は既存JS契約と内部データ維持のためDOMに残すが、予約ページ上では香りバランス等を表示しない
+- 予約保存payloadは `questionnaire_result_id`、`axes`、`summary_*` を維持し、`customer_name`、`customer_email` を追加する
+- 追加CSS: `css/customer/customer-reservation.css`

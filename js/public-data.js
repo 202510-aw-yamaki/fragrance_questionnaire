@@ -261,7 +261,7 @@
   }
 
   function omitReservationOptionalColumns(payload) {
-    const { questionnaire_flow_status, questionnaire_sync_error, customer_id, ...basePayload } = payload;
+    const { questionnaire_flow_status, questionnaire_sync_error, customer_id, customer_name, customer_email, ...basePayload } = payload;
     return basePayload;
   }
 

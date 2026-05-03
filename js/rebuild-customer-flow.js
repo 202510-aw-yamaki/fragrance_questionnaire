@@ -1313,58 +1313,225 @@
     const state = readJson(SCORE_STATE_KEY, {});
     const draft = readJson(DRAFT_KEY, {});
     const axes = { ...DEFAULT_AXES, ...(draft.axes || state.adjustedAxes || state.finalAxes || {}) };
-    const slots = await window.FragrancePublicData?.fetchPublicReservationSlots?.() || [];
+    const slots = (await window.FragrancePublicData?.fetchPublicReservationSlots?.() || [])
+      .filter((slot) => slot?.slot_date)
+      .sort((left, right) => {
+        const leftKey = `${left.slot_date || ""} ${left.slot_time || ""} ${left.sort_order || 0}`;
+        const rightKey = `${right.slot_date || ""} ${right.slot_time || ""} ${right.sort_order || 0}`;
+        return leftKey.localeCompare(rightKey);
+      });
     const slotList = $("slot-list");
+    const calendarDays = $("calendar-days");
+    const calendarMonthLabel = $("calendar-month-label");
+    const selectedDateLabel = $("selected-date-label");
     const selectedStatus = $("selected-status");
+    const selectedStaff = $("selected-staff");
+    const formStatus = $("reservation-form-status");
+    const nameInput = $("customer-name");
+    const emailInput = $("customer-email");
+    const confirmButton = $("confirm-btn");
+    const contactDraftKey = "fragranceReservationContactDraft";
+    const contactDraft = readJson(contactDraftKey, {});
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     let selectedSlot = slots[0] || null;
+    let selectedDateKey = selectedSlot?.slot_date || formatDateKey(today);
+    let currentMonthDate = parseDateKey(selectedDateKey) || new Date(today);
+
+    if (nameInput && contactDraft.customer_name) nameInput.value = contactDraft.customer_name;
+    if (emailInput && contactDraft.customer_email) emailInput.value = contactDraft.customer_email;
     if ($("summary-headline")) $("summary-headline").textContent = draft.summaryHeadline || "香りの準備ができました";
     if ($("summary-body")) $("summary-body").textContent = draft.summaryBody || "日時を選んでワークショップを予約してください。";
     if ($("axis-list")) {
       $("axis-list").innerHTML = AXES.map((axis) => `<span class="pill">${AXIS_LABELS[axis]} ${axes[axis]}</span>`).join("");
     }
+
+    function formatDateKey(date) {
+      return [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, "0"),
+        String(date.getDate()).padStart(2, "0")
+      ].join("-");
+    }
+
+    function parseDateKey(key) {
+      const match = String(key || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (!match) return null;
+      return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+    }
+
+    function formatMonth(date) {
+      return `${date.getFullYear()}年 ${date.getMonth() + 1}月`;
+    }
+
+    function formatDayLabel(key) {
+      const date = parseDateKey(key);
+      if (!date) return "日にちを選択";
+      const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
+      return `${date.getMonth() + 1}月${date.getDate()}日（${weekdays[date.getDay()]}）`;
+    }
+
+    function formatSlotTime(slot) {
+      return String(slot?.slot_time || "").slice(0, 5) || slot?.slot_label || "時間未定";
+    }
+
+    function getSlotsByDate(key) {
+      return slots.filter((slot) => slot.slot_date === key);
+    }
+
+    function setFormStatus(message) {
+      if (formStatus) formStatus.textContent = message || "";
+    }
+
+    function renderSelection() {
+      const dateText = formatDayLabel(selectedDateKey);
+      const timeText = selectedSlot ? formatSlotTime(selectedSlot) : "";
+      if (selectedDateLabel) selectedDateLabel.textContent = dateText;
+      if (selectedStatus) {
+        selectedStatus.textContent = selectedSlot
+          ? `${dateText} ${timeText}`
+          : (slots.length ? `${dateText}の時間を選択してください。` : "予約枠が設定されていません。");
+      }
+      if (selectedStaff) selectedStaff.textContent = selectedSlot?.instructor_name || "未定";
+    }
+
+    function renderCalendar() {
+      if (!calendarDays || !calendarMonthLabel) return;
+      const year = currentMonthDate.getFullYear();
+      const month = currentMonthDate.getMonth();
+      const firstDate = new Date(year, month, 1);
+      const start = new Date(year, month, 1 - firstDate.getDay());
+      calendarMonthLabel.textContent = formatMonth(currentMonthDate);
+      calendarDays.innerHTML = Array.from({ length: 42 }, (_, index) => {
+        const date = new Date(start);
+        date.setDate(start.getDate() + index);
+        const key = formatDateKey(date);
+        const dateSlots = getSlotsByDate(key);
+        const classes = [
+          "reservation-day",
+          date.getMonth() !== month ? "is-other-month" : "",
+          date.getDay() === 0 ? "is-sunday" : "",
+          key === formatDateKey(today) ? "is-today" : "",
+          key === selectedDateKey ? "is-selected" : "",
+          dateSlots.length ? "is-available" : ""
+        ].filter(Boolean).join(" ");
+        const disabled = !dateSlots.length ? " disabled" : "";
+        const pressed = key === selectedDateKey ? "true" : "false";
+        return `<button class="${classes}" type="button" data-date-key="${key}" aria-pressed="${pressed}"${disabled}>${date.getDate()}</button>`;
+      }).join("");
+      calendarDays.querySelectorAll("[data-date-key]:not(:disabled)").forEach((button) => {
+        button.addEventListener("click", () => {
+          selectedDateKey = button.dataset.dateKey;
+          selectedSlot = getSlotsByDate(selectedDateKey)[0] || null;
+          setFormStatus("");
+          renderCalendar();
+          renderSlots();
+        });
+      });
+    }
+
     function renderSlots() {
       if (!slotList) return;
-      const source = slots.length ? slots : [
-        { id: "", slot_label: "店頭確認", slot_date: "", slot_time: "", instructor_name: "", status: "open" }
-      ];
+      const source = getSlotsByDate(selectedDateKey);
+      if (!source.length) {
+        selectedSlot = null;
+        slotList.innerHTML = `<p class="reservation-empty-slots">${slots.length ? "この日の予約枠はありません。" : "現在選択できる予約枠がありません。"}</p>`;
+        renderSelection();
+        return;
+      }
+      if (!selectedSlot || !source.some((slot) => slot.id ? slot.id === selectedSlot.id : slot === selectedSlot)) {
+        selectedSlot = source[0] || null;
+      }
       slotList.innerHTML = source.map((slot, index) => {
-        const label = [slot.slot_date, String(slot.slot_time || "").slice(0, 5), slot.slot_label].filter(Boolean).join(" ");
-        return `<button class="time-slot ${selectedSlot === slot || (!selectedSlot && index === 0) ? "selected" : ""}" type="button" data-slot-index="${index}">${label || "店頭で日時相談"}</button>`;
+        const isSelected = selectedSlot === slot || (slot.id && selectedSlot?.id === slot.id);
+        return `<button class="time-slot ${isSelected ? "selected" : ""}" type="button" data-slot-index="${index}" aria-pressed="${isSelected ? "true" : "false"}">${escapeHtml(formatSlotTime(slot))}</button>`;
       }).join("");
       slotList.querySelectorAll("[data-slot-index]").forEach((button) => {
         button.addEventListener("click", () => {
           selectedSlot = source[Number(button.dataset.slotIndex)] || null;
-          if (selectedStatus) selectedStatus.textContent = button.textContent;
+          setFormStatus("");
           renderSlots();
         });
       });
-      if (selectedStatus) selectedStatus.textContent = selectedSlot ? [selectedSlot.slot_date, String(selectedSlot.slot_time || "").slice(0, 5)].filter(Boolean).join(" ") : "店頭で日時相談";
+      renderSelection();
     }
+
+    function updateContactDraft() {
+      writeJson(contactDraftKey, {
+        customer_name: nameInput?.value?.trim() || "",
+        customer_email: emailInput?.value?.trim() || ""
+      });
+    }
+
+    function isValidEmail(value) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || "").trim());
+    }
+
+    $("calendar-prev")?.addEventListener("click", () => {
+      currentMonthDate = new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth() - 1, 1);
+      renderCalendar();
+    });
+    $("calendar-next")?.addEventListener("click", () => {
+      currentMonthDate = new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth() + 1, 1);
+      renderCalendar();
+    });
+    nameInput?.addEventListener("input", updateContactDraft);
+    emailInput?.addEventListener("input", updateContactDraft);
+    renderCalendar();
     renderSlots();
     $("slot-close")?.addEventListener("click", () => $("slot-modal")?.setAttribute("hidden", ""));
-    $("confirm-btn")?.addEventListener("click", async () => {
-      const synced = await window.FragrancePublicData?.syncQuestionnaireResultFromState?.(state);
-      const payload = {
-        questionnaire_result_id: synced?.id || state.questionnaireResultId || null,
-        questionnaire_flow_status: synced?.id ? "linked" : (state.questionnaireCompletedAt ? "answered_unsaved" : "skipped"),
-        questionnaire_sync_error: synced?.id ? null : (state.questionnaireCompletedAt ? "questionnaire_result_insert_failed" : null),
-        slot_id: selectedSlot?.id || null,
-        slot_label: selectedSlot ? [selectedSlot.slot_date, String(selectedSlot.slot_time || "").slice(0, 5)].filter(Boolean).join(" ") : "店頭で日時相談",
-        visit_type: $("visit-type")?.value || "first",
-        guest_count: $("guest-count")?.value || "1",
-        staff_memo: $("staff-memo")?.value || "",
-        summary_headline: draft.summaryHeadline || "あなたの香りバランス",
-        summary_body: draft.summaryBody || "",
-        profile_key: state.branchKey || null,
-        axes,
-        status: "confirmed"
-      };
-      const reservation = await window.FragrancePublicData?.createReservation?.(payload);
-      if (reservation) {
-        writeJson(CONFIRMATION_KEY, { ...payload, ...reservation });
-        window.location.href = `reservation-complete.html?code=${encodeURIComponent(reservation.reservation_code || "")}`;
-      } else if (selectedStatus) {
-        selectedStatus.textContent = "予約を保存できませんでした。";
+    confirmButton?.addEventListener("click", async () => {
+      const customerName = nameInput?.value?.trim() || "";
+      const customerEmail = emailInput?.value?.trim() || "";
+      if (!selectedSlot) {
+        setFormStatus("予約する日時を選択してください。");
+        return;
+      }
+      if (!customerName) {
+        setFormStatus("お名前を入力してください。ニックネームでも構いません。");
+        nameInput?.focus();
+        return;
+      }
+      if (!isValidEmail(customerEmail)) {
+        setFormStatus("連絡先のメールアドレスを入力してください。");
+        emailInput?.focus();
+        return;
+      }
+      updateContactDraft();
+      setFormStatus("予約内容を保存しています。");
+      confirmButton.disabled = true;
+      try {
+        const synced = await window.FragrancePublicData?.syncQuestionnaireResultFromState?.(state);
+        const payload = {
+          questionnaire_result_id: synced?.id || state.questionnaireResultId || null,
+          questionnaire_flow_status: synced?.id ? "linked" : (state.questionnaireCompletedAt ? "answered_unsaved" : "skipped"),
+          questionnaire_sync_error: synced?.id ? null : (state.questionnaireCompletedAt ? "questionnaire_result_insert_failed" : null),
+          customer_name: customerName,
+          customer_email: customerEmail,
+          slot_id: selectedSlot?.id || null,
+          slot_label: selectedSlot ? [selectedSlot.slot_date, String(selectedSlot.slot_time || "").slice(0, 5)].filter(Boolean).join(" ") : "店頭で日時相談",
+          visit_type: $("visit-type")?.value || "first",
+          guest_count: $("guest-count")?.value || "1",
+          staff_memo: $("staff-memo")?.value || "",
+          summary_headline: draft.summaryHeadline || "あなたの香りバランス",
+          summary_body: draft.summaryBody || "",
+          profile_key: state.branchKey || null,
+          axes,
+          status: "confirmed"
+        };
+        const reservation = await window.FragrancePublicData?.createReservation?.(payload);
+        if (reservation) {
+          writeJson(CONFIRMATION_KEY, { ...payload, ...reservation });
+          if (reservation.id) writeJson(`fragranceCustomerDraft:${reservation.id}`, { name: customerName, email: customerEmail });
+          window.location.href = `reservation-complete.html?code=${encodeURIComponent(reservation.reservation_code || "")}`;
+          return;
+        }
+        setFormStatus("予約を保存できませんでした。時間をおいて再度お試しください。");
+      } catch (error) {
+        console.error("Failed to confirm reservation.", error);
+        setFormStatus("予約を保存できませんでした。時間をおいて再度お試しください。");
+      } finally {
+        confirmButton.disabled = false;
       }
     });
   }
@@ -1375,6 +1542,8 @@
     const remote = await window.FragrancePublicData?.fetchReservationByCode?.(code);
     const data = remote || readJson(CONFIRMATION_KEY, {});
     if ($("reservation-slot")) $("reservation-slot").textContent = data.slot_label || "-";
+    if ($("reservation-name")) $("reservation-name").textContent = data.customer_name || "-";
+    if ($("reservation-email")) $("reservation-email").textContent = data.customer_email || "-";
     if ($("reservation-guests")) $("reservation-guests").textContent = data.guest_count || "-";
     if ($("reservation-visit-type")) $("reservation-visit-type").textContent = data.visit_type || "-";
     if ($("reservation-memo")) $("reservation-memo").textContent = data.staff_memo || "";

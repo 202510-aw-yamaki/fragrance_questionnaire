@@ -5,33 +5,82 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>来店予約 | Fragrance Workshop</title>
   <link rel="stylesheet" href="../css/rebuild-ui.css">
+  <link rel="stylesheet" href="../css/customer/customer-reservation.css">
 </head>
-<body data-page="reservation">
+<body data-page="reservation" class="customer-reservation-page">
   <header class="site-header">
     <div class="site-header-inner site-container">
-      <a class="brand" href="../index.html"><span class="brand-mark">✦</span><span>Fragrance Workshop</span></a>
-      <nav class="main-nav is-static"><a href="questionnaire.html">アンケート</a><a href="fragrance-graph.html">結果</a></nav>
+      <a class="brand reservation-brand" href="../index.html"><span class="brand-logo-mark"><img src="../img/costomer/吟ロゴ.png" alt=""></span><span>Fragrance Workshop</span></a>
     </div>
   </header>
-  <main class="admin-main">
-    <section class="admin-page-title">
-      <div><span class="eyebrow">Reservation</span><h1>ワークショップ予約</h1><p id="summary-body" class="page-copy"></p></div>
+  <main class="reservation-main">
+    <section class="reservation-hero">
+      <span class="reservation-ornament" aria-hidden="true"></span>
+      <h1>ワークショップを予約する</h1>
+      <p>ご希望の日にちと時間を選び、連絡先をご入力ください。</p>
+      <p id="summary-body" class="page-copy" hidden></p>
+      <h2 id="summary-headline" hidden>香りの準備ができました</h2>
+      <div id="axis-list" hidden></div>
     </section>
-    <section class="grid-2">
-      <article class="card">
-        <h2 id="summary-headline">香りの準備ができました</h2>
-        <div id="axis-list" class="action-row"></div>
-        <p class="status-note" id="selected-status">日時を選択してください。</p>
-        <div id="slot-list" class="form-stack"></div>
+
+    <section class="reservation-schedule" aria-label="来店日時の選択">
+      <article class="reservation-card reservation-calendar-card">
+        <div class="reservation-calendar-head">
+          <button class="reservation-month-button" id="calendar-prev" type="button" aria-label="前の月へ">‹</button>
+          <h2 id="calendar-month-label">予約月</h2>
+          <button class="reservation-month-button" id="calendar-next" type="button" aria-label="次の月へ">›</button>
+        </div>
+        <div class="reservation-weekdays" aria-hidden="true">
+          <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
+        </div>
+        <div class="reservation-calendar-grid" id="calendar-days"></div>
       </article>
-      <article class="card">
-        <div class="form-stack">
+
+      <article class="reservation-card reservation-time-card">
+        <div class="reservation-time-head">
+          <span aria-hidden="true">○</span>
+          <h2 id="selected-date-label">日にちを選択</h2>
+        </div>
+        <span class="reservation-divider" aria-hidden="true"></span>
+        <p>ご希望の時間を選択してください</p>
+        <div id="slot-list" class="reservation-time-grid"></div>
+      </article>
+    </section>
+
+    <section class="reservation-form-card" aria-label="予約者情報">
+      <aside class="reservation-selected-summary">
+        <dl>
+          <div>
+            <dt>選択中日時</dt>
+            <dd id="selected-status">日時を選択してください。</dd>
+          </div>
+          <div>
+            <dt>所要時間</dt>
+            <dd>約60分</dd>
+          </div>
+          <div>
+            <dt>担当スタッフ</dt>
+            <dd id="selected-staff">未定</dd>
+          </div>
+        </dl>
+      </aside>
+      <div class="reservation-form-fields">
+        <div class="reservation-form-grid">
+          <label class="field">お名前
+            <input id="customer-name" type="text" autocomplete="name" placeholder="例）山田 花子／ニックネームでも可">
+          </label>
+          <label class="field">メールアドレス
+            <input id="customer-email" type="email" autocomplete="email" placeholder="例）hanako@example.com">
+          </label>
+        </div>
+        <div class="reservation-form-grid reservation-form-grid-small">
           <label class="field">来店種別<select id="visit-type"><option value="first">初回来店</option><option value="return">再来店</option><option value="gift">ギフト相談</option></select></label>
           <label class="field">人数<select id="guest-count"><option value="1">1名</option><option value="2">2名</option><option value="3">3名</option><option value="4">4名</option></select></label>
-          <label class="field">スタッフへのメモ<textarea id="staff-memo" rows="5"></textarea></label>
-          <button class="btn primary" id="confirm-btn" type="button">この内容で予約する</button>
         </div>
-      </article>
+        <label class="field">備考（任意）<textarea id="staff-memo" rows="4" placeholder="ご希望や気になることがございましたらご記入ください。"></textarea></label>
+        <p class="reservation-form-status" id="reservation-form-status" role="status"></p>
+        <button class="btn primary reservation-submit" id="confirm-btn" type="button">この日時で予約する</button>
+      </div>
     </section>
   </main>
   <div class="portal-modal slot-modal" id="slot-modal" hidden data-density="compact">

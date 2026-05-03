@@ -1,0 +1,500 @@
+body[data-page="reservation"] {
+  background: #fff8f0;
+}
+
+body[data-page="reservation"] .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  border-bottom: 1px solid #dc9f42;
+  background: rgba(255, 251, 246, 0.96);
+  box-shadow: none;
+  backdrop-filter: blur(18px);
+}
+
+body[data-page="reservation"] .site-header-inner {
+  width: min(1626px, calc(100% - 48px));
+  min-height: 78px;
+  justify-content: flex-start;
+}
+
+body[data-page="reservation"] .reservation-brand {
+  gap: 14px;
+  font-family: var(--serif);
+  font-size: 30px;
+  color: #39251c;
+}
+
+body[data-page="reservation"] .reservation-brand .brand-logo-mark {
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+body[data-page="reservation"] .reservation-brand img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.reservation-main {
+  position: relative;
+  min-height: calc(100vh - 78px);
+  overflow: hidden;
+  padding: 34px 0 28px;
+  background:
+    linear-gradient(90deg, rgba(255, 250, 244, 0.96) 0%, rgba(255, 250, 244, 0.88) 47%, rgba(255, 250, 244, 0.18) 100%),
+    url("../../img/costomer/初回アンケート共通背景.png") center top / cover no-repeat;
+}
+
+.reservation-main::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: min(31vw, 460px);
+  pointer-events: none;
+  background: radial-gradient(ellipse at 0% 12%, rgba(227, 191, 132, 0.22), transparent 56%);
+}
+
+.reservation-hero,
+.reservation-schedule,
+.reservation-form-card {
+  position: relative;
+  z-index: 1;
+  width: min(1238px, calc(100% - 64px));
+  margin: 0 auto;
+}
+
+.reservation-hero {
+  margin-bottom: 20px;
+  padding-left: 18px;
+}
+
+.reservation-ornament {
+  width: 126px;
+  height: 20px;
+  display: block;
+  margin: 0 0 8px 245px;
+  background:
+    linear-gradient(#d9b778, #d9b778) left 50% / 50px 1px no-repeat,
+    linear-gradient(#d9b778, #d9b778) right 50% / 50px 1px no-repeat,
+    url("../../img/costomer/会員ページの記号.png") center / 17px 17px no-repeat;
+}
+
+.reservation-hero h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(34px, 3.1vw, 54px);
+  font-weight: 500;
+  line-height: 1.35;
+  color: #342119;
+}
+
+.reservation-hero p {
+  margin: 10px 0 0;
+  color: #463127;
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.reservation-schedule {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(340px, 0.68fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.reservation-card,
+.reservation-form-card {
+  border: 1px solid rgba(196, 143, 82, 0.28);
+  border-radius: 8px;
+  background: rgba(255, 253, 249, 0.92);
+  box-shadow: 0 14px 34px rgba(99, 64, 30, 0.1);
+  backdrop-filter: blur(8px);
+}
+
+.reservation-card {
+  padding: 22px 24px 24px;
+}
+
+.reservation-calendar-head,
+.reservation-time-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.reservation-calendar-head h2,
+.reservation-time-head h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 500;
+  color: #3c281c;
+  text-align: center;
+}
+
+.reservation-month-button {
+  width: 38px;
+  height: 38px;
+  display: inline-grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #d59a48;
+  font-size: 34px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.reservation-month-button:hover {
+  background: rgba(222, 168, 92, 0.13);
+}
+
+.reservation-weekdays,
+.reservation-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  text-align: center;
+}
+
+.reservation-weekdays {
+  margin-top: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(196, 143, 82, 0.22);
+  color: #463127;
+  font-family: var(--serif);
+  font-size: 15px;
+}
+
+.reservation-weekdays span:first-child {
+  color: #cc6964;
+}
+
+.reservation-calendar-grid {
+  row-gap: 8px;
+  padding-top: 8px;
+}
+
+.reservation-day {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  display: inline-grid;
+  place-items: center;
+  justify-self: center;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: #3b2a20;
+  font-family: var(--serif);
+  font-size: 17px;
+  cursor: default;
+}
+
+.reservation-day.is-other-month {
+  color: rgba(64, 43, 31, 0.34);
+}
+
+.reservation-day.is-sunday {
+  color: #cc6964;
+}
+
+.reservation-day.is-available {
+  cursor: pointer;
+}
+
+.reservation-day.is-available::after {
+  content: "";
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #d8a65d;
+  transform: translateX(-50%);
+}
+
+.reservation-day.is-selected {
+  border-color: #e38086;
+  color: #c45e66;
+  background: rgba(255, 247, 243, 0.92);
+}
+
+.reservation-day.is-today:not(.is-selected) {
+  border-color: rgba(216, 166, 93, 0.52);
+}
+
+.reservation-day:disabled {
+  opacity: 0.46;
+}
+
+.reservation-time-card {
+  display: grid;
+  align-content: start;
+  min-height: 100%;
+}
+
+.reservation-time-head {
+  justify-content: center;
+}
+
+.reservation-time-head span {
+  width: 34px;
+  height: 34px;
+  display: inline-grid;
+  place-items: center;
+  border: 2px solid #d69a4e;
+  border-radius: 50%;
+  color: #d69a4e;
+  font-size: 14px;
+}
+
+.reservation-divider {
+  width: 100%;
+  height: 20px;
+  display: block;
+  margin: 16px 0 12px;
+  background:
+    linear-gradient(#d9b778, #d9b778) left 50% / calc(50% - 16px) 1px no-repeat,
+    linear-gradient(#d9b778, #d9b778) right 50% / calc(50% - 16px) 1px no-repeat,
+    url("../../img/costomer/会員ページの記号.png") center / 14px 14px no-repeat;
+}
+
+.reservation-time-card p {
+  margin: 0 0 18px;
+  color: #6a5548;
+  font-family: var(--serif);
+  text-align: center;
+}
+
+.reservation-time-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.reservation-time-grid .time-slot {
+  min-height: 76px;
+  border: 1px solid rgba(208, 154, 88, 0.32);
+  border-radius: 8px;
+  background: rgba(255, 253, 249, 0.9);
+  color: #3f281c;
+  font-family: var(--serif);
+  font-size: 26px;
+  box-shadow: 0 8px 18px rgba(113, 70, 30, 0.05);
+  cursor: pointer;
+}
+
+.reservation-time-grid .time-slot.selected {
+  border-color: #d79443;
+  background: linear-gradient(180deg, #e9c17c 0%, #d09a54 100%);
+  color: #fff;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.64), 0 13px 24px rgba(174, 114, 42, 0.22);
+}
+
+.reservation-empty-slots {
+  grid-column: 1 / -1;
+  margin: 8px 0 0;
+  color: #7b6253;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.reservation-form-card {
+  display: grid;
+  grid-template-columns: 350px minmax(0, 1fr);
+  gap: 28px;
+  margin-top: 14px;
+  padding: 24px 36px;
+}
+
+.reservation-selected-summary {
+  display: grid;
+  align-content: center;
+  border-radius: 8px;
+  background: rgba(250, 243, 235, 0.92);
+  padding: 18px 26px;
+}
+
+.reservation-selected-summary dl {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.reservation-selected-summary div {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  border-bottom: 1px solid rgba(196, 143, 82, 0.2);
+  padding: 0 0 12px;
+}
+
+.reservation-selected-summary div:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.reservation-selected-summary dt,
+.reservation-selected-summary dd {
+  margin: 0;
+}
+
+.reservation-selected-summary dt {
+  color: #6d5547;
+  font-family: var(--serif);
+}
+
+.reservation-selected-summary dd {
+  color: #3a281f;
+  font-weight: 700;
+}
+
+.reservation-form-fields {
+  min-width: 0;
+}
+
+.reservation-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.reservation-form-grid-small {
+  margin-top: 14px;
+}
+
+.reservation-form-fields .field {
+  color: #5d4638;
+  font-family: var(--serif);
+}
+
+.reservation-form-fields input,
+.reservation-form-fields select,
+.reservation-form-fields textarea {
+  border-color: rgba(177, 129, 75, 0.34);
+  border-radius: 8px;
+  background: rgba(255, 253, 249, 0.94);
+  font-family: var(--serif);
+}
+
+.reservation-form-fields textarea {
+  min-height: 86px;
+}
+
+.reservation-form-fields > .field {
+  margin-top: 14px;
+}
+
+.reservation-form-fields ::placeholder {
+  color: rgba(99, 77, 64, 0.44);
+}
+
+.reservation-form-status {
+  min-height: 24px;
+  margin: 12px 0 0;
+  color: #b2555f;
+  font-weight: 700;
+}
+
+.reservation-submit {
+  width: min(420px, 100%);
+  min-height: 60px;
+  margin: 4px auto 0;
+  display: flex;
+  border-radius: 8px;
+  font-family: var(--serif);
+  font-size: 24px;
+  letter-spacing: 0;
+}
+
+@media (max-width: 1100px) {
+  .reservation-schedule,
+  .reservation-form-card {
+    grid-template-columns: 1fr;
+  }
+
+  .reservation-selected-summary {
+    align-content: stretch;
+  }
+}
+
+@media (max-width: 720px) {
+  body[data-page="reservation"] .site-header-inner,
+  .reservation-hero,
+  .reservation-schedule,
+  .reservation-form-card {
+    width: min(100% - 28px, 640px);
+  }
+
+  body[data-page="reservation"] .site-header-inner {
+    min-height: 68px;
+  }
+
+  body[data-page="reservation"] .reservation-brand .brand-logo-mark {
+    width: 40px;
+    height: 40px;
+  }
+
+  body[data-page="reservation"] .reservation-brand {
+    font-size: 22px;
+  }
+
+  .reservation-main {
+    padding-top: 24px;
+  }
+
+  .reservation-hero {
+    padding-left: 0;
+  }
+
+  .reservation-ornament {
+    margin-left: 0;
+  }
+
+  .reservation-card,
+  .reservation-form-card {
+    padding: 20px 18px;
+  }
+
+  .reservation-calendar-head h2,
+  .reservation-time-head h2 {
+    font-size: 23px;
+  }
+
+  .reservation-day {
+    width: 38px;
+    height: 40px;
+    font-size: 15px;
+  }
+
+  .reservation-time-grid,
+  .reservation-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reservation-time-grid .time-slot {
+    min-height: 64px;
+    font-size: 23px;
+  }
+
+  .reservation-selected-summary div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .reservation-submit {
+    min-height: 56px;
+    font-size: 20px;
+  }
+}
