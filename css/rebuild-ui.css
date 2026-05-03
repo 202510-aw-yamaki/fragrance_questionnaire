@@ -149,6 +149,10 @@ img {
   color: var(--gold-dark);
 }
 
+.admin-nav-logout {
+  display: none;
+}
+
 .menu-toggle,
 .admin-menu-toggle {
   display: none;
@@ -2487,9 +2491,38 @@ details.card .admin-note {
     padding: 0;
   }
 
-  body[data-page="staff-dashboard"] .kpi-grid,
   .day-event {
     grid-template-columns: 1fr;
+  }
+
+  body[data-page="staff-dashboard"] .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body[data-page="staff-dashboard"] .kpi-card {
+    min-height: 86px;
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: 8px;
+    padding: 12px 10px;
+  }
+
+  body[data-page="staff-dashboard"] .staff-kpi-icon svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  body[data-page="staff-dashboard"] .kpi-card p {
+    font-size: 13px;
+    white-space: normal;
+  }
+
+  body[data-page="staff-dashboard"] .kpi-value {
+    font-size: 28px;
+  }
+
+  body[data-page="staff-dashboard"] .kpi-unit {
+    margin-left: 3px;
+    font-size: 14px;
   }
 
   body[data-page="staff-dashboard"] .staff-kpi-alert-layout {
@@ -2511,10 +2544,47 @@ details.card .admin-note {
     justify-content: center;
   }
 
-  .staff-date-switcher {
-    align-items: stretch;
-    flex-direction: column;
-    border-radius: var(--radius);
+  body[data-page="staff-dashboard"] .staff-date-switcher {
+    align-items: center;
+    flex-direction: row;
+    gap: 8px;
+    width: 100%;
+    border-radius: 999px;
+    padding: 6px;
+  }
+
+  body[data-page="staff-dashboard"] .staff-date-switcher .admin-btn {
+    flex: 0 0 auto;
+    min-height: 38px;
+    padding: 7px 12px;
+  }
+
+  body[data-page="staff-dashboard"] .staff-date-switcher strong {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  body.staff-page .admin-logout--staff {
+    display: none;
+  }
+
+  body.staff-page .admin-nav--staff .admin-nav-logout {
+    display: inline-flex;
+    width: 100%;
+    min-height: 42px;
+    align-items: center;
+    justify-content: flex-start;
+    border: 0;
+    border-top: 1px solid var(--line);
+    border-radius: 0;
+    background: transparent;
+    padding: 12px;
+    color: var(--ink);
+    font-weight: 700;
+    box-shadow: none;
+    cursor: pointer;
   }
 
   .staff-next-action-body {
@@ -2564,5 +2634,10 @@ details.card .admin-note {
   .main-button,
   .ghost-btn {
     width: 100%;
+  }
+
+  body[data-page="staff-dashboard"] .staff-date-switcher .admin-btn {
+    width: auto;
+    min-width: 70px;
   }
 }

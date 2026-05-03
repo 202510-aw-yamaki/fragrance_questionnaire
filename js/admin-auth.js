@@ -256,6 +256,7 @@
           ` : ""}
           <nav class="admin-nav ${role === "staff" ? "admin-nav--staff" : ""}" id="${navId}" aria-label="\u7ba1\u7406\u30e1\u30cb\u30e5\u30fc">
             ${links.map(({ href, label, key }) => `<a class="${activePage === key ? "active" : ""}" data-admin-nav-key="${key}" href="${appendRoleToHref(href, role)}">${label}</a>`).join("")}
+            ${role === "staff" ? `<button class="admin-nav-logout" id="admin-nav-logout-btn" type="button">\u30ed\u30b0\u30a2\u30a6\u30c8</button>` : ""}
           </nav>
           <button class="admin-logout ${role === "staff" ? "admin-logout--staff" : ""}" id="admin-logout-btn" type="button">\u30ed\u30b0\u30a2\u30a6\u30c8</button>
         </div>
@@ -263,6 +264,8 @@
     `;
     const logoutButton = document.getElementById("admin-logout-btn");
     if (logoutButton) logoutButton.addEventListener("click", signOutAdmin);
+    const navLogoutButton = document.getElementById("admin-nav-logout-btn");
+    if (navLogoutButton) navLogoutButton.addEventListener("click", signOutAdmin);
     const menuToggle = document.getElementById("admin-menu-toggle");
     const navMenu = document.getElementById(navId);
     if (menuToggle && navMenu) {
