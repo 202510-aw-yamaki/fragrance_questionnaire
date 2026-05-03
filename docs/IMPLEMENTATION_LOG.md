@@ -482,3 +482,18 @@
   - `node --check js/staff-dashboard-page.js`
   - `node --check js/admin-reservations-page.js`
   - Edge/Playwrightで検証用スタブを使い、ログインなしでスタッフダッシュボードと予約一覧の表示確認を行った。
+
+### 2026-05-03 customer/fragrance-graph.html 通常結果ページの見本反映
+- 対象:
+  - `customer/fragrance-graph.html`
+  - `css/customer/customer-fragrance-graph.css`
+  - `js/rebuild-customer-flow.js`
+- 参照:
+  - `レイアウトimg/06. customer fragrance-graph.html 通常結果ページ.png`
+- 実装:
+  - 通常結果ページ専用CSSを追加し、見本のレーダー、診断コメント、詳細バー、CTA構成へ調整。
+  - 既存JSはアンケート結果の読み取りと予約への受け渡しを維持し、表示用の結果コメント・バー描画だけ追加。
+  - 会員比較モード・比較拡大モーダルは今回の対象外。
+- 確認:
+  - `node --check js/rebuild-customer-flow.js`
+  - Playwright screenshot desktop/mobile/full-page

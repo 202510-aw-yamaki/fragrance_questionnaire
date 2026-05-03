@@ -5,41 +5,64 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>香りバランス | Fragrance Workshop</title>
   <link rel="stylesheet" href="../css/rebuild-ui.css">
+  <link rel="stylesheet" href="../css/customer/customer-fragrance-graph.css">
 </head>
-<body data-page="graph">
+<body data-page="graph" class="fragrance-graph-page">
   <header class="site-header">
     <div class="site-header-inner site-container">
-      <a class="brand" id="brand-link" href="../index.html"><span class="brand-mark">✦</span><span>Fragrance Workshop</span></a>
-      <nav class="main-nav is-static"><a href="questionnaire.html">再回答</a><a href="reservation.html">予約</a></nav>
+      <a class="brand graph-brand" id="brand-link" href="../index.html"><span class="graph-brand-mark" aria-hidden="true"></span><span>Fragrance Workshop</span></a>
     </div>
   </header>
-  <main class="admin-main">
-    <section class="admin-page-title">
-      <div><span class="eyebrow">Fragrance Balance</span><h1>香り5軸の結果</h1></div>
-      <a class="btn primary" id="reserve-link" href="reservation.html">この内容で予約へ進む</a>
-    </section>
-    <section id="graph-adjustment" class="grid-2">
-      <article class="card">
-        <svg id="radar-graph" class="radar-graph" viewBox="0 0 360 360" role="img" aria-label="5軸グラフ">
-          <g id="grid-polygons" fill="none" stroke="#d9cec1"></g>
-          <g id="axis-lines" stroke="#d9cec1"></g>
-          <g id="axis-labels" fill="#6f665f" font-size="13" text-anchor="middle"></g>
-          <polygon id="radar-shape" fill="rgba(220,119,119,.24)" stroke="#d77777" stroke-width="3"></polygon>
-          <g id="vertex-dots" fill="#d77777"></g>
-        </svg>
-      </article>
-      <article class="card">
-        <h2 id="adjust-heading">気になる項目だけ微調整</h2>
-        <div id="slider-list" class="slider-list"></div>
-        <div class="action-row">
-          <button class="ghost-btn" type="button" id="reset-btn">初期値</button>
-          <button class="ghost-btn" type="button" data-preset="A">軽やか</button>
-          <button class="ghost-btn" type="button" data-preset="B">やわらか</button>
-          <button class="ghost-btn" type="button" data-preset="C">印象強め</button>
+  <main class="graph-main">
+    <div class="graph-shell">
+      <section class="graph-title">
+        <h1>あなたの香りの傾向</h1>
+        <p>5つの軸から、今のあなたに似合う香りの方向性をまとめました。</p>
+      </section>
+
+      <section class="graph-result-layout" aria-label="香り診断結果">
+        <article class="graph-balance-card">
+          <div class="graph-balance-copy">
+            <h2>5つの軸による<br>あなたの香りバランス</h2>
+            <span class="graph-divider" aria-hidden="true"></span>
+            <p>各軸のバランスから、あなたらしい香りの個性を可視化しました。</p>
+          </div>
+          <div class="graph-radar-panel">
+            <svg id="radar-graph" class="radar-graph" viewBox="0 0 360 360" role="img" aria-label="5軸グラフ">
+              <g id="grid-polygons" fill="none" stroke="#e5c08f"></g>
+              <g id="axis-lines" stroke="#e5c08f"></g>
+              <g id="axis-labels" fill="#4a3325" font-size="15" text-anchor="middle"></g>
+              <polygon id="radar-shape" fill="rgba(228,128,128,.23)" stroke="#e48188" stroke-width="3"></polygon>
+              <g id="vertex-dots" fill="#e48188"></g>
+            </svg>
+          </div>
+        </article>
+
+        <aside class="graph-comment-card">
+          <div class="graph-card-heading">
+            <span class="graph-card-mark" aria-hidden="true"></span>
+            <h2>診断コメント</h2>
+          </div>
+          <span class="graph-divider graph-divider-small" aria-hidden="true"></span>
+          <p id="result-comment">診断結果を読み込み中です。</p>
+          <div class="graph-tag-list" id="result-tags" aria-label="香りの特徴"></div>
+        </aside>
+      </section>
+
+      <section class="graph-detail-card" aria-label="5つの軸の詳細バランス">
+        <div class="graph-detail-heading">
+          <h2>5つの軸の<br>詳細バランス</h2>
+          <span class="graph-divider" aria-hidden="true"></span>
         </div>
-      </article>
-    </section>
-    <section id="cta" class="section"><div class="card"><div id="summary-list"></div><a class="btn primary" href="reservation.html">予約へ進む</a></div></section>
+        <div class="graph-axis-list" id="result-detail-list"></div>
+      </section>
+
+      <div class="graph-actions">
+        <a class="graph-primary-action" id="reserve-link" href="reservation.html"><span aria-hidden="true"></span>この香りで予約する</a>
+        <a class="graph-secondary-action" href="questionnaire.html"><span aria-hidden="true"></span>もう一度回答する</a>
+        <a class="graph-help-link" href="../index.html#flow"><span aria-hidden="true">i</span>結果の活用方法はこちら</a>
+      </div>
+    </div>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabase-config.js"></script>

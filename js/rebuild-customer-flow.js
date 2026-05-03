@@ -13,6 +13,22 @@
   const DRAFT_KEY = "fragranceReservationDraft";
   const CONFIRMATION_KEY = "fragranceReservationConfirmation";
   const DEFAULT_AXES = { floral: 56, fresh: 58, woody: 45, spicy: 36, sweet: 52 };
+  const RESULT_AXIS_ORDER = ["floral", "sweet", "fresh", "woody", "spicy"];
+  const RESULT_AXIS_LABELS = {
+    floral: "華やかさ",
+    sweet: "甘さ",
+    fresh: "爽やかさ",
+    woody: "落ち着き",
+    spicy: "深み"
+  };
+  const RESULT_DEFAULT_AXES = { floral: 84, sweet: 68, fresh: 42, woody: 72, spicy: 56 };
+  const RESULT_AXIS_META = {
+    floral: { mark: "✿", color: "#df7f93" },
+    sweet: { mark: "✤", color: "#de9b58" },
+    fresh: { mark: "✧", color: "#7a9b79" },
+    woody: { mark: "❧", color: "#89966e" },
+    spicy: { mark: "✦", color: "#b98aa4" }
+  };
   const ANSWER_ORDER = ["A", "B", "C", "D", "ALL", "NONE"];
   const STEP1_TRIVIA_IMAGES = {
     Q2: "Trivia_Q2.png",
@@ -727,7 +743,10 @@
     if (!svg || !shape) return;
     const center = 180;
     const maxRadius = 128;
-    const values = AXES.map((axis) => clamp(axes?.[axis] ?? DEFAULT_AXES[axis]));
+    const isResultPage = document.body?.dataset?.page === "graph";
+    const axisOrder = isResultPage ? RESULT_AXIS_ORDER : AXES;
+    const axisLabels = isResultPage ? RESULT_AXIS_LABELS : AXIS_LABELS;
+    const values = axisOrder.map((axis) => clamp(axes?.[axis] ?? DEFAULT_AXES[axis]));
     const point = (value, index, radiusScale = 1) => {
       const angle = (-90 + index * 72) * Math.PI / 180;
       const radius = maxRadius * radiusScale * (value / 100);
@@ -741,20 +760,20 @@
       }).join("");
     }
     if (labels) {
-      labels.innerHTML = AXES.map((axis, index) => {
+      labels.innerHTML = axisOrder.map((axis, index) => {
         const [x, y] = point(100, index, 1.14);
-        return `<text x="${x}" y="${y}">${AXIS_LABELS[axis]}</text>`;
+        return `<text x="${x}" y="${y}">${axisLabels[axis]}</text>`;
       }).join("");
     }
     if (lines) {
-      lines.innerHTML = AXES.map((_, index) => {
+      lines.innerHTML = axisOrder.map((_, index) => {
         const [x, y] = point(100, index, 1);
         return `<line x1="${center}" y1="${center}" x2="${x}" y2="${y}"></line>`;
       }).join("");
     }
     if (grids) {
       grids.innerHTML = [0.25, 0.5, 0.75, 1].map((scale) => {
-        const pts = AXES.map((_, index) => {
+        const pts = axisOrder.map((_, index) => {
           const angle = (-90 + index * 72) * Math.PI / 180;
           return `${center + Math.cos(angle) * maxRadius * scale},${center + Math.sin(angle) * maxRadius * scale}`;
         }).join(" ");
@@ -765,53 +784,73 @@
 
   async function initGraph() {
     const state = readJson(SCORE_STATE_KEY, {});
-    let axes = { ...DEFAULT_AXES, ...(state.adjustedAxes || state.finalAxes || {}) };
-    const sliderList = $("slider-list");
-    function renderSliders() {
-      if (!sliderList) return;
-      sliderList.innerHTML = AXES.map((axis) => `
-        <label class="field">
-          <span>${AXIS_LABELS[axis]} <output id="${axis}-value">${axes[axis]}</output></span>
-          <input id="${axis}" name="${axis}" type="range" min="0" max="100" value="${axes[axis]}">
-        </label>
-      `).join("");
-      AXES.forEach((axis) => {
-        $(axis)?.addEventListener("input", (event) => {
-          axes[axis] = clamp(event.target.value);
-          const out = $(`${axis}-value`);
-          if (out) out.textContent = axes[axis];
-          drawRadar(axes);
-        });
-      });
+    const axes = { ...RESULT_DEFAULT_AXES, ...(state.adjustedAxes || state.finalAxes || {}) };
+    const detailList = $("result-detail-list");
+    const commentEl = $("result-comment");
+    const tagsEl = $("result-tags");
+
+    function getRankedAxes() {
+      return RESULT_AXIS_ORDER
+        .map((axis) => ({ axis, value: clamp(axes?.[axis] ?? RESULT_DEFAULT_AXES[axis]) }))
+        .sort((a, b) => b.value - a.value);
     }
-    function applyPreset(kind) {
-      const presets = {
-        A: { fresh: 70, floral: 48, woody: 38, spicy: 28, sweet: 42 },
-        B: { floral: 62, sweet: 64, fresh: 48, woody: 44, spicy: 34 },
-        C: { woody: 62, spicy: 58, floral: 46, fresh: 36, sweet: 50 }
+
+    function buildResultComment() {
+      const ranked = getRankedAxes();
+      const primaryAxis = ranked[0]?.axis || "floral";
+      const secondaryAxis = ranked[1]?.axis || "sweet";
+      const comments = {
+        floral: "華やかさを中心に、やわらかな甘さと落ち着きが残る香りです。",
+        sweet: "やさしい甘さが前に出て、親しみやすく穏やかな印象の香りです。",
+        fresh: "爽やかさがすっと広がり、軽く澄んだ余韻を楽しめる香りです。",
+        woody: "落ち着きを軸に、静かに深まる余韻を感じやすい香りです。",
+        spicy: "深みのある印象を中心に、個性と余韻が残る香りです。"
       };
-      axes = { ...axes, ...(presets[kind] || {}) };
-      renderSliders();
-      drawRadar(axes);
+      return {
+        text: comments[primaryAxis] || comments.floral,
+        tags: [primaryAxis, secondaryAxis, ranked[2]?.axis || "woody"]
+      };
     }
-    renderSliders();
+
+    function renderDetails() {
+      if (!detailList) return;
+      detailList.innerHTML = RESULT_AXIS_ORDER.map((axis) => {
+        const value = clamp(axes?.[axis] ?? RESULT_DEFAULT_AXES[axis]);
+        const meta = RESULT_AXIS_META[axis] || RESULT_AXIS_META.floral;
+        return `
+          <div class="graph-axis-row" style="--axis-value:${value}%; --axis-color:${meta.color};" aria-label="${RESULT_AXIS_LABELS[axis]} ${value} / 100">
+            <span class="graph-axis-icon" aria-hidden="true">${meta.mark}</span>
+            <span class="graph-axis-label">${RESULT_AXIS_LABELS[axis]}</span>
+            <span class="graph-axis-meter" aria-hidden="true"></span>
+            <span class="graph-axis-score">${value} <small>/ 100</small></span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderComment() {
+      const result = buildResultComment();
+      if (commentEl) commentEl.textContent = result.text;
+      if (!tagsEl) return;
+      tagsEl.innerHTML = result.tags.map((axis) => {
+        const meta = RESULT_AXIS_META[axis] || RESULT_AXIS_META.floral;
+        return `<span class="graph-result-tag" style="--axis-color:${meta.color};"><span aria-hidden="true">${meta.mark}</span>${RESULT_AXIS_LABELS[axis]}</span>`;
+      }).join("");
+    }
+
+    renderDetails();
+    renderComment();
     drawRadar(axes);
-    $("reset-btn")?.addEventListener("click", () => {
-      axes = { ...DEFAULT_AXES, ...(state.finalAxes || {}) };
-      renderSliders();
-      drawRadar(axes);
-    });
-    document.querySelectorAll("[data-preset]").forEach((button) => {
-      button.addEventListener("click", () => applyPreset(button.dataset.preset));
-    });
     $("reserve-link")?.addEventListener("click", async (event) => {
       event.preventDefault();
       const nextState = { ...readJson(SCORE_STATE_KEY, {}), adjustedAxes: axes, finalAxes: axes };
+      const result = buildResultComment();
+      const primaryAxis = result.tags[0] || "floral";
       writeJson(SCORE_STATE_KEY, nextState);
       writeJson(DRAFT_KEY, {
         axes,
-        summaryHeadline: "あなたの香りバランス",
-        summaryBody: "調整した内容をもとに、店頭で仕上げます。"
+        summaryHeadline: `${RESULT_AXIS_LABELS[primaryAxis]}を中心にした香りバランス`,
+        summaryBody: result.text
       });
       if (nextState.questionnaireResultId || nextState.questionnaireResultCode) {
         await window.FragrancePublicData?.updateQuestionnaireResult?.({

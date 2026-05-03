@@ -1,0 +1,568 @@
+body[data-page="graph"] {
+  background: #fff8f0;
+}
+
+body[data-page="graph"] .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(255, 251, 246, 0.96);
+  border-bottom: 1px solid #dc9f42;
+  box-shadow: none;
+}
+
+body[data-page="graph"] .site-header-inner {
+  width: min(1626px, calc(100% - 48px));
+  min-height: 70px;
+}
+
+body[data-page="graph"] .graph-brand {
+  gap: 14px;
+  font-family: var(--serif);
+  font-size: 30px;
+  color: #352017;
+}
+
+body[data-page="graph"] .graph-brand-mark {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  background: url("../../img/costomer/会員ページの記号.png") center / contain no-repeat;
+}
+
+body[data-page="graph"] .graph-main {
+  position: relative;
+  min-height: calc(100vh - 70px);
+  overflow: hidden;
+  padding: 34px 0 42px;
+  background:
+    linear-gradient(90deg, rgba(255, 250, 244, 0.88) 0%, rgba(255, 250, 244, 0.74) 48%, rgba(255, 250, 244, 0.14) 100%),
+    url("../../img/costomer/customer_back.png") center / cover no-repeat;
+}
+
+body[data-page="graph"] .graph-shell {
+  position: relative;
+  z-index: 1;
+  width: min(1310px, calc(100% - 64px));
+  margin: 0 auto;
+}
+
+body[data-page="graph"] .graph-title {
+  margin: 0 0 16px;
+  padding-left: 4px;
+}
+
+body[data-page="graph"] .graph-title h1 {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 1.28;
+  color: #2f1d14;
+}
+
+body[data-page="graph"] .graph-title h1::after {
+  content: "";
+  width: 126px;
+  height: 20px;
+  flex: 0 0 auto;
+  background:
+    linear-gradient(#d9b778, #d9b778) left 50% / 50px 1px no-repeat,
+    linear-gradient(#d9b778, #d9b778) right 50% / 50px 1px no-repeat,
+    url("../../img/costomer/会員ページの記号.png") center / 17px 17px no-repeat;
+}
+
+body[data-page="graph"] .graph-title p {
+  margin: 8px 0 0;
+  color: #493427;
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+body[data-page="graph"] .graph-result-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(270px, 292px);
+  gap: 32px;
+  align-items: start;
+  max-width: 1212px;
+}
+
+body[data-page="graph"] .graph-balance-card,
+body[data-page="graph"] .graph-comment-card,
+body[data-page="graph"] .graph-detail-card {
+  border: 1px solid rgba(223, 188, 138, 0.58);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 22px 44px rgba(115, 77, 45, 0.08);
+  backdrop-filter: blur(5px);
+}
+
+body[data-page="graph"] .graph-balance-card {
+  min-height: 362px;
+  display: grid;
+  grid-template-columns: minmax(220px, 0.38fr) minmax(380px, 0.62fr);
+  gap: 14px;
+  padding: 24px 34px;
+  align-items: center;
+}
+
+body[data-page="graph"] .graph-balance-copy {
+  display: grid;
+  gap: 22px;
+  align-content: center;
+}
+
+body[data-page="graph"] .graph-balance-copy h2,
+body[data-page="graph"] .graph-comment-card h2,
+body[data-page="graph"] .graph-detail-heading h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 500;
+  line-height: 1.55;
+  color: #2f1d14;
+}
+
+body[data-page="graph"] .graph-balance-copy h2 {
+  font-size: 27px;
+}
+
+body[data-page="graph"] .graph-balance-copy p,
+body[data-page="graph"] .graph-comment-card p {
+  margin: 0;
+  color: #4f3a2c;
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.9;
+}
+
+body[data-page="graph"] .graph-divider {
+  width: 220px;
+  height: 20px;
+  display: block;
+  background:
+    linear-gradient(#d9b778, #d9b778) left 50% / 95px 1px no-repeat,
+    linear-gradient(#d9b778, #d9b778) right 50% / 95px 1px no-repeat,
+    url("../../img/costomer/会員ページの記号.png") center / 16px 16px no-repeat;
+}
+
+body[data-page="graph"] .graph-divider-small {
+  width: 206px;
+  margin: 10px auto 24px;
+}
+
+body[data-page="graph"] .graph-radar-panel {
+  min-height: 300px;
+  display: grid;
+  place-items: center;
+}
+
+body[data-page="graph"] .radar-graph {
+  width: min(100%, 330px);
+  height: auto;
+  overflow: visible;
+}
+
+body[data-page="graph"] #grid-polygons polygon {
+  stroke-dasharray: 2 3;
+}
+
+body[data-page="graph"] #grid-polygons polygon:last-child {
+  stroke-dasharray: none;
+}
+
+body[data-page="graph"] #axis-labels text {
+  font-family: var(--serif);
+  font-size: 15px;
+  dominant-baseline: middle;
+}
+
+body[data-page="graph"] #vertex-dots circle {
+  stroke: rgba(255, 250, 244, 0.9);
+  stroke-width: 3px;
+}
+
+body[data-page="graph"] .graph-comment-card {
+  display: grid;
+  align-content: start;
+  min-height: 490px;
+  padding: 42px 28px 32px;
+  text-align: center;
+}
+
+body[data-page="graph"] .graph-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+body[data-page="graph"] .graph-card-heading h2 {
+  font-size: 21px;
+}
+
+body[data-page="graph"] .graph-card-mark {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  background: url("../../img/costomer/会員ページの記号.png") center / contain no-repeat;
+}
+
+body[data-page="graph"] #result-comment {
+  min-height: 112px;
+  text-align: left;
+  font-size: 21px;
+  line-height: 1.75;
+}
+
+body[data-page="graph"] .graph-tag-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+body[data-page="graph"] .graph-result-tag {
+  min-height: 54px;
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid rgba(223, 188, 138, 0.5);
+  border-radius: 8px;
+  background: rgba(255, 252, 247, 0.84);
+  padding: 8px 14px;
+  color: #3e281d;
+  font-family: var(--serif);
+  font-size: 17px;
+  text-align: left;
+  box-shadow: 0 8px 18px rgba(110, 72, 42, 0.05);
+}
+
+body[data-page="graph"] .graph-result-tag span {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(220, 150, 150, 0.45);
+  border-radius: 50%;
+  color: var(--axis-color, #d78384);
+  font-size: 20px;
+}
+
+body[data-page="graph"] .graph-detail-card {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+  max-width: 884px;
+  min-height: 154px;
+  margin-top: -104px;
+  padding: 18px 34px;
+}
+
+body[data-page="graph"] .graph-detail-heading {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding-right: 30px;
+  border-right: 1px solid rgba(223, 188, 138, 0.72);
+  text-align: center;
+}
+
+body[data-page="graph"] .graph-detail-heading h2 {
+  font-size: 23px;
+  line-height: 1.38;
+}
+
+body[data-page="graph"] .graph-detail-heading .graph-divider {
+  width: 136px;
+  background:
+    linear-gradient(#d9b778, #d9b778) left 50% / 54px 1px no-repeat,
+    linear-gradient(#d9b778, #d9b778) right 50% / 54px 1px no-repeat,
+    url("../../img/costomer/会員ページの記号.png") center / 15px 15px no-repeat;
+}
+
+body[data-page="graph"] .graph-axis-list {
+  display: grid;
+  gap: 8px;
+}
+
+body[data-page="graph"] .graph-axis-row {
+  --axis-value: 50%;
+  --axis-color: #dc7f93;
+  display: grid;
+  grid-template-columns: 30px 102px minmax(140px, 1fr) 66px;
+  gap: 12px;
+  align-items: center;
+  color: #3f2b20;
+}
+
+body[data-page="graph"] .graph-axis-icon {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  color: var(--axis-color);
+  font-size: 20px;
+}
+
+body[data-page="graph"] .graph-axis-label {
+  font-family: var(--serif);
+  font-size: 16px;
+}
+
+body[data-page="graph"] .graph-axis-meter {
+  position: relative;
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(229, 211, 188, 0.72);
+}
+
+body[data-page="graph"] .graph-axis-meter::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--axis-value);
+  border-radius: inherit;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--axis-color) 62%, #f8d8d5), var(--axis-color));
+}
+
+body[data-page="graph"] .graph-axis-score {
+  font-family: var(--serif);
+  font-size: 18px;
+  color: #3c251a;
+  white-space: nowrap;
+}
+
+body[data-page="graph"] .graph-axis-score small {
+  color: #8b7a68;
+  font-size: 13px;
+}
+
+body[data-page="graph"] .graph-actions {
+  display: grid;
+  grid-template-columns: minmax(280px, 450px) minmax(260px, 378px) minmax(200px, 1fr);
+  gap: 38px;
+  align-items: center;
+  max-width: 1212px;
+  margin-top: 22px;
+}
+
+body[data-page="graph"] .graph-primary-action,
+body[data-page="graph"] .graph-secondary-action {
+  min-height: 78px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  border-radius: 8px;
+  font-family: var(--serif);
+  font-size: 26px;
+  line-height: 1.35;
+  text-align: center;
+  box-shadow: 0 14px 25px rgba(119, 73, 44, 0.12);
+}
+
+body[data-page="graph"] .graph-primary-action {
+  border: 1px solid #f2caa9;
+  background: linear-gradient(180deg, #e89798, #cf676f);
+  color: #fff;
+}
+
+body[data-page="graph"] .graph-secondary-action {
+  border: 1px solid rgba(218, 162, 91, 0.78);
+  background: rgba(255, 252, 247, 0.78);
+  color: #3c251a;
+}
+
+body[data-page="graph"] .graph-primary-action span,
+body[data-page="graph"] .graph-secondary-action span {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  background: url("../../img/costomer/会員ページの記号.png") center / contain no-repeat;
+}
+
+body[data-page="graph"] .graph-primary-action span {
+  filter: brightness(0) invert(1);
+  opacity: 0.72;
+}
+
+body[data-page="graph"] .graph-help-link {
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: #4b3428;
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.4;
+  border-bottom: 1px dashed rgba(72, 48, 35, 0.54);
+  padding-bottom: 8px;
+}
+
+body[data-page="graph"] .graph-help-link span {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #8f6f51;
+  border-radius: 50%;
+  font-family: var(--serif);
+  font-size: 18px;
+}
+
+@media (max-width: 1160px) {
+  body[data-page="graph"] .graph-result-layout,
+  body[data-page="graph"] .graph-actions {
+    max-width: none;
+  }
+
+  body[data-page="graph"] .graph-result-layout {
+    grid-template-columns: 1fr;
+  }
+
+  body[data-page="graph"] .graph-comment-card {
+    max-width: 560px;
+  }
+
+  body[data-page="graph"] .graph-detail-card {
+    max-width: none;
+    margin-top: 18px;
+  }
+
+  body[data-page="graph"] .graph-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  body[data-page="graph"] .graph-help-link {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 860px) {
+  body[data-page="graph"] .graph-shell {
+    width: min(100% - 28px, 660px);
+  }
+
+  body[data-page="graph"] .graph-title h1 {
+    display: block;
+    font-size: 38px;
+  }
+
+  body[data-page="graph"] .graph-title h1::after {
+    display: block;
+    margin-top: 12px;
+  }
+
+  body[data-page="graph"] .graph-title p {
+    font-size: 16px;
+  }
+
+  body[data-page="graph"] .graph-balance-card,
+  body[data-page="graph"] .graph-detail-card {
+    grid-template-columns: 1fr;
+  }
+
+  body[data-page="graph"] .graph-balance-card {
+    min-height: 0;
+    padding: 28px 20px;
+  }
+
+  body[data-page="graph"] .graph-balance-copy {
+    justify-items: center;
+    text-align: center;
+  }
+
+  body[data-page="graph"] .graph-detail-heading {
+    padding-right: 0;
+    padding-bottom: 18px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(223, 188, 138, 0.72);
+  }
+
+  body[data-page="graph"] .graph-axis-row {
+    grid-template-columns: 30px 92px minmax(110px, 1fr) 62px;
+    gap: 10px;
+  }
+
+  body[data-page="graph"] .graph-actions {
+    grid-template-columns: 1fr;
+  }
+
+  body[data-page="graph"] .graph-help-link {
+    justify-self: center;
+  }
+}
+
+@media (max-width: 560px) {
+  body[data-page="graph"] .site-header-inner {
+    min-height: 64px;
+  }
+
+  body[data-page="graph"] .graph-brand {
+    font-size: 22px;
+  }
+
+  body[data-page="graph"] .graph-brand-mark {
+    width: 34px;
+    height: 34px;
+  }
+
+  body[data-page="graph"] .graph-main {
+    min-height: calc(100vh - 64px);
+    padding: 26px 0 34px;
+  }
+
+  body[data-page="graph"] .graph-title h1 {
+    font-size: 31px;
+  }
+
+  body[data-page="graph"] .graph-result-layout {
+    gap: 18px;
+  }
+
+  body[data-page="graph"] .graph-balance-copy h2,
+  body[data-page="graph"] .graph-detail-heading h2 {
+    font-size: 22px;
+  }
+
+  body[data-page="graph"] #result-comment {
+    min-height: 0;
+    font-size: 18px;
+  }
+
+  body[data-page="graph"] .graph-comment-card {
+    padding: 30px 20px 26px;
+  }
+
+  body[data-page="graph"] .graph-detail-card {
+    padding: 22px 18px;
+  }
+
+  body[data-page="graph"] .graph-axis-row {
+    grid-template-columns: 28px 82px 1fr;
+  }
+
+  body[data-page="graph"] .graph-axis-meter {
+    grid-column: 2 / -1;
+  }
+
+  body[data-page="graph"] .graph-axis-score {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+    font-size: 18px;
+  }
+
+  body[data-page="graph"] .graph-primary-action,
+  body[data-page="graph"] .graph-secondary-action {
+    min-height: 66px;
+    font-size: 22px;
+  }
+}
