@@ -2292,6 +2292,15 @@ details.card .admin-note {
   }
 
   body[data-page="staff-dashboard"] .staff-kpi-alert-layout {
+    grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr);
+    align-items: stretch;
+  }
+
+  body[data-page="staff-dashboard"] .staff-slot-alert {
+    min-height: 100%;
+  }
+
+  body[data-page="staff-dashboard"] .staff-missing-chip-list {
     grid-template-columns: 1fr;
   }
 
@@ -2481,6 +2490,19 @@ details.card .admin-note {
   body[data-page="staff-dashboard"] .kpi-grid,
   .day-event {
     grid-template-columns: 1fr;
+  }
+
+  body[data-page="staff-dashboard"] .staff-kpi-alert-layout {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  body[data-page="staff-dashboard"] .staff-slot-alert {
+    min-height: 0;
+  }
+
+  body[data-page="staff-dashboard"] .staff-missing-chip-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .staff-notification-pill,
