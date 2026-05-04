@@ -963,3 +963,13 @@
 - 確認:
   - `node --check js/staff-customer-detail-page.js`
   - `git diff --check`
+
+### 2026-05-04 予約者情報migrationの関数再作成対応
+- 対象:
+  - `supabase/migrations/20260504120000_reservation_contact_persistence_guard.sql`
+- 背景:
+  - SQL Editorで `fetch_reservation_by_code(text)` の戻り値定義変更に対して `cannot change return type of existing function` が発生した。
+- 実装:
+  - `fetch_reservation_by_code(text)` を再定義前に `drop function if exists` するようにした。
+- 確認:
+  - `git diff --check`

@@ -66,6 +66,8 @@ begin
 end;
 $$;
 
+drop function if exists public.fetch_reservation_by_code(text);
+
 create or replace function public.fetch_reservation_by_code(p_reservation_code text)
 returns table(
   id uuid,
