@@ -647,6 +647,17 @@
   - `node --check js/admin-dashboard-page.js`
   - `git diff --check`
   - in-app browserで `admin/admin-dashboard.html?role=manager` を再読み込みして表示確認。
+
+### 2026-05-05 Deep Research向けスケール整合質問レポート作成
+- 対象:
+  - `deep-research-question-report-2026-05-05.md`
+- 背景:
+  - アンケート結果5軸と原料ポイントによるおすすめ配合のスケール感を適正に合わせられるか、現行ロジックと現行原料ポイントを前提にDeep Researchへ調査させる必要があった。
+- 実装:
+  - 現行アンケートロジック、原料ポイント、現在のおすすめ配合ロジック、表示補正式を整理した。
+  - Deep Researchへそのまま渡せる質問プロンプトを作成した。
+- 確認:
+  - `git diff --check`
   - Playwright screenshot 1674x940 / 390x844 full-page
   - Playwright screenshot 1674x940 / 390x844 / 390x844 full-page
   - in-app browserでテンプレート切り替えと初期値復帰を確認
