@@ -11,7 +11,7 @@
   <main class="admin-main">
     <section class="admin-page-title"><div><span class="eyebrow">QR Requests</span><h1>QR依頼一覧</h1></div></section>
     <form class="portal-filter-form card" id="qr-request-filter-form">
-      <label>状態<select id="qr-request-status-filter"><option value="">すべて</option><option value="requested">未対応</option><option value="available_email_sent">作成可能メール済み</option><option value="unavailable">作成不可</option><option value="shipping_pending">発送準備中</option><option value="shipped">発送完了</option><option value="auto_unavailable_overdue">期限超過不可</option></select></label>
+      <label>状態<select id="qr-request-status-filter"><option value="">すべて</option><option value="requested">未対応</option><option value="available_email_sent">作成可能メール済み</option><option value="reminder_email_sent">再案内済み</option><option value="expired">期限切れ</option><option value="unavailable">作成不可</option><option value="shipping_pending">発送準備中</option><option value="shipped">発送完了</option><option value="auto_unavailable_overdue">期限超過不可</option></select></label>
       <label>検索<input id="qr-request-keyword-filter" type="search" placeholder="依頼番号・商品名・担当"></label>
     </form>
     <section class="section"><div id="qr-request-rows" class="portal-list-body"></div><p class="admin-empty" id="qr-request-empty" hidden>該当するQR依頼はありません。</p><p class="admin-note">表示件数: <span id="qr-request-count">0</span></p></section>

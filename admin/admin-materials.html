@@ -9,15 +9,43 @@
 <body class="admin-page" data-page="admin-materials">
   <header class="admin-header" id="admin-header"></header>
   <main class="admin-main">
-    <section class="admin-page-title"><div><span class="eyebrow">Materials</span><h1>原料ポイント編集</h1></div><div class="admin-actions"><button class="admin-btn primary" id="material-create-button" type="button">新規作成</button><button class="admin-btn secondary" id="material-import-trigger" type="button">Json読込</button><button class="admin-btn secondary" id="material-export-json" type="button">Json保存</button></div></section>
-    <section class="kpi-grid"><article class="admin-panel"><p>登録数</p><strong id="materials-kpi-total">0</strong></article><article class="admin-panel"><p>有効</p><strong id="materials-kpi-active">0</strong></article><article class="admin-panel"><p>テンプレート</p><strong id="materials-kpi-template">0</strong></article><article class="admin-panel"><p>表示</p><strong id="material-count">0</strong></article></section>
-    <section class="admin-panel section">
+    <section class="admin-page-title admin-page-title--center"><div><span class="eyebrow">Materials</span><h1>原料ポイント編集</h1><p class="portal-hero-copy">各原料の香りの特徴を5つの軸で設定・編集できます。</p></div></section>
+    <section class="kpi-grid admin-material-kpis"><article class="admin-panel"><p>登録数</p><strong id="materials-kpi-total">0</strong></article><article class="admin-panel"><p>有効</p><strong id="materials-kpi-active">0</strong></article><article class="admin-panel"><p>テンプレート</p><strong id="materials-kpi-template">0</strong></article><article class="admin-panel"><p>表示</p><strong id="material-count">0</strong></article></section>
+    <section class="admin-materials-workbench">
+    <article class="admin-panel section">
+      <h2>原料一覧</h2>
       <div class="form-grid"><input id="material-search" type="search" placeholder="検索"><select id="material-filter"><option value="">すべて</option><option value="Top">Top</option><option value="Middle">Middle</option><option value="Last">Last</option></select><select id="material-sort-mode"><option value="sort">表示順</option><option value="name">名前</option><option value="category">カテゴリ</option></select><select id="material-template-select"></select></div>
-      <div class="admin-actions"><button class="admin-btn primary" id="material-seed-btn" data-material-save-db type="button">DB保存</button><button class="admin-btn secondary" id="material-template-apply" type="button">テンプレート適用</button></div>
+      <div class="admin-actions"><button class="admin-btn primary" id="material-create-button" type="button">新規作成</button><button class="admin-btn secondary" id="material-template-apply" type="button">テンプレート適用</button></div>
       <p class="admin-note" id="material-seed-status"></p><p class="admin-note" id="material-current-sort"></p><p class="admin-note" id="material-save-note"></p><input id="material-import-file" type="file" accept="application/json" hidden>
       <div id="material-chip-grid" class="action-row"></div>
       <div id="material-rows" class="portal-list-body"></div>
+    </article>
+    <article class="admin-panel admin-material-inline-card">
+      <h2>原料編集</h2>
+      <p class="admin-note">リストの原料を選択すると編集モーダルが開きます。新規追加や既存原料の5軸ポイント調整をここから行います。</p>
+      <div class="admin-axis-preview-list">
+        <span>華やかさ</span><meter min="0" max="5" value="4"></meter>
+        <span>甘さ</span><meter min="0" max="5" value="3"></meter>
+        <span>爽やかさ</span><meter min="0" max="5" value="2"></meter>
+        <span>落ち着き</span><meter min="0" max="5" value="3"></meter>
+        <span>深み</span><meter min="0" max="5" value="3"></meter>
+      </div>
+      <div class="admin-actions"><button class="admin-btn primary" id="material-seed-btn" data-material-save-db type="button">DB保存</button></div>
+    </article>
+    <article class="admin-panel admin-material-preview-panel">
+      <h2>プレビュー</h2>
+      <div class="admin-radar-placeholder" aria-hidden="true"><span></span></div>
+      <div class="admin-axis-preview-list">
+        <span>華やかさ</span><meter min="0" max="5" value="4"></meter>
+        <span>甘さ</span><meter min="0" max="5" value="3"></meter>
+        <span>爽やかさ</span><meter min="0" max="5" value="2"></meter>
+        <span>落ち着き</span><meter min="0" max="5" value="3"></meter>
+        <span>深み</span><meter min="0" max="5" value="3"></meter>
+      </div>
+      <p class="admin-note">選択中の原料の香りの傾向を表示しています。</p>
+    </article>
     </section>
+    <div class="admin-bottom-savebar"><button class="admin-btn gold" id="material-export-json" type="button">JSONを書き出す</button><button class="admin-btn secondary" id="material-import-trigger" type="button">JSONを読み込む</button></div>
   </main>
   <div class="portal-modal" id="material-modal" hidden><div class="portal-modal-backdrop" data-modal-close="material-modal"></div><div class="portal-modal-dialog"><h2 id="material-modal-title">原料編集</h2><form class="admin-form" id="material-form"><input id="material-id" type="hidden"><label>コード<input id="material-code" required></label><label>名称<input id="material-name" required></label><label>カテゴリ<select id="material-category"><option>Top</option><option>Middle</option><option>Last</option></select></label><label>表示順<input id="material-sort" type="number" value="0"></label><label class="pill"><input id="material-active" type="checkbox" checked> 有効</label><div class="admin-axis-input-grid"><label>フローラル<input id="axis-floral" type="number" value="0"></label><label>シトラス<input id="axis-fresh" type="number" value="0"></label><label>ウッディ<input id="axis-woody" type="number" value="0"></label><label>スパイシー<input id="axis-spicy" type="number" value="0"></label><label>スウィート<input id="axis-sweet" type="number" value="0"></label></div><p class="admin-note">合計 <span id="material-total">0</span></p><label>メモ<textarea id="material-note"></textarea></label><div class="admin-actions"><button class="admin-btn primary" type="submit">保存</button><button class="admin-btn secondary" id="material-reset" type="button">リセット</button><button class="admin-btn secondary" type="button" data-modal-close="material-modal">閉じる</button></div></form></div></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

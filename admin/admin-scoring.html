@@ -9,15 +9,15 @@
 <body class="admin-page" data-page="admin-scoring">
   <header class="admin-header" id="admin-header"></header>
   <main class="admin-main">
-    <section class="admin-page-title"><div><span class="eyebrow">Scoring</span><h1>配点ロジック調整</h1><p class="portal-hero-copy">active version <strong id="active-version">-</strong> / note <strong id="active-note">-</strong> / updated <strong id="active-updated">-</strong></p></div><div class="admin-actions"><button class="admin-btn secondary" id="scoring-load-template" type="button">初期テンプレート</button><button class="admin-btn secondary" id="scoring-load-active" type="button">activeへ戻す</button><button class="admin-btn primary" data-scoring-import-trigger type="button">Json読込</button><button class="admin-btn secondary" data-scoring-export type="button">Json保存</button></div></section>
+    <section class="admin-page-title admin-page-title--center"><div><span class="eyebrow">Scoring</span><h1>アンケート配点ロジック</h1><p class="portal-hero-copy">質問ごとの回答配点を調整し、香りの5軸への反映を管理します。</p><p class="portal-hero-copy">active version <strong id="active-version">-</strong> / note <strong id="active-note">-</strong> / updated <strong id="active-updated">-</strong></p></div></section>
     <p class="status-note" id="scoring-status">読み込み中です。</p><input id="scoring-import-json" type="file" accept="application/json" hidden>
-    <section class="dashboard-grid">
+    <section class="dashboard-grid admin-scoring-workbench">
       <article class="admin-panel"><h2>基本設定</h2><div id="scoring-branch-settings"></div></article>
       <article class="admin-panel"><h2>STEP1</h2><div class="admin-form-stack" id="scoring-step1-section"></div></article>
       <article class="admin-panel"><h2>Q8</h2><div class="admin-form-stack" id="scoring-q8-section"></div></article>
       <article class="admin-panel"><h2>STEP2</h2><div class="admin-form-stack" id="scoring-step2-section"></div></article>
       <article class="admin-panel"><h2>仕上げ</h2><div class="admin-form-stack" id="scoring-finish-section"></div></article>
-      <article class="admin-panel"><h2>保存</h2><form class="admin-form" id="scoring-form"><label>note<input id="scoring-note" type="text"></label><textarea id="scoring-json" rows="10" readonly></textarea><div class="portal-config-grid" id="scoring-sections"></div><button class="admin-btn primary" type="submit">保存</button></form></article>
+      <article class="admin-panel admin-scoring-save-panel"><h2>保存</h2><form class="admin-form" id="scoring-form"><label>note<input id="scoring-note" type="text"></label><textarea id="scoring-json" rows="10" readonly></textarea><div class="portal-config-grid" id="scoring-sections"></div><div class="admin-bottom-savebar"><button class="admin-btn gold" type="submit">保存</button><button class="admin-btn secondary" data-scoring-export type="button">JSONを書き出す</button><button class="admin-btn secondary" data-scoring-import-trigger type="button">JSONを読み込む</button><button class="admin-btn secondary" id="scoring-load-template" type="button">初期テンプレート</button><button class="admin-btn secondary" id="scoring-load-active" type="button">activeへ戻す</button></div></form></article>
     </section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

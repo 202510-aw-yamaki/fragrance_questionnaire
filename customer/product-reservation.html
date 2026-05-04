@@ -10,15 +10,16 @@
   <header class="site-header">
     <div class="site-header-inner site-container"><a class="brand" href="../index.html"><span class="brand-mark">✦</span><span>Fragrance Workshop</span></a></div>
   </header>
-  <main class="page-hero">
-    <div class="page-shell page-hero-inner">
-      <article class="request-card" aria-labelledby="product-name">
-        <span class="eyebrow">QR Request</span>
+  <main class="page-hero qr-product-page">
+    <div class="page-shell page-hero-inner qr-product-layout">
+      <article class="request-card qr-product-request-card" aria-labelledby="product-name">
+        <span class="eyebrow">QR商品ページ</span>
         <h1 id="product-name">読み込み中</h1>
         <div class="qr-product-tags" id="product-tags" hidden></div>
-        <div class="grid-2">
-          <p class="portal-card">10ml <strong id="price-10ml">-</strong></p>
-          <p class="portal-card">30ml <strong id="price-30ml">-</strong></p>
+        <p class="qr-product-lead">容量を選択してください</p>
+        <div class="qr-product-price-list">
+          <p class="portal-card"><span>10ml</span><strong id="price-10ml">-</strong></p>
+          <p class="portal-card"><span>30ml</span><strong id="price-30ml">-</strong></p>
         </div>
         <form id="qr-request-form" class="form-stack" novalidate>
           <label class="qr-field">10ml 数量
@@ -27,21 +28,20 @@
           <label class="qr-field">30ml 数量
             <span class="quantity-control"><button type="button" data-quantity-target="quantity-30ml" data-step="-1">-</button><input id="quantity-30ml" name="quantity_30ml" type="number" min="0" step="1" inputmode="numeric" value="0"><button type="button" data-quantity-target="quantity-30ml" data-step="1">+</button></span>
           </label>
-          <div class="portal-card"><p id="request-summary"></p><strong id="request-total">-</strong></div>
+          <div class="portal-card qr-request-summary-card"><h2>ご依頼内容</h2><p id="request-summary"></p><strong id="request-total">-</strong></div>
           <label class="qr-field">メールアドレス<input id="requester-email" name="requester_email" type="email" autocomplete="email" required></label>
           <p class="status-note" id="request-status" aria-live="polite"></p>
           <button class="main-button" id="submit-request" type="submit" disabled>この香水を作成依頼する</button>
+          <p class="admin-note">このボタンを押すと、原材料在庫の確認後、メールをさせていただきます。</p>
         </form>
       </article>
-      <aside class="page-hero-aside">
-        <h2>受付後の流れ</h2>
-        <ol class="step-list">
-          <li class="step-item"><span class="step-number">1</span><span>作成依頼を送信</span></li>
-          <li class="step-item"><span class="step-number">2</span><span>店舗で作成可否を確認</span></li>
-          <li class="step-item"><span class="step-number">3</span><span>メールで連絡</span></li>
-        </ol>
-        <p class="admin-note">電話: <span id="shop-phone">-</span></p>
-        <p class="admin-note">受付時間: <span id="business-hours">-</span></p>
+      <aside class="page-hero-aside qr-product-help">
+        <p class="admin-note">送料・着払い手数料は別途かかります。発送元は東京を想定しています。</p>
+        <div class="qr-product-contact">
+          <p>まとまった本数をご希望の場合は、原材料の確認が必要となります。</p>
+          <p>電話: <span id="shop-phone">-</span></p>
+          <p>受付時間: <span id="business-hours">-</span></p>
+        </div>
       </aside>
     </div>
   </main>

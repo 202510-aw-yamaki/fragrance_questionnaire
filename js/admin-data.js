@@ -64,12 +64,21 @@
     return true;
   }
 
+  async function callRpc(functionName, params = {}) {
+    const client = getClient();
+    if (!client) throw new Error("Supabase is not configured.");
+    const { data, error } = await client.rpc(functionName, params);
+    if (error) throw error;
+    return data;
+  }
+
   window.AdminData = {
     listRows,
     upsertRow,
     insertRow,
     updateRow,
     updateRows,
-    deleteRow
+    deleteRow,
+    callRpc
   };
 })();

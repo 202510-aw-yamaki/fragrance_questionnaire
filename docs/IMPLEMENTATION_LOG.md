@@ -602,6 +602,37 @@
 - 確認:
   - `node --check js/rebuild-customer-flow.js`
   - `git diff --check`
+
+### 2026-05-05 管理画面レイアウトとQR商品設定導線の追加
+- 対象:
+  - `admin/admin-dashboard.html`
+  - `admin/admin-settings.html`
+  - `admin/admin-qr-settings.html`
+  - `admin/admin-scoring.html`
+  - `admin/admin-materials.html`
+  - `admin/admin-qr-requests.html`
+  - `customer/product-reservation.html`
+  - `css/rebuild-ui.css`
+  - `js/admin-auth.js`
+  - `js/admin-dashboard-page.js`
+  - `js/admin-data.js`
+  - `js/admin-settings-page.js`
+  - `js/admin-qr-settings-page.js`
+  - `js/qr-requests-page.js`
+  - `supabase/migrations/20260504170000_admin_qr_settings_and_request_ops.sql`
+- 背景:
+  - レイアウト画像10、11、21〜25の方針に合わせ、管理者トップ、基本設定、配点ロジック、原料ポイント、QR設定、QR作成依頼、QR商品ページの見た目と導線を現行実装へ反映する必要があった。
+- 実装:
+  - 管理者ヘッダーを共通ナビ化し、基本設定、配点ロジック、原料ポイント、QR設定へ遷移できる構成にした。
+  - 管理者トップにQR作成依頼、期限超過未対応、発送準備中のKPIと通知表示を追加した。
+  - 基本設定ページからQR関連設定を分離し、QR商品設定ページを追加した。
+  - QR商品設定は価格、上限容量、期限、通知、店舗連絡先を `admin_settings` の `qr_product_public_settings` として保存する構成にした。
+  - QR作成依頼一覧に作成可能、作成不可、発送完了の操作ボタンを追加し、RPC経由でステータス変更できるようにした。
+  - Supabase migrationにQR設定初期値、QRアクセスログ、期限処理、依頼操作RPCを追加した。
+- 確認:
+  - `node --check` で関連JSの構文確認を実施。
+  - Playwrightでデスクトップとモバイルの主要画面を確認。
+  - `git diff --check` を実施。
   - Playwright screenshot 1674x940 / 390x844 full-page
   - Playwright screenshot 1674x940 / 390x844 / 390x844 full-page
   - in-app browserでテンプレート切り替えと初期値復帰を確認

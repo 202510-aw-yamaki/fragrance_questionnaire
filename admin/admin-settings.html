@@ -9,26 +9,43 @@
 <body class="admin-page" data-page="admin-settings">
   <header class="admin-header" id="admin-header"></header>
   <main class="admin-main">
-    <section class="admin-page-title"><div><span class="eyebrow">Settings</span><h1>基本設定・店舗情報</h1></div><button class="admin-btn primary" id="staff-create-button" type="button">スタッフ新規登録</button></section>
-    <section class="grid-2">
-      <article class="admin-panel"><h2>本日の出勤者 <span id="settings-today-label">--/--</span></h2><div class="admin-card-list" id="settings-today-staff"></div></article>
-      <article class="admin-panel"><h2>スタッフ管理</h2><label>スタッフ<select id="staff-manage-select"></select></label><button class="admin-btn secondary" id="staff-shift-button" type="button">スタッフ出勤管理</button><label>出勤管理<select id="shift-manage-select"></select></label><p class="admin-note" id="settings-control-note" hidden></p></article>
-    </section>
-    <section class="section grid-2">
+    <section class="admin-page-title admin-page-title--center"><div><span class="eyebrow">Settings</span><h1>基本設定</h1><p class="portal-hero-copy">店舗運営に関する基本情報を設定します。</p></div></section>
+    <section class="admin-settings-layout">
       <article class="admin-panel">
-        <h2>QR商品設定</h2>
-        <form class="admin-form-stack" id="qr-product-settings-form">
-          <label>10ml 税込価格<input id="qr-price-10ml" type="number" min="0" step="1" inputmode="numeric"></label>
-          <label>30ml 税込価格<input id="qr-price-30ml" type="number" min="0" step="1" inputmode="numeric"></label>
-          <label>最大依頼容量<input id="qr-max-volume-ml" type="number" min="10" step="10" inputmode="numeric"></label>
-          <label>店舗電話番号<input id="qr-shop-phone" type="text"></label>
-          <label>受付時間<input id="qr-business-hours" type="text"></label>
-          <label>商品ページタグ候補<textarea id="qr-product-tags" rows="4"></textarea></label>
-          <p class="admin-note">1行またはカンマ区切りで登録します。スタッフ画面では最大3つまで選択します。</p>
-          <p class="admin-note" id="qr-settings-note">公開QRページはこの設定を参照します。</p>
-          <button class="admin-btn primary" type="submit">保存</button>
+        <h2>店舗情報</h2>
+        <form class="admin-form-stack" id="store-public-info-form">
+          <label>店舗名<input id="store-name" type="text" autocomplete="organization"></label>
+          <label>店舗電話番号<input id="store-phone" type="tel" autocomplete="tel"></label>
+          <div class="admin-inline-fields">
+            <label>営業開始時間<input id="store-open-time" type="time"></label>
+            <label>営業終了時間<input id="store-close-time" type="time"></label>
+          </div>
+          <label>定休日<input id="store-closed-days" type="text"></label>
+          <label>店舗LP URL<input id="store-lp-url" type="url" inputmode="url"></label>
+          <p class="admin-note" id="store-public-info-note">公開ページやQR商品ページの店舗情報に利用します。</p>
         </form>
       </article>
+      <article class="admin-panel"><h2>スタッフ管理</h2><div class="admin-actions"><button class="admin-btn primary" id="staff-create-button" type="button">スタッフを追加</button></div><label>スタッフ<select id="staff-manage-select"></select></label><button class="admin-btn secondary" id="staff-shift-button" type="button">スタッフ出勤管理</button><label>出勤管理<select id="shift-manage-select"></select></label><p class="admin-note" id="settings-control-note" hidden></p><h3>本日のスタッフ <span id="settings-today-label">--/--</span></h3><div class="admin-card-list" id="settings-today-staff"></div></article>
+      <article class="admin-panel">
+        <h2>予約基本設定</h2>
+        <div class="admin-form-stack">
+          <label>予約枠の標準時間<select id="reservation-duration-setting"><option>60分</option><option>90分</option><option>120分</option></select></label>
+          <label>休憩時間<select id="reservation-break-setting"><option>15分</option><option>30分</option><option>なし</option></select></label>
+          <label>最大予約数<select id="reservation-limit-setting"><option>6件/日</option><option>8件/日</option><option>10件/日</option></select></label>
+          <label>通知メール設定<select id="reservation-mail-setting"><option>予約完了・リマインダーを送信する</option><option>予約完了のみ送信する</option></select></label>
+          <p class="admin-note">予約枠の実データは下のカレンダーで確認します。</p>
+        </div>
+      </article>
+    </section>
+    <div class="admin-bottom-savebar"><button class="admin-btn gold" id="settings-save-button" type="button">設定を保存</button></div>
+    <section class="admin-panel admin-settings-qr-link">
+      <div>
+        <h2>QR商品設定は専用ページで管理します</h2>
+        <p class="admin-note">QR価格の設定・編集は「QR設定」ページで行ってください。ここでは基本情報のみを設定します。</p>
+      </div>
+      <a class="admin-btn secondary" href="admin-qr-settings.html">QR設定を開く</a>
+    </section>
+    <section class="section grid-2">
       <article class="admin-panel">
         <h2>予約枠カレンダー</h2>
         <p class="admin-note" id="settings-calendar-range">表示期間</p>

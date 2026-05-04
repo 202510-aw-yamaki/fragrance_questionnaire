@@ -84,6 +84,20 @@
     return emailEventMap.get(row.id) || [];
   }
 
+  function getActionButtons(row) {
+    const actions = [];
+    if (row.status === "requested") {
+      actions.push(["available", "作成可能"]);
+      actions.push(["unavailable", "作成不可"]);
+    }
+    if (row.status === "shipping_pending") {
+      actions.push(["shipped", "発送完了"]);
+    }
+    return actions.map(([action, label]) => (
+      `<button class="admin-btn secondary qr-request-action" type="button" data-request-action="${action}" data-request-id="${escapeHtml(row.id)}">${escapeHtml(label)}</button>`
+    )).join("");
+  }
+
   function matchesKeyword(row, keyword) {
     if (!keyword) return true;
     const product = getProduct(row);
@@ -137,9 +151,26 @@
         <span class="qr-request-cell" data-label="期限">${escapeHtml(formatDateTime(row.availability_due_at))}</span>
         <span class="qr-request-cell" data-label="メール">${escapeHtml(emailStatus)}</span>
         <span class="qr-request-cell" data-label="QRアクセス">${escapeHtml(String(qrCode.access_count ?? "-"))}</span>
+        <span class="qr-request-cell qr-request-actions" data-label="操作">${getActionButtons(row) || "-"}</span>
       `;
       rowsEl.appendChild(article);
     });
+  }
+
+  async function runRequestAction(action, requestId) {
+    const rpcMap = {
+      available: "mark_qr_request_available",
+      unavailable: "mark_qr_request_unavailable",
+      shipped: "mark_qr_request_shipped"
+    };
+    const functionName = rpcMap[action];
+    if (!functionName || !requestId) return;
+    const params = action === "unavailable"
+      ? { p_request_id: requestId, p_reason: null }
+      : { p_request_id: requestId };
+    await window.AdminData.callRpc(functionName, params);
+    await loadRequests();
+    renderRows();
   }
 
   async function loadRelatedRows() {
@@ -207,6 +238,19 @@
   [statusFilterEl, keywordFilterEl].filter(Boolean).forEach((element) => {
     element.addEventListener("input", renderRows);
     element.addEventListener("change", renderRows);
+  });
+
+  rowsEl.addEventListener("click", async (event) => {
+    const button = event.target.closest("[data-request-action]");
+    if (!button) return;
+    button.disabled = true;
+    try {
+      await runRequestAction(button.dataset.requestAction, button.dataset.requestId);
+    } catch (error) {
+      button.disabled = false;
+      console.error("Failed to update QR request status.", error);
+      window.alert(error?.message || "QR依頼の状態更新に失敗しました。");
+    }
   });
 
   async function bootstrap() {

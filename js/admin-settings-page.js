@@ -2,6 +2,7 @@
   const STAFF_SETTING_KEY = "staff_directory";
   const SHIFT_SETTING_KEY = "staff_shift_overrides";
   const QR_PRODUCT_SETTING_KEY = "qr_product_public_settings";
+  const STORE_PUBLIC_INFO_KEY = "store_public_info";
   const QR_DEFAULT_SETTINGS = {
     price_10ml: 1000,
     price_30ml: 2860,
@@ -23,7 +24,24 @@
     "ティー",
     "アンバー"
   ];
+  const STORE_DEFAULT_INFO = {
+    store_name: "Fragrance Atelier",
+    store_phone: "03-1234-5678",
+    open_time: "10:00",
+    close_time: "19:00",
+    closed_days: "毎週水曜日",
+    lp_url: "https://fragrance-atelier.jp"
+  };
   const WEEKDAY_LABELS = ["日", "月", "火", "水", "木", "金", "土"];
+  const storeInfoFormEl = document.getElementById("store-public-info-form");
+  const storeNameEl = document.getElementById("store-name");
+  const storePhoneEl = document.getElementById("store-phone");
+  const storeOpenTimeEl = document.getElementById("store-open-time");
+  const storeCloseTimeEl = document.getElementById("store-close-time");
+  const storeClosedDaysEl = document.getElementById("store-closed-days");
+  const storeLpUrlEl = document.getElementById("store-lp-url");
+  const storeInfoNoteEl = document.getElementById("store-public-info-note");
+  const settingsSaveButtonEl = document.getElementById("settings-save-button");
   const todayLabelEl = document.getElementById("settings-today-label");
   const todayStaffEl = document.getElementById("settings-today-staff");
   const controlNoteEl = document.getElementById("settings-control-note");
@@ -867,6 +885,18 @@
     };
   }
 
+  function normalizeStoreInfo(value) {
+    const source = value && typeof value === "object" ? value : {};
+    return {
+      store_name: String(source.store_name ?? source.storeName ?? STORE_DEFAULT_INFO.store_name),
+      store_phone: String(source.store_phone ?? source.storePhone ?? STORE_DEFAULT_INFO.store_phone),
+      open_time: String(source.open_time ?? source.openTime ?? STORE_DEFAULT_INFO.open_time),
+      close_time: String(source.close_time ?? source.closeTime ?? STORE_DEFAULT_INFO.close_time),
+      closed_days: String(source.closed_days ?? source.closedDays ?? STORE_DEFAULT_INFO.closed_days),
+      lp_url: String(source.lp_url ?? source.lpUrl ?? STORE_DEFAULT_INFO.lp_url)
+    };
+  }
+
   function normalizeProductTags(value) {
     const source = Array.isArray(value)
       ? value
@@ -888,6 +918,34 @@
     if (!qrSettingsNoteEl) return;
     qrSettingsNoteEl.textContent = message;
     qrSettingsNoteEl.className = isError ? "admin-error" : "admin-note";
+  }
+
+  function setStoreInfoNote(message, isError = false) {
+    if (!storeInfoNoteEl) return;
+    storeInfoNoteEl.textContent = message;
+    storeInfoNoteEl.className = isError ? "admin-error" : "admin-note";
+  }
+
+  function fillStoreInfoForm() {
+    if (!storeInfoFormEl) return;
+    const info = normalizeStoreInfo(readSettingValue(STORE_PUBLIC_INFO_KEY));
+    if (storeNameEl) storeNameEl.value = info.store_name;
+    if (storePhoneEl) storePhoneEl.value = info.store_phone;
+    if (storeOpenTimeEl) storeOpenTimeEl.value = info.open_time;
+    if (storeCloseTimeEl) storeCloseTimeEl.value = info.close_time;
+    if (storeClosedDaysEl) storeClosedDaysEl.value = info.closed_days;
+    if (storeLpUrlEl) storeLpUrlEl.value = info.lp_url;
+  }
+
+  function readStoreInfoForm() {
+    return normalizeStoreInfo({
+      store_name: storeNameEl?.value,
+      store_phone: storePhoneEl?.value,
+      open_time: storeOpenTimeEl?.value,
+      close_time: storeCloseTimeEl?.value,
+      closed_days: storeClosedDaysEl?.value,
+      lp_url: storeLpUrlEl?.value
+    });
   }
 
   function fillQrSettingsForm() {
@@ -943,6 +1001,7 @@
       state.selectedStaffId = state.staffDirectory[0].id;
     }
     renderPage();
+    fillStoreInfoForm();
     fillQrSettingsForm();
   }
 
@@ -1184,6 +1243,34 @@
     button.addEventListener("click", () => {
       closeModal(document.getElementById(button.dataset.modalClose));
     });
+  });
+
+  async function saveStorePublicInfo() {
+    const info = readStoreInfoForm();
+    if (!info.store_name || !info.store_phone) {
+      setStoreInfoNote("店舗名と電話番号を確認してください。", true);
+      return;
+    }
+    try {
+      await saveSetting(STORE_PUBLIC_INFO_KEY, {
+        ...info,
+        shop_phone: info.store_phone,
+        business_hours: `${info.open_time}〜${info.close_time}`
+      }, { isPublic: true });
+      fillStoreInfoForm();
+      setStoreInfoNote("店舗情報を保存しました。", false);
+    } catch (error) {
+      setStoreInfoNote(error?.message || "店舗情報の保存に失敗しました。", true);
+    }
+  }
+
+  storeInfoFormEl?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    await saveStorePublicInfo();
+  });
+
+  settingsSaveButtonEl?.addEventListener("click", async () => {
+    await saveStorePublicInfo();
   });
 
   qrSettingsFormEl?.addEventListener("submit", async (event) => {

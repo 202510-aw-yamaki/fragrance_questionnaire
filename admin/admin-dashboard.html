@@ -9,16 +9,17 @@
 <body class="admin-page" data-page="admin-dashboard">
   <header class="admin-header" id="admin-header"></header>
   <main class="admin-main">
-    <section class="admin-page-title"><div><span class="eyebrow">Admin Dashboard</span><h1>管理者ダッシュボード</h1></div></section>
-    <section class="kpi-grid">
-      <article class="admin-panel kpi-card"><span class="decor-icon">□</span><div><p>本日の予約</p><strong class="kpi-value" id="kpi-reservations">0</strong><small id="kpi-reservations-week">0</small></div></article>
-      <article class="admin-panel kpi-card"><span class="decor-icon">□</span><div><p>予約枠</p><strong class="kpi-value" id="kpi-slots">0</strong></div></article>
-      <article class="admin-panel kpi-card"><span class="decor-icon">□</span><div><p>配点</p><strong class="kpi-value" id="kpi-scoring">-</strong></div></article>
-      <article class="admin-panel kpi-card"><span class="decor-icon">□</span><div><p>原料</p><strong class="kpi-value" id="kpi-materials">0</strong></div></article>
+    <section class="admin-page-title admin-page-title--center"><div><span class="eyebrow">Admin Dashboard</span><h1>管理者ダッシュボード</h1></div><a class="admin-notification-pill" href="admin-qr-requests.html">QR関連通知 <strong id="manager-qr-request-count">0</strong></a></section>
+    <section class="kpi-grid admin-dashboard-kpis">
+      <article class="admin-panel kpi-card"><span class="decor-icon">□</span><div><p>本日の予約</p><strong class="kpi-value"><span id="kpi-reservations">0</span>件</strong><small>今週 <span id="kpi-reservations-week">0</span>件</small></div></article>
+      <article class="admin-panel kpi-card"><span class="decor-icon">□</span><div><p>未確認予約</p><strong class="kpi-value"><span id="kpi-unconfirmed-reservations">0</span>件</strong><small>確認待ち</small></div></article>
+      <article class="admin-panel kpi-card"><span class="decor-icon">□</span><div><p>QR作成依頼</p><strong class="kpi-value"><span id="kpi-qr-requests">0</span>件</strong><small>未対応</small></div></article>
+      <article class="admin-panel kpi-card"><span class="decor-icon">□</span><div><p>期限超過未対応</p><strong class="kpi-value"><span id="kpi-overdue-requests">0</span>件</strong><small>管理者確認</small></div></article>
+      <article class="admin-panel kpi-card"><span class="decor-icon">□</span><div><p>発送準備中</p><strong class="kpi-value"><span id="kpi-shipping-pending">0</span>件</strong><small>発送待ち</small></div></article>
     </section>
     <section class="dashboard-grid section">
       <article class="admin-panel"><h2>本日の出勤</h2><div id="manager-today-shifts" class="portal-list-body"></div></article>
-      <article class="admin-panel"><h2>QR関連通知</h2><strong class="kpi-value" id="manager-qr-request-count">0</strong><div id="manager-qr-request-list" class="portal-list-body"></div></article>
+      <article class="admin-panel"><h2>QR関連通知</h2><strong class="kpi-value" id="manager-qr-request-panel-count">0</strong><div id="manager-qr-request-list" class="portal-list-body"></div></article>
       <article class="admin-panel"><h2>翌週の予約枠</h2><div id="manager-next-week-summary" class="portal-list-body"></div></article>
       <article class="admin-panel"><h2>枠カバー状況</h2><div id="manager-slot-coverage" class="portal-list-body"></div></article>
       <article class="admin-panel"><h2>配点ロジック</h2><div id="manager-scoring-weight-summary"></div><div id="manager-scoring-summary"></div></article>

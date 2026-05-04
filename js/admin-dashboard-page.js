@@ -6,6 +6,10 @@
   const kpiSlotsEl = document.getElementById("kpi-slots");
   const kpiScoringEl = document.getElementById("kpi-scoring");
   const kpiMaterialsEl = document.getElementById("kpi-materials");
+  const kpiUnconfirmedReservationsEl = document.getElementById("kpi-unconfirmed-reservations");
+  const kpiQrRequestsEl = document.getElementById("kpi-qr-requests");
+  const kpiOverdueRequestsEl = document.getElementById("kpi-overdue-requests");
+  const kpiShippingPendingEl = document.getElementById("kpi-shipping-pending");
   const todayShiftsEl = document.getElementById("manager-today-shifts");
   const nextWeekSummaryEl = document.getElementById("manager-next-week-summary");
   const coverageEl = document.getElementById("manager-slot-coverage");
@@ -13,6 +17,7 @@
   const scoringSummaryEl = document.getElementById("manager-scoring-summary");
   const materialLinksEl = document.getElementById("manager-material-links");
   const qrRequestCountEl = document.getElementById("manager-qr-request-count");
+  const qrRequestPanelCountEl = document.getElementById("manager-qr-request-panel-count");
   const qrRequestListEl = document.getElementById("manager-qr-request-list");
 
   function createLocalDate(date) {
@@ -319,15 +324,48 @@
       : `<p class="admin-empty">表示できる原料がありません。</p>`;
   }
 
-  function renderQrNotifications(rows, emailRows = []) {
+  function isUnconfirmedReservation(row) {
+    return ["pending", "unconfirmed", "requested"].includes(String(row.status || "").toLowerCase());
+  }
+
+  function isOpenQrRequest(row) {
+    return ["requested", "available_email_sent", "reminder_email_sent"].includes(String(row.status || ""));
+  }
+
+  function isOverdueQrRequest(row, now = new Date()) {
+    if (row.status === "auto_unavailable_overdue") return true;
+    if (row.status !== "requested" || !row.availability_due_at) return false;
+    const dueAt = new Date(row.availability_due_at);
+    return Number.isFinite(dueAt.getTime()) && dueAt < now;
+  }
+
+  function renderQrNotifications(rows, emailRows = [], requestRows = []) {
     if (!qrRequestCountEl || !qrRequestListEl) return;
     const openRows = (rows || []).filter((row) => row.status === "open");
     const queuedEmailRows = (emailRows || []).filter((row) => row.status === "queued");
-    qrRequestCountEl.textContent = String(openRows.length + queuedEmailRows.length);
-    if (!openRows.length && !queuedEmailRows.length) {
+    const overdueRows = (requestRows || []).filter((row) => isOverdueQrRequest(row));
+    const shippingRows = (requestRows || []).filter((row) => row.status === "shipping_pending");
+    const totalCount = openRows.length + queuedEmailRows.length + overdueRows.length + shippingRows.length;
+    qrRequestCountEl.textContent = String(totalCount);
+    if (qrRequestPanelCountEl) qrRequestPanelCountEl.textContent = String(totalCount);
+    if (!openRows.length && !queuedEmailRows.length && !overdueRows.length && !shippingRows.length) {
       qrRequestListEl.innerHTML = `<p class="admin-empty">未対応のQR依頼はありません。</p>`;
       return;
     }
+    const overdueItems = overdueRows.slice(0, 3).map((row) => `
+      <article class="portal-dashboard-row portal-dashboard-row--summary">
+        <span>${escapeHtml(row.request_code || "QR依頼")}</span>
+        <span>期限超過</span>
+        <strong>${escapeHtml(formatDueDate(row.availability_due_at))}</strong>
+      </article>
+    `);
+    const shippingItems = shippingRows.slice(0, 3).map((row) => `
+      <article class="portal-dashboard-row portal-dashboard-row--summary">
+        <span>${escapeHtml(row.request_code || "QR依頼")}</span>
+        <span>発送準備中</span>
+        <strong>${escapeHtml(formatDueDate(row.updated_at))}</strong>
+      </article>
+    `);
     const requestItems = openRows.slice(0, 5).map((row) => {
       const payload = parsePayload(row);
       const productName = payload.product_name || "QR商品";
@@ -351,7 +389,7 @@
         </article>
       `;
     });
-    qrRequestListEl.innerHTML = requestItems.concat(emailItems).join("")
+    qrRequestListEl.innerHTML = overdueItems.concat(shippingItems, requestItems, emailItems).join("")
       + `<a class="admin-btn" href="${window.AdminAuth.appendRoleToHref("admin-qr-requests.html", "manager")}">QR依頼一覧</a>`;
   }
 
@@ -370,7 +408,7 @@
       ]
     });
 
-    const [reservations, slots, scoringRows, materials, settingsRows, qrNotificationRows, emailEventRows] = await Promise.all([
+    const [reservations, slots, scoringRows, materials, settingsRows, qrNotificationRows, emailEventRows, qrRequestRows] = await Promise.all([
       window.AdminData.listRows("reservations", { orders: [{ column: "created_at", ascending: false }] }).catch(() => []),
       window.AdminData.listRows("reservation_slots", { filters: [{ operator: "in", column: "status", value: ["open", "recommended", "closed"] }] }).catch(() => []),
       window.AdminData.listRows("scoring_configs", { filters: [{ operator: "eq", column: "is_active", value: true }], limit: 1 }).catch(() => []),
@@ -390,6 +428,10 @@
         ],
         orders: [{ column: "created_at", ascending: false }],
         limit: 5
+      }).catch(() => []),
+      window.AdminData.listRows("qr_product_requests", {
+        orders: [{ column: "created_at", ascending: false }],
+        select: "id, request_code, status, availability_due_at, updated_at"
       }).catch(() => [])
     ]);
 
@@ -399,6 +441,18 @@
     const slotMap = new Map(slots.map((row) => [row.id, row]));
     const todayReservations = reservations.filter((row) => slotMap.get(row.slot_id)?.slot_date === todayKey);
     kpiReservationsEl.textContent = String(todayReservations.length);
+    if (kpiUnconfirmedReservationsEl) {
+      kpiUnconfirmedReservationsEl.textContent = String(reservations.filter(isUnconfirmedReservation).length);
+    }
+    if (kpiQrRequestsEl) {
+      kpiQrRequestsEl.textContent = String(qrRequestRows.filter(isOpenQrRequest).length);
+    }
+    if (kpiOverdueRequestsEl) {
+      kpiOverdueRequestsEl.textContent = String(qrRequestRows.filter((row) => isOverdueQrRequest(row)).length);
+    }
+    if (kpiShippingPendingEl) {
+      kpiShippingPendingEl.textContent = String(qrRequestRows.filter((row) => row.status === "shipping_pending").length);
+    }
     if (kpiReservationsWeekEl) {
       const today = todayKey;
       const weekLimit = formatDateKey(addDays(createLocalDate(new Date()), 6));
@@ -408,17 +462,17 @@
       });
       const weeklySlots = slots.filter((row) => row.is_active !== false && row.slot_date >= today && row.slot_date <= weekLimit);
       kpiReservationsWeekEl.textContent = String(weeklyReservations.length);
-      kpiSlotsEl.textContent = String(weeklySlots.length);
+      if (kpiSlotsEl) kpiSlotsEl.textContent = String(weeklySlots.length);
     }
-    kpiScoringEl.textContent = scoringRows[0]?.version ?? "-";
-    kpiMaterialsEl.textContent = String(materials.length);
+    if (kpiScoringEl) kpiScoringEl.textContent = scoringRows[0]?.version ?? "-";
+    if (kpiMaterialsEl) kpiMaterialsEl.textContent = String(materials.length);
 
     renderTodayShifts(slots, reservations, staffRows, shiftOverrides);
     renderNextWeekSummary(slots, reservations, staffRows);
     renderCoverage(slots, staffRows);
     renderScoringSummary(scoringRows[0] || null);
     renderMaterialLinks(materials);
-    renderQrNotifications(qrNotificationRows, emailEventRows);
+    renderQrNotifications(qrNotificationRows, emailEventRows, qrRequestRows);
   }
 
   bootstrap();
