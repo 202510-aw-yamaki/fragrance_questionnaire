@@ -44,7 +44,6 @@
   const recipeSummaryListEl = document.getElementById("recipe-summary-list");
   const previsitRecipeSummaryEl = document.getElementById("previsit-recipe-summary");
   const previsitRecipeEditOpenEl = document.getElementById("previsit-recipe-edit-open");
-  const copyPrevisitToFinalEl = document.getElementById("copy-previsit-to-final");
   const recipeBaseAxisPreviewEl = document.getElementById("recipe-base-axis-preview");
   const recipeDerivedAxisPreviewEl = document.getElementById("recipe-derived-axis-preview");
   const previsitRecipeBaseAxisPreviewEl = document.getElementById("previsit-recipe-base-axis-preview");
@@ -61,11 +60,9 @@
   const normalizePrevisitRecipeEl = document.getElementById("normalize-previsit-recipe");
   const axisTotalEl = document.getElementById("axis-total");
   const finalAxisPreviewEl = document.getElementById("final-axis-preview");
-  const customerFeedbackEl = document.getElementById("customer-feedback");
   const saveStatusEl = document.getElementById("save-status");
   const qrPreviewEl = document.getElementById("qr-preview");
   const saveDraftEl = document.getElementById("save-draft");
-  const saveDraftNoteEl = document.getElementById("save-draft-note");
   const saveCompleteEl = document.getElementById("save-complete");
   const generateQrEl = document.getElementById("generate-qr");
   const productNameEl = document.getElementById("product-name");
@@ -523,7 +520,8 @@
     return {
       axes: getCurrentFinalAxes(),
       customerActionRecipeItems: collectCustomerActionRecipeItems(),
-      customerFeedback: customerFeedbackEl?.value || "",
+      hearingNote: hearingNoteEl?.value || "",
+      staffSummary: staffSummaryEl?.value || "",
       productName: productNameEl?.value || "",
       personalInfoConsent: Boolean(personalInfoConsentEl?.checked),
       thirdPartyOrderConsent: Boolean(thirdPartyOrderConsentEl?.checked)
@@ -536,7 +534,8 @@
     if (Array.isArray(snapshot.customerActionRecipeItems)) {
       renderCustomerActionRecipeRows(snapshot.customerActionRecipeItems);
     }
-    if (customerFeedbackEl) customerFeedbackEl.value = snapshot.customerFeedback || "";
+    if (hearingNoteEl) hearingNoteEl.value = snapshot.hearingNote || "";
+    if (staffSummaryEl) staffSummaryEl.value = snapshot.staffSummary || "";
     if (productNameEl) productNameEl.value = snapshot.productName || "";
     if (personalInfoConsentEl) personalInfoConsentEl.checked = Boolean(snapshot.personalInfoConsent);
     if (thirdPartyOrderConsentEl) thirdPartyOrderConsentEl.checked = Boolean(snapshot.thirdPartyOrderConsent);
@@ -944,7 +943,6 @@
   function renderPrevisitRecipeSummary() {
     if (!previsitRecipeSummaryEl) return;
     const items = getPrevisitProposalItems();
-    if (copyPrevisitToFinalEl) copyPrevisitToFinalEl.disabled = !items.length;
     if (!items.length) {
       previsitRecipeSummaryEl.innerHTML = `<p class="admin-empty">提案配合は未設定です。</p>`;
       return;
@@ -1054,19 +1052,6 @@
     });
     syncAllRecipeAmountRanges(previsitRecipeListEl);
     renderPrevisitRecipeAxisCompare();
-  }
-
-  function copyPrevisitRecipeToFinal() {
-    if (!previsitRecipeItems.length) {
-      setStatus("コピーできる事前配合がありません。", "error");
-      return;
-    }
-    renderRecipeRows(previsitRecipeItems);
-    refreshFinalAxesFromRecipe();
-    renderRecipeSummary();
-    renderRecipeAxisCompare();
-    renderQr(false);
-    setStatus("事前配合を最終配合へコピーしました。");
   }
 
   function getRecipeModalSnapshot() {
@@ -1380,7 +1365,8 @@
     recordIdEl.value = workshop?.id || "";
     sessionStatusEl.value = workshop?.status || "draft";
     renderPreparationNote();
-    staffSummaryEl.value = workshop?.staff_summary || "";
+    const storedFeedback = getFeedbackKey() ? window.sessionStorage.getItem(getFeedbackKey()) || "" : "";
+    if (staffSummaryEl) staffSummaryEl.value = workshop?.staff_summary || storedFeedback || "";
     if (productNameEl) productNameEl.value = fragranceProduct?.product_name || "";
     if (personalInfoConsentEl) {
       personalInfoConsentEl.checked = Boolean(fragranceProduct?.personal_info_consent);
@@ -1388,7 +1374,6 @@
     if (thirdPartyOrderConsentEl) {
       thirdPartyOrderConsentEl.checked = Boolean(fragranceProduct?.third_party_order_consent);
     }
-    customerFeedbackEl.value = getFeedbackKey() ? window.sessionStorage.getItem(getFeedbackKey()) || "" : "";
     if (hearingNoteEl) {
       hearingNoteEl.value = getHearingMemoKey() ? window.sessionStorage.getItem(getHearingMemoKey()) || "" : "";
     }
@@ -1550,7 +1535,7 @@
       reservation_id: reservation.id,
       questionnaire_result_id: reservation.questionnaire_result_id || null,
       preparation_note: getPreparationNoteText() || null,
-      staff_summary: staffSummaryEl.value.trim() || null,
+      staff_summary: staffSummaryEl?.value.trim() || null,
       pre_visit_axes: normalizeAxes(questionnaire?.final_axes || reservation.axes || {}),
       reservation_axes: normalizeAxes(reservation.axes || {}),
       final_axes: normalizeAxes(getCurrentFinalAxes()),
@@ -1572,7 +1557,7 @@
       await saveFragranceProduct(recordIdEl.value, payload);
       await syncProductQrCode();
       if (getFeedbackKey()) {
-        window.sessionStorage.setItem(getFeedbackKey(), customerFeedbackEl.value.trim());
+        window.sessionStorage.setItem(getFeedbackKey(), staffSummaryEl?.value.trim() || "");
       }
       if (hearingNoteEl && getHearingMemoKey()) {
         window.sessionStorage.setItem(getHearingMemoKey(), hearingNoteEl.value.trim());
@@ -1772,7 +1757,6 @@
     addPrevisitRecipeRowEl?.addEventListener("click", () => createPrevisitRecipeRow({ role: "ingredient" }));
     applyPrevisitRecommendedRecipeEl?.addEventListener("click", applyPrevisitRecommendedRecipe);
     normalizePrevisitRecipeEl?.addEventListener("click", normalizePrevisitRecipeAmounts);
-    copyPrevisitToFinalEl?.addEventListener("click", copyPrevisitRecipeToFinal);
     AXIS_ORDER.forEach((axis) => {
       document.getElementById(`axis-${axis}`)?.addEventListener("input", updateAxisTotal);
     });
@@ -1788,9 +1772,6 @@
       });
     });
     saveDraftEl?.addEventListener("click", () => {
-      submitModeEl.value = "draft";
-    });
-    saveDraftNoteEl?.addEventListener("click", () => {
       submitModeEl.value = "draft";
     });
     saveCompleteEl?.addEventListener("click", () => {

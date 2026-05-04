@@ -897,8 +897,8 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   gap: 18px;
 }
 
-.staff-customer-action-panel[data-customer-action-panel="fragrance"] .staff-customer-note-grid {
-  grid-template-columns: 1fr;
+.staff-customer-action-panel[data-customer-action-panel="fragrance"] .staff-customer-note-grid--split {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .staff-customer-note-grid label,
@@ -2550,6 +2550,10 @@ body[data-page="staff-slots"] .staff-main::before {
   .staff-customer-balance-grid,
   .staff-customer-note-grid,
   .staff-customer-product-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .staff-customer-action-panel[data-customer-action-panel="fragrance"] .staff-customer-note-grid--split {
     grid-template-columns: 1fr;
   }
 

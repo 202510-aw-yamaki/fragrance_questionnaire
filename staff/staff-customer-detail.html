@@ -40,19 +40,16 @@
                 <h2>アンケート結果</h2>
                 <div id="axis-compare"></div>
               </section>
-              <section class="staff-detail-mini-card staff-detail-recommend-card">
-                <h2>おすすめ配合</h2>
-                <div id="recommended-materials"></div>
-              </section>
             </div>
             <div class="staff-detail-note-stack">
               <section class="staff-detail-note-card staff-detail-readonly-note">
                 <h2>来店前メモ</h2>
                 <div class="staff-detail-note-display" id="preparation-note-display">未記載</div>
               </section>
-              <label class="staff-detail-note-card">当日ヒアリングメモ<textarea id="hearing-note"></textarea></label>
-              <label class="staff-detail-note-card">お客様感想メモ<textarea id="staff-summary"></textarea></label>
-              <button class="admin-btn secondary staff-note-save" id="save-draft-note" type="submit" form="staff-detail-form">途中保存</button>
+              <section class="staff-detail-mini-card staff-detail-recommend-card">
+                <h2>おすすめ配合</h2>
+                <div id="recommended-materials"></div>
+              </section>
             </div>
           </div>
         </article>
@@ -66,9 +63,6 @@
               <button class="admin-btn secondary" id="previsit-recipe-edit-open" type="button">調整</button>
             </div>
             <div class="staff-previsit-summary" id="previsit-recipe-summary"></div>
-            <div class="staff-previsit-actions">
-              <button class="admin-btn secondary" id="copy-previsit-to-final" type="button" disabled>最終配合へコピー</button>
-            </div>
           </div>
         </article>
 
@@ -201,8 +195,9 @@
           <button class="admin-btn secondary" id="normalize-customer-action-recipe" type="button">割合を100%に整える</button>
         </div>
         <div class="staff-recipe-list staff-customer-action-recipe-list" id="customer-action-recipe-list"></div>
-        <div class="staff-customer-note-grid">
-          <label>仕上がりメモ<textarea id="customer-feedback" form="staff-detail-form"></textarea></label>
+        <div class="staff-customer-note-grid staff-customer-note-grid--split">
+          <label>当日ヒアリングメモ<textarea id="hearing-note" form="staff-detail-form"></textarea></label>
+          <label>お客様感想メモ<textarea id="staff-summary" form="staff-detail-form"></textarea></label>
         </div>
       </div>
 
