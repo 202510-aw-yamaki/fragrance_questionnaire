@@ -261,8 +261,18 @@
   }
 
   function omitReservationOptionalColumns(payload) {
-    const { questionnaire_flow_status, questionnaire_sync_error, customer_id, customer_name, customer_email, duration_minutes, ...basePayload } = payload;
+    const { questionnaire_flow_status, questionnaire_sync_error, customer_id, duration_minutes, ...basePayload } = payload;
     return basePayload;
+  }
+
+  function mergeReservationContactResult(row, payload) {
+    if (!row) return row;
+    return {
+      ...row,
+      customer_name: row.customer_name || payload.customer_name || null,
+      customer_email: row.customer_email || payload.customer_email || null,
+      duration_minutes: row.duration_minutes ?? payload.duration_minutes ?? null
+    };
   }
 
   async function createReservation(payload) {
@@ -276,7 +286,7 @@
     try {
       const { data, error } = await client.rpc("create_public_reservation", { p_payload: rpcPayload });
       if (error) throw error;
-      return normalizeSingleRow(data);
+      return mergeReservationContactResult(normalizeSingleRow(data), reservationPayload);
     } catch (error) {
       if (!isMissingFunctionError(error)) {
         console.error("Failed to create reservation via RPC.", error);
@@ -293,11 +303,12 @@
       return data;
     };
     try {
-      return await insertReservation(reservationPayload);
+      return mergeReservationContactResult(await insertReservation(reservationPayload), reservationPayload);
     } catch (error) {
       if (isMissingColumnError(error)) {
         try {
-          return await insertReservation(omitReservationOptionalColumns(reservationPayload));
+          const fallbackPayload = omitReservationOptionalColumns(reservationPayload);
+          return mergeReservationContactResult(await insertReservation(fallbackPayload), fallbackPayload);
         } catch (retryError) {
           console.error("Failed to create reservation.", retryError);
           return null;

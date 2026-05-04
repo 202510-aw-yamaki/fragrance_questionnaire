@@ -933,3 +933,20 @@
   - `node --check js/admin-auth.js`
   - `git diff --check`
   - Playwrightで390px表示時に外側ログアウト非表示、メニュー内ログアウト表示、日付切替横並び、KPI2列3行を確認。
+
+### 2026-05-04 接客詳細の予約者情報保存・表示補強
+- 対象:
+  - `js/public-data.js`
+  - `js/staff-customer-detail-page.js`
+  - `supabase/migrations/20260504120000_reservation_contact_persistence_guard.sql`
+- 背景:
+  - ユーザー確認で、予約枠への予約時に名前（ニックネーム可）とメールアドレスを入力する構造のため、その時点で保存され、接客詳細で表示される必要がある。
+- 実装:
+  - 予約作成の直接insertフォールバックで `customer_name` / `customer_email` を落とさないようにした。
+  - RPC返却値にも予約者情報をマージし、予約完了直後の画面状態で入力情報を保持するようにした。
+  - 接客詳細では `reservations.customer_name/customer_email` に加えて、`reservation.customer_id` に紐づく `customers.display_name/email` をフォールバック表示するようにした。
+  - Supabase migrationで予約者名・メール・枠時間カラムと `create_public_reservation` / `fetch_reservation_by_code` を再定義し、DB側でも保存される状態を補強した。
+- 確認:
+  - `node --check js/public-data.js`
+  - `node --check js/staff-customer-detail-page.js`
+  - `git diff --check`
