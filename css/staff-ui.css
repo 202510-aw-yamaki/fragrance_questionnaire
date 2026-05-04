@@ -1034,11 +1034,6 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   min-width: 260px;
 }
 
-.staff-detail-operations-head h2 {
-  margin: 0 0 16px;
-  font-size: 24px;
-}
-
 .staff-detail-operation-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 0.88fr);
@@ -1390,6 +1385,11 @@ body[data-page="staff-customer-detail"] .staff-axis-input-grid {
 .staff-detail-status-summary .admin-btn {
   width: 100%;
   white-space: normal;
+}
+
+.staff-detail-status-panel {
+  display: grid;
+  gap: 10px;
 }
 
 .staff-detail-status-summary .staff-qr-preview {

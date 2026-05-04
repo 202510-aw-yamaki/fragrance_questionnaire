@@ -77,9 +77,6 @@
       </section>
 
       <section class="staff-soft-card staff-final-section staff-detail-operations" id="final-section">
-        <div class="staff-detail-operations-head">
-          <h2>スタッフ操作・ワークショップ運用</h2>
-        </div>
         <div class="staff-detail-operation-grid staff-detail-operation-grid--compact">
           <article class="staff-detail-operation-card">
             <h3>ワークショップ完了</h3>
@@ -89,17 +86,18 @@
               <p class="admin-note" id="axis-total">合計 0</p>
               <div class="staff-axis-preview" id="final-axis-preview"></div>
             </section>
-            <p class="status-note" id="save-status"></p>
             <div class="admin-actions staff-detail-save-actions"><button class="admin-btn primary" id="save-complete" type="submit" form="staff-detail-form">最終登録</button></div>
           </article>
 
           <aside class="staff-detail-status-summary">
-            <h3>ステータスサマリー</h3>
-            <div><span>QR発行状況</span><strong id="staff-detail-summary-qr">-</strong></div>
-            <div><span>メール送信状況</span><strong id="staff-detail-mail-status">-</strong></div>
-            <div><span>ワークショップ状態</span><strong id="staff-detail-summary-workshop">-</strong></div>
             <div id="qr-preview" class="staff-qr-preview" hidden></div>
             <button class="admin-btn primary" id="generate-qr" type="button" disabled>QR付きメールを送る</button>
+            <section class="staff-detail-status-panel" aria-label="ステータスサマリー">
+              <h3>ステータスサマリー</h3>
+              <div><span>QR発行状況</span><strong id="staff-detail-summary-qr">-</strong></div>
+              <div><span>メール送信状況</span><strong id="staff-detail-mail-status">-</strong></div>
+              <div><span>ワークショップ状態</span><strong id="staff-detail-summary-workshop">-</strong></div>
+            </section>
           </aside>
         </div>
       </section>
