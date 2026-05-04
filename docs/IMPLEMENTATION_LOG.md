@@ -1,5 +1,77 @@
 # Implementation Log
 
+## 2026-05-04 Staff Detail Handoff Summary
+
+### Scope
+
+- スタッフ予約枠ページ、予約一覧ページ、接客詳細ページをユーザー注釈に合わせて継続調整した。
+- 特に `staff/staff-customer-detail.html` は、見本に寄せるため旧構成の流用をやめ、スタッフ確認用、事前配合調整、お客様共有アクション、完了操作へ役割を分け直した。
+
+### User Decisions Treated As Source Of Truth
+
+- スタッフ系CSSは `css/staff-ui.css` にまとめる。
+- 予約枠ページは3カラムを基本とし、タブレットでは週カレンダーとフォームを `1:2` で横並びにする。
+- 予約一覧ページではメール欄を出さない。
+- 接客詳細サマリーでは電話番号を出さない。予約時入力の名前/メールを優先表示する。
+- ゲスト予約とログイン予約の会員紐づけを分離する。ブラウザにAuthセッションが残っていても、ゲスト予約が別人情報に引っ張られないようにする。
+- 事前配合調整は来店前提案のための機能。配合提案はDB保存し、カード上は設定済み/未設定だけを表示する。
+- お客様と香りを調整する画面は、提案配合をもとに一緒に調整し、`これで決定` で最終配合へ反映する。
+- 商品名決定では、管理者設定のタグ候補から商品ページ用タグを選択する。
+- 最終操作は `最終登録` と `QR付きメールを送る` を横並びにする。途中保存と不要な状態pは置かない。
+
+### Main Files
+
+- `staff/staff-slots.html`
+- `staff/staff-reservations.html`
+- `staff/staff-customer-detail.html`
+- `css/staff-ui.css`
+- `js/staff-slots-page.js`
+- `js/staff-reservations-page.js`
+- `js/staff-customer-detail-page.js`
+- `js/public-data.js`
+- `supabase/migrations/20260504120000_reservation_contact_persistence_guard.sql`
+- `supabase/migrations/20260504150000_staff_previsit_product_tags.sql`
+- `supabase/migrations/20260504154500_fix_fragrance_product_policy_recursion.sql`
+
+### DB Notes
+
+- `reservations.customer_name` / `reservations.customer_email` are the source of truth for reservation contact display.
+- `workshop_sessions.previsit_recipe_items` stores the previsit proposal recipe.
+- `workshop_sessions.previsit_recipe_axes` stores the corrected proposal axes.
+- `fragrance_products.product_tags` stores selected product page tags.
+- RLS recursion between `fragrance_products` and `product_qr_codes` was fixed by moving cross-table checks into Security Definer functions.
+
+### Local Commits In This Workstream
+
+- `d99394f fix: 予約枠ページの注釈指摘を反映`
+- `5af4946 fix: 予約枠作成フォームの注釈指摘を反映`
+- `e5b0ee6 fix: 予約枠作成時の確認導線を追加`
+- `e528c9e fix: 予約枠ページのタブレット幅を調整`
+- `8518528 fix: 予約枠フォームの高さを調整`
+- `5eb674d fix: 予約一覧ページのヘッダーと完了済み切替を調整`
+- `d5ce040 fix: 予約一覧のメール列を削除`
+- `d36ca42 fix: 接客詳細ページを見本レイアウトへ調整`
+- `c6bf730 fix: 接客詳細の共有アクションをモーダル化`
+- `c9cacaa fix: 予約者情報の保存と接客詳細表示を補強`
+- `0007a91 fix: 接客詳細の予約者情報フォールバックを修正`
+- `48f7a8c fix: ゲスト予約と会員予約の紐づけを分離`
+- `1f5878b feat: 事前配合調整を追加`
+- `f8bae26 fix: 配合調整モーダルを理想レイアウトに調整`
+- `68bfa05 fix: 配合調整の5軸をL字配置に調整`
+- `108f6c8 fix: 香り調整に提案配合を反映`
+- `5432b70 fix: 香り調整に接客メモを集約`
+- `25565cb feat: 商品タグと事前配合保存を追加`
+- `c4bea3e fix: QR商品RLSの再帰を解消`
+- `c569cad refactor: スタッフ詳細の完了操作を整理`
+- `b7746a8 refactor: 完了操作の表示を簡素化`
+- `9d197cf refactor: 詳細操作ボタンの配置を調整`
+
+### Verification Notes
+
+- 関連JSは各コミット時点で `node --check` を実施している。
+- レイアウトは in-app browser / Playwright で PC、タブレット、スマホ幅を都度確認している。
+- SQL Editor で `20260504150000_staff_previsit_product_tags.sql` と `20260504154500_fix_fragrance_product_policy_recursion.sql` はユーザーが実行済み。
+
 このファイルは、作業実装の記録用です。
 `docs/00_PROJECT_CORE.md` から `docs/06_OPEN_ISSUES.md` までの正本仕様を置き換えるものではありません。
 正本資料への追記を増やしすぎないため、実装したファイル、判断、未対応範囲をここに集約します。
