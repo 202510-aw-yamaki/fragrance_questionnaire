@@ -19,6 +19,9 @@
   const qrRequestCountEl = document.getElementById("manager-qr-request-count");
   const qrRequestPanelCountEl = document.getElementById("manager-qr-request-panel-count");
   const qrRequestListEl = document.getElementById("manager-qr-request-list");
+  const statusBlockHeadings = document.querySelectorAll(".admin-dashboard-status-block h3");
+  const todayShiftHeadingEl = statusBlockHeadings[0] || null;
+  const slotSummaryHeadingEl = statusBlockHeadings[1] || null;
 
   function createLocalDate(date) {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -51,7 +54,14 @@
     commonQuestions: "\u5171\u901a\u8cea\u554f\uff081\uff5e5\uff09",
     branchQuestions: "\u5206\u5c90\u8cea\u554f\uff086\uff5e7\uff09",
     finalQuestion: "\u6700\u7d42\u8cea\u554f",
-    finishCorrection: "\u4ed5\u4e0a\u3052\u88dc\u6b63"
+    finishCorrection: "\u4ed5\u4e0a\u3052\u88dc\u6b63",
+    todayStaff: "\u672c\u65e5\u306e\u30b9\u30bf\u30c3\u30d5",
+    slotStatus: "\u4e88\u7d04\u67a0\u72b6\u6cc1",
+    total: "\u5168\u4f53",
+    slotUnit: "\u67a0",
+    reserved: "\u4e88\u7d04\u6e08\u307f",
+    peopleUnit: "\u540d",
+    noSlots: "\u4e88\u7d04\u67a0\u306f\u3042\u308a\u307e\u305b\u3093"
   };
 
   function escapeHtml(value) {
@@ -159,22 +169,84 @@
     return slots.reduce((total, slot) => total + (reservationMap.get(slot.id) || 0), 0);
   }
 
+  function getSlotCapacity(slot) {
+    const capacity = Number(slot?.capacity);
+    return Number.isFinite(capacity) && capacity > 0 ? capacity : 1;
+  }
+
+  function getUsagePercent(reservedCount, totalCapacity) {
+    return totalCapacity ? Math.round((reservedCount / totalCapacity) * 100) : 0;
+  }
+
+  function formatSlotUsage(totalCapacity, reservedCount) {
+    const percent = getUsagePercent(reservedCount, totalCapacity);
+    return `${LABELS.total}${totalCapacity}${LABELS.slotUnit}\u4e2d${reservedCount}${LABELS.slotUnit}${LABELS.reserved}\uff08${percent}%\uff09`;
+  }
+
+  function setStatusHeading(element, title, meta) {
+    if (!element) return;
+    element.innerHTML = `<span>${escapeHtml(title)}</span>${meta ? `<strong>${escapeHtml(meta)}</strong>` : ""}`;
+  }
+
+  function formatSlotRange(slot) {
+    const label = String(slot?.slot_label || "");
+    const rangeMatch = label.match(/\d{1,2}:\d{2}\s*[-\u2013\u2014~\uff5e]\s*\d{1,2}:\d{2}/);
+    if (rangeMatch) return rangeMatch[0].replace(/\s+/g, "");
+    return String(slot?.slot_time || "").slice(0, 5) || label || LABELS.uncategorized;
+  }
+
+  function getSlotTone(reservedCount, totalCapacity) {
+    if (totalCapacity && reservedCount >= totalCapacity) return "is-full";
+    if (totalCapacity && getUsagePercent(reservedCount, totalCapacity) >= 70) return "is-warn";
+    return "";
+  }
+
+  function buildSlotStatusCards(slotRows, reservationMap) {
+    const groups = slotRows.reduce((acc, slot) => {
+      const label = formatSlotRange(slot);
+      const bucket = acc.get(label) || { label, sortKey: String(slot.slot_time || label), capacity: 0, reserved: 0 };
+      bucket.capacity += getSlotCapacity(slot);
+      bucket.reserved += reservationMap.get(slot.id) || 0;
+      acc.set(label, bucket);
+      return acc;
+    }, new Map());
+    const items = Array.from(groups.values()).sort((left, right) => left.sortKey.localeCompare(right.sortKey));
+    if (!items.length) return `<p class="admin-empty">${LABELS.noSlots}</p>`;
+    return items.map((bucket) => {
+      const tone = getSlotTone(bucket.reserved, bucket.capacity);
+      return `
+        <article class="admin-dashboard-slot-card ${tone}">
+          <span>${escapeHtml(bucket.label)}</span>
+          <strong>${getUsagePercent(bucket.reserved, bucket.capacity)}%</strong>
+          <small>${escapeHtml(`${bucket.reserved}${LABELS.slotUnit}${LABELS.reserved} / ${bucket.capacity}${LABELS.slotUnit}`)}</small>
+        </article>
+      `;
+    }).join("");
+  }
+
   function renderTodayShifts(slots, reservations, staffRows = [], shiftOverrides = []) {
     const todayKey = formatDateKey(new Date());
     const todaySlots = slots.filter((row) => row.slot_date === todayKey && row.is_active !== false);
     const reservationMap = createReservationCountMap(reservations);
     if (staffRows.length) {
-      todayShiftsEl.innerHTML = staffRows.map((staff) => {
+      const staffStates = staffRows.map((staff) => {
         const staffSlots = getSlotsForStaff(slots, staff.staffName, todayKey);
         const isWorking = isStaffWorkingOnDate(staff, todayKey, shiftOverrides);
-        return `
-          <article class="portal-dashboard-row portal-dashboard-row--today ${isWorking ? "" : "is-off"}">
-            <span>${escapeHtml(staff.staffName)}</span>
-            <span>${isWorking ? LABELS.attending : LABELS.dayOff}</span>
-            <strong>${isWorking ? countReservationsForSlots(staffSlots, reservationMap) : "/"}</strong>
-          </article>
-        `;
-      }).join("");
+        return {
+          staffName: staff.staffName,
+          isWorking,
+          reservationCount: isWorking ? countReservationsForSlots(staffSlots, reservationMap) : "/"
+        };
+      });
+      const workingCount = staffStates.filter((staff) => staff.isWorking).length;
+      setStatusHeading(todayShiftHeadingEl, LABELS.todayStaff, `${LABELS.attending} ${workingCount}${LABELS.peopleUnit}`);
+      todayShiftsEl.innerHTML = staffStates.map((staff) => `
+        <article class="admin-dashboard-staff-card ${staff.isWorking ? "" : "is-off"}">
+          <span>${escapeHtml(staff.staffName)}</span>
+          <span>${staff.isWorking ? LABELS.attending : LABELS.dayOff}</span>
+          <strong>${escapeHtml(staff.reservationCount)}</strong>
+        </article>
+      `).join("");
       return;
     }
     const groups = todaySlots.reduce((acc, slot) => {
@@ -187,12 +259,14 @@
     }, new Map());
 
     if (!groups.size) {
+      setStatusHeading(todayShiftHeadingEl, LABELS.todayStaff, `${LABELS.attending} 0${LABELS.peopleUnit}`);
       todayShiftsEl.innerHTML = `<p class="admin-empty">本日の予約枠はありません。</p>`;
       return;
     }
 
+    setStatusHeading(todayShiftHeadingEl, LABELS.todayStaff, `${LABELS.attending} ${groups.size}${LABELS.peopleUnit}`);
     todayShiftsEl.innerHTML = Array.from(groups.values()).map((group) => `
-      <article class="portal-dashboard-row portal-dashboard-row--today">
+      <article class="admin-dashboard-staff-card">
         <span>${escapeHtml(group.staffName)}</span>
         <span>${LABELS.attending}</span>
         <strong>${group.reservations}</strong>
@@ -274,6 +348,25 @@
         </article>
       `;
     }).join("");
+  }
+
+  function renderSlotSummary(slots, reservations) {
+    if (!nextWeekSummaryEl) return;
+    const today = formatDateKey(new Date());
+    const weekLimit = formatDateKey(addDays(createLocalDate(new Date()), 6));
+    const slotRows = slots.filter((row) => row.is_active !== false && row.slot_date >= today && row.slot_date <= weekLimit);
+    const reservationMap = createReservationCountMap(reservations);
+    const totalCapacity = slotRows.reduce((total, slot) => total + getSlotCapacity(slot), 0);
+    const reservedCount = countReservationsForSlots(slotRows, reservationMap);
+    const usageText = formatSlotUsage(totalCapacity, reservedCount);
+    setStatusHeading(slotSummaryHeadingEl, LABELS.slotStatus, "");
+    nextWeekSummaryEl.innerHTML = `
+      <article class="admin-dashboard-slot-total">
+        <span>${escapeHtml(usageText)}</span>
+        <strong>${getUsagePercent(reservedCount, totalCapacity)}%</strong>
+      </article>
+      ${buildSlotStatusCards(slotRows, reservationMap)}
+    `;
   }
 
   function renderScoringSummary(scoringRow) {
@@ -468,7 +561,7 @@
     if (kpiMaterialsEl) kpiMaterialsEl.textContent = String(materials.length);
 
     renderTodayShifts(slots, reservations, staffRows, shiftOverrides);
-    renderNextWeekSummary(slots, reservations, staffRows);
+    renderSlotSummary(slots, reservations);
     renderCoverage(slots, staffRows);
     renderScoringSummary(scoringRows[0] || null);
     renderMaterialLinks(materials);

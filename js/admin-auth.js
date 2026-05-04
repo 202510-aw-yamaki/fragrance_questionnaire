@@ -228,7 +228,7 @@
     };
     const staffLinks = optionLinks || defaultLinks;
     const baseLinks = (role === "staff" ? staffLinks : defaultLinks)
-      .filter(({ key }) => role !== "staff" || activePage !== "staff-dashboard" || key !== activePage);
+      .filter(({ key }) => key !== activePage);
     const portalSwitchLinks = sessionRole === "manager"
       ? (role === "staff"
         ? [{ href: HOME_BY_ROLE.manager, label: "\u7ba1\u7406\u8005\u753b\u9762\u3078", key: "portal-manager" }]
