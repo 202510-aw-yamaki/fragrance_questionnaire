@@ -80,21 +80,7 @@
         <div class="staff-detail-operations-head">
           <h2>スタッフ操作・ワークショップ運用</h2>
         </div>
-        <div class="staff-detail-operation-grid">
-          <article class="staff-detail-operation-card">
-            <div class="staff-detail-operation-card-head">
-              <h3>最終配合保存</h3>
-              <button class="admin-btn secondary" id="recipe-edit-open" type="button">編集</button>
-            </div>
-            <div class="staff-recipe-summary-list" id="recipe-summary-list"></div>
-          </article>
-
-          <article class="staff-detail-operation-card">
-            <h3>QRメール送信</h3>
-            <div id="qr-preview" class="staff-qr-preview" hidden></div>
-            <button class="admin-btn primary" id="generate-qr" type="button" disabled>QR付きメールを送る</button>
-          </article>
-
+        <div class="staff-detail-operation-grid staff-detail-operation-grid--compact">
           <article class="staff-detail-operation-card">
             <h3>ワークショップ完了</h3>
             <p class="staff-workshop-complete-text">接客内容・配合・同意確認が完了したら、お客様ステータスを完了として記録します。</p>
@@ -112,6 +98,8 @@
             <div><span>QR発行状況</span><strong id="staff-detail-summary-qr">-</strong></div>
             <div><span>メール送信状況</span><strong id="staff-detail-mail-status">-</strong></div>
             <div><span>ワークショップ状態</span><strong id="staff-detail-summary-workshop">-</strong></div>
+            <div id="qr-preview" class="staff-qr-preview" hidden></div>
+            <button class="admin-btn primary" id="generate-qr" type="button" disabled>QR付きメールを送る</button>
           </aside>
         </div>
       </section>

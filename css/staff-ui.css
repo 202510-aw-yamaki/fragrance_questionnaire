@@ -1046,6 +1046,10 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   align-items: start;
 }
 
+.staff-detail-operation-grid--compact {
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.78fr);
+}
+
 .staff-detail-operation-card {
   display: grid;
   gap: 12px;
@@ -1099,6 +1103,12 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+}
+
+.staff-detail-save-actions .admin-btn:only-child {
+  grid-column: 1 / -1;
+  width: 100%;
+  white-space: nowrap;
 }
 
 .staff-detail-recipe-head {
@@ -1375,6 +1385,15 @@ body[data-page="staff-customer-detail"] .staff-axis-input-grid {
   display: grid;
   gap: 10px;
   align-self: start;
+}
+
+.staff-detail-status-summary .admin-btn {
+  width: 100%;
+  white-space: normal;
+}
+
+.staff-detail-status-summary .staff-qr-preview {
+  margin: 2px 0 0;
 }
 
 .staff-detail-status-summary h3 {
@@ -2523,6 +2542,10 @@ body[data-page="staff-slots"] .staff-main::before {
 
   body[data-page="staff-customer-detail"] .staff-detail-operation-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  body[data-page="staff-customer-detail"] .staff-detail-operation-grid--compact {
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 0.78fr);
   }
 
   .staff-reservation-layout.section {
