@@ -1,5 +1,11 @@
 # Current State
 
+## 2026-05-04 Layout Image Completion State
+
+`レイアウトimg/01`〜`10`、`13`〜`20` は、ユーザー訂正を反映したうえで本リポジトリ内では完了済みとして扱う。
+
+これらは未着手のUI再構築タスクではない。完了済み計画は `docs/archive/20260504_UI_REBUILD_PLAN_completed.md` に退避済み。
+
 ## 2026-05-04 Latest Staff Page State
 
 この節は 2026-05-04 時点のスタッフ系ページの最新状態です。下部に古い課題として `staff-customer-detail.html` に商品名入力欄がない等の記述が残っている場合でも、現在は本節を優先してください。

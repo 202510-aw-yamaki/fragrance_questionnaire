@@ -1,3 +1,22 @@
+# Archive Notice
+
+このファイルは、2026-05-01から2026-05-04にかけて進めたUI再構築の完了済み計画です。
+
+`レイアウトimg/01`〜`10`、`13`〜`20` は、ユーザー訂正を反映したうえで本リポジトリ内では完了済みとして扱います。
+
+現在の作業判断では、以下を優先してください。
+
+1. `AGENTS.md`
+2. `docs/00_PROJECT_CORE.md`
+3. `docs/01_CURRENT_STATE.md`
+4. `docs/02_TARGET_ARCHITECTURE.md`
+5. `docs/03_DB_DESIGN_POLICY.md`
+6. `docs/04_QR_PRODUCT_FLOW.md`
+7. `docs/05_IMPLEMENTATION_ROADMAP.md`
+8. `docs/06_OPEN_ISSUES.md`
+
+このファイルの内容をもとに未着手タスクとして実装しないでください。
+
 # UI Rebuild Plan
 
 ## 目的

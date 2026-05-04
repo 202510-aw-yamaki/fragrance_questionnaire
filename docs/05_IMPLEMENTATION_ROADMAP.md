@@ -20,13 +20,17 @@
 - `docs/04_QR_PRODUCT_FLOW.md`
 - `docs/05_IMPLEMENTATION_ROADMAP.md`
 - `docs/06_OPEN_ISSUES.md`
-- `docs/UI_REBUILD_PLAN.md`
 
 UI再構築は2026-05-01に完了しました。
 
 完了内容は以下に退避しました。
 
 `docs/archive/20260501_05_IMPLEMENTATION_ROADMAP_ui_rebuild_completed.md`
+
+2026-05-04追記:
+`レイアウトimg/01`〜`10`、`13`〜`20` は、ユーザー訂正を反映したうえで本リポジトリ内では完了済みとして扱う。
+完了済みのUI再構築計画は `docs/archive/20260504_UI_REBUILD_PLAN_completed.md` に退避済み。
+通常作業では未着手タスクとして参照しない。
 
 ## 現在の最優先作業
 
