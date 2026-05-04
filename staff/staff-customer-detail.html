@@ -11,7 +11,6 @@
   <header class="staff-detail-header" id="staff-detail-header"></header>
   <main class="staff-main staff-detail-main">
     <section class="staff-detail-summary-card">
-      <div class="staff-detail-summary-art" aria-hidden="true"><span></span></div>
       <div class="staff-detail-summary-body">
         <span class="eyebrow">Customer Detail</span>
         <div id="customer-profile"></div>
@@ -30,24 +29,20 @@
 
       <section class="staff-detail-board">
         <article class="admin-panel staff-detail-private-panel">
-          <div class="staff-detail-panel-tab staff-detail-panel-tab--private">スタッフ確認用（お客様には表示しません）</div>
+          <div class="staff-detail-panel-tab staff-detail-panel-tab--private">スタッフ確認用</div>
           <div class="staff-detail-private-grid">
             <section class="staff-detail-mini-card staff-detail-survey-card">
               <h2>アンケート結果</h2>
-              <div id="question-summary"></div>
-              <div class="staff-answer-grid" id="question-answer-grid"></div>
-            </section>
-            <section class="staff-detail-mini-card staff-detail-axis-card">
-              <h2>香り5軸</h2>
               <div id="axis-compare"></div>
             </section>
             <label class="staff-detail-note-card">来店前メモ<textarea id="preparation-note"></textarea></label>
+            <label class="staff-detail-note-card">当日ヒアリングメモ<textarea id="hearing-note"></textarea></label>
             <label class="staff-detail-note-card staff-detail-note-card--wide">接客メモ<textarea id="staff-summary"></textarea></label>
           </div>
         </article>
 
         <article class="admin-panel staff-detail-share-panel">
-          <div class="staff-detail-panel-tab staff-detail-panel-tab--share">お客様共有アクション（お客様に見せる操作）</div>
+          <div class="staff-detail-panel-tab staff-detail-panel-tab--share">お客様共有アクション</div>
           <div class="staff-detail-share-actions">
             <button class="staff-detail-share-action" type="button" data-customer-action="fragrance"><span>調</span><strong>お客様と香りを調整する</strong><small>香りの方向性を確認しながら、微調整を行います。</small></button>
             <button class="staff-detail-share-action" type="button" data-customer-action="product"><span>商</span><strong>商品名を決める</strong><small>お客様と一緒に、香水の名前を決めます。</small></button>
@@ -62,25 +57,23 @@
         </div>
         <div class="staff-detail-operation-grid">
           <article class="staff-detail-operation-card">
-            <h3>最終配合保存</h3>
-            <div class="staff-detail-recipe-head">
-              <h4>最終配合</h4>
-              <button class="admin-btn secondary" id="add-recipe-row" type="button">行を追加</button>
+            <div class="staff-detail-operation-card-head">
+              <h3>最終配合保存</h3>
+              <button class="admin-btn secondary" id="recipe-edit-open" type="button">編集</button>
             </div>
-            <div class="staff-recipe-list" id="recipe-list"></div>
-            <button class="admin-btn secondary" id="normalize-recipe" type="button">割合を100%に整える</button>
+            <div class="staff-recipe-summary-list" id="recipe-summary-list"></div>
           </article>
 
           <article class="staff-detail-operation-card">
             <h3>QR発行・メール送信</h3>
-            <div id="qr-preview" class="staff-qr-preview">QRコードがここに表示されます。</div>
-            <button class="admin-btn primary" id="generate-qr" type="button">QR表示</button>
+            <div id="qr-preview" class="staff-qr-preview">QR付きメールを送信し、お客様の端末で受信確認を行います。</div>
+            <button class="admin-btn primary" id="generate-qr" type="button">QR付きメールを送る</button>
           </article>
 
           <article class="staff-detail-operation-card">
             <h3>ワークショップ完了</h3>
-            <section class="staff-detail-axis-section">
-              <h4>最終5軸</h4>
+            <p class="staff-workshop-complete-text">接客内容・配合・同意確認が完了したら、お客様ステータスを完了として記録します。</p>
+            <section class="staff-axis-hidden-controls" aria-hidden="true">
               <div class="staff-axis-input-grid" id="final-axis-inputs"><label>フローラル<input id="axis-floral" type="number" min="0" max="100" step="1" value="0"></label><label>シトラス<input id="axis-fresh" type="number" min="0" max="100" step="1" value="0"></label><label>ウッディ<input id="axis-woody" type="number" min="0" max="100" step="1" value="0"></label><label>スパイシー<input id="axis-spicy" type="number" min="0" max="100" step="1" value="0"></label><label>スウィート<input id="axis-sweet" type="number" min="0" max="100" step="1" value="0"></label></div>
               <p class="admin-note" id="axis-total">合計 0</p>
               <div class="staff-axis-preview" id="final-axis-preview"></div>
@@ -99,9 +92,23 @@
       </section>
 
     </form>
-
-    <p class="staff-detail-footnote">この画面では、スタッフ確認用の情報と、お客様に見せる操作を分けて管理しています。</p>
   </main>
+  <div class="portal-modal staff-recipe-modal" id="recipe-modal" hidden>
+    <div class="portal-modal-backdrop" data-recipe-close></div>
+    <section class="portal-modal-dialog staff-recipe-dialog" role="dialog" aria-modal="true" aria-labelledby="recipe-modal-title">
+      <button class="staff-customer-action-close" type="button" data-recipe-close aria-label="閉じる">×</button>
+      <h2 id="recipe-modal-title">配合調整</h2>
+      <div class="staff-detail-recipe-head">
+        <h4>最終配合</h4>
+        <button class="admin-btn secondary" id="add-recipe-row" type="button">行を追加</button>
+      </div>
+      <div class="staff-recipe-list" id="recipe-list"></div>
+      <div class="staff-recipe-modal-actions">
+        <button class="admin-btn secondary" id="normalize-recipe" type="button">割合を100%に整える</button>
+        <button class="admin-btn primary" type="button" data-recipe-close>配合を反映して閉じる</button>
+      </div>
+    </section>
+  </div>
   <div class="portal-modal staff-customer-action-modal" id="customer-action-modal" hidden>
     <div class="portal-modal-backdrop" data-customer-action-close></div>
     <section class="portal-modal-dialog staff-customer-action-dialog" role="dialog" aria-modal="true" aria-labelledby="customer-action-modal-title">
@@ -119,7 +126,6 @@
           </section>
         </div>
         <div class="staff-customer-note-grid">
-          <label>当日ヒアリングメモ<textarea id="hearing-note" form="staff-detail-form"></textarea></label>
           <label>仕上がりメモ<textarea id="customer-feedback" form="staff-detail-form"></textarea></label>
         </div>
       </div>

@@ -151,7 +151,7 @@ body[data-page="staff-customer-detail"] .staff-main::before {
 
 .staff-detail-summary-card {
   display: grid;
-  grid-template-columns: 150px minmax(340px, 1fr) minmax(360px, 0.9fr) auto;
+  grid-template-columns: minmax(340px, 1fr) minmax(360px, 0.9fr) auto;
   gap: 22px;
   align-items: center;
   border: 1px solid var(--line);
@@ -159,24 +159,6 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   background: rgba(255, 253, 249, 0.92);
   box-shadow: var(--soft-shadow);
   padding: 18px 24px;
-}
-
-.staff-detail-summary-art {
-  min-height: 120px;
-  border-right: 1px solid var(--line);
-  background: url("../img/TOP/hero-visual.png") left center / 104px auto no-repeat;
-}
-
-.staff-detail-summary-art span {
-  width: 94px;
-  height: 94px;
-  display: block;
-  margin: 13px 0 0 38px;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 50% 35%, rgba(213, 173, 115, 0.32) 0 18px, transparent 19px),
-    radial-gradient(circle at 50% 72%, rgba(181, 159, 128, 0.24) 0 32px, transparent 33px),
-    #f6eee4;
 }
 
 .staff-detail-summary-body .eyebrow {
@@ -305,6 +287,10 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   gap: 12px;
 }
 
+.staff-detail-survey-card {
+  grid-row: span 2;
+}
+
 .staff-detail-mini-card,
 .staff-detail-note-card,
 .staff-detail-operation-card,
@@ -394,20 +380,14 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   font-weight: 700;
 }
 
-.staff-axis-compare-grid {
+.staff-survey-radar-only {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  min-height: 250px;
+  place-items: center;
 }
 
-.staff-axis-card {
-  display: grid;
-  gap: 10px;
-}
-
-.staff-axis-card h3 {
-  margin: 0;
-  font-size: 16px;
+.staff-survey-radar-only .staff-radar-graph {
+  width: min(100%, 280px);
 }
 
 .staff-radar-wrap {
@@ -662,6 +642,10 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   gap: 18px;
 }
 
+.staff-customer-action-panel[data-customer-action-panel="fragrance"] .staff-customer-note-grid {
+  grid-template-columns: 1fr;
+}
+
 .staff-customer-note-grid label,
 .staff-customer-product-entry label {
   display: grid;
@@ -782,7 +766,7 @@ body[data-page="staff-customer-detail"] .staff-main::before {
 
 .staff-detail-operation-grid {
   display: grid;
-  grid-template-columns: minmax(280px, 1fr) minmax(240px, 0.85fr) minmax(280px, 1fr) minmax(220px, 0.72fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 0.88fr);
   gap: 18px;
   align-items: start;
 }
@@ -791,6 +775,48 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   display: grid;
   gap: 12px;
   align-content: start;
+}
+
+.staff-detail-operation-card h3 {
+  font-size: 20px;
+}
+
+.staff-detail-operation-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.staff-detail-operation-card-head h3 {
+  margin: 0;
+}
+
+.staff-detail-operation-card-head .admin-btn {
+  min-width: 58px;
+  padding: 8px 12px;
+}
+
+.staff-recipe-summary-list {
+  display: grid;
+  gap: 8px;
+}
+
+.staff-recipe-summary-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 250, 243, 0.82);
+  padding: 10px 12px;
+}
+
+.staff-recipe-summary-row--head {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
 }
 
 .staff-detail-consent-grid,
@@ -825,6 +851,29 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   padding: 8px;
 }
 
+.staff-recipe-modal .portal-modal-backdrop {
+  background: rgba(55, 45, 35, 0.52);
+  backdrop-filter: blur(3px);
+}
+
+.staff-recipe-dialog {
+  width: min(760px, calc(100vw - 42px));
+}
+
+.staff-recipe-dialog h2 {
+  margin: 0 0 22px;
+  font-family: var(--serif);
+  font-size: clamp(28px, 3vw, 40px);
+  text-align: center;
+}
+
+.staff-recipe-modal-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+  margin-top: 14px;
+}
+
 .staff-amount-control {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -839,7 +888,7 @@ body[data-page="staff-customer-detail"] .staff-main::before {
 
 .staff-qr-preview {
   display: grid;
-  min-height: 180px;
+  min-height: 150px;
   place-items: center;
   border: 1px dashed var(--line-strong);
   border-radius: var(--radius);
@@ -848,10 +897,15 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   text-align: center;
 }
 
-.staff-qr-preview img,
-.staff-qr-preview canvas {
-  max-width: 180px;
-  max-height: 180px;
+.staff-workshop-complete-text {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+  font-weight: 700;
+}
+
+.staff-axis-hidden-controls {
+  display: none;
 }
 
 body[data-page="staff-customer-detail"] .staff-axis-input-grid {
@@ -1944,13 +1998,13 @@ body[data-page="staff-slots"] .staff-main::before {
 
 @media (max-width: 1120px) {
   .staff-detail-summary-card {
-    grid-template-columns: 120px minmax(280px, 0.9fr) minmax(300px, 1fr);
+    grid-template-columns: minmax(280px, 0.9fr) minmax(300px, 1fr);
     gap: 16px;
     padding-bottom: 74px;
   }
 
   .staff-detail-summary-status {
-    grid-column: 3;
+    grid-column: 2;
   }
 
   .staff-detail-summary-status {
@@ -1969,6 +2023,10 @@ body[data-page="staff-slots"] .staff-main::before {
 
   .staff-detail-operation-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body[data-page="staff-customer-detail"] .staff-detail-operation-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .staff-reservation-layout.section {
@@ -2128,10 +2186,6 @@ body[data-page="staff-slots"] .staff-main::before {
     grid-template-columns: 1fr;
   }
 
-  .staff-detail-summary-art {
-    display: none;
-  }
-
   .staff-detail-summary-status,
   .staff-detail-summary-card > .admin-btn,
   .staff-detail-note-card--wide {
@@ -2162,6 +2216,10 @@ body[data-page="staff-slots"] .staff-main::before {
   .staff-detail-share-action span {
     width: 48px;
     height: 48px;
+  }
+
+  .staff-recipe-modal-actions {
+    grid-template-columns: 1fr;
   }
 
   .staff-customer-action-dialog {

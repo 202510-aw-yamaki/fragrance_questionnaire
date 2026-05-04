@@ -39,6 +39,9 @@
   const staffSummaryEl = document.getElementById("staff-summary");
   const hearingNoteEl = document.getElementById("hearing-note");
   const recipeListEl = document.getElementById("recipe-list");
+  const recipeSummaryListEl = document.getElementById("recipe-summary-list");
+  const recipeModalEl = document.getElementById("recipe-modal");
+  const recipeEditOpenEl = document.getElementById("recipe-edit-open");
   const addRecipeRowEl = document.getElementById("add-recipe-row");
   const normalizeRecipeEl = document.getElementById("normalize-recipe");
   const axisTotalEl = document.getElementById("axis-total");
@@ -155,7 +158,7 @@
     headerEl.innerHTML = `
       <div class="staff-detail-header-inner staff-detail-header-inner-simple">
         <a class="staff-detail-brand" href="${escapeHtml(window.AdminAuth.appendRoleToHref("staff-dashboard.html", "staff"))}">
-          <span class="staff-detail-brand-mark" aria-hidden="true"><img src="../img/TOP/roherarogo.png" alt=""></span>
+          <span class="staff-detail-brand-mark" aria-hidden="true"><img src="../img/TOP/吟ロゴ.png" alt=""></span>
           <span>Customer Detail</span>
         </a>
         <div class="staff-detail-header-actions">
@@ -460,20 +463,10 @@
 
   function renderAxisCompare() {
     if (!axisCompareEl) return;
-    const questionnaireAxes = questionnaire?.final_axes || {};
-    const reservationAxes = reservation?.axes || {};
+    const currentAxes = reservation?.axes || questionnaire?.adjusted_axes || questionnaire?.final_axes || {};
     axisCompareEl.innerHTML = `
-      <div class="staff-axis-compare-grid">
-        <article class="staff-axis-card">
-          <h3>アンケート時点の5軸</h3>
-          ${createRadarGraph(questionnaireAxes, "survey")}
-          ${createAxisStatGrid(questionnaireAxes)}
-        </article>
-        <article class="staff-axis-card">
-          <h3>予約完了時の5軸</h3>
-          ${createRadarGraph(reservationAxes, "reservation")}
-          ${createAxisStatGrid(reservationAxes)}
-        </article>
+      <div class="staff-survey-radar-only">
+        ${createRadarGraph(currentAxes, "survey")}
       </div>
     `;
   }
@@ -586,18 +579,27 @@
     row.querySelector("[data-remove-recipe]")?.addEventListener("click", () => {
       row.remove();
       refreshFinalAxesFromRecipe();
+      renderRecipeSummary();
     });
-    row.querySelector('[data-recipe-field="material_code"]')?.addEventListener("change", refreshFinalAxesFromRecipe);
-    row.querySelector('[data-recipe-field="amount"]')?.addEventListener("input", refreshFinalAxesFromRecipe);
+    row.querySelector('[data-recipe-field="material_code"]')?.addEventListener("change", () => {
+      refreshFinalAxesFromRecipe();
+      renderRecipeSummary();
+    });
+    row.querySelector('[data-recipe-field="amount"]')?.addEventListener("input", () => {
+      refreshFinalAxesFromRecipe();
+      renderRecipeSummary();
+    });
     row.querySelectorAll("[data-adjust-amount]").forEach((button) => {
       button.addEventListener("click", () => {
         const input = row.querySelector('[data-recipe-field="amount"]');
         const nextValue = Math.max(0, Number(input?.value || 0) + Number(button.dataset.adjustAmount || 0));
         if (input) input.value = String(nextValue);
         refreshFinalAxesFromRecipe();
+        renderRecipeSummary();
       });
     });
     recipeListEl.appendChild(row);
+    renderRecipeSummary();
   }
 
   function renderRecipeRows(items) {
@@ -607,6 +609,7 @@
     while (recipeListEl.children.length < 3) {
       createRecipeRow({ role: "ingredient" });
     }
+    renderRecipeSummary();
   }
 
   function collectRecipeItems() {
@@ -625,6 +628,42 @@
         };
       })
       .filter((item) => item.material_code);
+  }
+
+  function renderRecipeSummary() {
+    if (!recipeSummaryListEl) return;
+    const items = collectRecipeItems();
+    if (!items.length) {
+      recipeSummaryListEl.innerHTML = `<p class="admin-empty">配合は未設定です。</p>`;
+      return;
+    }
+    recipeSummaryListEl.innerHTML = `
+      <div class="staff-recipe-summary-row staff-recipe-summary-row--head">
+        <span>原料</span>
+        <strong>割合</strong>
+      </div>
+      ${items.map((item) => `
+        <div class="staff-recipe-summary-row">
+          <span>${escapeHtml(item.material_name || "未選択")}</span>
+          <strong>${Number(item.amount || 0)}%</strong>
+        </div>
+      `).join("")}
+    `;
+  }
+
+  function openRecipeModal() {
+    if (!recipeModalEl) return;
+    recipeModalEl.hidden = false;
+    document.body.classList.add("portal-modal-open");
+    recipeModalEl.querySelector(".staff-customer-action-close")?.focus();
+  }
+
+  function closeRecipeModal() {
+    if (!recipeModalEl) return;
+    recipeModalEl.hidden = true;
+    document.body.classList.remove("portal-modal-open");
+    renderRecipeSummary();
+    renderQr(false);
   }
 
   function getProductName() {
@@ -714,6 +753,7 @@
       input.value = String(Math.max(0, nextValue));
     });
     refreshFinalAxesFromRecipe();
+    renderRecipeSummary();
   }
 
   function fillForm() {
@@ -786,27 +826,15 @@
     const snapshot = buildProductSnapshot();
     if (!force) {
       qrPreviewEl.innerHTML = snapshot.isReady
-        ? `<div>QR表示できます<br><span class="admin-note">商品ID: ${escapeHtml(snapshot.productId)}</span></div>`
-        : `<div>QRコードがここに表示されます。<br><span class="admin-note">商品名・同意・原料配合・接客完了登録を確認してください。</span></div>`;
+        ? `<div>QR付きメールの送信準備ができています。<br><span class="admin-note">お客様の端末で受信確認を行ってください。</span></div>`
+        : `<div>QR付きメールはまだ送信できません。<br><span class="admin-note">商品名・同意・原料配合・接客完了登録を確認してください。</span></div>`;
       return;
     }
     if (!snapshot.isReady) {
-      qrPreviewEl.innerHTML = `<div>QRを生成できません。<br><span class="admin-note">商品名・同意・原料配合・接客完了登録を確認してください。</span></div>`;
+      qrPreviewEl.innerHTML = `<div>QR付きメールを送信できません。<br><span class="admin-note">商品名・同意・原料配合・接客完了登録を確認してください。</span></div>`;
       return;
     }
-    if (!window.QRCode) {
-      qrPreviewEl.textContent = "QRライブラリを読み込めなかったため表示できません。";
-      return;
-    }
-    qrPreviewEl.innerHTML = "";
-    new window.QRCode(qrPreviewEl, {
-      text: snapshot.url,
-      width: 220,
-      height: 220,
-      colorDark: "#3d2f24",
-      colorLight: "#fffdf9",
-      correctLevel: window.QRCode.CorrectLevel.M
-    });
+    qrPreviewEl.innerHTML = `<div>QR付きメールの送信確認に進みます。<br><span class="admin-note">お客様の端末に案内メールが届いたか確認してください。</span></div>`;
   }
 
   async function saveFragranceProduct(workshopId, workshopPayload) {
@@ -1020,6 +1048,11 @@
       button.addEventListener("click", closeCustomerActionModal);
     });
 
+    recipeEditOpenEl?.addEventListener("click", openRecipeModal);
+    document.querySelectorAll("[data-recipe-close]").forEach((button) => {
+      button.addEventListener("click", closeRecipeModal);
+    });
+
     document.querySelectorAll("[data-product-name-suggestion]").forEach((button) => {
       button.addEventListener("click", () => {
         if (!productNameEl) return;
@@ -1035,6 +1068,9 @@
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && customerActionModalEl && !customerActionModalEl.hidden) {
         closeCustomerActionModal();
+      }
+      if (event.key === "Escape" && recipeModalEl && !recipeModalEl.hidden) {
+        closeRecipeModal();
       }
     });
 
@@ -1087,7 +1123,7 @@
     });
     generateQrEl?.addEventListener("click", async () => {
       if (!fragranceProduct?.id || fragranceProduct.status !== "published") {
-        setStatus("QR表示には接客完了登録が必要です。", "error");
+        setStatus("QR付きメールの送信確認には接客完了登録が必要です。", "error");
         renderQr(false);
         return;
       }
@@ -1096,7 +1132,7 @@
         renderQr(true);
         renderCustomerProfile();
       } catch (error) {
-        setStatus(error?.message || "QR発行に失敗しました。", "error");
+        setStatus(error?.message || "QR付きメールの送信確認に失敗しました。", "error");
       }
     });
   }
