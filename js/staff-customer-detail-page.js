@@ -80,7 +80,12 @@
   const customerActionModalEl = document.getElementById("customer-action-modal");
   const customerActionModalTitleEl = document.getElementById("customer-action-modal-title");
   const customerActionAxisPreviewEl = document.getElementById("customer-action-axis-preview");
+  const customerActionDerivedAxisPreviewEl = document.getElementById("customer-action-derived-axis-preview");
   const customerActionAxisControlsEl = document.getElementById("customer-action-axis-controls");
+  const customerActionRecipeListEl = document.getElementById("customer-action-recipe-list");
+  const addCustomerActionRecipeRowEl = document.getElementById("add-customer-action-recipe-row");
+  const normalizeCustomerActionRecipeEl = document.getElementById("normalize-customer-action-recipe");
+  const customerActionApplyEl = document.querySelector("[data-customer-action-apply]");
   const productNamePreviewEl = document.getElementById("product-name-preview");
   const consentStaffNameEl = document.getElementById("consent-staff-name");
   const consentCheckedAtEl = document.getElementById("consent-checked-at");
@@ -105,6 +110,7 @@
   let recipeModalSnapshot = null;
   let previsitRecipeItems = [];
   let previsitRecipeModalSnapshot = null;
+  let customerActionMode = "fragrance";
 
   function escapeHtml(value) {
     return String(value ?? "")
@@ -330,6 +336,30 @@
     return normalizeAxes(reservation?.axes || questionnaire?.adjusted_axes || questionnaire?.final_axes || {});
   }
 
+  function getUsableRecipeItems(items) {
+    return (Array.isArray(items) ? items : [])
+      .filter((item) => item?.material_code && Number(item.amount || 0) > 0);
+  }
+
+  function getPrevisitProposalItems() {
+    return getUsableRecipeItems(previsitRecipeItems);
+  }
+
+  function getPrevisitProposalAxes() {
+    const items = getPrevisitProposalItems();
+    return items.length ? calculateRecipeDerivedAxes(items, getBaseSurveyAxes()) : null;
+  }
+
+  function getCustomerActionBaseAxes() {
+    return getPrevisitProposalAxes() || normalizeAxes(getCurrentFinalAxes());
+  }
+
+  function getCustomerActionStartItems() {
+    const previsitItems = getPrevisitProposalItems();
+    if (previsitItems.length) return previsitItems;
+    return getUsableRecipeItems(collectRecipeItems());
+  }
+
   function renderCustomerActionAxisControls() {
     if (!customerActionAxisControlsEl) return;
     const axes = getCurrentFinalAxes();
@@ -401,7 +431,9 @@
     if (finalAxisPreviewEl) {
       finalAxisPreviewEl.innerHTML = createRadarGraph(axes, "final");
     }
-    if (customerActionAxisPreviewEl) {
+    if (customerActionModalEl && !customerActionModalEl.hidden && customerActionMode === "fragrance") {
+      renderCustomerActionRecipeAxisCompare();
+    } else if (customerActionAxisPreviewEl) {
       customerActionAxisPreviewEl.innerHTML = createRadarGraph(axes, "final");
     }
     syncCustomerActionAxisControls();
@@ -490,6 +522,7 @@
   function getCustomerActionSnapshot() {
     return {
       axes: getCurrentFinalAxes(),
+      customerActionRecipeItems: collectCustomerActionRecipeItems(),
       customerFeedback: customerFeedbackEl?.value || "",
       productName: productNameEl?.value || "",
       personalInfoConsent: Boolean(personalInfoConsentEl?.checked),
@@ -500,6 +533,9 @@
   function restoreCustomerActionSnapshot(snapshot) {
     if (!snapshot) return;
     setFinalAxisInputs(snapshot.axes || {});
+    if (Array.isArray(snapshot.customerActionRecipeItems)) {
+      renderCustomerActionRecipeRows(snapshot.customerActionRecipeItems);
+    }
     if (customerFeedbackEl) customerFeedbackEl.value = snapshot.customerFeedback || "";
     if (productNameEl) productNameEl.value = snapshot.productName || "";
     if (personalInfoConsentEl) personalInfoConsentEl.checked = Boolean(snapshot.personalInfoConsent);
@@ -518,16 +554,25 @@
   function openCustomerActionModal(action) {
     if (!customerActionModalEl) return;
     const activeAction = CUSTOMER_ACTION_TITLES[action] ? action : "fragrance";
-    customerActionSnapshot = getCustomerActionSnapshot();
+    customerActionMode = activeAction;
     if (customerActionModalTitleEl) {
       customerActionModalTitleEl.textContent = CUSTOMER_ACTION_TITLES[activeAction];
     }
+    if (customerActionApplyEl) {
+      customerActionApplyEl.textContent = activeAction === "fragrance" ? "これで決定" : "内容を反映して閉じる";
+    }
+    customerActionModalEl.dataset.mode = activeAction;
     customerActionModalEl.querySelectorAll("[data-customer-action-panel]").forEach((panel) => {
       panel.hidden = panel.dataset.customerActionPanel !== activeAction;
     });
-    updateAxisTotal();
-    renderCustomerActionAxisControls();
+    if (activeAction === "fragrance") {
+      renderCustomerActionRecipeRows(getCustomerActionStartItems());
+    } else {
+      updateAxisTotal();
+      renderCustomerActionAxisControls();
+    }
     updateCustomerActionSummary();
+    customerActionSnapshot = getCustomerActionSnapshot();
     customerActionModalEl.hidden = false;
     document.body.classList.add("portal-modal-open");
     customerActionModalEl.querySelector(".staff-customer-action-close")?.focus();
@@ -540,6 +585,19 @@
       if (!shouldDiscard) return;
       restoreCustomerActionSnapshot(customerActionSnapshot);
       setStatus("変更内容を反映せずに閉じました。");
+    }
+    if (options.apply && customerActionMode === "fragrance") {
+      const items = collectCustomerActionRecipeItems();
+      if (!items.length) {
+        setStatus("決定できる配合がありません。", "error");
+        return;
+      }
+      renderRecipeRows(items);
+      refreshFinalAxesFromRecipe();
+      renderRecipeSummary();
+      renderRecipeAxisCompare();
+      renderQr(false);
+      setStatus("お客様と調整した配合を最終配合へ反映しました。");
     }
     customerActionModalEl.hidden = true;
     document.body.classList.remove("portal-modal-open");
@@ -885,26 +943,13 @@
 
   function renderPrevisitRecipeSummary() {
     if (!previsitRecipeSummaryEl) return;
-    const items = Array.isArray(previsitRecipeItems) ? previsitRecipeItems : [];
+    const items = getPrevisitProposalItems();
     if (copyPrevisitToFinalEl) copyPrevisitToFinalEl.disabled = !items.length;
     if (!items.length) {
       previsitRecipeSummaryEl.innerHTML = `<p class="admin-empty">提案配合は未設定です。</p>`;
       return;
     }
-    const axes = calculateRecipeDerivedAxes(items, getBaseSurveyAxes());
-    previsitRecipeSummaryEl.innerHTML = `
-      <div class="staff-recipe-summary-row staff-recipe-summary-row--head">
-        <span>原料</span>
-        <strong>割合</strong>
-      </div>
-      ${items.map((item) => `
-        <div class="staff-recipe-summary-row">
-          <span>${escapeHtml(item.material_name || "未選択")}</span>
-          <strong>${Number(item.amount || 0)}%</strong>
-        </div>
-      `).join("")}
-      ${axes ? `<div class="staff-previsit-axis-preview">${createRadarGraph(axes, "final")}</div>` : ""}
-    `;
+    previsitRecipeSummaryEl.innerHTML = `<p class="staff-previsit-status is-ready">配合提案は設定済み</p>`;
   }
 
   function getRecommendedRecipeItems() {
@@ -1223,6 +1268,100 @@
       createPrevisitRecipeRow({ role: "ingredient" });
     }
     renderPrevisitRecipeAxisCompare();
+  }
+
+  function collectCustomerActionRecipeItems() {
+    return collectRecipeItemsFromList(customerActionRecipeListEl);
+  }
+
+  function renderCustomerActionRecipeAxisCompare() {
+    const baseAxes = getCustomerActionBaseAxes();
+    const derivedAxes = calculateRecipeDerivedAxes(collectCustomerActionRecipeItems(), baseAxes);
+    if (customerActionAxisPreviewEl) {
+      customerActionAxisPreviewEl.innerHTML = hasAxisValue(baseAxes)
+        ? `${createRadarGraph(baseAxes, "survey")}${createAxisStatGrid(baseAxes)}`
+        : `<p class="admin-empty">提案配合が未設定です。</p>`;
+    }
+    if (customerActionDerivedAxisPreviewEl) {
+      customerActionDerivedAxisPreviewEl.innerHTML = derivedAxes
+        ? `${createRadarGraph(derivedAxes, "final")}${createAxisStatGrid(derivedAxes)}`
+        : `<p class="admin-empty">配合を調整すると表示されます。</p>`;
+    }
+  }
+
+  function createCustomerActionRecipeRow(item = {}) {
+    if (!customerActionRecipeListEl) return;
+    const originalMaterial = item.material_name
+      || materialRows.find((entry) => entry.material_code === item.material_code)?.material_name
+      || "";
+    const initialAmount = clampRecipeAmount(item.amount || 0);
+    const row = document.createElement("div");
+    row.className = "staff-recipe-row";
+    row.innerHTML = `
+      <input data-recipe-field="role" type="hidden" value="${escapeHtml(item.role || "ingredient")}">
+      <input data-recipe-field="lot" type="hidden" value="${escapeHtml(item.lot || "")}">
+      <input data-recipe-field="note" type="hidden" value="${escapeHtml(item.note || "")}">
+      <div class="staff-recipe-row-head">
+        <span class="staff-recipe-field-label">原料</span>
+        <button class="admin-btn secondary" type="button" data-remove-recipe>削除</button>
+      </div>
+      <label class="staff-recipe-material-field">
+        <select data-recipe-field="material_code">${getMaterialOptions(item.material_code || "")}</select>
+        <small class="staff-recipe-original-material">${originalMaterial ? `変更前: ${escapeHtml(originalMaterial)}` : "変更前: 未選択"}</small>
+      </label>
+      <label class="staff-recipe-amount-field">
+        <span class="staff-recipe-field-label">割合</span>
+        <span class="staff-amount-control">
+          <input data-recipe-field="amount" type="number" min="0" max="100" step="1" value="${initialAmount}">
+          <span class="staff-amount-unit">%</span>
+        </span>
+        <input class="staff-amount-range" data-recipe-field="amount_range" type="range" min="0" max="100" step="1" value="${initialAmount}">
+      </label>
+    `;
+    const refresh = () => renderCustomerActionRecipeAxisCompare();
+    row.querySelector("[data-remove-recipe]")?.addEventListener("click", () => {
+      row.remove();
+      refresh();
+    });
+    row.querySelector('[data-recipe-field="material_code"]')?.addEventListener("change", refresh);
+    row.querySelector('[data-recipe-field="amount"]')?.addEventListener("input", () => {
+      setRecipeAmountControls(row, row.querySelector('[data-recipe-field="amount"]')?.value);
+      refresh();
+    });
+    row.querySelector('[data-recipe-field="amount_range"]')?.addEventListener("input", () => {
+      setRecipeAmountControls(row, row.querySelector('[data-recipe-field="amount_range"]')?.value);
+      refresh();
+    });
+    customerActionRecipeListEl.appendChild(row);
+    refresh();
+  }
+
+  function renderCustomerActionRecipeRows(items) {
+    if (!customerActionRecipeListEl) return;
+    customerActionRecipeListEl.innerHTML = "";
+    (Array.isArray(items) ? items : []).forEach((item) => createCustomerActionRecipeRow(item));
+    while (customerActionRecipeListEl.children.length < 3) {
+      createCustomerActionRecipeRow({ role: "ingredient" });
+    }
+    renderCustomerActionRecipeAxisCompare();
+  }
+
+  function normalizeCustomerActionRecipeAmounts() {
+    const amountInputs = Array.from(customerActionRecipeListEl?.querySelectorAll('[data-recipe-field="amount"]') || []);
+    if (!amountInputs.length) return;
+    const values = amountInputs.map((input) => Math.max(0, Number(input.value || 0)));
+    const total = values.reduce((sum, value) => sum + value, 0);
+    if (!total) return;
+    let remainder = 100;
+    amountInputs.forEach((input, index) => {
+      const nextValue = index === amountInputs.length - 1
+        ? remainder
+        : Math.round((values[index] / total) * 100);
+      remainder -= nextValue;
+      input.value = String(Math.max(0, nextValue));
+    });
+    syncAllRecipeAmountRanges(customerActionRecipeListEl);
+    renderCustomerActionRecipeAxisCompare();
   }
 
   function getPreparationNoteText() {
@@ -1553,6 +1692,10 @@
     document.querySelectorAll("[data-customer-action-apply]").forEach((button) => {
       button.addEventListener("click", () => closeCustomerActionModal({ apply: true }));
     });
+    addCustomerActionRecipeRowEl?.addEventListener("click", () => {
+      createCustomerActionRecipeRow({ role: "ingredient" });
+    });
+    normalizeCustomerActionRecipeEl?.addEventListener("click", normalizeCustomerActionRecipeAmounts);
 
     recipeEditOpenEl?.addEventListener("click", openRecipeModal);
     previsitRecipeEditOpenEl?.addEventListener("click", openPrevisitRecipeModal);

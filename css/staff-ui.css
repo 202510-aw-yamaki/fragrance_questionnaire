@@ -420,6 +420,22 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   gap: 8px;
 }
 
+.staff-previsit-status {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 250, 243, 0.82);
+  padding: 14px 16px;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.staff-previsit-status.is-ready {
+  border-color: rgba(87, 138, 90, 0.32);
+  background: rgba(242, 250, 240, 0.84);
+  color: var(--green);
+}
+
 .staff-previsit-actions {
   display: grid;
   justify-content: start;
@@ -1095,6 +1111,16 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: start;
   gap: 14px;
+}
+
+.staff-customer-action-panel[data-customer-action-panel="fragrance"] .staff-recipe-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 14px;
+}
+
+.staff-customer-action-recipe-head {
+  margin-top: 8px;
 }
 
 .staff-recipe-row-head {
@@ -2707,6 +2733,7 @@ body[data-page="staff-slots"] .staff-main::before {
   }
 
   .staff-recipe-dialog .staff-recipe-list,
+  .staff-customer-action-panel[data-customer-action-panel="fragrance"] .staff-recipe-list,
   .staff-recipe-axis-compare {
     grid-template-columns: 1fr;
   }

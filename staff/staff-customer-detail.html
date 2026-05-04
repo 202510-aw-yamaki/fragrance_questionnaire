@@ -185,19 +185,22 @@
       <h2 id="customer-action-modal-title">お客様共有アクション</h2>
 
       <div class="staff-customer-action-panel" data-customer-action-panel="fragrance">
-        <div class="staff-customer-balance-grid">
-          <section class="staff-customer-balance-card">
-            <h3>現在のバランス</h3>
+        <div class="staff-recipe-axis-compare staff-customer-action-axis-compare">
+          <section class="staff-recipe-axis-card">
+            <h4>現在のバランス</h4>
             <div id="customer-action-axis-preview" class="staff-customer-axis-preview"></div>
           </section>
-          <section class="staff-customer-balance-card staff-customer-balance-card--controls">
-            <h3>香りの方向性</h3>
-            <div id="customer-action-axis-controls" class="staff-customer-axis-controls"></div>
-          </section>
-          <section class="staff-customer-balance-card staff-customer-balance-card--message">
-            <p>お客様の印象を聞きながら、香りの方向性と仕上がりの言葉をここで整理します。</p>
+          <section class="staff-recipe-axis-card">
+            <h4>調整後の5軸</h4>
+            <div id="customer-action-derived-axis-preview" class="staff-customer-axis-preview"></div>
           </section>
         </div>
+        <div class="staff-detail-recipe-head staff-customer-action-recipe-head">
+          <h4>一緒に調整しましょう</h4>
+          <button class="admin-btn secondary" id="add-customer-action-recipe-row" type="button">行を追加</button>
+          <button class="admin-btn secondary" id="normalize-customer-action-recipe" type="button">割合を100%に整える</button>
+        </div>
+        <div class="staff-recipe-list staff-customer-action-recipe-list" id="customer-action-recipe-list"></div>
         <div class="staff-customer-note-grid">
           <label>仕上がりメモ<textarea id="customer-feedback" form="staff-detail-form"></textarea></label>
         </div>
