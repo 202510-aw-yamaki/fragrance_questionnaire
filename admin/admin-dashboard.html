@@ -6,24 +6,49 @@
   <title>管理者ダッシュボード | Fragrance Workshop</title>
   <link rel="stylesheet" href="../css/rebuild-ui.css">
 </head>
-<body class="admin-page" data-page="admin-dashboard">
+<body class="admin-page admin-dashboard-page" data-page="admin-dashboard">
   <header class="admin-header" id="admin-header"></header>
   <main class="admin-main">
-    <section class="admin-page-title admin-page-title--center"><div><span class="eyebrow">Admin Dashboard</span><h1>管理者ダッシュボード</h1></div><a class="admin-notification-pill" href="admin-qr-requests.html">QR関連通知 <strong id="manager-qr-request-count">0</strong></a></section>
+    <section class="admin-page-title admin-dashboard-title"><div><h1>管理者ダッシュボード</h1></div><a class="admin-notification-pill" href="admin-qr-requests.html">QR関連通知 <strong id="manager-qr-request-count">0</strong></a></section>
     <section class="kpi-grid admin-dashboard-kpis">
-      <article class="admin-panel kpi-card"><span class="decor-icon">□</span><div><p>本日の予約</p><strong class="kpi-value"><span id="kpi-reservations">0</span>件</strong><small>今週 <span id="kpi-reservations-week">0</span>件</small></div></article>
-      <article class="admin-panel kpi-card"><span class="decor-icon">□</span><div><p>未確認予約</p><strong class="kpi-value"><span id="kpi-unconfirmed-reservations">0</span>件</strong><small>確認待ち</small></div></article>
-      <article class="admin-panel kpi-card"><span class="decor-icon">□</span><div><p>QR作成依頼</p><strong class="kpi-value"><span id="kpi-qr-requests">0</span>件</strong><small>未対応</small></div></article>
-      <article class="admin-panel kpi-card"><span class="decor-icon">□</span><div><p>期限超過未対応</p><strong class="kpi-value"><span id="kpi-overdue-requests">0</span>件</strong><small>管理者確認</small></div></article>
-      <article class="admin-panel kpi-card"><span class="decor-icon">□</span><div><p>発送準備中</p><strong class="kpi-value"><span id="kpi-shipping-pending">0</span>件</strong><small>発送待ち</small></div></article>
+      <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>本日の予約</p><strong class="kpi-value"><span id="kpi-reservations">0</span>件</strong><small>前日比 +<span id="kpi-reservations-week">0</span>件</small></div></article>
+      <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>未確認予約</p><strong class="kpi-value"><span id="kpi-unconfirmed-reservations">0</span>件</strong><small>前日比 -1件</small></div></article>
+      <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>QR作成依頼</p><strong class="kpi-value"><span id="kpi-qr-requests">0</span>件</strong><small>前日比 +1件</small></div></article>
+      <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>期限超過未対応</p><strong class="kpi-value"><span id="kpi-overdue-requests">0</span>件</strong><small>前日比 ±0件</small></div></article>
+      <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>発送準備中</p><strong class="kpi-value"><span id="kpi-shipping-pending">0</span>件</strong><small>前日比 +1件</small></div></article>
     </section>
-    <section class="dashboard-grid section">
-      <article class="admin-panel"><h2>本日の出勤</h2><div id="manager-today-shifts" class="portal-list-body"></div></article>
-      <article class="admin-panel"><h2>QR関連通知</h2><strong class="kpi-value" id="manager-qr-request-panel-count">0</strong><div id="manager-qr-request-list" class="portal-list-body"></div></article>
-      <article class="admin-panel"><h2>翌週の予約枠</h2><div id="manager-next-week-summary" class="portal-list-body"></div></article>
-      <article class="admin-panel"><h2>枠カバー状況</h2><div id="manager-slot-coverage" class="portal-list-body"></div></article>
-      <article class="admin-panel"><h2>配点ロジック</h2><div id="manager-scoring-weight-summary"></div><div id="manager-scoring-summary"></div></article>
-      <article class="admin-panel"><h2>原料ポイント</h2><div id="manager-material-links" class="portal-list-body"></div></article>
+    <section class="admin-dashboard-main-grid section">
+      <article class="admin-panel admin-dashboard-status-panel">
+        <h2>予約・スタッフ状況</h2>
+        <div class="admin-dashboard-status-block">
+          <h3>本日のスタッフ</h3>
+          <div id="manager-today-shifts" class="portal-list-body"></div>
+        </div>
+        <div class="admin-dashboard-status-block">
+          <h3>予約枠状況</h3>
+          <div id="manager-next-week-summary" class="portal-list-body admin-dashboard-inline-list"></div>
+        </div>
+        <div class="admin-dashboard-status-block">
+          <h3>枠カバー状況</h3>
+          <div id="manager-slot-coverage" class="portal-list-body admin-dashboard-inline-list"></div>
+        </div>
+      </article>
+      <article class="admin-panel admin-dashboard-qr-panel">
+        <h2>QR関連通知</h2>
+        <strong class="kpi-value" id="manager-qr-request-panel-count">0</strong>
+        <div id="manager-qr-request-list" class="portal-list-body"></div>
+      </article>
+    </section>
+    <section class="admin-dashboard-action-grid">
+      <a class="admin-panel admin-dashboard-action-card" href="admin-scoring.html?role=manager"><span class="decor-icon" aria-hidden="true"></span><div><h3>ロジックを調整する</h3><p>配点ロジックや条件の設定を調整できます。</p></div></a>
+      <a class="admin-panel admin-dashboard-action-card" href="admin-materials.html?role=manager"><span class="decor-icon" aria-hidden="true"></span><div><h3>原料ポイントを編集する</h3><p>原料ポイントの付与値や条件を編集できます。</p></div></a>
+      <a class="admin-panel admin-dashboard-action-card" href="admin-qr-settings.html?role=manager"><span class="decor-icon" aria-hidden="true"></span><div><h3>QR商品設定を開く</h3><p>QR商品情報や特典内容の設定を行います。</p></div></a>
+      <a class="admin-panel admin-dashboard-action-card" href="admin-settings.html?role=manager"><span class="decor-icon" aria-hidden="true"></span><div><h3>店舗情報を編集する</h3><p>店舗の基本情報や営業時間を管理します。</p></div></a>
+    </section>
+    <section class="admin-dashboard-hidden-data" aria-hidden="true">
+      <div id="manager-scoring-weight-summary"></div>
+      <div id="manager-scoring-summary"></div>
+      <div id="manager-material-links"></div>
     </section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

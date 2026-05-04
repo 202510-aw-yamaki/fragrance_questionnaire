@@ -633,6 +633,20 @@
   - `node --check` で関連JSの構文確認を実施。
   - Playwrightでデスクトップとモバイルの主要画面を確認。
   - `git diff --check` を実施。
+
+### 2026-05-05 管理者ダッシュボードのレイアウト画像差分修正
+- 対象:
+  - `admin/admin-dashboard.html`
+  - `css/rebuild-ui.css`
+- 背景:
+  - 管理者ダッシュボードがレイアウト画像21の構図と異なり、KPIが縦積みに近く、予約・スタッフ状況とQR通知の2カラム構成になっていなかった。
+- 実装:
+  - 管理者ダッシュボード専用のページクラスを追加し、タイトル、5枚KPI、予約・スタッフ状況、QR関連通知、下部ショートカットを画像基準の構成に寄せた。
+  - 1024px幅の in-app browser でもヘッダーが破綻しないよう、ダッシュボード専用にヘッダー間隔と文字サイズを調整した。
+- 確認:
+  - `node --check js/admin-dashboard-page.js`
+  - `git diff --check`
+  - in-app browserで `admin/admin-dashboard.html?role=manager` を再読み込みして表示確認。
   - Playwright screenshot 1674x940 / 390x844 full-page
   - Playwright screenshot 1674x940 / 390x844 / 390x844 full-page
   - in-app browserでテンプレート切り替えと初期値復帰を確認
