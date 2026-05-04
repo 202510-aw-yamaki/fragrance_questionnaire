@@ -25,6 +25,8 @@
     unknown: "アンケート結果なし"
   };
   const headerEl = document.getElementById("admin-header");
+  const summaryCardEl = document.querySelector(".staff-detail-summary-card");
+  const summaryToggleEl = document.getElementById("customer-summary-toggle");
   const profileEl = document.getElementById("customer-profile");
   const questionSummaryEl = document.getElementById("question-summary");
   const questionAnswerGridEl = document.getElementById("question-answer-grid");
@@ -43,6 +45,7 @@
   const recipeModalEl = document.getElementById("recipe-modal");
   const recipeEditOpenEl = document.getElementById("recipe-edit-open");
   const addRecipeRowEl = document.getElementById("add-recipe-row");
+  const applyRecommendedRecipeEl = document.getElementById("apply-recommended-recipe");
   const normalizeRecipeEl = document.getElementById("normalize-recipe");
   const axisTotalEl = document.getElementById("axis-total");
   const finalAxisPreviewEl = document.getElementById("final-axis-preview");
@@ -50,6 +53,7 @@
   const saveStatusEl = document.getElementById("save-status");
   const qrPreviewEl = document.getElementById("qr-preview");
   const saveDraftEl = document.getElementById("save-draft");
+  const saveDraftNoteEl = document.getElementById("save-draft-note");
   const saveCompleteEl = document.getElementById("save-complete");
   const generateQrEl = document.getElementById("generate-qr");
   const productNameEl = document.getElementById("product-name");
@@ -280,6 +284,15 @@
 
   function getCustomerDisplayEmail() {
     return reservation?.customer_email || customerDraft?.email || "未入力";
+  }
+
+  function setSummaryCollapsed(collapsed) {
+    if (!summaryCardEl) return;
+    summaryCardEl.classList.toggle("is-collapsed", collapsed);
+    if (summaryToggleEl) {
+      summaryToggleEl.setAttribute("aria-expanded", String(!collapsed));
+      summaryToggleEl.textContent = collapsed ? "詳細を開く" : "詳細を閉じる";
+    }
   }
 
   function renderCustomerProfile() {
@@ -664,6 +677,32 @@
     `;
   }
 
+  function getRecommendedRecipeItems() {
+    const rankMaterials = window.FragranceMasterData?.rankMaterials;
+    const axes = reservation?.axes || questionnaire?.adjusted_axes || questionnaire?.final_axes || {};
+    if (!rankMaterials || !hasAxisValue(axes)) return [];
+    const ratios = [40, 35, 25];
+    return rankMaterials(axes, materialRows, 3).slice(0, 3).map((row, index) => ({
+      role: "ingredient",
+      material_code: row.material_code,
+      material_name: row.material_name,
+      amount: ratios[index] || 0
+    }));
+  }
+
+  function applyRecommendedRecipe() {
+    const items = getRecommendedRecipeItems();
+    if (!items.length) {
+      setStatus("おすすめ配合を追加できるアンケート結果がありません。", "error");
+      return;
+    }
+    renderRecipeRows(items);
+    refreshFinalAxesFromRecipe();
+    renderRecipeSummary();
+    renderQr(false);
+    setStatus("おすすめ配合を最終配合に追加しました。");
+  }
+
   function openRecipeModal() {
     if (!recipeModalEl) return;
     recipeModalEl.hidden = false;
@@ -845,20 +884,37 @@
     };
   }
 
+  function canSendQrMail() {
+    const readiness = getProductReadiness();
+    return Boolean(
+      fragranceProduct?.id &&
+      fragranceProduct.status === "published" &&
+      readiness.productName &&
+      readiness.hasFinalAxes &&
+      readiness.hasRecipe &&
+      readiness.hasConsents
+    );
+  }
+
   function renderQr(force = false) {
-    if (!qrPreviewEl) return;
+    if (qrPreviewEl) {
+      qrPreviewEl.innerHTML = "";
+      qrPreviewEl.hidden = true;
+    }
     const snapshot = buildProductSnapshot();
-    if (!force) {
-      qrPreviewEl.innerHTML = snapshot.isReady
-        ? `<div>QR付きメールの送信準備ができています。<br><span class="admin-note">お客様の端末で受信確認を行ってください。</span></div>`
-        : `<div>QR付きメールはまだ送信できません。<br><span class="admin-note">商品名・同意・原料配合・接客完了登録を確認してください。</span></div>`;
+    const readyToSend = canSendQrMail();
+    if (generateQrEl) {
+      generateQrEl.disabled = !readyToSend;
+      generateQrEl.classList.toggle("is-disabled", !readyToSend);
+    }
+    if (!force || !qrPreviewEl) {
       return;
     }
     if (!snapshot.isReady) {
-      qrPreviewEl.innerHTML = `<div>QR付きメールを送信できません。<br><span class="admin-note">商品名・同意・原料配合・接客完了登録を確認してください。</span></div>`;
+      setStatus("QR付きメールの送信準備がまだ完了していません。", "error");
       return;
     }
-    qrPreviewEl.innerHTML = `<div>QR付きメールの送信確認に進みます。<br><span class="admin-note">お客様の端末に案内メールが届いたか確認してください。</span></div>`;
+    setStatus("QR付きメールの送信確認に進みます。お客様の端末に案内メールが届いたか確認してください。");
   }
 
   async function saveFragranceProduct(workshopId, workshopPayload) {
@@ -1045,6 +1101,10 @@
   }
 
   function bindEvents() {
+    summaryToggleEl?.addEventListener("click", () => {
+      setSummaryCollapsed(!summaryCardEl?.classList.contains("is-collapsed"));
+    });
+
     customerEditOpenEl?.addEventListener("click", () => {
       customerDraft = readCustomerDraft() || {};
       customerNameEl.value = reservation?.customer_name || customerDraft.name || "";
@@ -1129,6 +1189,7 @@
     });
 
     addRecipeRowEl?.addEventListener("click", () => createRecipeRow({ role: "ingredient" }));
+    applyRecommendedRecipeEl?.addEventListener("click", applyRecommendedRecipe);
     normalizeRecipeEl?.addEventListener("click", normalizeRecipeAmounts);
     AXIS_ORDER.forEach((axis) => {
       document.getElementById(`axis-${axis}`)?.addEventListener("input", updateAxisTotal);
@@ -1147,6 +1208,9 @@
     saveDraftEl?.addEventListener("click", () => {
       submitModeEl.value = "draft";
     });
+    saveDraftNoteEl?.addEventListener("click", () => {
+      submitModeEl.value = "draft";
+    });
     saveCompleteEl?.addEventListener("click", () => {
       submitModeEl.value = "complete";
     });
@@ -1155,7 +1219,7 @@
       await saveWorkshop();
     });
     generateQrEl?.addEventListener("click", async () => {
-      if (!fragranceProduct?.id || fragranceProduct.status !== "published") {
+      if (!canSendQrMail()) {
         setStatus("QR付きメールの送信確認には接客完了登録が必要です。", "error");
         renderQr(false);
         return;

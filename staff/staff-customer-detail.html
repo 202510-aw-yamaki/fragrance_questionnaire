@@ -10,7 +10,7 @@
 <body class="staff-page" data-page="staff-customer-detail">
   <header class="admin-header" id="admin-header"></header>
   <main class="staff-main staff-detail-main">
-    <section class="staff-detail-summary-card">
+    <section class="staff-detail-summary-card is-collapsed">
       <div class="staff-detail-summary-body">
         <span class="eyebrow">Customer Detail</span>
         <div id="customer-profile"></div>
@@ -25,6 +25,7 @@
         <div><span>QR発行状況</span><strong id="staff-detail-qr-status">-</strong></div>
         <div><span>ワークショップ状態</span><strong id="staff-detail-workshop-status">-</strong></div>
       </div>
+      <button class="staff-detail-summary-toggle" id="customer-summary-toggle" type="button" aria-expanded="false">詳細を開く</button>
     </section>
 
     <form class="admin-form-stack staff-detail-form" id="staff-detail-form">
@@ -51,6 +52,7 @@
               </section>
               <label class="staff-detail-note-card">当日ヒアリングメモ<textarea id="hearing-note"></textarea></label>
               <label class="staff-detail-note-card">お客様感想メモ<textarea id="staff-summary"></textarea></label>
+              <button class="admin-btn secondary staff-note-save" id="save-draft-note" type="submit" form="staff-detail-form">途中保存</button>
             </div>
           </div>
         </article>
@@ -58,8 +60,8 @@
         <article class="admin-panel staff-detail-share-panel">
           <div class="staff-detail-panel-tab staff-detail-panel-tab--share">お客様共有アクション</div>
           <div class="staff-detail-share-actions">
-            <button class="staff-detail-share-action" type="button" data-customer-action="fragrance"><span>調</span><strong>お客様と香りを調整する</strong><small>香りの方向性を確認しながら、微調整を行います。</small></button>
-            <button class="staff-detail-share-action" type="button" data-customer-action="product"><span>商</span><strong>商品名を決める</strong><small>お客様と一緒に、香水の名前を決めます。</small></button>
+            <button class="staff-detail-share-action" type="button" data-customer-action="fragrance"><span class="staff-share-icon" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false"><path d="M14 9v30M24 9v30M34 9v30" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="14" cy="18" r="5" fill="currentColor"/><circle cx="24" cy="30" r="5" fill="currentColor"/><circle cx="34" cy="22" r="5" fill="currentColor"/></svg></span><strong>お客様と香りを調整する</strong><small>香りの方向性を確認しながら、微調整を行います。</small></button>
+            <button class="staff-detail-share-action" type="button" data-customer-action="product"><span class="staff-share-icon" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false"><path d="M17 8h14l2 10v22a4 4 0 0 1-4 4H19a4 4 0 0 1-4-4V18l2-10Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M18 20h12M18 33h12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M20 8V4h8v4" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg></span><strong>商品名を決める</strong><small>お客様と一緒に、香水の名前を決めます。</small></button>
           </div>
         </article>
       </section>
@@ -78,9 +80,9 @@
           </article>
 
           <article class="staff-detail-operation-card">
-            <h3>QR発行・メール送信</h3>
-            <div id="qr-preview" class="staff-qr-preview">QR付きメールを送信し、お客様の端末で受信確認を行います。</div>
-            <button class="admin-btn primary" id="generate-qr" type="button">QR付きメールを送る</button>
+            <h3>QRメール送信</h3>
+            <div id="qr-preview" class="staff-qr-preview" hidden></div>
+            <button class="admin-btn primary" id="generate-qr" type="button" disabled>QR付きメールを送る</button>
           </article>
 
           <article class="staff-detail-operation-card">
@@ -113,6 +115,7 @@
       <h2 id="recipe-modal-title">配合調整</h2>
       <div class="staff-detail-recipe-head">
         <h4>最終配合</h4>
+        <button class="admin-btn secondary" id="apply-recommended-recipe" type="button">おすすめを追加</button>
         <button class="admin-btn secondary" id="add-recipe-row" type="button">行を追加</button>
       </div>
       <div class="staff-recipe-list" id="recipe-list"></div>
