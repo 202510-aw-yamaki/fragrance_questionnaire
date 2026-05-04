@@ -109,9 +109,9 @@
     </form>
   </main>
   <div class="portal-modal staff-recipe-modal" id="recipe-modal" hidden>
-    <div class="portal-modal-backdrop" data-recipe-close></div>
+    <div class="portal-modal-backdrop" data-recipe-cancel></div>
     <section class="portal-modal-dialog staff-recipe-dialog" role="dialog" aria-modal="true" aria-labelledby="recipe-modal-title">
-      <button class="staff-customer-action-close" type="button" data-recipe-close aria-label="閉じる">×</button>
+      <button class="staff-customer-action-close" type="button" data-recipe-cancel aria-label="閉じる">×</button>
       <h2 id="recipe-modal-title">配合調整</h2>
       <div class="staff-detail-recipe-head">
         <h4>最終配合</h4>
@@ -119,16 +119,26 @@
         <button class="admin-btn secondary" id="add-recipe-row" type="button">行を追加</button>
       </div>
       <div class="staff-recipe-list" id="recipe-list"></div>
+      <div class="staff-recipe-axis-compare">
+        <section class="staff-recipe-axis-card">
+          <h4>アンケート結果の5軸</h4>
+          <div id="recipe-base-axis-preview"></div>
+        </section>
+        <section class="staff-recipe-axis-card">
+          <h4>配合による5軸</h4>
+          <div id="recipe-derived-axis-preview"></div>
+        </section>
+      </div>
       <div class="staff-recipe-modal-actions">
         <button class="admin-btn secondary" id="normalize-recipe" type="button">割合を100%に整える</button>
-        <button class="admin-btn primary" type="button" data-recipe-close>配合を反映して閉じる</button>
+        <button class="admin-btn primary" type="button" data-recipe-apply>配合を反映して閉じる</button>
       </div>
     </section>
   </div>
   <div class="portal-modal staff-customer-action-modal" id="customer-action-modal" hidden>
-    <div class="portal-modal-backdrop" data-customer-action-close></div>
+    <div class="portal-modal-backdrop" data-customer-action-cancel></div>
     <section class="portal-modal-dialog staff-customer-action-dialog" role="dialog" aria-modal="true" aria-labelledby="customer-action-modal-title">
-      <button class="staff-customer-action-close" type="button" data-customer-action-close aria-label="閉じる">×</button>
+      <button class="staff-customer-action-close" type="button" data-customer-action-cancel aria-label="閉じる">×</button>
       <h2 id="customer-action-modal-title">お客様共有アクション</h2>
 
       <div class="staff-customer-action-panel" data-customer-action-panel="fragrance">
@@ -136,6 +146,10 @@
           <section class="staff-customer-balance-card">
             <h3>現在のバランス</h3>
             <div id="customer-action-axis-preview" class="staff-customer-axis-preview"></div>
+          </section>
+          <section class="staff-customer-balance-card staff-customer-balance-card--controls">
+            <h3>香りの方向性</h3>
+            <div id="customer-action-axis-controls" class="staff-customer-axis-controls"></div>
           </section>
           <section class="staff-customer-balance-card staff-customer-balance-card--message">
             <p>お客様の印象を聞きながら、香りの方向性と仕上がりの言葉をここで整理します。</p>
@@ -177,7 +191,7 @@
       </div>
 
       <div class="staff-customer-action-modal-actions">
-        <button class="admin-btn primary" type="button" data-customer-action-close>内容を反映して閉じる</button>
+        <button class="admin-btn primary" type="button" data-customer-action-apply>内容を反映して閉じる</button>
       </div>
     </section>
   </div>

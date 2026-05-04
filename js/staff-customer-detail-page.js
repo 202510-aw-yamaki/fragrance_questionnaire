@@ -42,6 +42,8 @@
   const hearingNoteEl = document.getElementById("hearing-note");
   const recipeListEl = document.getElementById("recipe-list");
   const recipeSummaryListEl = document.getElementById("recipe-summary-list");
+  const recipeBaseAxisPreviewEl = document.getElementById("recipe-base-axis-preview");
+  const recipeDerivedAxisPreviewEl = document.getElementById("recipe-derived-axis-preview");
   const recipeModalEl = document.getElementById("recipe-modal");
   const recipeEditOpenEl = document.getElementById("recipe-edit-open");
   const addRecipeRowEl = document.getElementById("add-recipe-row");
@@ -68,6 +70,7 @@
   const customerActionModalEl = document.getElementById("customer-action-modal");
   const customerActionModalTitleEl = document.getElementById("customer-action-modal-title");
   const customerActionAxisPreviewEl = document.getElementById("customer-action-axis-preview");
+  const customerActionAxisControlsEl = document.getElementById("customer-action-axis-controls");
   const productNamePreviewEl = document.getElementById("product-name-preview");
   const consentStaffNameEl = document.getElementById("consent-staff-name");
   const consentCheckedAtEl = document.getElementById("consent-checked-at");
@@ -88,6 +91,8 @@
   let materialRows = [];
   let materialDataReady = false;
   let customerDraft = null;
+  let customerActionSnapshot = null;
+  let recipeModalSnapshot = null;
 
   function escapeHtml(value) {
     return String(value ?? "")
@@ -263,6 +268,57 @@
     `;
   }
 
+  function getBaseSurveyAxes() {
+    return normalizeAxes(reservation?.axes || questionnaire?.adjusted_axes || questionnaire?.final_axes || {});
+  }
+
+  function renderCustomerActionAxisControls() {
+    if (!customerActionAxisControlsEl) return;
+    const axes = getCurrentFinalAxes();
+    customerActionAxisControlsEl.innerHTML = AXIS_ORDER.map((axis) => `
+      <label class="staff-customer-axis-control">
+        <span>${escapeHtml(AXIS_LABELS[axis])}</span>
+        <input type="range" min="0" max="100" step="1" value="${Number(axes[axis] || 0)}" data-customer-axis-range="${axis}">
+        <strong data-customer-axis-value="${axis}">${Number(axes[axis] || 0)}</strong>
+      </label>
+    `).join("");
+    customerActionAxisControlsEl.querySelectorAll("[data-customer-axis-range]").forEach((input) => {
+      input.addEventListener("input", () => {
+        const axis = input.dataset.customerAxisRange;
+        const axisInput = document.getElementById(`axis-${axis}`);
+        if (axisInput) axisInput.value = input.value;
+        updateAxisTotal();
+      });
+    });
+  }
+
+  function syncCustomerActionAxisControls() {
+    if (!customerActionAxisControlsEl) return;
+    const axes = getCurrentFinalAxes();
+    AXIS_ORDER.forEach((axis) => {
+      const range = customerActionAxisControlsEl.querySelector(`[data-customer-axis-range="${axis}"]`);
+      const value = customerActionAxisControlsEl.querySelector(`[data-customer-axis-value="${axis}"]`);
+      const axisValue = Number(axes[axis] || 0);
+      if (range && range.value !== String(axisValue)) range.value = String(axisValue);
+      if (value) value.textContent = String(axisValue);
+    });
+  }
+
+  function renderRecipeAxisCompare() {
+    const baseAxes = getBaseSurveyAxes();
+    const derivedAxes = calculateRecipeDerivedAxes();
+    if (recipeBaseAxisPreviewEl) {
+      recipeBaseAxisPreviewEl.innerHTML = hasAxisValue(baseAxes)
+        ? `${createRadarGraph(baseAxes, "survey")}${createAxisStatGrid(baseAxes)}`
+        : `<p class="admin-empty">アンケート結果がありません。</p>`;
+    }
+    if (recipeDerivedAxisPreviewEl) {
+      recipeDerivedAxisPreviewEl.innerHTML = derivedAxes
+        ? `${createRadarGraph(derivedAxes, "final")}${createAxisStatGrid(derivedAxes)}`
+        : `<p class="admin-empty">配合を選択すると表示されます。</p>`;
+    }
+  }
+
   function updateAxisTotal() {
     const axes = getCurrentFinalAxes();
     const total = AXIS_ORDER.reduce((sum, axis) => sum + Number(axes[axis] || 0), 0);
@@ -275,6 +331,7 @@
     if (customerActionAxisPreviewEl) {
       customerActionAxisPreviewEl.innerHTML = createRadarGraph(axes, "final");
     }
+    syncCustomerActionAxisControls();
     renderAxisCompare();
   }
 
@@ -337,6 +394,9 @@
     if (productNamePreviewEl) {
       productNamePreviewEl.textContent = getProductName() || "未入力";
     }
+    document.querySelectorAll("[data-product-name-suggestion]").forEach((item) => {
+      item.classList.toggle("is-selected", item.dataset.productNameSuggestion === getProductName());
+    });
     if (consentStaffNameEl) {
       const staffName = window.AdminAuth?.getStaffDisplayName
         ? window.AdminAuth.getStaffDisplayName(session)
@@ -354,9 +414,38 @@
     }
   }
 
+  function getCustomerActionSnapshot() {
+    return {
+      axes: getCurrentFinalAxes(),
+      customerFeedback: customerFeedbackEl?.value || "",
+      productName: productNameEl?.value || "",
+      personalInfoConsent: Boolean(personalInfoConsentEl?.checked),
+      thirdPartyOrderConsent: Boolean(thirdPartyOrderConsentEl?.checked)
+    };
+  }
+
+  function restoreCustomerActionSnapshot(snapshot) {
+    if (!snapshot) return;
+    setFinalAxisInputs(snapshot.axes || {});
+    if (customerFeedbackEl) customerFeedbackEl.value = snapshot.customerFeedback || "";
+    if (productNameEl) productNameEl.value = snapshot.productName || "";
+    if (personalInfoConsentEl) personalInfoConsentEl.checked = Boolean(snapshot.personalInfoConsent);
+    if (thirdPartyOrderConsentEl) thirdPartyOrderConsentEl.checked = Boolean(snapshot.thirdPartyOrderConsent);
+    updateAxisTotal();
+    updateCustomerActionSummary();
+    renderQr(false);
+  }
+
+  function isCustomerActionDirty() {
+    return customerActionSnapshot
+      ? JSON.stringify(getCustomerActionSnapshot()) !== JSON.stringify(customerActionSnapshot)
+      : false;
+  }
+
   function openCustomerActionModal(action) {
     if (!customerActionModalEl) return;
     const activeAction = CUSTOMER_ACTION_TITLES[action] ? action : "fragrance";
+    customerActionSnapshot = getCustomerActionSnapshot();
     if (customerActionModalTitleEl) {
       customerActionModalTitleEl.textContent = CUSTOMER_ACTION_TITLES[activeAction];
     }
@@ -364,16 +453,24 @@
       panel.hidden = panel.dataset.customerActionPanel !== activeAction;
     });
     updateAxisTotal();
+    renderCustomerActionAxisControls();
     updateCustomerActionSummary();
     customerActionModalEl.hidden = false;
     document.body.classList.add("portal-modal-open");
     customerActionModalEl.querySelector(".staff-customer-action-close")?.focus();
   }
 
-  function closeCustomerActionModal() {
+  function closeCustomerActionModal(options = {}) {
     if (!customerActionModalEl) return;
+    if (!options.apply && isCustomerActionDirty()) {
+      const shouldDiscard = window.confirm("変更内容を反映せずに閉じますか？");
+      if (!shouldDiscard) return;
+      restoreCustomerActionSnapshot(customerActionSnapshot);
+      setStatus("変更内容を反映せずに閉じました。");
+    }
     customerActionModalEl.hidden = true;
     document.body.classList.remove("portal-modal-open");
+    customerActionSnapshot = null;
     updateCustomerActionSummary();
     renderQr(false);
   }
@@ -580,6 +677,9 @@
 
   function createRecipeRow(item = {}) {
     if (!recipeListEl) return;
+    const originalMaterial = item.material_name
+      || materialRows.find((entry) => entry.material_code === item.material_code)?.material_name
+      || "";
     const row = document.createElement("div");
     row.className = "staff-recipe-row";
     row.innerHTML = `
@@ -589,6 +689,7 @@
       <label class="staff-recipe-material-field">
         <span class="staff-recipe-field-label">原料</span>
         <select data-recipe-field="material_code">${getMaterialOptions(item.material_code || "")}</select>
+        <small class="staff-recipe-original-material">${originalMaterial ? `変更前: ${escapeHtml(originalMaterial)}` : "変更前: 未選択"}</small>
       </label>
       <label class="staff-recipe-amount-field">割合
         <span class="staff-amount-control">
@@ -606,14 +707,17 @@
       row.remove();
       refreshFinalAxesFromRecipe();
       renderRecipeSummary();
+      renderRecipeAxisCompare();
     });
     row.querySelector('[data-recipe-field="material_code"]')?.addEventListener("change", () => {
       refreshFinalAxesFromRecipe();
       renderRecipeSummary();
+      renderRecipeAxisCompare();
     });
     row.querySelector('[data-recipe-field="amount"]')?.addEventListener("input", () => {
       refreshFinalAxesFromRecipe();
       renderRecipeSummary();
+      renderRecipeAxisCompare();
     });
     row.querySelectorAll("[data-adjust-amount]").forEach((button) => {
       button.addEventListener("click", () => {
@@ -622,10 +726,12 @@
         if (input) input.value = String(nextValue);
         refreshFinalAxesFromRecipe();
         renderRecipeSummary();
+        renderRecipeAxisCompare();
       });
     });
     recipeListEl.appendChild(row);
     renderRecipeSummary();
+    renderRecipeAxisCompare();
   }
 
   function renderRecipeRows(items) {
@@ -636,6 +742,7 @@
       createRecipeRow({ role: "ingredient" });
     }
     renderRecipeSummary();
+    renderRecipeAxisCompare();
   }
 
   function collectRecipeItems() {
@@ -699,22 +806,56 @@
     renderRecipeRows(items);
     refreshFinalAxesFromRecipe();
     renderRecipeSummary();
+    renderRecipeAxisCompare();
     renderQr(false);
     setStatus("おすすめ配合を最終配合に追加しました。");
   }
 
+  function getRecipeModalSnapshot() {
+    return {
+      items: collectRecipeItems(),
+      axes: getCurrentFinalAxes()
+    };
+  }
+
+  function restoreRecipeModalSnapshot(snapshot) {
+    if (!snapshot) return;
+    renderRecipeRows(snapshot.items || []);
+    setFinalAxisInputs(snapshot.axes || {});
+    updateAxisTotal();
+    renderRecipeSummary();
+    renderRecipeAxisCompare();
+    renderQr(false);
+  }
+
+  function isRecipeModalDirty() {
+    return recipeModalSnapshot
+      ? JSON.stringify(getRecipeModalSnapshot()) !== JSON.stringify(recipeModalSnapshot)
+      : false;
+  }
+
   function openRecipeModal() {
     if (!recipeModalEl) return;
+    recipeModalSnapshot = getRecipeModalSnapshot();
+    renderRecipeAxisCompare();
     recipeModalEl.hidden = false;
     document.body.classList.add("portal-modal-open");
     recipeModalEl.querySelector(".staff-customer-action-close")?.focus();
   }
 
-  function closeRecipeModal() {
+  function closeRecipeModal(options = {}) {
     if (!recipeModalEl) return;
+    if (!options.apply && isRecipeModalDirty()) {
+      const shouldDiscard = window.confirm("配合の変更を反映せずに閉じますか？");
+      if (!shouldDiscard) return;
+      restoreRecipeModalSnapshot(recipeModalSnapshot);
+      setStatus("配合の変更を反映せずに閉じました。");
+    }
     recipeModalEl.hidden = true;
     document.body.classList.remove("portal-modal-open");
+    recipeModalSnapshot = null;
     renderRecipeSummary();
+    renderRecipeAxisCompare();
     renderQr(false);
   }
 
@@ -806,6 +947,7 @@
     });
     refreshFinalAxesFromRecipe();
     renderRecipeSummary();
+    renderRecipeAxisCompare();
   }
 
   function getPreparationNoteText() {
@@ -1128,13 +1270,19 @@
       });
     });
 
-    document.querySelectorAll("[data-customer-action-close]").forEach((button) => {
-      button.addEventListener("click", closeCustomerActionModal);
+    document.querySelectorAll("[data-customer-action-cancel]").forEach((button) => {
+      button.addEventListener("click", () => closeCustomerActionModal({ apply: false }));
+    });
+    document.querySelectorAll("[data-customer-action-apply]").forEach((button) => {
+      button.addEventListener("click", () => closeCustomerActionModal({ apply: true }));
     });
 
     recipeEditOpenEl?.addEventListener("click", openRecipeModal);
-    document.querySelectorAll("[data-recipe-close]").forEach((button) => {
-      button.addEventListener("click", closeRecipeModal);
+    document.querySelectorAll("[data-recipe-cancel]").forEach((button) => {
+      button.addEventListener("click", () => closeRecipeModal({ apply: false }));
+    });
+    document.querySelectorAll("[data-recipe-apply]").forEach((button) => {
+      button.addEventListener("click", () => closeRecipeModal({ apply: true }));
     });
 
     document.querySelectorAll("[data-product-name-suggestion]").forEach((button) => {
@@ -1151,10 +1299,10 @@
 
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && customerActionModalEl && !customerActionModalEl.hidden) {
-        closeCustomerActionModal();
+        closeCustomerActionModal({ apply: false });
       }
       if (event.key === "Escape" && recipeModalEl && !recipeModalEl.hidden) {
-        closeRecipeModal();
+        closeRecipeModal({ apply: false });
       }
       if (event.key === "Escape" && customerModalEl && !customerModalEl.hidden) {
         customerModalEl.hidden = true;

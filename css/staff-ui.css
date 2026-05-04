@@ -757,7 +757,7 @@ body[data-page="staff-customer-detail"] .staff-main::before {
 
 .staff-customer-balance-grid {
   display: grid;
-  grid-template-columns: minmax(280px, 0.9fr) minmax(300px, 1fr);
+  grid-template-columns: minmax(240px, 0.85fr) minmax(280px, 1fr) minmax(240px, 0.9fr);
   gap: 18px;
 }
 
@@ -787,8 +787,40 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   text-align: center;
 }
 
+.staff-customer-balance-card--controls {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+
 .staff-customer-axis-preview .staff-radar-graph {
   width: min(100%, 280px);
+}
+
+.staff-customer-axis-controls {
+  display: grid;
+  gap: 14px;
+}
+
+.staff-customer-axis-control {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr) 38px;
+  gap: 8px;
+  align-items: center;
+  font-weight: 800;
+}
+
+.staff-customer-axis-control > span {
+  white-space: nowrap;
+}
+
+.staff-customer-axis-control input {
+  accent-color: var(--rose);
+}
+
+.staff-customer-axis-control strong {
+  color: var(--gold-dark);
+  text-align: right;
 }
 
 .staff-customer-note-grid,
@@ -1002,6 +1034,17 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   align-items: end;
 }
 
+.staff-recipe-material-field {
+  display: grid;
+  gap: 6px;
+}
+
+.staff-recipe-original-material {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
 .staff-recipe-row .admin-btn {
   min-height: 38px;
   padding: 8px;
@@ -1013,7 +1056,7 @@ body[data-page="staff-customer-detail"] .staff-main::before {
 }
 
 .staff-recipe-dialog {
-  width: min(760px, calc(100vw - 42px));
+  width: min(940px, calc(100vw - 42px));
 }
 
 .staff-recipe-dialog h2 {
@@ -1028,6 +1071,37 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 12px;
   margin-top: 14px;
+}
+
+.staff-recipe-axis-compare {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.staff-recipe-axis-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 253, 249, 0.88);
+  padding: 14px;
+}
+
+.staff-recipe-axis-card h4 {
+  margin: 0 0 10px;
+  font-size: 15px;
+}
+
+.staff-recipe-axis-card .staff-radar-graph {
+  width: min(100%, 190px);
+}
+
+.staff-recipe-axis-card .staff-radar-wrap {
+  margin: 0 auto 10px;
+}
+
+.staff-recipe-axis-card .staff-axis-stat-grid {
+  display: grid;
 }
 
 .staff-amount-control {
@@ -2189,32 +2263,47 @@ body[data-page="staff-slots"] .staff-main::before {
 
 @media (max-width: 1120px) {
   .staff-detail-summary-card {
-    grid-template-columns: minmax(260px, 1fr) minmax(300px, auto) auto;
+    grid-template-columns: minmax(260px, 1fr) minmax(330px, auto) auto;
     gap: 14px;
     padding-bottom: 18px;
   }
 
   .staff-detail-summary-status {
     grid-column: 2 / 4;
-    grid-row: 2;
+    grid-row: 1;
     justify-self: end;
     width: min(100%, 360px);
   }
 
   .staff-detail-summary-actions {
     grid-column: 2;
-    grid-row: 1;
+    grid-row: 2;
   }
 
   .staff-detail-summary-toggle {
     grid-column: 3;
-    grid-row: 1;
+    grid-row: 2;
   }
 
   .staff-detail-summary-status {
-    border-left: 0;
-    border-top: 1px dashed var(--line-strong);
-    padding: 12px 0 0;
+    border-left: 1px dashed var(--line-strong);
+    border-top: 0;
+    padding: 0 0 0 14px;
+  }
+
+  .staff-detail-summary-card.is-collapsed {
+    grid-template-columns: minmax(260px, 1fr) minmax(320px, auto) auto;
+    align-items: center;
+  }
+
+  .staff-detail-summary-card.is-collapsed .staff-detail-summary-actions {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .staff-detail-summary-card.is-collapsed .staff-detail-summary-toggle {
+    grid-column: 3;
+    grid-row: 1;
   }
 
   .staff-detail-operation-grid {
