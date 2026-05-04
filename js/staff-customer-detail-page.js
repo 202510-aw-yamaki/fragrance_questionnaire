@@ -59,6 +59,17 @@
   const customerEmailEl = document.getElementById("customer-email");
   const customerPhoneEl = document.getElementById("customer-phone");
   const customerConsentEl = document.getElementById("customer-consent");
+  const customerActionModalEl = document.getElementById("customer-action-modal");
+  const customerActionModalTitleEl = document.getElementById("customer-action-modal-title");
+  const customerActionAxisPreviewEl = document.getElementById("customer-action-axis-preview");
+  const productNamePreviewEl = document.getElementById("product-name-preview");
+  const consentStaffNameEl = document.getElementById("consent-staff-name");
+  const consentCheckedAtEl = document.getElementById("consent-checked-at");
+  const CUSTOMER_ACTION_TITLES = {
+    fragrance: "香りのバランス調整",
+    product: "香水の名前を決めましょう",
+    consent: "確認事項"
+  };
 
   let session = null;
   let staffProfile = null;
@@ -270,6 +281,9 @@
     if (finalAxisPreviewEl) {
       finalAxisPreviewEl.innerHTML = createRadarGraph(axes, "final");
     }
+    if (customerActionAxisPreviewEl) {
+      customerActionAxisPreviewEl.innerHTML = createRadarGraph(axes, "final");
+    }
     renderAxisCompare();
   }
 
@@ -311,6 +325,51 @@
     setText("staff-detail-summary-qr", qrStatus);
     setText("staff-detail-mail-status", mailStatus);
     setText("staff-detail-summary-workshop", workshopStatus);
+  }
+
+  function updateCustomerActionSummary() {
+    if (productNamePreviewEl) {
+      productNamePreviewEl.textContent = getProductName() || "未入力";
+    }
+    if (consentStaffNameEl) {
+      const staffName = window.AdminAuth?.getStaffDisplayName
+        ? window.AdminAuth.getStaffDisplayName(session)
+        : staffProfile?.staff_name || staffProfile?.name || "-";
+      consentStaffNameEl.textContent = formatDisplayValue(staffName, "-");
+    }
+    if (consentCheckedAtEl) {
+      const hasConsent = Boolean(personalInfoConsentEl?.checked || thirdPartyOrderConsentEl?.checked);
+      const consentDate = fragranceProduct?.consented_at
+        ? new Date(fragranceProduct.consented_at)
+        : (hasConsent ? new Date() : null);
+      consentCheckedAtEl.textContent = consentDate && !Number.isNaN(consentDate.getTime())
+        ? new Intl.DateTimeFormat("ja-JP", { dateStyle: "medium", timeStyle: "short" }).format(consentDate)
+        : "-";
+    }
+  }
+
+  function openCustomerActionModal(action) {
+    if (!customerActionModalEl) return;
+    const activeAction = CUSTOMER_ACTION_TITLES[action] ? action : "fragrance";
+    if (customerActionModalTitleEl) {
+      customerActionModalTitleEl.textContent = CUSTOMER_ACTION_TITLES[activeAction];
+    }
+    customerActionModalEl.querySelectorAll("[data-customer-action-panel]").forEach((panel) => {
+      panel.hidden = panel.dataset.customerActionPanel !== activeAction;
+    });
+    updateAxisTotal();
+    updateCustomerActionSummary();
+    customerActionModalEl.hidden = false;
+    document.body.classList.add("portal-modal-open");
+    customerActionModalEl.querySelector(".staff-customer-action-close")?.focus();
+  }
+
+  function closeCustomerActionModal() {
+    if (!customerActionModalEl) return;
+    customerActionModalEl.hidden = true;
+    document.body.classList.remove("portal-modal-open");
+    updateCustomerActionSummary();
+    renderQr(false);
   }
 
   function formatAnswerValue(value) {
@@ -677,6 +736,7 @@
     setFinalAxisInputs(baseAxes);
     renderRecipeRows(workshop?.recipe_items || []);
     updateAxisTotal();
+    updateCustomerActionSummary();
   }
 
   function createStableHash(source) {
@@ -950,6 +1010,34 @@
       });
     });
 
+    document.querySelectorAll("[data-customer-action]").forEach((button) => {
+      button.addEventListener("click", () => {
+        openCustomerActionModal(button.dataset.customerAction);
+      });
+    });
+
+    document.querySelectorAll("[data-customer-action-close]").forEach((button) => {
+      button.addEventListener("click", closeCustomerActionModal);
+    });
+
+    document.querySelectorAll("[data-product-name-suggestion]").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (!productNameEl) return;
+        productNameEl.value = button.dataset.productNameSuggestion || "";
+        document.querySelectorAll("[data-product-name-suggestion]").forEach((item) => {
+          item.classList.toggle("is-selected", item === button);
+        });
+        updateCustomerActionSummary();
+        renderQr(false);
+      });
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && customerActionModalEl && !customerActionModalEl.hidden) {
+        closeCustomerActionModal();
+      }
+    });
+
     customerFormEl?.addEventListener("submit", (event) => {
       event.preventDefault();
       if (!customerConsentEl.checked) {
@@ -977,8 +1065,12 @@
       document.getElementById(`axis-${axis}`)?.addEventListener("input", updateAxisTotal);
     });
     [productNameEl, personalInfoConsentEl, thirdPartyOrderConsentEl].forEach((element) => {
-      element?.addEventListener("input", () => renderQr(false));
+      element?.addEventListener("input", () => {
+        updateCustomerActionSummary();
+        renderQr(false);
+      });
       element?.addEventListener("change", () => {
+        updateCustomerActionSummary();
         renderCustomerProfile();
         renderQr(false);
       });

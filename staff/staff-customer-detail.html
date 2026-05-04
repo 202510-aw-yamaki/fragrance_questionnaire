@@ -42,7 +42,6 @@
               <div id="axis-compare"></div>
             </section>
             <label class="staff-detail-note-card">来店前メモ<textarea id="preparation-note"></textarea></label>
-            <label class="staff-detail-note-card">当日ヒアリングメモ<textarea id="hearing-note"></textarea></label>
             <label class="staff-detail-note-card staff-detail-note-card--wide">接客メモ<textarea id="staff-summary"></textarea></label>
           </div>
         </article>
@@ -50,9 +49,9 @@
         <article class="admin-panel staff-detail-share-panel">
           <div class="staff-detail-panel-tab staff-detail-panel-tab--share">お客様共有アクション（お客様に見せる操作）</div>
           <div class="staff-detail-share-actions">
-            <a class="staff-detail-share-action" href="#hearing-note"><span>調</span><strong>お客様と香りを調整する</strong><small>香りの方向性を確認しながら、微調整を行います。</small></a>
-            <a class="staff-detail-share-action" href="#product-name"><span>商</span><strong>商品名を決める</strong><small>お客様と一緒に、香水の名前を決めます。</small></a>
-            <a class="staff-detail-share-action" href="#personal-info-consent"><span>同</span><strong>同意内容を確認する</strong><small>ワークショップの同意内容を確認します。</small></a>
+            <button class="staff-detail-share-action" type="button" data-customer-action="fragrance"><span>調</span><strong>お客様と香りを調整する</strong><small>香りの方向性を確認しながら、微調整を行います。</small></button>
+            <button class="staff-detail-share-action" type="button" data-customer-action="product"><span>商</span><strong>商品名を決める</strong><small>お客様と一緒に、香水の名前を決めます。</small></button>
+            <button class="staff-detail-share-action" type="button" data-customer-action="consent"><span>同</span><strong>同意内容を確認する</strong><small>ワークショップの同意内容を確認します。</small></button>
           </div>
         </article>
       </section>
@@ -64,11 +63,6 @@
         <div class="staff-detail-operation-grid">
           <article class="staff-detail-operation-card">
             <h3>最終配合保存</h3>
-            <label>商品名<input id="product-name" type="text" maxlength="120"></label>
-            <div class="staff-detail-consent-grid">
-              <label class="pill"><input id="personal-info-consent" type="checkbox"> 個人情報同意確認済み</label>
-              <label class="pill"><input id="third-party-order-consent" type="checkbox"> 第三者作成同意確認済み</label>
-            </div>
             <div class="staff-detail-recipe-head">
               <h4>最終配合</h4>
               <button class="admin-btn secondary" id="add-recipe-row" type="button">行を追加</button>
@@ -81,7 +75,6 @@
             <h3>QR発行・メール送信</h3>
             <div id="qr-preview" class="staff-qr-preview">QRコードがここに表示されます。</div>
             <button class="admin-btn primary" id="generate-qr" type="button">QR表示</button>
-            <label>仕上がりメモ<textarea id="customer-feedback"></textarea></label>
           </article>
 
           <article class="staff-detail-operation-card">
@@ -104,10 +97,68 @@
           </aside>
         </div>
       </section>
+
     </form>
 
     <p class="staff-detail-footnote">この画面では、スタッフ確認用の情報と、お客様に見せる操作を分けて管理しています。</p>
   </main>
+  <div class="portal-modal staff-customer-action-modal" id="customer-action-modal" hidden>
+    <div class="portal-modal-backdrop" data-customer-action-close></div>
+    <section class="portal-modal-dialog staff-customer-action-dialog" role="dialog" aria-modal="true" aria-labelledby="customer-action-modal-title">
+      <button class="staff-customer-action-close" type="button" data-customer-action-close aria-label="閉じる">×</button>
+      <h2 id="customer-action-modal-title">お客様共有アクション</h2>
+
+      <div class="staff-customer-action-panel" data-customer-action-panel="fragrance">
+        <div class="staff-customer-balance-grid">
+          <section class="staff-customer-balance-card">
+            <h3>現在のバランス</h3>
+            <div id="customer-action-axis-preview" class="staff-customer-axis-preview"></div>
+          </section>
+          <section class="staff-customer-balance-card staff-customer-balance-card--message">
+            <p>お客様の印象を聞きながら、香りの方向性と仕上がりの言葉をここで整理します。</p>
+          </section>
+        </div>
+        <div class="staff-customer-note-grid">
+          <label>当日ヒアリングメモ<textarea id="hearing-note" form="staff-detail-form"></textarea></label>
+          <label>仕上がりメモ<textarea id="customer-feedback" form="staff-detail-form"></textarea></label>
+        </div>
+      </div>
+
+      <div class="staff-customer-action-panel" data-customer-action-panel="product" hidden>
+        <div class="staff-customer-product-grid">
+          <section class="staff-customer-product-entry">
+            <label>商品名<input id="product-name" form="staff-detail-form" type="text" maxlength="120"></label>
+            <div class="staff-product-suggestion-list" aria-label="おすすめの候補">
+              <button class="staff-product-suggestion is-selected" type="button" data-product-name-suggestion="月夜の余韻">月夜の余韻</button>
+              <button class="staff-product-suggestion" type="button" data-product-name-suggestion="ひだまりブレンド">ひだまりブレンド</button>
+              <button class="staff-product-suggestion" type="button" data-product-name-suggestion="雨上がりの庭">雨上がりの庭</button>
+              <button class="staff-product-suggestion" type="button" data-product-name-suggestion="朝の白檀">朝の白檀</button>
+            </div>
+          </section>
+          <section class="staff-customer-product-preview">
+            <span>QR商品ページでの表示</span>
+            <strong id="product-name-preview">未入力</strong>
+            <small>この名前は、メールで届くQR商品ページに表示されます。</small>
+          </section>
+        </div>
+      </div>
+
+      <div class="staff-customer-action-panel" data-customer-action-panel="consent" hidden>
+        <div class="staff-consent-check-list">
+          <label class="staff-consent-check"><input id="personal-info-consent" form="staff-detail-form" type="checkbox"><span><strong>個人情報の取扱いに同意します</strong><small>ご予約・ご連絡・本日作成した香水のご案内のため、メールアドレス等を保存します。</small></span></label>
+          <label class="staff-consent-check"><input id="third-party-order-consent" form="staff-detail-form" type="checkbox"><span><strong>第三者作成依頼に同意します</strong><small>本日作成した香水を、QRコード経由で第三者が作成依頼できる商品として扱うことに同意します。</small></span></label>
+        </div>
+        <div class="staff-consent-meta">
+          <span>確認スタッフ：<strong id="consent-staff-name">-</strong></span>
+          <span>確認日時：<strong id="consent-checked-at">-</strong></span>
+        </div>
+      </div>
+
+      <div class="staff-customer-action-modal-actions">
+        <button class="admin-btn primary" type="button" data-customer-action-close>内容を反映して閉じる</button>
+      </div>
+    </section>
+  </div>
   <div class="portal-modal" id="customer-modal" hidden><div class="portal-modal-backdrop" data-customer-close></div><div class="portal-modal-dialog"><button class="admin-btn secondary" type="button" data-customer-close>閉じる</button><form class="admin-form" id="customer-form"><label>お名前<input id="customer-name" type="text" maxlength="80"></label><label>メール<input id="customer-email" type="email" maxlength="120"></label><label>電話<input id="customer-phone" type="text" maxlength="40"></label><label class="pill"><input id="customer-consent" type="checkbox"> 個人情報確認済み</label><button class="admin-btn primary" type="submit">保存</button></form></div></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
