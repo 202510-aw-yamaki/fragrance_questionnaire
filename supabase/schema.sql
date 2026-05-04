@@ -416,6 +416,39 @@ as $$
   select public.current_portal_role() in ('customer', 'member');
 $$;
 
+create or replace function public.has_active_public_product_qr(p_fragrance_product_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from public.product_qr_codes pq
+    where pq.fragrance_product_id = p_fragrance_product_id
+      and pq.status = 'active'
+      and pq.is_public = true
+      and (pq.expires_at is null or pq.expires_at > now())
+  );
+$$;
+
+create or replace function public.can_current_staff_access_fragrance_product(p_fragrance_product_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select public.is_staff_member()
+    and exists (
+      select 1
+      from public.fragrance_products fp
+      where fp.id = p_fragrance_product_id
+        and (fp.created_by_staff_id = public.current_staff_profile_id() or fp.created_by_staff_id is null)
+    );
+$$;
+
 create or replace function public.hash_questionnaire_edit_token()
 returns trigger
 language plpgsql
@@ -1285,14 +1318,7 @@ on public.fragrance_products for select
 to anon, authenticated
 using (
   status = 'published'
-  and exists (
-    select 1
-    from public.product_qr_codes pq
-    where pq.fragrance_product_id = fragrance_products.id
-      and pq.status = 'active'
-      and pq.is_public = true
-      and (pq.expires_at is null or pq.expires_at > now())
-  )
+  and public.has_active_public_product_qr(id)
 );
 create policy "staff fragrance products own"
 on public.fragrance_products for all
@@ -1326,22 +1352,10 @@ create policy "staff product qr codes own"
 on public.product_qr_codes for all
 to authenticated
 using (
-  public.is_staff_member()
-  and exists (
-    select 1
-    from public.fragrance_products fp
-    where fp.id = product_qr_codes.fragrance_product_id
-      and (fp.created_by_staff_id = public.current_staff_profile_id() or fp.created_by_staff_id is null)
-  )
+  public.can_current_staff_access_fragrance_product(fragrance_product_id)
 )
 with check (
-  public.is_staff_member()
-  and exists (
-    select 1
-    from public.fragrance_products fp
-    where fp.id = product_qr_codes.fragrance_product_id
-      and (fp.created_by_staff_id = public.current_staff_profile_id() or fp.created_by_staff_id is null)
-  )
+  public.can_current_staff_access_fragrance_product(fragrance_product_id)
 );
 create policy "manager product qr codes all"
 on public.product_qr_codes for all
@@ -1467,6 +1481,8 @@ grant execute on function public.current_customer_profile_id() to anon, authenti
 grant execute on function public.should_link_current_customer(jsonb) to anon, authenticated;
 grant execute on function public.fetch_customer_portal_summary() to authenticated;
 grant execute on function public.record_qr_product_access(text) to anon, authenticated;
+grant execute on function public.has_active_public_product_qr(uuid) to anon, authenticated;
+grant execute on function public.can_current_staff_access_fragrance_product(uuid) to authenticated;
 
 grant insert (
   result_code,

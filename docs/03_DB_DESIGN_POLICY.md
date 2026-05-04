@@ -187,3 +187,11 @@ QR商品ページのアクセス記録は `record_qr_product_access()` を入口
 - 管理者が選べるタグ候補は `admin_settings.setting_key = 'qr_product_public_settings'` の `product_tags` に保持する。
 
 事前配合はブラウザ一時保存ではなく、予約に紐づく `workshop_sessions` から復元できる状態を正とする。QR経由の第三者を `customers` に入れない方針は変更しない。
+
+## 2026-05-04 RLS policy recursion note
+
+`fragrance_products` と `product_qr_codes` のRLSポリシーが互いのテーブルを直接参照すると、完成品保存後の `select()` で再帰エラーになる。
+
+- `fragrance_products` の公開判定は `has_active_public_product_qr(product_id)` で行う。
+- `product_qr_codes` のスタッフ所有判定は `can_current_staff_access_fragrance_product(product_id)` で行う。
+- どちらも `security definer` 関数で判定し、ポリシー本文で相互にbase tableを直接参照しない。
