@@ -1067,9 +1067,10 @@ body[data-page="staff-customer-detail"] .staff-main::before {
 
 .staff-detail-recipe-head {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
   align-items: center;
   gap: 10px;
+  margin-top: 18px;
 }
 
 .staff-detail-recipe-head h4,
@@ -1080,14 +1081,36 @@ body[data-page="staff-customer-detail"] .staff-main::before {
 
 .staff-recipe-row {
   display: grid;
-  grid-template-columns: minmax(150px, 1fr) 104px 76px;
-  gap: 8px;
-  align-items: end;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  align-items: stretch;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 253, 249, 0.88);
+  padding: 12px;
+}
+
+.staff-recipe-dialog .staff-recipe-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 14px;
+}
+
+.staff-recipe-row-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .staff-recipe-material-field {
   display: grid;
   gap: 6px;
+}
+
+.staff-recipe-amount-field {
+  display: grid;
+  gap: 7px;
 }
 
 .staff-recipe-original-material {
@@ -1101,13 +1124,20 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   padding: 8px;
 }
 
+.staff-recipe-row-head .admin-btn {
+  min-height: 34px;
+  padding: 6px 12px;
+}
+
 .staff-recipe-modal .portal-modal-backdrop {
   background: rgba(55, 45, 35, 0.52);
   backdrop-filter: blur(3px);
 }
 
 .staff-recipe-dialog {
-  width: min(940px, calc(100vw - 42px));
+  width: min(1060px, calc(100vw - 36px));
+  max-height: calc(100vh - 36px);
+  overflow: auto;
 }
 
 .staff-recipe-dialog h2 {
@@ -1118,17 +1148,21 @@ body[data-page="staff-customer-detail"] .staff-main::before {
 }
 
 .staff-recipe-modal-actions {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  display: flex;
+  justify-content: flex-end;
   gap: 12px;
-  margin-top: 14px;
+  margin-top: 16px;
+}
+
+.staff-recipe-modal-actions .admin-btn {
+  min-width: min(320px, 100%);
 }
 
 .staff-recipe-axis-compare {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
-  margin-top: 14px;
+  margin: 0 0 16px;
 }
 
 .staff-recipe-axis-card {
@@ -1160,6 +1194,17 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 4px;
   align-items: center;
+}
+
+.staff-amount-control input {
+  width: 100%;
+}
+
+.staff-amount-range {
+  width: 100%;
+  height: 22px;
+  accent-color: #dd8f72;
+  cursor: pointer;
 }
 
 .staff-amount-unit,
@@ -2557,7 +2602,11 @@ body[data-page="staff-slots"] .staff-main::before {
   }
 
   .staff-recipe-modal-actions {
-    grid-template-columns: 1fr;
+    justify-content: stretch;
+  }
+
+  .staff-recipe-modal-actions .admin-btn {
+    width: 100%;
   }
 
   .staff-detail-recipe-head {
@@ -2585,6 +2634,11 @@ body[data-page="staff-slots"] .staff-main::before {
   }
 
   .staff-recipe-row {
+    grid-template-columns: 1fr;
+  }
+
+  .staff-recipe-dialog .staff-recipe-list,
+  .staff-recipe-axis-compare {
     grid-template-columns: 1fr;
   }
 

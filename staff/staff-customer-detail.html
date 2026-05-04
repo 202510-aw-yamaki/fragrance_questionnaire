@@ -129,12 +129,6 @@
     <section class="portal-modal-dialog staff-recipe-dialog" role="dialog" aria-modal="true" aria-labelledby="recipe-modal-title">
       <button class="staff-customer-action-close" type="button" data-recipe-cancel aria-label="閉じる">×</button>
       <h2 id="recipe-modal-title">配合調整</h2>
-      <div class="staff-detail-recipe-head">
-        <h4>最終配合</h4>
-        <button class="admin-btn secondary" id="apply-recommended-recipe" type="button">おすすめを追加</button>
-        <button class="admin-btn secondary" id="add-recipe-row" type="button">行を追加</button>
-      </div>
-      <div class="staff-recipe-list" id="recipe-list"></div>
       <div class="staff-recipe-axis-compare">
         <section class="staff-recipe-axis-card">
           <h4>アンケート結果の5軸</h4>
@@ -145,8 +139,14 @@
           <div id="recipe-derived-axis-preview"></div>
         </section>
       </div>
-      <div class="staff-recipe-modal-actions">
+      <div class="staff-detail-recipe-head">
+        <h4>最終配合</h4>
+        <button class="admin-btn secondary" id="apply-recommended-recipe" type="button">おすすめを追加</button>
+        <button class="admin-btn secondary" id="add-recipe-row" type="button">行を追加</button>
         <button class="admin-btn secondary" id="normalize-recipe" type="button">割合を100%に整える</button>
+      </div>
+      <div class="staff-recipe-list" id="recipe-list"></div>
+      <div class="staff-recipe-modal-actions">
         <button class="admin-btn primary" type="button" data-recipe-apply>配合を反映して閉じる</button>
       </div>
     </section>
@@ -156,12 +156,6 @@
     <section class="portal-modal-dialog staff-recipe-dialog" role="dialog" aria-modal="true" aria-labelledby="previsit-recipe-modal-title">
       <button class="staff-customer-action-close" type="button" data-previsit-recipe-cancel aria-label="閉じる">×</button>
       <h2 id="previsit-recipe-modal-title">事前配合調整</h2>
-      <div class="staff-detail-recipe-head">
-        <h4>来店前の提案配合</h4>
-        <button class="admin-btn secondary" id="apply-previsit-recommended-recipe" type="button">おすすめを追加</button>
-        <button class="admin-btn secondary" id="add-previsit-recipe-row" type="button">行を追加</button>
-      </div>
-      <div class="staff-recipe-list" id="previsit-recipe-list"></div>
       <div class="staff-recipe-axis-compare">
         <section class="staff-recipe-axis-card">
           <h4>アンケート結果の5軸</h4>
@@ -172,8 +166,14 @@
           <div id="previsit-recipe-derived-axis-preview"></div>
         </section>
       </div>
-      <div class="staff-recipe-modal-actions">
+      <div class="staff-detail-recipe-head">
+        <h4>来店前の提案配合</h4>
+        <button class="admin-btn secondary" id="apply-previsit-recommended-recipe" type="button">おすすめを追加</button>
+        <button class="admin-btn secondary" id="add-previsit-recipe-row" type="button">行を追加</button>
         <button class="admin-btn secondary" id="normalize-previsit-recipe" type="button">割合を100%に整える</button>
+      </div>
+      <div class="staff-recipe-list" id="previsit-recipe-list"></div>
+      <div class="staff-recipe-modal-actions">
         <button class="admin-btn primary" type="button" data-previsit-recipe-apply>提案配合を反映して閉じる</button>
       </div>
     </section>

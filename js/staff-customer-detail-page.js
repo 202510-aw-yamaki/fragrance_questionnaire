@@ -748,59 +748,77 @@
       .join("");
   }
 
+  function clampRecipeAmount(value) {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return 0;
+    return Math.max(0, Math.min(100, Math.round(number)));
+  }
+
+  function setRecipeAmountControls(row, value) {
+    const nextValue = String(clampRecipeAmount(value));
+    const input = row?.querySelector('[data-recipe-field="amount"]');
+    const range = row?.querySelector('[data-recipe-field="amount_range"]');
+    if (input) input.value = nextValue;
+    if (range) range.value = nextValue;
+  }
+
+  function syncRecipeAmountRange(row) {
+    const input = row?.querySelector('[data-recipe-field="amount"]');
+    const range = row?.querySelector('[data-recipe-field="amount_range"]');
+    if (!input || !range) return;
+    range.value = String(clampRecipeAmount(input.value));
+  }
+
+  function syncAllRecipeAmountRanges(listEl) {
+    Array.from(listEl?.querySelectorAll(".staff-recipe-row") || []).forEach(syncRecipeAmountRange);
+  }
+
   function createRecipeRow(item = {}) {
     if (!recipeListEl) return;
     const originalMaterial = item.material_name
       || materialRows.find((entry) => entry.material_code === item.material_code)?.material_name
       || "";
+    const initialAmount = clampRecipeAmount(item.amount || 0);
     const row = document.createElement("div");
     row.className = "staff-recipe-row";
     row.innerHTML = `
       <input data-recipe-field="role" type="hidden" value="${escapeHtml(item.role || "ingredient")}">
       <input data-recipe-field="lot" type="hidden" value="${escapeHtml(item.lot || "")}">
       <input data-recipe-field="note" type="hidden" value="${escapeHtml(item.note || "")}">
-      <label class="staff-recipe-material-field">
+      <div class="staff-recipe-row-head">
         <span class="staff-recipe-field-label">原料</span>
+        <button class="admin-btn secondary" type="button" data-remove-recipe>削除</button>
+      </div>
+      <label class="staff-recipe-material-field">
         <select data-recipe-field="material_code">${getMaterialOptions(item.material_code || "")}</select>
         <small class="staff-recipe-original-material">${originalMaterial ? `変更前: ${escapeHtml(originalMaterial)}` : "変更前: 未選択"}</small>
       </label>
-      <label class="staff-recipe-amount-field">割合
+      <label class="staff-recipe-amount-field">
+        <span class="staff-recipe-field-label">割合</span>
         <span class="staff-amount-control">
-          <input data-recipe-field="amount" type="number" min="0" step="1" value="${Math.round(Number(item.amount || 0))}">
+          <input data-recipe-field="amount" type="number" min="0" max="100" step="1" value="${initialAmount}">
           <span class="staff-amount-unit">%</span>
-          <span class="staff-amount-step-group">
-            <button class="staff-amount-step" type="button" data-adjust-amount="-1" aria-label="割合を減らす">◀</button>
-            <button class="staff-amount-step" type="button" data-adjust-amount="1" aria-label="割合を増やす">▶</button>
-          </span>
         </span>
+        <input class="staff-amount-range" data-recipe-field="amount_range" type="range" min="0" max="100" step="1" value="${initialAmount}">
       </label>
-      <button class="admin-btn secondary" type="button" data-remove-recipe>削除</button>
     `;
+    const refresh = () => {
+      refreshFinalAxesFromRecipe();
+      renderRecipeSummary();
+      renderRecipeAxisCompare();
+    };
     row.querySelector("[data-remove-recipe]")?.addEventListener("click", () => {
       row.remove();
-      refreshFinalAxesFromRecipe();
-      renderRecipeSummary();
-      renderRecipeAxisCompare();
+      refresh();
     });
-    row.querySelector('[data-recipe-field="material_code"]')?.addEventListener("change", () => {
-      refreshFinalAxesFromRecipe();
-      renderRecipeSummary();
-      renderRecipeAxisCompare();
-    });
+    row.querySelector('[data-recipe-field="material_code"]')?.addEventListener("change", refresh);
     row.querySelector('[data-recipe-field="amount"]')?.addEventListener("input", () => {
-      refreshFinalAxesFromRecipe();
-      renderRecipeSummary();
-      renderRecipeAxisCompare();
+      setRecipeAmountControls(row, row.querySelector('[data-recipe-field="amount"]')?.value);
+      refresh();
     });
-    row.querySelectorAll("[data-adjust-amount]").forEach((button) => {
-      button.addEventListener("click", () => {
-        const input = row.querySelector('[data-recipe-field="amount"]');
-        const nextValue = Math.max(0, Number(input?.value || 0) + Number(button.dataset.adjustAmount || 0));
-        if (input) input.value = String(nextValue);
-        refreshFinalAxesFromRecipe();
-        renderRecipeSummary();
-        renderRecipeAxisCompare();
-      });
+    row.querySelector('[data-recipe-field="amount_range"]')?.addEventListener("input", () => {
+      setRecipeAmountControls(row, row.querySelector('[data-recipe-field="amount_range"]')?.value);
+      refresh();
     });
     recipeListEl.appendChild(row);
     renderRecipeSummary();
@@ -989,6 +1007,7 @@
       remainder -= nextValue;
       input.value = String(Math.max(0, nextValue));
     });
+    syncAllRecipeAmountRanges(previsitRecipeListEl);
     renderPrevisitRecipeAxisCompare();
   }
 
@@ -1143,6 +1162,7 @@
       remainder -= nextValue;
       input.value = String(Math.max(0, nextValue));
     });
+    syncAllRecipeAmountRanges(recipeListEl);
     refreshFinalAxesFromRecipe();
     renderRecipeSummary();
     renderRecipeAxisCompare();
@@ -1153,24 +1173,29 @@
     const originalMaterial = item.material_name
       || materialRows.find((entry) => entry.material_code === item.material_code)?.material_name
       || "";
+    const initialAmount = clampRecipeAmount(item.amount || 0);
     const row = document.createElement("div");
     row.className = "staff-recipe-row";
     row.innerHTML = `
       <input data-recipe-field="role" type="hidden" value="${escapeHtml(item.role || "ingredient")}">
       <input data-recipe-field="lot" type="hidden" value="${escapeHtml(item.lot || "")}">
       <input data-recipe-field="note" type="hidden" value="${escapeHtml(item.note || "")}">
-      <label class="staff-recipe-material-field">
+      <div class="staff-recipe-row-head">
         <span class="staff-recipe-field-label">原料</span>
+        <button class="admin-btn secondary" type="button" data-remove-recipe>削除</button>
+      </div>
+      <label class="staff-recipe-material-field">
         <select data-recipe-field="material_code">${getMaterialOptions(item.material_code || "")}</select>
         <small class="staff-recipe-original-material">${originalMaterial ? `変更前: ${escapeHtml(originalMaterial)}` : "変更前: 未選択"}</small>
       </label>
-      <label class="staff-recipe-amount-field">割合
+      <label class="staff-recipe-amount-field">
+        <span class="staff-recipe-field-label">割合</span>
         <span class="staff-amount-control">
-          <input data-recipe-field="amount" type="number" min="0" step="1" value="${Math.round(Number(item.amount || 0))}">
+          <input data-recipe-field="amount" type="number" min="0" max="100" step="1" value="${initialAmount}">
           <span class="staff-amount-unit">%</span>
         </span>
+        <input class="staff-amount-range" data-recipe-field="amount_range" type="range" min="0" max="100" step="1" value="${initialAmount}">
       </label>
-      <button class="admin-btn secondary" type="button" data-remove-recipe>削除</button>
     `;
     const refresh = () => renderPrevisitRecipeAxisCompare();
     row.querySelector("[data-remove-recipe]")?.addEventListener("click", () => {
@@ -1178,7 +1203,14 @@
       refresh();
     });
     row.querySelector('[data-recipe-field="material_code"]')?.addEventListener("change", refresh);
-    row.querySelector('[data-recipe-field="amount"]')?.addEventListener("input", refresh);
+    row.querySelector('[data-recipe-field="amount"]')?.addEventListener("input", () => {
+      setRecipeAmountControls(row, row.querySelector('[data-recipe-field="amount"]')?.value);
+      refresh();
+    });
+    row.querySelector('[data-recipe-field="amount_range"]')?.addEventListener("input", () => {
+      setRecipeAmountControls(row, row.querySelector('[data-recipe-field="amount_range"]')?.value);
+      refresh();
+    });
     previsitRecipeListEl.appendChild(row);
     refresh();
   }
