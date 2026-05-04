@@ -1178,15 +1178,62 @@ body[data-page="staff-customer-detail"] .staff-main::before {
 }
 
 .staff-recipe-axis-card .staff-radar-graph {
-  width: min(100%, 190px);
+  width: min(100%, 210px);
 }
 
 .staff-recipe-axis-card .staff-radar-wrap {
-  margin: 0 auto 10px;
+  grid-area: graph;
+  align-self: start;
+  justify-self: end;
+  margin: 0;
 }
 
 .staff-recipe-axis-card .staff-axis-stat-grid {
+  display: contents;
+}
+
+.staff-recipe-axis-card > div {
   display: grid;
+  grid-template-columns: minmax(132px, 0.72fr) minmax(120px, 1fr) minmax(120px, 1fr);
+  grid-template-areas:
+    "floral graph graph"
+    "woody graph graph"
+    "sweet fresh spicy";
+  align-items: end;
+  gap: 8px 10px;
+}
+
+.staff-recipe-axis-card .staff-axis-stat:nth-child(1) {
+  grid-area: floral;
+}
+
+.staff-recipe-axis-card .staff-axis-stat:nth-child(2) {
+  grid-area: fresh;
+}
+
+.staff-recipe-axis-card .staff-axis-stat:nth-child(3) {
+  grid-area: woody;
+}
+
+.staff-recipe-axis-card .staff-axis-stat:nth-child(4) {
+  grid-area: spicy;
+}
+
+.staff-recipe-axis-card .staff-axis-stat:nth-child(5) {
+  grid-area: sweet;
+}
+
+.staff-recipe-axis-card .staff-axis-stat {
+  min-height: 48px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 253, 249, 0.92);
+  padding: 10px 12px;
+}
+
+.staff-recipe-axis-card .staff-axis-stat span {
+  white-space: nowrap;
 }
 
 .staff-amount-control {
@@ -2640,6 +2687,19 @@ body[data-page="staff-slots"] .staff-main::before {
   .staff-recipe-dialog .staff-recipe-list,
   .staff-recipe-axis-compare {
     grid-template-columns: 1fr;
+  }
+
+  .staff-recipe-axis-card > div {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "graph graph"
+      "floral fresh"
+      "woody spicy"
+      "sweet sweet";
+  }
+
+  .staff-recipe-axis-card .staff-radar-wrap {
+    justify-self: center;
   }
 
   .staff-detail-header-inner {
