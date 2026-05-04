@@ -303,6 +303,7 @@ body[data-page="staff-customer-detail"] .staff-main::before {
 }
 
 .staff-detail-private-panel,
+.staff-detail-previsit-panel,
 .staff-detail-share-panel,
 .staff-detail-operations {
   position: relative;
@@ -323,8 +324,18 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   background: #6f5b42;
 }
 
+.staff-detail-panel-tab--previsit {
+  background: #b98642;
+}
+
 .staff-detail-panel-tab--share {
   background: var(--green);
+}
+
+.staff-detail-side-stack {
+  display: grid;
+  gap: 28px;
+  align-content: start;
 }
 
 .staff-detail-private-grid {
@@ -385,6 +396,46 @@ body[data-page="staff-customer-detail"] .staff-main::before {
 
 .staff-detail-note-display.is-empty {
   color: var(--muted);
+}
+
+.staff-previsit-card {
+  display: grid;
+  gap: 12px;
+}
+
+.staff-previsit-card-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.staff-previsit-card-head h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.staff-previsit-summary {
+  display: grid;
+  gap: 8px;
+}
+
+.staff-previsit-actions {
+  display: grid;
+  justify-content: start;
+}
+
+.staff-previsit-axis-preview {
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 250, 243, 0.72);
+  padding: 10px;
+}
+
+.staff-previsit-axis-preview .staff-radar-graph {
+  width: min(100%, 150px);
 }
 
 .staff-note-save {

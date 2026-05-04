@@ -42,13 +42,23 @@
   const hearingNoteEl = document.getElementById("hearing-note");
   const recipeListEl = document.getElementById("recipe-list");
   const recipeSummaryListEl = document.getElementById("recipe-summary-list");
+  const previsitRecipeSummaryEl = document.getElementById("previsit-recipe-summary");
+  const previsitRecipeEditOpenEl = document.getElementById("previsit-recipe-edit-open");
+  const copyPrevisitToFinalEl = document.getElementById("copy-previsit-to-final");
   const recipeBaseAxisPreviewEl = document.getElementById("recipe-base-axis-preview");
   const recipeDerivedAxisPreviewEl = document.getElementById("recipe-derived-axis-preview");
+  const previsitRecipeBaseAxisPreviewEl = document.getElementById("previsit-recipe-base-axis-preview");
+  const previsitRecipeDerivedAxisPreviewEl = document.getElementById("previsit-recipe-derived-axis-preview");
   const recipeModalEl = document.getElementById("recipe-modal");
+  const previsitRecipeModalEl = document.getElementById("previsit-recipe-modal");
   const recipeEditOpenEl = document.getElementById("recipe-edit-open");
+  const previsitRecipeListEl = document.getElementById("previsit-recipe-list");
   const addRecipeRowEl = document.getElementById("add-recipe-row");
+  const addPrevisitRecipeRowEl = document.getElementById("add-previsit-recipe-row");
   const applyRecommendedRecipeEl = document.getElementById("apply-recommended-recipe");
+  const applyPrevisitRecommendedRecipeEl = document.getElementById("apply-previsit-recommended-recipe");
   const normalizeRecipeEl = document.getElementById("normalize-recipe");
+  const normalizePrevisitRecipeEl = document.getElementById("normalize-previsit-recipe");
   const axisTotalEl = document.getElementById("axis-total");
   const finalAxisPreviewEl = document.getElementById("final-axis-preview");
   const customerFeedbackEl = document.getElementById("customer-feedback");
@@ -93,6 +103,8 @@
   let customerDraft = null;
   let customerActionSnapshot = null;
   let recipeModalSnapshot = null;
+  let previsitRecipeItems = [];
+  let previsitRecipeModalSnapshot = null;
 
   function escapeHtml(value) {
     return String(value ?? "")
@@ -131,6 +143,10 @@
     return reservation?.id ? `fragranceHearingMemo:${reservation.id}` : "";
   }
 
+  function getPrevisitRecipeKey() {
+    return reservation?.id ? `fragrancePrevisitRecipe:${reservation.id}` : "";
+  }
+
   function readCustomerDraft() {
     try {
       const key = getDraftKey();
@@ -146,6 +162,24 @@
     const key = getDraftKey();
     if (key) {
       window.sessionStorage.setItem(key, JSON.stringify(payload));
+    }
+  }
+
+  function readPrevisitRecipeItems() {
+    try {
+      const key = getPrevisitRecipeKey();
+      if (!key) return [];
+      const stored = window.sessionStorage.getItem(key);
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function persistPrevisitRecipeItems() {
+    const key = getPrevisitRecipeKey();
+    if (key) {
+      window.sessionStorage.setItem(key, JSON.stringify(previsitRecipeItems));
     }
   }
 
@@ -174,6 +208,30 @@
     }
     return AXIS_ORDER.reduce((acc, axis) => {
       acc[axis] = Number(axes?.[axis] || 0);
+      return acc;
+    }, {});
+  }
+
+  function clampAxisValue(value) {
+    return Math.max(0, Math.min(100, Math.round(Number(value || 0))));
+  }
+
+  function normalizeRecipeAxesForDisplay(rawAxes, baseAxes) {
+    if (!rawAxes || !hasAxisValue(rawAxes)) return null;
+    const normalizedRaw = normalizeAxes(rawAxes);
+    const normalizedBase = normalizeAxes(baseAxes || {});
+    if (!hasAxisValue(normalizedBase)) {
+      return AXIS_ORDER.reduce((acc, axis) => {
+        acc[axis] = clampAxisValue(normalizedRaw[axis]);
+        return acc;
+      }, {});
+    }
+    const rawTotal = AXIS_ORDER.reduce((sum, axis) => sum + Number(normalizedRaw[axis] || 0), 0);
+    const baseTotal = AXIS_ORDER.reduce((sum, axis) => sum + Number(normalizedBase[axis] || 0), 0);
+    const scale = rawTotal > 0 && baseTotal > 0 ? baseTotal / rawTotal : 1;
+    return AXIS_ORDER.reduce((acc, axis) => {
+      const scaledRaw = Number(normalizedRaw[axis] || 0) * scale;
+      acc[axis] = clampAxisValue((Number(normalizedBase[axis] || 0) * 0.65) + (scaledRaw * 0.35));
       return acc;
     }, {});
   }
@@ -314,6 +372,21 @@
     }
     if (recipeDerivedAxisPreviewEl) {
       recipeDerivedAxisPreviewEl.innerHTML = derivedAxes
+        ? `${createRadarGraph(derivedAxes, "final")}${createAxisStatGrid(derivedAxes)}`
+        : `<p class="admin-empty">配合を選択すると表示されます。</p>`;
+    }
+  }
+
+  function renderPrevisitRecipeAxisCompare() {
+    const baseAxes = getBaseSurveyAxes();
+    const derivedAxes = calculateRecipeDerivedAxes(collectPrevisitRecipeItems(), baseAxes);
+    if (previsitRecipeBaseAxisPreviewEl) {
+      previsitRecipeBaseAxisPreviewEl.innerHTML = hasAxisValue(baseAxes)
+        ? `${createRadarGraph(baseAxes, "survey")}${createAxisStatGrid(baseAxes)}`
+        : `<p class="admin-empty">アンケート結果がありません。</p>`;
+    }
+    if (previsitRecipeDerivedAxisPreviewEl) {
+      previsitRecipeDerivedAxisPreviewEl.innerHTML = derivedAxes
         ? `${createRadarGraph(derivedAxes, "final")}${createAxisStatGrid(derivedAxes)}`
         : `<p class="admin-empty">配合を選択すると表示されます。</p>`;
     }
@@ -745,9 +818,9 @@
     renderRecipeAxisCompare();
   }
 
-  function collectRecipeItems() {
-    if (!recipeListEl) return [];
-    return Array.from(recipeListEl.children)
+  function collectRecipeItemsFromList(listEl) {
+    if (!listEl) return [];
+    return Array.from(listEl.children)
       .map((row) => {
         const materialCode = row.querySelector('[data-recipe-field="material_code"]')?.value || "";
         const material = materialRows.find((entry) => entry.material_code === materialCode);
@@ -761,6 +834,14 @@
         };
       })
       .filter((item) => item.material_code);
+  }
+
+  function collectRecipeItems() {
+    return collectRecipeItemsFromList(recipeListEl);
+  }
+
+  function collectPrevisitRecipeItems() {
+    return collectRecipeItemsFromList(previsitRecipeListEl);
   }
 
   function renderRecipeSummary() {
@@ -781,6 +862,30 @@
           <strong>${Number(item.amount || 0)}%</strong>
         </div>
       `).join("")}
+    `;
+  }
+
+  function renderPrevisitRecipeSummary() {
+    if (!previsitRecipeSummaryEl) return;
+    const items = Array.isArray(previsitRecipeItems) ? previsitRecipeItems : [];
+    if (copyPrevisitToFinalEl) copyPrevisitToFinalEl.disabled = !items.length;
+    if (!items.length) {
+      previsitRecipeSummaryEl.innerHTML = `<p class="admin-empty">提案配合は未設定です。</p>`;
+      return;
+    }
+    const axes = calculateRecipeDerivedAxes(items, getBaseSurveyAxes());
+    previsitRecipeSummaryEl.innerHTML = `
+      <div class="staff-recipe-summary-row staff-recipe-summary-row--head">
+        <span>原料</span>
+        <strong>割合</strong>
+      </div>
+      ${items.map((item) => `
+        <div class="staff-recipe-summary-row">
+          <span>${escapeHtml(item.material_name || "未選択")}</span>
+          <strong>${Number(item.amount || 0)}%</strong>
+        </div>
+      `).join("")}
+      ${axes ? `<div class="staff-previsit-axis-preview">${createRadarGraph(axes, "final")}</div>` : ""}
     `;
   }
 
@@ -809,6 +914,95 @@
     renderRecipeAxisCompare();
     renderQr(false);
     setStatus("おすすめ配合を最終配合に追加しました。");
+  }
+
+  function applyPrevisitRecommendedRecipe() {
+    const items = getRecommendedRecipeItems();
+    if (!items.length) {
+      setStatus("おすすめ配合を追加できるアンケート結果がありません。", "error");
+      return;
+    }
+    renderPrevisitRecipeRows(items);
+    setStatus("おすすめ配合を事前提案に追加しました。");
+  }
+
+  function getPrevisitRecipeModalSnapshot() {
+    return {
+      items: collectPrevisitRecipeItems()
+    };
+  }
+
+  function restorePrevisitRecipeModalSnapshot(snapshot) {
+    if (!snapshot) return;
+    renderPrevisitRecipeRows(snapshot.items || []);
+    renderPrevisitRecipeAxisCompare();
+  }
+
+  function isPrevisitRecipeModalDirty() {
+    return previsitRecipeModalSnapshot
+      ? JSON.stringify(getPrevisitRecipeModalSnapshot()) !== JSON.stringify(previsitRecipeModalSnapshot)
+      : false;
+  }
+
+  function openPrevisitRecipeModal() {
+    if (!previsitRecipeModalEl) return;
+    renderPrevisitRecipeRows(previsitRecipeItems || []);
+    previsitRecipeModalSnapshot = getPrevisitRecipeModalSnapshot();
+    renderPrevisitRecipeAxisCompare();
+    previsitRecipeModalEl.hidden = false;
+    document.body.classList.add("portal-modal-open");
+    previsitRecipeModalEl.querySelector(".staff-customer-action-close")?.focus();
+  }
+
+  function closePrevisitRecipeModal(options = {}) {
+    if (!previsitRecipeModalEl) return;
+    if (!options.apply && isPrevisitRecipeModalDirty()) {
+      const shouldDiscard = window.confirm("事前配合の変更を反映せずに閉じますか？");
+      if (!shouldDiscard) return;
+      restorePrevisitRecipeModalSnapshot(previsitRecipeModalSnapshot);
+      setStatus("事前配合の変更を反映せずに閉じました。");
+    }
+    if (options.apply) {
+      previsitRecipeItems = collectPrevisitRecipeItems();
+      persistPrevisitRecipeItems();
+      renderPrevisitRecipeSummary();
+      setStatus("事前配合を反映しました。");
+    }
+    previsitRecipeModalEl.hidden = true;
+    document.body.classList.remove("portal-modal-open");
+    previsitRecipeModalSnapshot = null;
+    renderPrevisitRecipeSummary();
+    renderPrevisitRecipeAxisCompare();
+  }
+
+  function normalizePrevisitRecipeAmounts() {
+    const amountInputs = Array.from(previsitRecipeListEl?.querySelectorAll('[data-recipe-field="amount"]') || []);
+    if (!amountInputs.length) return;
+    const values = amountInputs.map((input) => Math.max(0, Number(input.value || 0)));
+    const total = values.reduce((sum, value) => sum + value, 0);
+    if (!total) return;
+    let remainder = 100;
+    amountInputs.forEach((input, index) => {
+      const nextValue = index === amountInputs.length - 1
+        ? remainder
+        : Math.round((values[index] / total) * 100);
+      remainder -= nextValue;
+      input.value = String(Math.max(0, nextValue));
+    });
+    renderPrevisitRecipeAxisCompare();
+  }
+
+  function copyPrevisitRecipeToFinal() {
+    if (!previsitRecipeItems.length) {
+      setStatus("コピーできる事前配合がありません。", "error");
+      return;
+    }
+    renderRecipeRows(previsitRecipeItems);
+    refreshFinalAxesFromRecipe();
+    renderRecipeSummary();
+    renderRecipeAxisCompare();
+    renderQr(false);
+    setStatus("事前配合を最終配合へコピーしました。");
   }
 
   function getRecipeModalSnapshot() {
@@ -901,8 +1095,7 @@
     };
   }
 
-  function calculateRecipeDerivedAxes() {
-    const items = collectRecipeItems();
+  function calculateRecipeRawAxes(items = collectRecipeItems()) {
     const totalAmount = items.reduce((sum, item) => sum + Math.max(0, Number(item.amount || 0)), 0);
     if (!items.length || !totalAmount) return null;
     const axes = AXIS_ORDER.reduce((acc, axis) => {
@@ -921,6 +1114,11 @@
       acc[axis] = Math.round(axes[axis]);
       return acc;
     }, {});
+  }
+
+  function calculateRecipeDerivedAxes(items = collectRecipeItems(), baseAxes = getBaseSurveyAxes()) {
+    const rawAxes = calculateRecipeRawAxes(items);
+    return normalizeRecipeAxesForDisplay(rawAxes, baseAxes);
   }
 
   function refreshFinalAxesFromRecipe() {
@@ -948,6 +1146,51 @@
     refreshFinalAxesFromRecipe();
     renderRecipeSummary();
     renderRecipeAxisCompare();
+  }
+
+  function createPrevisitRecipeRow(item = {}) {
+    if (!previsitRecipeListEl) return;
+    const originalMaterial = item.material_name
+      || materialRows.find((entry) => entry.material_code === item.material_code)?.material_name
+      || "";
+    const row = document.createElement("div");
+    row.className = "staff-recipe-row";
+    row.innerHTML = `
+      <input data-recipe-field="role" type="hidden" value="${escapeHtml(item.role || "ingredient")}">
+      <input data-recipe-field="lot" type="hidden" value="${escapeHtml(item.lot || "")}">
+      <input data-recipe-field="note" type="hidden" value="${escapeHtml(item.note || "")}">
+      <label class="staff-recipe-material-field">
+        <span class="staff-recipe-field-label">原料</span>
+        <select data-recipe-field="material_code">${getMaterialOptions(item.material_code || "")}</select>
+        <small class="staff-recipe-original-material">${originalMaterial ? `変更前: ${escapeHtml(originalMaterial)}` : "変更前: 未選択"}</small>
+      </label>
+      <label class="staff-recipe-amount-field">割合
+        <span class="staff-amount-control">
+          <input data-recipe-field="amount" type="number" min="0" step="1" value="${Math.round(Number(item.amount || 0))}">
+          <span class="staff-amount-unit">%</span>
+        </span>
+      </label>
+      <button class="admin-btn secondary" type="button" data-remove-recipe>削除</button>
+    `;
+    const refresh = () => renderPrevisitRecipeAxisCompare();
+    row.querySelector("[data-remove-recipe]")?.addEventListener("click", () => {
+      row.remove();
+      refresh();
+    });
+    row.querySelector('[data-recipe-field="material_code"]')?.addEventListener("change", refresh);
+    row.querySelector('[data-recipe-field="amount"]')?.addEventListener("input", refresh);
+    previsitRecipeListEl.appendChild(row);
+    refresh();
+  }
+
+  function renderPrevisitRecipeRows(items) {
+    if (!previsitRecipeListEl) return;
+    previsitRecipeListEl.innerHTML = "";
+    (Array.isArray(items) ? items : []).forEach((item) => createPrevisitRecipeRow(item));
+    while (previsitRecipeListEl.children.length < 3) {
+      createPrevisitRecipeRow({ role: "ingredient" });
+    }
+    renderPrevisitRecipeAxisCompare();
   }
 
   function getPreparationNoteText() {
@@ -978,6 +1221,8 @@
     if (hearingNoteEl) {
       hearingNoteEl.value = getHearingMemoKey() ? window.sessionStorage.getItem(getHearingMemoKey()) || "" : "";
     }
+    previsitRecipeItems = readPrevisitRecipeItems();
+    renderPrevisitRecipeSummary();
     setFinalAxisInputs(baseAxes);
     renderRecipeRows(workshop?.recipe_items || []);
     updateAxisTotal();
@@ -1278,11 +1523,18 @@
     });
 
     recipeEditOpenEl?.addEventListener("click", openRecipeModal);
+    previsitRecipeEditOpenEl?.addEventListener("click", openPrevisitRecipeModal);
     document.querySelectorAll("[data-recipe-cancel]").forEach((button) => {
       button.addEventListener("click", () => closeRecipeModal({ apply: false }));
     });
     document.querySelectorAll("[data-recipe-apply]").forEach((button) => {
       button.addEventListener("click", () => closeRecipeModal({ apply: true }));
+    });
+    document.querySelectorAll("[data-previsit-recipe-cancel]").forEach((button) => {
+      button.addEventListener("click", () => closePrevisitRecipeModal({ apply: false }));
+    });
+    document.querySelectorAll("[data-previsit-recipe-apply]").forEach((button) => {
+      button.addEventListener("click", () => closePrevisitRecipeModal({ apply: true }));
     });
 
     document.querySelectorAll("[data-product-name-suggestion]").forEach((button) => {
@@ -1303,6 +1555,9 @@
       }
       if (event.key === "Escape" && recipeModalEl && !recipeModalEl.hidden) {
         closeRecipeModal({ apply: false });
+      }
+      if (event.key === "Escape" && previsitRecipeModalEl && !previsitRecipeModalEl.hidden) {
+        closePrevisitRecipeModal({ apply: false });
       }
       if (event.key === "Escape" && customerModalEl && !customerModalEl.hidden) {
         customerModalEl.hidden = true;
@@ -1339,6 +1594,10 @@
     addRecipeRowEl?.addEventListener("click", () => createRecipeRow({ role: "ingredient" }));
     applyRecommendedRecipeEl?.addEventListener("click", applyRecommendedRecipe);
     normalizeRecipeEl?.addEventListener("click", normalizeRecipeAmounts);
+    addPrevisitRecipeRowEl?.addEventListener("click", () => createPrevisitRecipeRow({ role: "ingredient" }));
+    applyPrevisitRecommendedRecipeEl?.addEventListener("click", applyPrevisitRecommendedRecipe);
+    normalizePrevisitRecipeEl?.addEventListener("click", normalizePrevisitRecipeAmounts);
+    copyPrevisitToFinalEl?.addEventListener("click", copyPrevisitRecipeToFinal);
     AXIS_ORDER.forEach((axis) => {
       document.getElementById(`axis-${axis}`)?.addEventListener("input", updateAxisTotal);
     });

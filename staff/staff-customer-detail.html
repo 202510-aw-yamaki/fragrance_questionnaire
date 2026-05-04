@@ -57,6 +57,21 @@
           </div>
         </article>
 
+        <div class="staff-detail-side-stack">
+        <article class="admin-panel staff-detail-previsit-panel">
+          <div class="staff-detail-panel-tab staff-detail-panel-tab--previsit">事前配合調整</div>
+          <div class="staff-previsit-card">
+            <div class="staff-previsit-card-head">
+              <h2>来店前の提案配合</h2>
+              <button class="admin-btn secondary" id="previsit-recipe-edit-open" type="button">調整</button>
+            </div>
+            <div class="staff-previsit-summary" id="previsit-recipe-summary"></div>
+            <div class="staff-previsit-actions">
+              <button class="admin-btn secondary" id="copy-previsit-to-final" type="button" disabled>最終配合へコピー</button>
+            </div>
+          </div>
+        </article>
+
         <article class="admin-panel staff-detail-share-panel">
           <div class="staff-detail-panel-tab staff-detail-panel-tab--share">お客様共有アクション</div>
           <div class="staff-detail-share-actions">
@@ -64,6 +79,7 @@
             <button class="staff-detail-share-action" type="button" data-customer-action="product"><span class="staff-share-icon" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false"><path d="M17 8h14l2 10v22a4 4 0 0 1-4 4H19a4 4 0 0 1-4-4V18l2-10Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M18 20h12M18 33h12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M20 8V4h8v4" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg></span><strong>商品名を決める</strong><small>お客様と一緒に、香水の名前を決めます。</small></button>
           </div>
         </article>
+        </div>
       </section>
 
       <section class="staff-soft-card staff-final-section staff-detail-operations" id="final-section">
@@ -132,6 +148,33 @@
       <div class="staff-recipe-modal-actions">
         <button class="admin-btn secondary" id="normalize-recipe" type="button">割合を100%に整える</button>
         <button class="admin-btn primary" type="button" data-recipe-apply>配合を反映して閉じる</button>
+      </div>
+    </section>
+  </div>
+  <div class="portal-modal staff-recipe-modal" id="previsit-recipe-modal" hidden>
+    <div class="portal-modal-backdrop" data-previsit-recipe-cancel></div>
+    <section class="portal-modal-dialog staff-recipe-dialog" role="dialog" aria-modal="true" aria-labelledby="previsit-recipe-modal-title">
+      <button class="staff-customer-action-close" type="button" data-previsit-recipe-cancel aria-label="閉じる">×</button>
+      <h2 id="previsit-recipe-modal-title">事前配合調整</h2>
+      <div class="staff-detail-recipe-head">
+        <h4>来店前の提案配合</h4>
+        <button class="admin-btn secondary" id="apply-previsit-recommended-recipe" type="button">おすすめを追加</button>
+        <button class="admin-btn secondary" id="add-previsit-recipe-row" type="button">行を追加</button>
+      </div>
+      <div class="staff-recipe-list" id="previsit-recipe-list"></div>
+      <div class="staff-recipe-axis-compare">
+        <section class="staff-recipe-axis-card">
+          <h4>アンケート結果の5軸</h4>
+          <div id="previsit-recipe-base-axis-preview"></div>
+        </section>
+        <section class="staff-recipe-axis-card">
+          <h4>提案配合による5軸</h4>
+          <div id="previsit-recipe-derived-axis-preview"></div>
+        </section>
+      </div>
+      <div class="staff-recipe-modal-actions">
+        <button class="admin-btn secondary" id="normalize-previsit-recipe" type="button">割合を100%に整える</button>
+        <button class="admin-btn primary" type="button" data-previsit-recipe-apply>提案配合を反映して閉じる</button>
       </div>
     </section>
   </div>
