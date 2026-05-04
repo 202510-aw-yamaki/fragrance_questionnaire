@@ -139,14 +139,21 @@
       : "staff";
     const sessionRole = window.AdminAuth?.getSessionPortalRole?.(session);
     const managerLink = sessionRole === "manager"
-      ? `<a class="staff-detail-nav-link" href="${escapeHtml(window.AdminAuth.appendRoleToHref("../admin/admin-dashboard.html", "manager"))}">\u7ba1\u7406\u8005\u753b\u9762</a>`
+      ? `<a class="staff-detail-nav-link staff-detail-manager-link" href="${escapeHtml(window.AdminAuth.appendRoleToHref("../admin/admin-dashboard.html", "manager"))}">管理者画面へ</a>`
       : "";
     headerEl.innerHTML = `
       <div class="staff-detail-header-inner staff-detail-header-inner-simple">
-        <a class="staff-detail-brand" href="${escapeHtml(window.AdminAuth.appendRoleToHref("staff-dashboard.html", "staff"))}">Fragrance STAFF_${escapeHtml(staffName)}</a>
+        <a class="staff-detail-brand" href="${escapeHtml(window.AdminAuth.appendRoleToHref("staff-dashboard.html", "staff"))}">
+          <span class="staff-detail-brand-mark" aria-hidden="true"><img src="../img/TOP/roherarogo.png" alt=""></span>
+          <span>Customer Detail</span>
+        </a>
         <div class="staff-detail-header-actions">
+          <nav class="staff-detail-nav" aria-label="スタッフメニュー">
+            <a class="staff-detail-nav-link" href="${escapeHtml(window.AdminAuth.appendRoleToHref("staff-dashboard.html", "staff"))}">ダッシュボード</a>
+            <a class="staff-detail-nav-link" href="${escapeHtml(back.href)}">予約一覧</a>
+            <a class="staff-detail-nav-link" href="${escapeHtml(window.AdminAuth.appendRoleToHref("staff-slots.html", "staff"))}">予約枠</a>
+          </nav>
           ${managerLink}
-          <a class="staff-detail-nav-link" id="staff-detail-back" href="${escapeHtml(back.href)}">戻る</a>
           <button class="staff-detail-logout" id="staff-detail-logout" type="button">ログアウト</button>
         </div>
       </div>
@@ -272,31 +279,38 @@
     const name = customerDraft?.name || reservation?.customer_name || "未入力";
     const email = customerDraft?.email || reservation?.customer_email || "未入力";
     const phone = customerDraft?.phone || "任意";
-    const consent = customerDraft?.consent ? "同意済み" : "未取得";
-    const productName = fragranceProduct?.product_name || getProductName() || "未登録";
-    const thirdPartyConsent = fragranceProduct?.third_party_order_consent ? "同意済み" : "未取得";
-    const productConsentState = getProductConsentState();
-    const personalInfoConsentLabel = productConsentState.personalInfoConsent ? "同意済み" : "未取得";
-    const thirdPartyConsentLabel = productConsentState.thirdPartyOrderConsent ? "同意済み" : "未取得";
+    const branchLabel = BRANCH_LABELS[questionnaire?.branch_key] || questionnaire?.branch_key || formatVisitType(reservation?.visit_type);
+    const memberStatus = reservation?.customer_id ? "登録済み" : "未登録";
+    const qrStatus = productQrCode?.is_public || productQrCode?.status === "active" ? "QR発行済み" : "未発行";
+    const mailStatus = productQrCode?.is_public || productQrCode?.status === "active" ? "メール未送信" : "QR発行前";
+    const workshopStatus = workshop?.status === "completed" || reservation?.status === "completed"
+      ? "完了"
+      : "進行中";
     profileEl.innerHTML = `
       <div class="staff-profile-card">
-        <div class="staff-profile-top staff-profile-top-compact">
-          <div class="staff-profile-name-block">
-            <span class="staff-profile-label">お客様名:</span>
-            <h3 class="staff-profile-name">${escapeHtml(name)}</h3>
-          </div>
-          <div class="staff-profile-chip-row">
-            <span class="staff-profile-chip">個人情報同意: <strong>${escapeHtml(personalInfoConsentLabel)}</strong></span>
-            <span class="staff-profile-chip">メール: <strong>${escapeHtml(email)}</strong></span>
-            <span class="staff-profile-chip">電話: <strong>${escapeHtml(phone)}</strong></span>
-            <span class="staff-profile-chip">商品名: <strong>${escapeHtml(productName)}</strong></span>
-            <span class="staff-profile-chip">第三者作成同意: <strong>${escapeHtml(thirdPartyConsentLabel)}</strong></span>
-            <span class="staff-profile-chip">予約枠: <strong>${escapeHtml(getSlotLabel())}</strong></span>
-            <span class="staff-profile-chip">来店目的: <strong>${escapeHtml(formatVisitType(reservation?.visit_type))}</strong></span>
-          </div>
+        <div class="staff-profile-name-line">
+          <span>お客様名：</span>
+          <strong>${escapeHtml(name)}</strong>
+          <small>様</small>
         </div>
+        <dl class="staff-profile-detail-list">
+          <div><dt>予約日時</dt><dd>${escapeHtml(getSlotLabel())}</dd></div>
+          <div><dt>メール</dt><dd>${escapeHtml(email)}</dd></div>
+          <div><dt>電話</dt><dd>${escapeHtml(phone)}</dd></div>
+        </dl>
       </div>
     `;
+    const setText = (id, value) => {
+      const target = document.getElementById(id);
+      if (target) target.textContent = value;
+    };
+    setText("staff-detail-branch", branchLabel);
+    setText("staff-detail-member-status", memberStatus);
+    setText("staff-detail-qr-status", qrStatus);
+    setText("staff-detail-workshop-status", workshopStatus);
+    setText("staff-detail-summary-qr", qrStatus);
+    setText("staff-detail-mail-status", mailStatus);
+    setText("staff-detail-summary-workshop", workshopStatus);
   }
 
   function formatAnswerValue(value) {
@@ -988,6 +1002,7 @@
       try {
         await syncProductQrCode();
         renderQr(true);
+        renderCustomerProfile();
       } catch (error) {
         setStatus(error?.message || "QR発行に失敗しました。", "error");
       }

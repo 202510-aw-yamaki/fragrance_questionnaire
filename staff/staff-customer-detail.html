@@ -9,29 +9,104 @@
 </head>
 <body class="staff-page" data-page="staff-customer-detail">
   <header class="staff-detail-header" id="staff-detail-header"></header>
-  <main class="staff-main">
-    <section class="admin-page-title"><div><span class="eyebrow">Customer Detail</span><h1>接客詳細</h1></div><button class="admin-btn primary" id="customer-edit-open" type="button">お客様情報を入力</button></section>
-    <section class="grid-2">
-      <article class="admin-panel"><h2>お客様</h2><div id="customer-profile"></div><h3>アンケート</h3><div id="question-summary"></div><div class="staff-answer-grid" id="question-answer-grid"></div></article>
-      <article class="admin-panel"><h2>香り5軸</h2><div id="axis-compare"></div><h3>おすすめ原料</h3><div id="recommended-materials"></div></article>
+  <main class="staff-main staff-detail-main">
+    <section class="staff-detail-summary-card">
+      <div class="staff-detail-summary-art" aria-hidden="true"><span></span></div>
+      <div class="staff-detail-summary-body">
+        <span class="eyebrow">Customer Detail</span>
+        <div id="customer-profile"></div>
+      </div>
+      <div class="staff-detail-summary-status" id="staff-detail-summary-status">
+        <div><span>香り傾向</span><strong id="staff-detail-branch">-</strong></div>
+        <div><span>会員登録状況</span><strong id="staff-detail-member-status">-</strong></div>
+        <div><span>QR発行状況</span><strong id="staff-detail-qr-status">-</strong></div>
+        <div><span>ワークショップ状態</span><strong id="staff-detail-workshop-status">-</strong></div>
+      </div>
+      <button class="admin-btn primary" id="customer-edit-open" type="button">お客様情報を入力</button>
     </section>
-    <section class="staff-action-rail"><a class="staff-customer-action" href="#product-name">商品名</a><a class="staff-customer-action" href="#personal-info-consent">同意確認</a><a class="staff-customer-action" href="#recipe-list">配合</a></section>
-    <form class="admin-form-stack section" id="staff-detail-form">
+
+    <form class="admin-form-stack staff-detail-form" id="staff-detail-form">
       <input id="session-record-id" type="hidden"><input id="submit-mode" type="hidden" value="draft"><input id="session-status" type="hidden" value="draft">
-      <section class="grid-2"><label>準備メモ<textarea id="preparation-note"></textarea></label><label>接客メモ<textarea id="staff-summary"></textarea></label></section>
-      <label>ヒアリングメモ<textarea id="hearing-note"></textarea></label>
-      <section class="staff-soft-card staff-final-section" id="final-section">
-        <div class="grid-2">
-          <article><label>商品名<input id="product-name" type="text" maxlength="120"></label><label class="pill"><input id="personal-info-consent" type="checkbox"> 個人情報同意確認済み</label><label class="pill"><input id="third-party-order-consent" type="checkbox"> 第三者作成同意確認済み</label></article>
-          <article><h3>QR表示</h3><div id="qr-preview" class="staff-qr-preview">QRコードがここに表示されます。</div></article>
+
+      <section class="staff-detail-board">
+        <article class="admin-panel staff-detail-private-panel">
+          <div class="staff-detail-panel-tab staff-detail-panel-tab--private">スタッフ確認用（お客様には表示しません）</div>
+          <div class="staff-detail-private-grid">
+            <section class="staff-detail-mini-card staff-detail-survey-card">
+              <h2>アンケート結果</h2>
+              <div id="question-summary"></div>
+              <div class="staff-answer-grid" id="question-answer-grid"></div>
+            </section>
+            <section class="staff-detail-mini-card staff-detail-axis-card">
+              <h2>香り5軸</h2>
+              <div id="axis-compare"></div>
+            </section>
+            <label class="staff-detail-note-card">来店前メモ<textarea id="preparation-note"></textarea></label>
+            <label class="staff-detail-note-card">当日ヒアリングメモ<textarea id="hearing-note"></textarea></label>
+            <label class="staff-detail-note-card staff-detail-note-card--wide">接客メモ<textarea id="staff-summary"></textarea></label>
+          </div>
+        </article>
+
+        <article class="admin-panel staff-detail-share-panel">
+          <div class="staff-detail-panel-tab staff-detail-panel-tab--share">お客様共有アクション（お客様に見せる操作）</div>
+          <div class="staff-detail-share-actions">
+            <a class="staff-detail-share-action" href="#hearing-note"><span>調</span><strong>お客様と香りを調整する</strong><small>香りの方向性を確認しながら、微調整を行います。</small></a>
+            <a class="staff-detail-share-action" href="#product-name"><span>商</span><strong>商品名を決める</strong><small>お客様と一緒に、香水の名前を決めます。</small></a>
+            <a class="staff-detail-share-action" href="#personal-info-consent"><span>同</span><strong>同意内容を確認する</strong><small>ワークショップの同意内容を確認します。</small></a>
+          </div>
+        </article>
+      </section>
+
+      <section class="staff-soft-card staff-final-section staff-detail-operations" id="final-section">
+        <div class="staff-detail-operations-head">
+          <h2>スタッフ操作・ワークショップ運用</h2>
         </div>
-        <section><h3>最終配合</h3><button class="admin-btn secondary" id="add-recipe-row" type="button">行を追加</button><div class="staff-recipe-list" id="recipe-list"></div><button class="admin-btn secondary" id="normalize-recipe" type="button">割合を100%に整える</button></section>
-        <section><h3>最終5軸</h3><div class="staff-axis-input-grid" id="final-axis-inputs"><label>フローラル<input id="axis-floral" type="number" min="0" max="100" step="1" value="0"></label><label>シトラス<input id="axis-fresh" type="number" min="0" max="100" step="1" value="0"></label><label>ウッディ<input id="axis-woody" type="number" min="0" max="100" step="1" value="0"></label><label>スパイシー<input id="axis-spicy" type="number" min="0" max="100" step="1" value="0"></label><label>スウィート<input id="axis-sweet" type="number" min="0" max="100" step="1" value="0"></label></div><p class="admin-note" id="axis-total">合計 0</p><div class="staff-axis-preview" id="final-axis-preview"></div></section>
-        <label>仕上がりメモ<textarea id="customer-feedback"></textarea></label>
-        <p class="status-note" id="save-status"></p>
-        <div class="admin-actions"><button class="admin-btn secondary" id="save-draft" type="submit" form="staff-detail-form">途中保存</button><button class="admin-btn primary" id="save-complete" type="submit" form="staff-detail-form">最終登録</button><button class="admin-btn primary" id="generate-qr" type="button">QR表示</button></div>
+        <div class="staff-detail-operation-grid">
+          <article class="staff-detail-operation-card">
+            <h3>最終配合保存</h3>
+            <label>商品名<input id="product-name" type="text" maxlength="120"></label>
+            <div class="staff-detail-consent-grid">
+              <label class="pill"><input id="personal-info-consent" type="checkbox"> 個人情報同意確認済み</label>
+              <label class="pill"><input id="third-party-order-consent" type="checkbox"> 第三者作成同意確認済み</label>
+            </div>
+            <div class="staff-detail-recipe-head">
+              <h4>最終配合</h4>
+              <button class="admin-btn secondary" id="add-recipe-row" type="button">行を追加</button>
+            </div>
+            <div class="staff-recipe-list" id="recipe-list"></div>
+            <button class="admin-btn secondary" id="normalize-recipe" type="button">割合を100%に整える</button>
+          </article>
+
+          <article class="staff-detail-operation-card">
+            <h3>QR発行・メール送信</h3>
+            <div id="qr-preview" class="staff-qr-preview">QRコードがここに表示されます。</div>
+            <button class="admin-btn primary" id="generate-qr" type="button">QR表示</button>
+            <label>仕上がりメモ<textarea id="customer-feedback"></textarea></label>
+          </article>
+
+          <article class="staff-detail-operation-card">
+            <h3>ワークショップ完了</h3>
+            <section class="staff-detail-axis-section">
+              <h4>最終5軸</h4>
+              <div class="staff-axis-input-grid" id="final-axis-inputs"><label>フローラル<input id="axis-floral" type="number" min="0" max="100" step="1" value="0"></label><label>シトラス<input id="axis-fresh" type="number" min="0" max="100" step="1" value="0"></label><label>ウッディ<input id="axis-woody" type="number" min="0" max="100" step="1" value="0"></label><label>スパイシー<input id="axis-spicy" type="number" min="0" max="100" step="1" value="0"></label><label>スウィート<input id="axis-sweet" type="number" min="0" max="100" step="1" value="0"></label></div>
+              <p class="admin-note" id="axis-total">合計 0</p>
+              <div class="staff-axis-preview" id="final-axis-preview"></div>
+            </section>
+            <p class="status-note" id="save-status"></p>
+            <div class="admin-actions staff-detail-save-actions"><button class="admin-btn secondary" id="save-draft" type="submit" form="staff-detail-form">途中保存</button><button class="admin-btn primary" id="save-complete" type="submit" form="staff-detail-form">最終登録</button></div>
+          </article>
+
+          <aside class="staff-detail-status-summary">
+            <h3>ステータスサマリー</h3>
+            <div><span>QR発行状況</span><strong id="staff-detail-summary-qr">-</strong></div>
+            <div><span>メール送信状況</span><strong id="staff-detail-mail-status">-</strong></div>
+            <div><span>ワークショップ状態</span><strong id="staff-detail-summary-workshop">-</strong></div>
+          </aside>
+        </div>
       </section>
     </form>
+
+    <p class="staff-detail-footnote">この画面では、スタッフ確認用の情報と、お客様に見せる操作を分けて管理しています。</p>
   </main>
   <div class="portal-modal" id="customer-modal" hidden><div class="portal-modal-backdrop" data-customer-close></div><div class="portal-modal-dialog"><button class="admin-btn secondary" type="button" data-customer-close>閉じる</button><form class="admin-form" id="customer-form"><label>お名前<input id="customer-name" type="text" maxlength="80"></label><label>メール<input id="customer-email" type="email" maxlength="120"></label><label>電話<input id="customer-phone" type="text" maxlength="40"></label><label class="pill"><input id="customer-consent" type="checkbox"> 個人情報確認済み</label><button class="admin-btn primary" type="submit">保存</button></form></div></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
