@@ -1071,6 +1071,7 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   align-items: center;
   gap: 10px;
   margin-top: 18px;
+  margin-bottom: 12px;
 }
 
 .staff-detail-recipe-head h4,
@@ -1110,7 +1111,24 @@ body[data-page="staff-customer-detail"] .staff-main::before {
 
 .staff-recipe-amount-field {
   display: grid;
-  gap: 7px;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "label input"
+    "range range";
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.staff-recipe-amount-field .staff-recipe-field-label {
+  grid-area: label;
+}
+
+.staff-recipe-amount-field .staff-amount-control {
+  grid-area: input;
+}
+
+.staff-recipe-amount-field .staff-amount-range {
+  grid-area: range;
 }
 
 .staff-recipe-original-material {
@@ -1205,6 +1223,7 @@ body[data-page="staff-customer-detail"] .staff-main::before {
 
 .staff-recipe-axis-card .staff-axis-stat:nth-child(1) {
   grid-area: floral;
+  transform: translateY(28px);
 }
 
 .staff-recipe-axis-card .staff-axis-stat:nth-child(2) {
