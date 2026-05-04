@@ -6,37 +6,79 @@
   <title>管理者ダッシュボード | Fragrance Workshop</title>
   <link rel="stylesheet" href="../css/rebuild-ui.css">
 </head>
-<body class="admin-page admin-dashboard-page" data-page="admin-dashboard">
-  <header class="admin-header" id="admin-header"></header>
+<body class="admin-page admin-reference-page admin-dashboard-page" data-page="admin-dashboard">
+  <header class="admin-header" id="admin-header">
+    <div class="admin-header-inner site-container admin-header-inner--manager">
+      <a class="admin-brand" href="admin-dashboard.html?role=manager">
+        <span class="admin-brand-logo" aria-hidden="true"><img src="../img/TOP/吟ロゴ.png" alt=""></span>
+        <span>Admin Dashboard</span>
+      </a>
+      <div class="admin-header-actions">
+        <nav class="admin-nav" aria-label="管理メニュー">
+          <a class="active" data-admin-nav-key="dashboard" href="admin-dashboard.html?role=manager">ダッシュボード</a>
+          <a data-admin-nav-key="settings" href="admin-settings.html?role=manager">基本設定</a>
+          <a data-admin-nav-key="scoring" href="admin-scoring.html?role=manager">配点ロジック</a>
+          <a data-admin-nav-key="materials" href="admin-materials.html?role=manager">原料ポイント</a>
+          <a data-admin-nav-key="qr-settings" href="admin-qr-settings.html?role=manager">QR設定</a>
+          <a data-admin-nav-key="portal-staff" href="../staff/staff-dashboard.html?role=staff">スタッフ画面へ</a>
+        </nav>
+        <button class="admin-logout" type="button">ログアウト</button>
+      </div>
+    </div>
+  </header>
   <main class="admin-main">
-    <section class="admin-page-title admin-dashboard-title"><div><h1>管理者ダッシュボード</h1></div><a class="admin-notification-pill" href="admin-qr-requests.html">QR関連通知 <strong id="manager-qr-request-count">0</strong></a></section>
+    <section class="admin-page-title admin-dashboard-title"><div><h1>管理者ダッシュボード</h1></div><a class="admin-notification-pill" id="admin-qr-notification-trigger" href="admin-qr-requests.html" role="button">QR関連通知 <strong id="manager-qr-request-count">10</strong></a></section>
     <section class="kpi-grid admin-dashboard-kpis">
-      <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>本日の予約</p><strong class="kpi-value"><span id="kpi-reservations">0</span>件</strong><small>前日比 +<span id="kpi-reservations-week">0</span>件</small></div></article>
+      <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>本日の予約</p><strong class="kpi-value"><span id="kpi-reservations">8</span>件</strong><small>前日比 +<span id="kpi-reservations-week">2</span>件</small></div></article>
       <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>未確認予約</p><strong class="kpi-value"><span id="kpi-unconfirmed-reservations">0</span>件</strong><small>前日比 -1件</small></div></article>
-      <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>QR作成依頼</p><strong class="kpi-value"><span id="kpi-qr-requests">0</span>件</strong><small>前日比 +1件</small></div></article>
-      <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>期限超過未対応</p><strong class="kpi-value"><span id="kpi-overdue-requests">0</span>件</strong><small>前日比 ±0件</small></div></article>
-      <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>発送準備中</p><strong class="kpi-value"><span id="kpi-shipping-pending">0</span>件</strong><small>前日比 +1件</small></div></article>
+      <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>QR作成依頼</p><strong class="kpi-value"><span id="kpi-qr-requests">5</span>件</strong><small>前日比 +1件</small></div></article>
+      <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>期限超過未対応</p><strong class="kpi-value"><span id="kpi-overdue-requests">1</span>件</strong><small>前日比 ±0件</small></div></article>
+      <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>発送準備中</p><strong class="kpi-value"><span id="kpi-shipping-pending">3</span>件</strong><small>前日比 +1件</small></div></article>
     </section>
     <section class="admin-dashboard-main-grid section">
       <article class="admin-panel admin-dashboard-status-panel">
         <h2>予約・スタッフ状況</h2>
         <div class="admin-dashboard-status-block">
           <h3>本日のスタッフ</h3>
-          <div id="manager-today-shifts" class="portal-list-body"></div>
+          <div id="manager-today-shifts" class="portal-list-body">
+            <span class="admin-reference-chip">佐藤 花子</span>
+            <span class="admin-reference-chip">鈴木 健太</span>
+            <span class="admin-reference-chip">田中 美香</span>
+            <span class="admin-reference-chip">山本 直樹</span>
+            <span class="admin-reference-chip">高橋 優子</span>
+            <span class="admin-reference-chip">+1名</span>
+          </div>
         </div>
         <div class="admin-dashboard-status-block">
           <h3>予約枠状況</h3>
-          <div id="manager-next-week-summary" class="portal-list-body admin-dashboard-inline-list"></div>
+          <div id="manager-next-week-summary" class="portal-list-body admin-dashboard-inline-list">
+            <span class="admin-reference-slot"><b>10:00-12:00</b><small>4 / 6枠</small></span>
+            <span class="admin-reference-slot is-full"><b>13:00-15:00</b><small>6 / 6枠</small></span>
+            <span class="admin-reference-slot is-warn"><b>15:30-17:30</b><small>5 / 6枠</small></span>
+            <span class="admin-reference-slot"><b>18:00-20:00</b><small>5 / 10枠</small></span>
+          </div>
         </div>
         <div class="admin-dashboard-status-block">
-          <h3>枠カバー状況</h3>
-          <div id="manager-slot-coverage" class="portal-list-body admin-dashboard-inline-list"></div>
+          <h3>未確認メモ</h3>
+          <div id="manager-slot-coverage" class="portal-list-body admin-dashboard-inline-list">
+            <ul class="admin-reference-memo-list">
+              <li>アレルギー確認メモ：2件</li>
+              <li>香りの希望メモ：3件</li>
+              <li>ワークショップ要望メモ：1件</li>
+            </ul>
+            <a class="admin-reference-outline-btn" href="admin-settings.html?role=manager">未確認メモ一覧へ</a>
+          </div>
         </div>
       </article>
       <article class="admin-panel admin-dashboard-qr-panel">
         <h2>QR関連通知</h2>
-        <strong class="kpi-value" id="manager-qr-request-panel-count">0</strong>
-        <div id="manager-qr-request-list" class="portal-list-body"></div>
+        <strong class="kpi-value" id="manager-qr-request-panel-count">10</strong>
+        <div id="manager-qr-request-list" class="portal-list-body">
+          <article class="portal-dashboard-row portal-dashboard-row--summary is-alert"><span>3営業日超過未対応</span><small>対応期限を超過しているQR作成依頼があります。</small><strong>1件</strong></article>
+          <article class="portal-dashboard-row portal-dashboard-row--summary"><span>受付終了QRアクセス急増</span><small>受付終了後もアクセスが急増しているQRがあります。</small><strong>2件</strong></article>
+          <article class="portal-dashboard-row portal-dashboard-row--summary is-mail"><span>再案内判断が必要</span><small>返信・対応が必要な再案内リクエストがあります。</small><strong>3件</strong></article>
+          <a class="admin-btn" href="admin-qr-requests.html?role=manager">QR通知一覧へ</a>
+        </div>
       </article>
     </section>
     <section class="admin-dashboard-action-grid">
@@ -51,6 +93,36 @@
       <div id="manager-material-links"></div>
     </section>
   </main>
+  <footer class="admin-reference-footer"><span>最終ログイン：2024年5月21日（火）09:42</span><span>ログインユーザー：管理者 佐藤（admin@example.com）</span><strong>セキュア接続中</strong></footer>
+  <div class="admin-qr-modal" id="admin-qr-modal" hidden>
+    <div class="admin-qr-modal-backdrop" data-admin-qr-modal-close></div>
+    <section class="admin-qr-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="admin-qr-modal-title">
+      <button class="admin-qr-modal-close" type="button" data-admin-qr-modal-close aria-label="閉じる">×</button>
+      <h2 id="admin-qr-modal-title">QR関連通知</h2>
+      <div class="admin-qr-modal-tabs" role="tablist" aria-label="QR関連通知">
+        <button class="is-active" type="button">未対応期限超過 <strong>1</strong></button>
+        <button type="button">無効QRアクセス <strong>1</strong></button>
+        <button type="button">再案内候補 <strong>0</strong></button>
+        <button type="button">発送準備中 <strong>1</strong></button>
+      </div>
+      <div class="admin-qr-modal-grid">
+        <div class="admin-qr-modal-list">
+          <article class="admin-qr-modal-item is-danger"><span class="modal-icon" aria-hidden="true"></span><div><h3>月夜の余韻 <em>期限超過</em></h3><p>状態：3営業日超過</p><p>依頼内容：10ml × 2本</p><p>受付日：2026/05/12</p><p>処理：自動作成不可メール送信済み</p></div><a href="admin-qr-requests.html?role=manager" aria-label="詳細へ">›</a></article>
+          <article class="admin-qr-modal-item is-warning"><span class="modal-icon" aria-hidden="true"></span><div><h3>ひだまりブレンド <em>アクセス増加</em></h3><p>状態：受付終了QRアクセス増加</p><p>直近7日アクセス：34件</p><p>操作：再有効化を検討</p></div><a href="admin-qr-requests.html?role=manager" aria-label="詳細へ">›</a></article>
+          <article class="admin-qr-modal-item is-success"><span class="modal-icon" aria-hidden="true"></span><div><h3>雨上がりの庭 <em>発送準備中</em></h3><p>状態：発送準備中</p><p>担当スタッフ：山田</p><p>操作：詳細を見る</p></div><a href="admin-qr-requests.html?role=manager" aria-label="詳細へ">›</a></article>
+        </div>
+        <aside class="admin-qr-modal-side">
+          <section><h3>サマリー</h3><dl><div><dt>期限超過</dt><dd>1件</dd></div><div><dt>無効QRアクセス増加</dt><dd>1件</dd></div><div><dt>発送準備中</dt><dd>1件</dd></div></dl></section>
+          <p>通知は見ただけでは消えません。対応完了ステータスで管理されます。</p>
+        </aside>
+      </div>
+      <div class="admin-qr-modal-actions">
+        <button class="admin-btn gold" type="button">対応完了にする</button>
+        <a class="admin-btn secondary" href="admin-qr-requests.html?role=manager">詳細を見る</a>
+        <button class="admin-btn secondary" type="button" data-admin-qr-modal-close>閉じる</button>
+      </div>
+    </section>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabase-config.js"></script>
   <script src="../js/supabase-client.js"></script>
@@ -58,5 +130,6 @@
   <script src="../js/admin-data.js"></script>
   <script src="../js/fragrance-master-data.js"></script>
   <script src="../js/admin-dashboard-page.js"></script>
+  <script src="../js/admin-dashboard-reference.js"></script>
 </body>
 </html>

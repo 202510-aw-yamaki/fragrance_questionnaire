@@ -6,46 +6,81 @@
   <title>原料ポイント | Fragrance Workshop</title>
   <link rel="stylesheet" href="../css/rebuild-ui.css">
 </head>
-<body class="admin-page" data-page="admin-materials">
-  <header class="admin-header" id="admin-header"></header>
+<body class="admin-page admin-reference-page admin-materials-page" data-page="admin-materials">
+  <header class="admin-header" id="admin-header">
+    <div class="admin-header-inner site-container admin-header-inner--manager">
+      <a class="admin-brand" href="admin-materials.html?role=manager">
+        <span class="admin-brand-logo" aria-hidden="true"><img src="../img/TOP/吟ロゴ.png" alt=""></span>
+        <span>Material Points</span>
+      </a>
+      <div class="admin-header-actions">
+        <nav class="admin-nav" aria-label="管理メニュー">
+          <a data-admin-nav-key="dashboard" href="admin-dashboard.html?role=manager">ダッシュボード</a>
+          <a data-admin-nav-key="settings" href="admin-settings.html?role=manager">基本設定</a>
+          <a data-admin-nav-key="scoring" href="admin-scoring.html?role=manager">配点ロジック</a>
+          <a class="active" data-admin-nav-key="materials" href="admin-materials.html?role=manager">原料ポイント</a>
+          <a data-admin-nav-key="qr-settings" href="admin-qr-settings.html?role=manager">QR設定</a>
+          <a data-admin-nav-key="portal-staff" href="../staff/staff-dashboard.html?role=staff">スタッフ画面へ</a>
+        </nav>
+        <button class="admin-logout" type="button">ログアウト</button>
+      </div>
+    </div>
+  </header>
   <main class="admin-main">
-    <section class="admin-page-title admin-page-title--center"><div><span class="eyebrow">Materials</span><h1>原料ポイント編集</h1><p class="portal-hero-copy">各原料の香りの特徴を5つの軸で設定・編集できます。</p></div></section>
-    <section class="kpi-grid admin-material-kpis"><article class="admin-panel"><p>登録数</p><strong id="materials-kpi-total">0</strong></article><article class="admin-panel"><p>有効</p><strong id="materials-kpi-active">0</strong></article><article class="admin-panel"><p>テンプレート</p><strong id="materials-kpi-template">0</strong></article><article class="admin-panel"><p>表示</p><strong id="material-count">0</strong></article></section>
+    <section class="admin-page-title admin-page-title--center"><div><span class="eyebrow" aria-hidden="true"></span><h1>原料ポイント編集</h1><p class="portal-hero-copy">各原料の香りの特徴を5つの軸で設定・編集できます。</p></div></section>
+    <section class="kpi-grid admin-material-kpis admin-reference-hidden-live"><article class="admin-panel"><p>登録数</p><strong id="materials-kpi-total">0</strong></article><article class="admin-panel"><p>有効</p><strong id="materials-kpi-active">0</strong></article><article class="admin-panel"><p>テンプレート</p><strong id="materials-kpi-template">0</strong></article><article class="admin-panel"><p>表示</p><strong id="material-count">0</strong></article></section>
     <section class="admin-materials-workbench">
-    <article class="admin-panel section">
-      <h2>原料一覧</h2>
-      <div class="form-grid"><input id="material-search" type="search" placeholder="検索"><select id="material-filter"><option value="">すべて</option><option value="Top">Top</option><option value="Middle">Middle</option><option value="Last">Last</option></select><select id="material-sort-mode"><option value="sort">表示順</option><option value="name">名前</option><option value="category">カテゴリ</option></select><select id="material-template-select"></select></div>
-      <div class="admin-actions"><button class="admin-btn primary" id="material-create-button" type="button">新規作成</button><button class="admin-btn secondary" id="material-template-apply" type="button">テンプレート適用</button></div>
-      <p class="admin-note" id="material-seed-status"></p><p class="admin-note" id="material-current-sort"></p><p class="admin-note" id="material-save-note"></p><input id="material-import-file" type="file" accept="application/json" hidden>
-      <div id="material-chip-grid" class="action-row"></div>
-      <div id="material-rows" class="portal-list-body"></div>
-    </article>
-    <article class="admin-panel admin-material-inline-card">
-      <h2>原料編集</h2>
-      <p class="admin-note">リストの原料を選択すると編集モーダルが開きます。新規追加や既存原料の5軸ポイント調整をここから行います。</p>
-      <div class="admin-axis-preview-list">
-        <span>華やかさ</span><meter min="0" max="5" value="4"></meter>
-        <span>甘さ</span><meter min="0" max="5" value="3"></meter>
-        <span>爽やかさ</span><meter min="0" max="5" value="2"></meter>
-        <span>落ち着き</span><meter min="0" max="5" value="3"></meter>
-        <span>深み</span><meter min="0" max="5" value="3"></meter>
-      </div>
-      <div class="admin-actions"><button class="admin-btn primary" id="material-seed-btn" data-material-save-db type="button">DB保存</button></div>
-    </article>
-    <article class="admin-panel admin-material-preview-panel">
-      <h2>プレビュー</h2>
-      <div class="admin-radar-placeholder" aria-hidden="true"><span></span></div>
-      <div class="admin-axis-preview-list">
-        <span>華やかさ</span><meter min="0" max="5" value="4"></meter>
-        <span>甘さ</span><meter min="0" max="5" value="3"></meter>
-        <span>爽やかさ</span><meter min="0" max="5" value="2"></meter>
-        <span>落ち着き</span><meter min="0" max="5" value="3"></meter>
-        <span>深み</span><meter min="0" max="5" value="3"></meter>
-      </div>
-      <p class="admin-note">選択中の原料の香りの傾向を表示しています。</p>
-    </article>
+      <article class="admin-panel admin-reference-card admin-material-list-card">
+        <h2>原料一覧</h2>
+        <div class="admin-reference-hidden-controls">
+          <div class="form-grid"><input id="material-search" type="search" placeholder="検索"><select id="material-filter"><option value="">すべて</option><option value="Top">Top</option><option value="Middle">Middle</option><option value="Last">Last</option></select><select id="material-sort-mode"><option value="sort">表示順</option><option value="name">名前</option><option value="category">カテゴリ</option></select><select id="material-template-select"></select></div>
+          <div class="admin-actions"><button class="admin-btn primary" id="material-create-button" type="button">新規作成</button><button class="admin-btn secondary" id="material-template-apply" type="button">テンプレート適用</button></div>
+          <p class="admin-note" id="material-seed-status"></p><p class="admin-note" id="material-current-sort"></p><p class="admin-note" id="material-save-note"></p><input id="material-import-file" type="file" accept="application/json" hidden>
+          <div id="material-chip-grid" class="action-row"></div>
+          <div id="material-rows" class="portal-list-body"></div>
+        </div>
+        <nav class="admin-material-reference-list" aria-label="原料一覧">
+          <a href="#" class="is-active"><span class="material-icon rose"></span>ローズアコード</a>
+          <a href="#"><span class="material-icon green"></span>ベルガモット</a>
+          <a href="#"><span class="material-icon wood"></span>サンダルウッド</a>
+          <a href="#"><span class="material-icon lavender"></span>ラベンダー</a>
+          <a href="#"><span class="material-icon musk"></span>ムスク</a>
+        </nav>
+        <p class="admin-reference-help">原料を選択すると、中央の編集エリアにその原料の相関が表示されます。</p>
+      </article>
+      <article class="admin-panel admin-reference-card admin-material-inline-card">
+        <h2>原料編集</h2>
+        <div class="admin-material-field-grid">
+          <label>原料名<input type="text" value="ローズアコード"></label>
+          <label>カテゴリ<select><option>フローラル</option></select></label>
+          <label>ステータス<span class="admin-material-toggle"><b>有効</b><em>無効</em></span></label>
+        </div>
+        <h3>5軸ポイント入力</h3>
+        <div class="admin-material-slider-list">
+          <label><span>華やかさ</span><input type="range" min="0" max="5" value="4"><b>4</b></label>
+          <label><span>甘さ</span><input type="range" min="0" max="5" value="3"><b>3</b></label>
+          <label><span>爽やかさ</span><input type="range" min="0" max="5" value="2"><b>2</b></label>
+          <label><span>落ち着き</span><input type="range" min="0" max="5" value="3"><b>3</b></label>
+          <label><span>深み</span><input type="range" min="0" max="5" value="3"><b>3</b></label>
+        </div>
+        <div class="admin-material-tag-row"><span>フローラル ×</span><span>エレガント ×</span><span>やわらかい ×</span><button type="button">タグを追加</button></div>
+      </article>
+      <article class="admin-panel admin-reference-card admin-material-preview-panel">
+        <h2>プレビュー</h2>
+        <h3>5軸レーダーチャート</h3>
+        <div class="admin-reference-radar" aria-hidden="true"><span></span></div>
+        <h3>香りの傾向サマリー</h3>
+        <div class="admin-axis-preview-list">
+          <span>華やかさ</span><meter min="0" max="5" value="4"></meter><span>4</span>
+          <span>甘さ</span><meter min="0" max="5" value="3"></meter><span>3</span>
+          <span>爽やかさ</span><meter min="0" max="5" value="2"></meter><span>2</span>
+          <span>落ち着き</span><meter min="0" max="5" value="3"></meter><span>3</span>
+          <span>深み</span><meter min="0" max="5" value="3"></meter><span>3</span>
+        </div>
+        <p class="admin-reference-help">選択中の原料の香りの傾向を表示しています。</p>
+      </article>
     </section>
-    <div class="admin-bottom-savebar"><button class="admin-btn gold" id="material-export-json" type="button">JSONを書き出す</button><button class="admin-btn secondary" id="material-import-trigger" type="button">JSONを読み込む</button></div>
+    <div class="admin-bottom-savebar admin-reference-savebar"><button class="admin-btn gold" id="material-seed-btn" type="button">保存</button><button class="admin-btn secondary" id="material-export-json" type="button">JSONを書き出す</button><button class="admin-btn secondary" id="material-import-trigger" type="button">JSONを読み込む</button></div>
   </main>
   <div class="portal-modal" id="material-modal" hidden><div class="portal-modal-backdrop" data-modal-close="material-modal"></div><div class="portal-modal-dialog"><h2 id="material-modal-title">原料編集</h2><form class="admin-form" id="material-form"><input id="material-id" type="hidden"><label>コード<input id="material-code" required></label><label>名称<input id="material-name" required></label><label>カテゴリ<select id="material-category"><option>Top</option><option>Middle</option><option>Last</option></select></label><label>表示順<input id="material-sort" type="number" value="0"></label><label class="pill"><input id="material-active" type="checkbox" checked> 有効</label><div class="admin-axis-input-grid"><label>フローラル<input id="axis-floral" type="number" value="0"></label><label>シトラス<input id="axis-fresh" type="number" value="0"></label><label>ウッディ<input id="axis-woody" type="number" value="0"></label><label>スパイシー<input id="axis-spicy" type="number" value="0"></label><label>スウィート<input id="axis-sweet" type="number" value="0"></label></div><p class="admin-note">合計 <span id="material-total">0</span></p><label>メモ<textarea id="material-note"></textarea></label><div class="admin-actions"><button class="admin-btn primary" type="submit">保存</button><button class="admin-btn secondary" id="material-reset" type="button">リセット</button><button class="admin-btn secondary" type="button" data-modal-close="material-modal">閉じる</button></div></form></div></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

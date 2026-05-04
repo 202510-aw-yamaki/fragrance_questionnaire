@@ -1,0 +1,32 @@
+(function () {
+  const modal = document.getElementById("admin-qr-modal");
+  const trigger = document.getElementById("admin-qr-notification-trigger");
+  if (!modal || !trigger) return;
+
+  function setOpen(isOpen) {
+    modal.hidden = !isOpen;
+    document.body.classList.toggle("admin-qr-modal-open", isOpen);
+    if (isOpen) {
+      const closeButton = modal.querySelector("[data-admin-qr-modal-close]");
+      closeButton?.focus?.();
+    }
+  }
+
+  trigger.addEventListener("click", (event) => {
+    event.preventDefault();
+    setOpen(true);
+  });
+
+  modal.querySelectorAll("[data-admin-qr-modal-close]").forEach((button) => {
+    button.addEventListener("click", () => setOpen(false));
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !modal.hidden) setOpen(false);
+  });
+
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("modal") === "qr" || window.location.hash === "#qr-modal") {
+    setOpen(true);
+  }
+}());

@@ -6,51 +6,69 @@
   <title>QR商品設定 | Fragrance Workshop</title>
   <link rel="stylesheet" href="../css/rebuild-ui.css">
 </head>
-<body class="admin-page" data-page="admin-qr-settings">
-  <header class="admin-header" id="admin-header"></header>
+<body class="admin-page admin-reference-page admin-qr-settings-page" data-page="admin-qr-settings">
+  <header class="admin-header" id="admin-header">
+    <div class="admin-header-inner site-container admin-header-inner--manager">
+      <a class="admin-brand" href="admin-qr-settings.html?role=manager">
+        <span class="admin-brand-logo" aria-hidden="true"><img src="../img/TOP/吟ロゴ.png" alt=""></span>
+        <span>QR Product Settings</span>
+      </a>
+      <div class="admin-header-actions">
+        <nav class="admin-nav" aria-label="管理メニュー">
+          <a data-admin-nav-key="dashboard" href="admin-dashboard.html?role=manager">ダッシュボード</a>
+          <a data-admin-nav-key="settings" href="admin-settings.html?role=manager">基本設定</a>
+          <a data-admin-nav-key="scoring" href="admin-scoring.html?role=manager">配点ロジック</a>
+          <a data-admin-nav-key="materials" href="admin-materials.html?role=manager">原料ポイント</a>
+          <a class="active" data-admin-nav-key="qr-settings" href="admin-qr-settings.html?role=manager">QR設定</a>
+          <a data-admin-nav-key="portal-staff" href="../staff/staff-dashboard.html?role=staff">スタッフ画面へ</a>
+        </nav>
+        <button class="admin-logout" type="button">ログアウト</button>
+      </div>
+    </div>
+  </header>
   <main class="admin-main">
-    <section class="admin-page-title admin-page-title--center"><div><span class="eyebrow">QR Product Settings</span><h1>QR商品設定</h1><p class="portal-hero-copy">QR商品の運用に関する設定をまとめて管理できます。</p></div></section>
-    <form class="admin-qr-settings-layout" id="qr-product-settings-form">
+    <section class="admin-page-title admin-page-title--center"><div><span class="eyebrow" aria-hidden="true"></span><h1>QR商品設定</h1><p class="portal-hero-copy">QR商品の運用に関する設定をまとめて管理できます。</p></div></section>
+    <form class="admin-qr-settings-layout admin-qr-reference-layout" id="qr-product-settings-form">
       <section class="admin-qr-settings-main">
-        <article class="admin-panel">
+        <article class="admin-panel admin-reference-card">
           <h2>価格設定</h2>
-          <label class="admin-price-field">10ml 税込価格<span><input id="qr-price-10ml" type="number" min="0" step="1" inputmode="numeric"><em>円</em></span></label>
-          <label class="admin-price-field">30ml 税込価格<span><input id="qr-price-30ml" type="number" min="0" step="1" inputmode="numeric"><em>円</em></span></label>
+          <label class="admin-price-field">10ml 税込価格<span><input id="qr-price-10ml" type="number" min="0" step="1" value="1000" inputmode="numeric"><em>円</em></span></label>
+          <label class="admin-price-field">30ml 税込価格<span><input id="qr-price-30ml" type="number" min="0" step="1" value="2860" inputmode="numeric"><em>円</em></span></label>
         </article>
-        <article class="admin-panel">
+        <article class="admin-panel admin-reference-card">
           <h2>依頼上限</h2>
-          <label class="admin-price-field">最大依頼容量<span><input id="qr-max-volume-ml" type="number" min="10" step="10" inputmode="numeric"><em>ml</em></span></label>
-          <p class="admin-note">QR商品ページには「最大で合計100mlまで作成依頼できます」のように表示されます。</p>
+          <label class="admin-price-field">最大依頼容量<span><input id="qr-max-volume-ml" type="number" min="10" step="10" value="100" inputmode="numeric"><em>ml</em></span></label>
+          <p class="admin-note">QR商品ページには「最大で合計100mlまで作成依頼できます」と表示されます。</p>
         </article>
-        <article class="admin-panel">
+        <article class="admin-panel admin-reference-card">
           <h2>期限設定</h2>
           <label>作成可否確認期限<select id="qr-availability-due-business-days"><option value="3">3営業日</option><option value="5">5営業日</option><option value="7">7営業日</option></select></label>
           <label>作成可能メール後の再案内<select id="qr-available-reminder-after-days"><option value="3">3日後</option><option value="5">5日後</option><option value="7">7日後</option></select></label>
           <label>発送先URL期限<select id="qr-available-expires-after-days"><option value="7">7日</option><option value="10">10日</option><option value="14">14日</option></select></label>
           <label>作成不可後の再案内窓<select id="qr-unavailable-reinvite-window-days"><option value="14">14日</option><option value="21">21日</option><option value="30">30日</option></select></label>
         </article>
-        <article class="admin-panel">
+        <article class="admin-panel admin-reference-card">
           <h2>QR通知設定</h2>
-          <label class="admin-price-field admin-threshold-field">無効化QRアクセス通知しきい値<span><small>直近</small><input id="qr-inactive-access-window-days" type="number" min="1" step="1" inputmode="numeric"><em>日で</em><input id="qr-inactive-access-threshold" type="number" min="1" step="1" inputmode="numeric"><em>件</em></span></label>
-          <label class="pill"><input id="qr-show-overdue-admin-notification" type="checkbox"> 期限超過未対応を管理者通知に表示</label>
-          <label class="pill"><input id="qr-show-notification-badge" type="checkbox"> QR関連通知バッジを表示</label>
+          <label class="admin-price-field admin-threshold-field">無効化QRアクセス通知しきい値<span><small>直近7日で</small><input id="qr-inactive-access-window-days" type="number" min="1" step="1" value="7" inputmode="numeric"><input id="qr-inactive-access-threshold" type="number" min="1" step="1" value="10" inputmode="numeric"><em>件</em></span></label>
+          <label class="pill"><input id="qr-show-overdue-admin-notification" type="checkbox" checked> 期限超過未対応を管理者通知に表示</label>
+          <label class="pill"><input id="qr-show-notification-badge" type="checkbox" checked> QR関連通知バッジを表示</label>
         </article>
       </section>
-      <aside class="admin-panel admin-qr-preview-panel">
+      <aside class="admin-panel admin-reference-card admin-qr-preview-panel">
         <h2>QR商品ページ表示プレビュー</h2>
         <div class="qr-settings-phone-preview">
           <div class="qr-settings-phone-top"><span>☰</span><strong>Fragrance Atelier</strong></div>
           <img src="../img/TOP/香水の瓶が並ぶ.png" alt="">
           <p>香りのオーダーをご依頼いただけます</p>
           <dl>
-            <div><dt>10ml</dt><dd id="qr-preview-price-10ml">-</dd></div>
-            <div><dt>30ml</dt><dd id="qr-preview-price-30ml">-</dd></div>
+            <div><dt>10ml</dt><dd id="qr-preview-price-10ml">1,000円</dd></div>
+            <div><dt>30ml</dt><dd id="qr-preview-price-30ml">2,860円</dd></div>
           </dl>
           <div class="qr-settings-preview-limit">最大<span id="qr-preview-max-volume">100</span>mlまで<br>作成依頼できます</div>
           <p class="admin-note">価格はすべて税込です。</p>
         </div>
       </aside>
-      <section class="admin-panel admin-qr-contact-panel">
+      <section class="admin-panel admin-qr-contact-panel admin-reference-hidden-live">
         <h2>公開ページ連絡先</h2>
         <label>店舗電話番号<input id="qr-shop-phone" type="text"></label>
         <label>受付時間<input id="qr-business-hours" type="text"></label>
@@ -58,7 +76,7 @@
         <p class="admin-note">1行またはカンマ区切りで登録します。スタッフ画面では最大3つまで選択します。</p>
         <p class="admin-note" id="qr-settings-note">公開QRページはこの設定を参照します。</p>
       </section>
-      <div class="admin-bottom-savebar admin-bottom-savebar--wide"><button class="admin-btn gold" type="submit">QR設定を保存</button></div>
+      <div class="admin-bottom-savebar admin-bottom-savebar--wide admin-reference-savebar"><button class="admin-btn gold" type="submit">QR設定を保存</button></div>
     </form>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

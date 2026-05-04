@@ -6,46 +6,88 @@
   <title>基本設定 | Fragrance Workshop</title>
   <link rel="stylesheet" href="../css/rebuild-ui.css">
 </head>
-<body class="admin-page" data-page="admin-settings">
-  <header class="admin-header" id="admin-header"></header>
+<body class="admin-page admin-reference-page admin-settings-page" data-page="admin-settings">
+  <header class="admin-header" id="admin-header">
+    <div class="admin-header-inner site-container admin-header-inner--manager">
+      <a class="admin-brand" href="admin-settings.html?role=manager">
+        <span class="admin-brand-logo" aria-hidden="true"><img src="../img/TOP/吟ロゴ.png" alt=""></span>
+        <span>Admin Settings</span>
+      </a>
+      <div class="admin-header-actions">
+        <nav class="admin-nav" aria-label="管理メニュー">
+          <a data-admin-nav-key="dashboard" href="admin-dashboard.html?role=manager">ダッシュボード</a>
+          <a class="active" data-admin-nav-key="settings" href="admin-settings.html?role=manager">基本設定</a>
+          <a data-admin-nav-key="scoring" href="admin-scoring.html?role=manager">配点ロジック</a>
+          <a data-admin-nav-key="materials" href="admin-materials.html?role=manager">原料ポイント</a>
+          <a data-admin-nav-key="qr-settings" href="admin-qr-settings.html?role=manager">QR設定</a>
+          <a data-admin-nav-key="portal-staff" href="../staff/staff-dashboard.html?role=staff">スタッフ画面へ</a>
+        </nav>
+        <button class="admin-logout" type="button">ログアウト</button>
+      </div>
+    </div>
+  </header>
   <main class="admin-main">
-    <section class="admin-page-title admin-page-title--center"><div><span class="eyebrow">Settings</span><h1>基本設定</h1><p class="portal-hero-copy">店舗運営に関する基本情報を設定します。</p></div></section>
+    <section class="admin-page-title admin-page-title--center"><div><span class="eyebrow" aria-hidden="true"></span><h1>基本設定</h1><p class="portal-hero-copy">店舗運営に関する基本情報を設定します。</p></div></section>
     <section class="admin-settings-layout">
-      <article class="admin-panel">
+      <article class="admin-panel admin-reference-card admin-settings-store-card">
         <h2>店舗情報</h2>
         <form class="admin-form-stack" id="store-public-info-form">
-          <label>店舗名<input id="store-name" type="text" autocomplete="organization"></label>
-          <label>店舗電話番号<input id="store-phone" type="tel" autocomplete="tel"></label>
+          <label>店舗名<input id="store-name" type="text" value="Fragrance Atelier（フレグランス アトリエ）" autocomplete="organization"></label>
+          <label>店舗電話番号<input id="store-phone" type="tel" value="03-1234-5678" autocomplete="tel"></label>
           <div class="admin-inline-fields">
-            <label>営業開始時間<input id="store-open-time" type="time"></label>
-            <label>営業終了時間<input id="store-close-time" type="time"></label>
+            <label>営業開始時間<input id="store-open-time" type="time" value="10:00"></label>
+            <label>営業終了時間<input id="store-close-time" type="time" value="19:00"></label>
           </div>
-          <label>定休日<input id="store-closed-days" type="text"></label>
-          <label>店舗LP URL<input id="store-lp-url" type="url" inputmode="url"></label>
+          <label>定休日<input id="store-closed-days" type="text" value="毎週水曜日"></label>
+          <label>店舗LP URL<input id="store-lp-url" type="url" value="https://fragrance-atelier.jp" inputmode="url"></label>
           <p class="admin-note" id="store-public-info-note">公開ページやQR商品ページの店舗情報に利用します。</p>
         </form>
       </article>
-      <article class="admin-panel"><h2>スタッフ管理</h2><div class="admin-actions"><button class="admin-btn primary" id="staff-create-button" type="button">スタッフを追加</button></div><label>スタッフ<select id="staff-manage-select"></select></label><button class="admin-btn secondary" id="staff-shift-button" type="button">スタッフ出勤管理</button><label>出勤管理<select id="shift-manage-select"></select></label><p class="admin-note" id="settings-control-note" hidden></p><h3>本日のスタッフ <span id="settings-today-label">--/--</span></h3><div class="admin-card-list" id="settings-today-staff"></div></article>
-      <article class="admin-panel">
+      <article class="admin-panel admin-reference-card admin-settings-staff-card">
+        <div class="admin-reference-card-head"><h2>スタッフ管理</h2><button class="admin-btn primary" id="staff-create-button" type="button">スタッフを追加</button></div>
+        <div class="admin-reference-hidden-controls">
+          <label>スタッフ<select id="staff-manage-select"></select></label>
+          <button class="admin-btn secondary" id="staff-shift-button" type="button">スタッフ出勤管理</button>
+          <label>出勤管理<select id="shift-manage-select"></select></label>
+          <p class="admin-note" id="settings-control-note" hidden></p>
+          <h3>本日のスタッフ <span id="settings-today-label">--/--</span></h3>
+          <div class="admin-card-list" id="settings-today-staff"></div>
+        </div>
+        <p class="admin-reference-table-label">スタッフ一覧</p>
+        <table class="admin-reference-staff-table">
+          <thead><tr><th>スタッフ名</th><th>役割</th><th>在籍状況</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><span class="staff-avatar">山田</span>山田 花子</td><td>店長</td><td><i class="status-dot"></i>在籍中</td><td>︙</td></tr>
+            <tr><td><span class="staff-avatar pink">佐藤</span>佐藤 優子</td><td>スタッフ</td><td><i class="status-dot"></i>在籍中</td><td>︙</td></tr>
+            <tr><td><span class="staff-avatar green">鈴木</span>鈴木 大輔</td><td>スタッフ</td><td><i class="status-dot"></i>在籍中</td><td>︙</td></tr>
+            <tr><td><span class="staff-avatar peach">田中</span>田中 美咲</td><td>スタッフ</td><td><i class="status-dot is-off"></i>休職中</td><td>︙</td></tr>
+          </tbody>
+        </table>
+        <p class="admin-note">全4件を表示中</p>
+      </article>
+      <article class="admin-panel admin-reference-card admin-settings-reservation-card">
         <h2>予約基本設定</h2>
         <div class="admin-form-stack">
           <label>予約枠の標準時間<select id="reservation-duration-setting"><option>60分</option><option>90分</option><option>120分</option></select></label>
           <label>休憩時間<select id="reservation-break-setting"><option>15分</option><option>30分</option><option>なし</option></select></label>
           <label>最大予約数<select id="reservation-limit-setting"><option>6件/日</option><option>8件/日</option><option>10件/日</option></select></label>
           <label>通知メール設定<select id="reservation-mail-setting"><option>予約完了・リマインダーを送信する</option><option>予約完了のみ送信する</option></select></label>
-          <p class="admin-note">予約枠の実データは下のカレンダーで確認します。</p>
+          <p class="admin-note">予約リマインダーは予約時刻の24時間前に送信されます。</p>
         </div>
       </article>
     </section>
-    <div class="admin-bottom-savebar"><button class="admin-btn gold" id="settings-save-button" type="button">設定を保存</button></div>
+    <div class="admin-bottom-savebar admin-reference-savebar"><button class="admin-btn gold" id="settings-save-button" type="button">設定を保存</button></div>
     <section class="admin-panel admin-settings-qr-link">
-      <div>
-        <h2>QR商品設定は専用ページで管理します</h2>
-        <p class="admin-note">QR価格の設定・編集は「QR設定」ページで行ってください。ここでは基本情報のみを設定します。</p>
+      <div class="admin-reference-qr-info">
+        <span class="admin-reference-badge-icon" aria-hidden="true"></span>
+        <div>
+          <h2>QR商品設定は専用ページで管理します</h2>
+          <p class="admin-note">QR価格の設定・編集は「QR設定」ページで行ってください。ここでは基本情報のみを設定します。</p>
+        </div>
       </div>
-      <a class="admin-btn secondary" href="admin-qr-settings.html">QR設定を開く</a>
+      <a class="admin-btn secondary" href="admin-qr-settings.html?role=manager">QR設定を開く</a>
     </section>
-    <section class="section grid-2">
+    <section class="section grid-2 admin-reference-hidden-live">
       <article class="admin-panel">
         <h2>予約枠カレンダー</h2>
         <p class="admin-note" id="settings-calendar-range">表示期間</p>
