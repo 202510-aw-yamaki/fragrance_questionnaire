@@ -8,12 +8,16 @@
   <link rel="stylesheet" href="../css/staff-ui.css">
 </head>
 <body class="staff-page" data-page="staff-customer-detail">
-  <header class="staff-detail-header" id="staff-detail-header"></header>
+  <header class="admin-header" id="admin-header"></header>
   <main class="staff-main staff-detail-main">
     <section class="staff-detail-summary-card">
       <div class="staff-detail-summary-body">
         <span class="eyebrow">Customer Detail</span>
         <div id="customer-profile"></div>
+      </div>
+      <div class="staff-detail-summary-actions">
+        <button class="admin-btn primary" id="customer-edit-open" type="button">お客様情報を入力</button>
+        <button class="admin-btn secondary" type="button" data-customer-action="consent">同意内容を確認する</button>
       </div>
       <div class="staff-detail-summary-status" id="staff-detail-summary-status">
         <div><span>香り傾向</span><strong id="staff-detail-branch">-</strong></div>
@@ -21,7 +25,6 @@
         <div><span>QR発行状況</span><strong id="staff-detail-qr-status">-</strong></div>
         <div><span>ワークショップ状態</span><strong id="staff-detail-workshop-status">-</strong></div>
       </div>
-      <button class="admin-btn primary" id="customer-edit-open" type="button">お客様情報を入力</button>
     </section>
 
     <form class="admin-form-stack staff-detail-form" id="staff-detail-form">
@@ -31,13 +34,24 @@
         <article class="admin-panel staff-detail-private-panel">
           <div class="staff-detail-panel-tab staff-detail-panel-tab--private">スタッフ確認用</div>
           <div class="staff-detail-private-grid">
-            <section class="staff-detail-mini-card staff-detail-survey-card">
-              <h2>アンケート結果</h2>
-              <div id="axis-compare"></div>
-            </section>
-            <label class="staff-detail-note-card">来店前メモ<textarea id="preparation-note"></textarea></label>
-            <label class="staff-detail-note-card">当日ヒアリングメモ<textarea id="hearing-note"></textarea></label>
-            <label class="staff-detail-note-card staff-detail-note-card--wide">接客メモ<textarea id="staff-summary"></textarea></label>
+            <div class="staff-detail-insight-stack">
+              <section class="staff-detail-mini-card staff-detail-survey-card">
+                <h2>アンケート結果</h2>
+                <div id="axis-compare"></div>
+              </section>
+              <section class="staff-detail-mini-card staff-detail-recommend-card">
+                <h2>おすすめ配合</h2>
+                <div id="recommended-materials"></div>
+              </section>
+            </div>
+            <div class="staff-detail-note-stack">
+              <section class="staff-detail-note-card staff-detail-readonly-note">
+                <h2>来店前メモ</h2>
+                <div class="staff-detail-note-display" id="preparation-note-display">未記載</div>
+              </section>
+              <label class="staff-detail-note-card">当日ヒアリングメモ<textarea id="hearing-note"></textarea></label>
+              <label class="staff-detail-note-card">お客様感想メモ<textarea id="staff-summary"></textarea></label>
+            </div>
           </div>
         </article>
 
@@ -46,7 +60,6 @@
           <div class="staff-detail-share-actions">
             <button class="staff-detail-share-action" type="button" data-customer-action="fragrance"><span>調</span><strong>お客様と香りを調整する</strong><small>香りの方向性を確認しながら、微調整を行います。</small></button>
             <button class="staff-detail-share-action" type="button" data-customer-action="product"><span>商</span><strong>商品名を決める</strong><small>お客様と一緒に、香水の名前を決めます。</small></button>
-            <button class="staff-detail-share-action" type="button" data-customer-action="consent"><span>同</span><strong>同意内容を確認する</strong><small>ワークショップの同意内容を確認します。</small></button>
           </div>
         </article>
       </section>
@@ -165,7 +178,24 @@
       </div>
     </section>
   </div>
-  <div class="portal-modal" id="customer-modal" hidden><div class="portal-modal-backdrop" data-customer-close></div><div class="portal-modal-dialog"><button class="admin-btn secondary" type="button" data-customer-close>閉じる</button><form class="admin-form" id="customer-form"><label>お名前<input id="customer-name" type="text" maxlength="80"></label><label>メール<input id="customer-email" type="email" maxlength="120"></label><label>電話<input id="customer-phone" type="text" maxlength="40"></label><label class="pill"><input id="customer-consent" type="checkbox"> 個人情報確認済み</label><button class="admin-btn primary" type="submit">保存</button></form></div></div>
+  <div class="portal-modal" id="customer-modal" hidden>
+    <div class="portal-modal-backdrop" data-customer-close></div>
+    <div class="portal-modal-dialog staff-customer-edit-dialog" role="dialog" aria-modal="true" aria-labelledby="customer-modal-title">
+      <button class="staff-customer-action-close" type="button" data-customer-close aria-label="閉じる">×</button>
+      <h2 id="customer-modal-title">お客様情報を入力</h2>
+      <p class="staff-customer-edit-note">変更内容は保存を押すまで反映されません。</p>
+      <form class="admin-form staff-customer-edit-form" id="customer-form">
+        <div class="staff-customer-edit-row staff-customer-edit-row--two">
+          <label>お名前<input id="customer-name" type="text" maxlength="80"></label>
+          <label>メール<input id="customer-email" type="email" maxlength="120"></label>
+        </div>
+        <div class="staff-customer-edit-row staff-customer-edit-row--phone">
+          <label>電話 <small>任意</small><input id="customer-phone" type="text" maxlength="40"></label>
+          <button class="admin-btn primary" type="submit">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="../js/supabase-config.js"></script>

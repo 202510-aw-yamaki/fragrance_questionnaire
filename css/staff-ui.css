@@ -151,7 +151,7 @@ body[data-page="staff-customer-detail"] .staff-main::before {
 
 .staff-detail-summary-card {
   display: grid;
-  grid-template-columns: minmax(340px, 1fr) minmax(360px, 0.9fr) auto;
+  grid-template-columns: minmax(340px, 1fr) minmax(220px, 0.46fr) minmax(360px, 0.92fr);
   gap: 22px;
   align-items: center;
   border: 1px solid var(--line);
@@ -159,6 +159,16 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   background: rgba(255, 253, 249, 0.92);
   box-shadow: var(--soft-shadow);
   padding: 18px 24px;
+}
+
+.staff-detail-summary-actions {
+  display: grid;
+  gap: 10px;
+  align-self: center;
+}
+
+.staff-detail-summary-actions .admin-btn {
+  width: 100%;
 }
 
 .staff-detail-summary-body .eyebrow {
@@ -215,6 +225,8 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px 20px;
+  justify-self: end;
+  width: min(100%, 460px);
   border-left: 1px dashed var(--line-strong);
   padding-left: 24px;
 }
@@ -287,8 +299,11 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   gap: 12px;
 }
 
-.staff-detail-survey-card {
-  grid-row: span 2;
+.staff-detail-insight-stack,
+.staff-detail-note-stack {
+  display: grid;
+  gap: 12px;
+  align-content: start;
 }
 
 .staff-detail-mini-card,
@@ -313,6 +328,29 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   gap: 8px;
   color: var(--ink);
   font-weight: 800;
+}
+
+.staff-detail-note-card h2,
+.staff-detail-recommend-card h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+
+.staff-detail-note-display {
+  max-height: 116px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 250, 243, 0.82);
+  padding: 12px;
+  color: var(--ink);
+  font-weight: 700;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.staff-detail-note-display.is-empty {
+  color: var(--muted);
 }
 
 .staff-detail-note-card textarea,
@@ -474,6 +512,31 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   font-size: 13px;
 }
 
+.staff-recommend-blend-list {
+  display: grid;
+  gap: 8px;
+}
+
+.staff-recommend-blend-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 250, 243, 0.82);
+  padding: 10px 12px;
+}
+
+.staff-recommend-blend-row span {
+  min-width: 0;
+  font-weight: 800;
+}
+
+.staff-recommend-blend-row strong {
+  color: var(--rose-dark);
+}
+
 .staff-detail-share-actions {
   display: grid;
   gap: 12px;
@@ -588,6 +651,55 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   font-family: var(--serif);
   font-size: clamp(30px, 3.4vw, 44px);
   text-align: center;
+}
+
+.staff-customer-edit-dialog {
+  width: min(820px, calc(100vw - 42px));
+  padding: 34px 28px 28px;
+}
+
+.staff-customer-edit-dialog h2 {
+  margin: 0 0 10px;
+  font-family: var(--serif);
+  font-size: 28px;
+}
+
+.staff-customer-edit-note {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.staff-customer-edit-form {
+  display: grid;
+  gap: 16px;
+}
+
+.staff-customer-edit-row {
+  display: grid;
+  gap: 12px;
+  align-items: end;
+}
+
+.staff-customer-edit-row--two,
+.staff-customer-edit-row--phone {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.staff-customer-edit-row--phone .admin-btn {
+  min-height: 52px;
+}
+
+.staff-customer-edit-row label {
+  display: grid;
+  gap: 8px;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.staff-customer-edit-row label small {
+  color: var(--muted);
+  font-size: 12px;
 }
 
 .staff-customer-action-panel {
@@ -1998,27 +2110,19 @@ body[data-page="staff-slots"] .staff-main::before {
 
 @media (max-width: 1120px) {
   .staff-detail-summary-card {
-    grid-template-columns: minmax(280px, 0.9fr) minmax(300px, 1fr);
-    gap: 16px;
-    padding-bottom: 74px;
+    grid-template-columns: minmax(280px, 1fr) minmax(220px, 0.56fr) minmax(300px, 0.95fr);
+    gap: 14px;
+    padding-bottom: 18px;
   }
 
   .staff-detail-summary-status {
-    grid-column: 2;
+    grid-column: auto;
   }
 
   .staff-detail-summary-status {
     border-left: 1px dashed var(--line-strong);
     border-top: 0;
     padding: 0 0 0 18px;
-  }
-
-  .staff-detail-summary-card > .admin-btn {
-    position: absolute;
-    right: 24px;
-    bottom: 18px;
-    width: auto;
-    min-width: 220px;
   }
 
   .staff-detail-operation-grid {
@@ -2178,6 +2282,8 @@ body[data-page="staff-slots"] .staff-main::before {
   .staff-detail-summary-card,
   .staff-detail-board,
   .staff-detail-private-grid,
+  .staff-customer-edit-row--two,
+  .staff-customer-edit-row--phone,
   .staff-detail-operation-grid,
   .staff-detail-summary-status,
   .staff-detail-consent-grid,

@@ -24,7 +24,7 @@
     linked_missing: "結果データ取得不可",
     unknown: "アンケート結果なし"
   };
-  const headerEl = document.getElementById("staff-detail-header");
+  const headerEl = document.getElementById("admin-header");
   const profileEl = document.getElementById("customer-profile");
   const questionSummaryEl = document.getElementById("question-summary");
   const questionAnswerGridEl = document.getElementById("question-answer-grid");
@@ -35,7 +35,7 @@
   const recordIdEl = document.getElementById("session-record-id");
   const submitModeEl = document.getElementById("submit-mode");
   const sessionStatusEl = document.getElementById("session-status");
-  const preparationNoteEl = document.getElementById("preparation-note");
+  const preparationNoteDisplayEl = document.getElementById("preparation-note-display");
   const staffSummaryEl = document.getElementById("staff-summary");
   const hearingNoteEl = document.getElementById("hearing-note");
   const recipeListEl = document.getElementById("recipe-list");
@@ -61,7 +61,6 @@
   const customerNameEl = document.getElementById("customer-name");
   const customerEmailEl = document.getElementById("customer-email");
   const customerPhoneEl = document.getElementById("customer-phone");
-  const customerConsentEl = document.getElementById("customer-consent");
   const customerActionModalEl = document.getElementById("customer-action-modal");
   const customerActionModalTitleEl = document.getElementById("customer-action-modal-title");
   const customerActionAxisPreviewEl = document.getElementById("customer-action-axis-preview");
@@ -146,33 +145,18 @@
   }
 
   function renderHeader() {
-    if (!headerEl) return;
-    const back = getBackHref();
-    const staffName = window.AdminAuth?.getStaffDisplayName
-      ? window.AdminAuth.getStaffDisplayName(session)
-      : "staff";
-    const sessionRole = window.AdminAuth?.getSessionPortalRole?.(session);
-    const managerLink = sessionRole === "manager"
-      ? `<a class="staff-detail-nav-link staff-detail-manager-link" href="${escapeHtml(window.AdminAuth.appendRoleToHref("../admin/admin-dashboard.html", "manager"))}">管理者画面へ</a>`
-      : "";
-    headerEl.innerHTML = `
-      <div class="staff-detail-header-inner staff-detail-header-inner-simple">
-        <a class="staff-detail-brand" href="${escapeHtml(window.AdminAuth.appendRoleToHref("staff-dashboard.html", "staff"))}">
-          <span class="staff-detail-brand-mark" aria-hidden="true"><img src="../img/TOP/吟ロゴ.png" alt=""></span>
-          <span>Customer Detail</span>
-        </a>
-        <div class="staff-detail-header-actions">
-          <nav class="staff-detail-nav" aria-label="スタッフメニュー">
-            <a class="staff-detail-nav-link" href="${escapeHtml(window.AdminAuth.appendRoleToHref("staff-dashboard.html", "staff"))}">ダッシュボード</a>
-            <a class="staff-detail-nav-link" href="${escapeHtml(back.href)}">予約一覧</a>
-            <a class="staff-detail-nav-link" href="${escapeHtml(window.AdminAuth.appendRoleToHref("staff-slots.html", "staff"))}">予約枠</a>
-          </nav>
-          ${managerLink}
-          <button class="staff-detail-logout" id="staff-detail-logout" type="button">ログアウト</button>
-        </div>
-      </div>
-    `;
-    document.getElementById("staff-detail-logout")?.addEventListener("click", window.AdminAuth.signOutAdmin);
+    if (!headerEl || !window.AdminAuth?.renderAdminHeader) return;
+    window.AdminAuth.renderAdminHeader("staff-customer-detail", {
+      role: "staff",
+      session,
+      brandText: "Customer Detail",
+      roleLabel: "",
+      links: [
+        { href: "staff-dashboard.html", label: "ダッシュボード", key: "staff-dashboard" },
+        { href: "staff-reservations.html", label: "予約一覧", key: "reservations" },
+        { href: "staff-slots.html", label: "予約枠", key: "slots" }
+      ]
+    });
   }
 
   function normalizeAxes(axes) {
@@ -291,11 +275,11 @@
   }
 
   function getCustomerDisplayName() {
-    return customerDraft?.name || reservation?.customer_name || "未入力";
+    return reservation?.customer_name || customerDraft?.name || "未入力";
   }
 
   function getCustomerDisplayEmail() {
-    return customerDraft?.email || reservation?.customer_email || "未入力";
+    return reservation?.customer_email || customerDraft?.email || "未入力";
   }
 
   function renderCustomerProfile() {
@@ -303,7 +287,6 @@
     customerDraft = readCustomerDraft();
     const name = getCustomerDisplayName();
     const email = getCustomerDisplayEmail();
-    const phone = customerDraft?.phone || "任意";
     const branchLabel = BRANCH_LABELS[questionnaire?.branch_key] || questionnaire?.branch_key || formatVisitType(reservation?.visit_type);
     const memberStatus = reservation?.customer_id ? "登録済み" : "未登録";
     const qrStatus = productQrCode?.is_public || productQrCode?.status === "active" ? "QR発行済み" : "未発行";
@@ -321,7 +304,6 @@
         <dl class="staff-profile-detail-list">
           <div><dt>予約日時</dt><dd>${escapeHtml(getSlotLabel())}</dd></div>
           <div><dt>メール</dt><dd>${escapeHtml(email)}</dd></div>
-          <div><dt>電話</dt><dd>${escapeHtml(phone)}</dd></div>
         </dl>
       </div>
     `;
@@ -481,6 +463,29 @@
 
   function renderRecommendedMaterials() {
     if (!recommendedMaterialsEl) return;
+    {
+    const rankMaterials = window.FragranceMasterData?.rankMaterials;
+    const axes = reservation?.axes || questionnaire?.adjusted_axes || questionnaire?.final_axes || {};
+    const rankedRows = rankMaterials && hasAxisValue(axes)
+      ? rankMaterials(axes, materialRows, 3)
+      : [];
+    if (!rankedRows.length) {
+      recommendedMaterialsEl.innerHTML = `<p class="admin-empty">算出できるアンケート結果がありません。</p>`;
+      return;
+    }
+    const ratios = [40, 35, 25];
+    recommendedMaterialsEl.innerHTML = `
+      <div class="staff-recommend-blend-list">
+        ${rankedRows.slice(0, 3).map((row, index) => `
+          <article class="staff-recommend-blend-row">
+            <span>${escapeHtml(row.material_name)}</span>
+            <strong>${ratios[index] || 0}%</strong>
+          </article>
+        `).join("")}
+      </div>
+    `;
+    return;
+    }
     const rankMaterials = window.FragranceMasterData?.rankMaterials;
     if (!rankMaterials) {
       recommendedMaterialsEl.innerHTML = `<p class="admin-empty">原料候補を計算できません。</p>`;
@@ -764,15 +769,26 @@
     renderRecipeSummary();
   }
 
+  function getPreparationNoteText() {
+    return String(workshop?.preparation_note || reservation?.staff_memo || "").trim();
+  }
+
+  function renderPreparationNote() {
+    if (!preparationNoteDisplayEl) return;
+    const text = getPreparationNoteText();
+    preparationNoteDisplayEl.textContent = text || "未記載";
+    preparationNoteDisplayEl.classList.toggle("is-empty", !text);
+  }
+
   function fillForm() {
     const baseAxes = workshop?.final_axes || reservation?.axes || questionnaire?.adjusted_axes || questionnaire?.final_axes || {};
     recordIdEl.value = workshop?.id || "";
     sessionStatusEl.value = workshop?.status || "draft";
-    preparationNoteEl.value = workshop?.preparation_note || reservation?.staff_memo || "";
+    renderPreparationNote();
     staffSummaryEl.value = workshop?.staff_summary || "";
     if (productNameEl) productNameEl.value = fragranceProduct?.product_name || "";
     if (personalInfoConsentEl) {
-      personalInfoConsentEl.checked = Boolean(fragranceProduct?.personal_info_consent || customerDraft?.consent);
+      personalInfoConsentEl.checked = Boolean(fragranceProduct?.personal_info_consent);
     }
     if (thirdPartyOrderConsentEl) {
       thirdPartyOrderConsentEl.checked = Boolean(fragranceProduct?.third_party_order_consent);
@@ -919,7 +935,7 @@
     const payload = {
       reservation_id: reservation.id,
       questionnaire_result_id: reservation.questionnaire_result_id || null,
-      preparation_note: preparationNoteEl.value.trim() || null,
+      preparation_note: getPreparationNoteText() || null,
       staff_summary: staffSummaryEl.value.trim() || null,
       pre_visit_axes: normalizeAxes(questionnaire?.final_axes || reservation.axes || {}),
       reservation_axes: normalizeAxes(reservation.axes || {}),
@@ -935,7 +951,6 @@
         ? await window.AdminData.updateRow("workshop_sessions", recordId, payload)
         : await window.AdminData.insertRow("workshop_sessions", payload);
       await window.AdminData.updateRow("reservations", reservation.id, {
-        staff_memo: payload.preparation_note,
         status: submitModeEl.value === "complete" ? "completed" : reservation.status,
         updated_at: new Date().toISOString()
       });
@@ -948,7 +963,6 @@
       if (hearingNoteEl && getHearingMemoKey()) {
         window.sessionStorage.setItem(getHearingMemoKey(), hearingNoteEl.value.trim());
       }
-      reservation.staff_memo = payload.preparation_note;
       if (submitModeEl.value === "complete") reservation.status = "completed";
       workshop = { ...(workshop || {}), ...payload, id: recordIdEl.value };
       renderCustomerProfile();
@@ -1033,16 +1047,18 @@
   function bindEvents() {
     customerEditOpenEl?.addEventListener("click", () => {
       customerDraft = readCustomerDraft() || {};
-      customerNameEl.value = customerDraft.name || reservation?.customer_name || "";
-      customerEmailEl.value = customerDraft.email || reservation?.customer_email || "";
+      customerNameEl.value = reservation?.customer_name || customerDraft.name || "";
+      customerEmailEl.value = reservation?.customer_email || customerDraft.email || "";
       customerPhoneEl.value = customerDraft.phone || "";
-      customerConsentEl.checked = Boolean(customerDraft.consent);
       customerModalEl.hidden = false;
+      document.body.classList.add("portal-modal-open");
+      customerNameEl?.focus();
     });
 
     document.querySelectorAll("[data-customer-close]").forEach((button) => {
       button.addEventListener("click", () => {
         customerModalEl.hidden = true;
+        document.body.classList.remove("portal-modal-open");
       });
     });
 
@@ -1080,27 +1096,36 @@
       if (event.key === "Escape" && recipeModalEl && !recipeModalEl.hidden) {
         closeRecipeModal();
       }
+      if (event.key === "Escape" && customerModalEl && !customerModalEl.hidden) {
+        customerModalEl.hidden = true;
+        document.body.classList.remove("portal-modal-open");
+      }
     });
 
-    customerFormEl?.addEventListener("submit", (event) => {
+    customerFormEl?.addEventListener("submit", async (event) => {
       event.preventDefault();
-      if (!customerConsentEl.checked) {
-        setStatus("個人情報の同意チェックがないため保存できません。", "error");
-        return;
-      }
       customerDraft = {
         name: customerNameEl.value.trim(),
         email: customerEmailEl.value.trim(),
-        phone: customerPhoneEl.value.trim(),
-        consent: customerConsentEl.checked
+        phone: customerPhoneEl.value.trim()
       };
-      persistCustomerDraft(customerDraft);
-      if (personalInfoConsentEl) {
-        personalInfoConsentEl.checked = Boolean(customerDraft.consent);
+      try {
+        if (reservation?.id) {
+          const saved = await window.AdminData.updateRow("reservations", reservation.id, {
+            customer_name: customerDraft.name || null,
+            customer_email: customerDraft.email || null,
+            updated_at: new Date().toISOString()
+          });
+          reservation = { ...reservation, ...(saved?.[0] || {}), customer_name: customerDraft.name || null, customer_email: customerDraft.email || null };
+        }
+        persistCustomerDraft(customerDraft);
+        customerModalEl.hidden = true;
+        document.body.classList.remove("portal-modal-open");
+        renderCustomerProfile();
+        setStatus("お客様情報を保存しました。");
+      } catch (error) {
+        setStatus(error?.message || "お客様情報の保存に失敗しました。", "error");
       }
-      customerModalEl.hidden = true;
-      renderCustomerProfile();
-      setStatus("お客様情報をこの端末の下書きとして保存しました。");
     });
 
     addRecipeRowEl?.addEventListener("click", () => createRecipeRow({ role: "ingredient" }));
