@@ -127,6 +127,8 @@ create table if not exists public.workshop_sessions (
   staff_summary text,
   pre_visit_axes jsonb,
   reservation_axes jsonb,
+  previsit_recipe_items jsonb not null default '[]'::jsonb,
+  previsit_recipe_axes jsonb,
   final_axes jsonb,
   recipe_items jsonb not null default '[]'::jsonb,
   status text not null default 'draft',
@@ -194,6 +196,7 @@ create table if not exists public.fragrance_products (
   questionnaire_result_id uuid references public.questionnaire_results(id) on delete set null,
   customer_id uuid references public.customers(id) on delete set null,
   product_name text not null,
+  product_tags jsonb not null default '[]'::jsonb,
   final_axes jsonb,
   recipe_items jsonb not null default '[]'::jsonb,
   created_by_staff_id uuid references public.staff_profiles(id) on delete set null,
@@ -975,7 +978,21 @@ values (
     'price_30ml', 2860,
     'max_volume_ml', 100,
     'shop_phone', '03-1234-5678',
-    'business_hours', '11:00〜19:00'
+    'business_hours', '11:00〜19:00',
+    'product_tags', jsonb_build_array(
+      'フローラル',
+      'フレッシュ',
+      'ウッディ',
+      'スパイシー',
+      'スウィート',
+      'シトラス',
+      'ハーバル',
+      'パウダリー',
+      'ムスク',
+      'グリーン',
+      'ティー',
+      'アンバー'
+    )
   ),
   true
 )
@@ -1494,7 +1511,7 @@ grant select (config_json, version, updated_at, is_active) on public.scoring_con
 grant select (id, material_code, material_name, category, point_axes, note, is_active, sort_order, updated_at) on public.material_points to anon;
 grant select (id, slot_code, slot_date, slot_time, slot_label, instructor_name, status, sort_order, is_active) on public.reservation_slots to anon;
 grant select (setting_key, setting_value, updated_at, is_public) on public.admin_settings to anon;
-grant select (id, product_name) on public.fragrance_products to anon;
+grant select (id, product_name, product_tags) on public.fragrance_products to anon;
 grant select (id, fragrance_product_id, qr_code, public_token, status, expires_at, inactive_reason) on public.product_qr_codes to anon;
 grant insert (product_qr_code_id, fragrance_product_id, requester_email, quantity_10ml, quantity_30ml, status) on public.qr_product_requests to anon;
 

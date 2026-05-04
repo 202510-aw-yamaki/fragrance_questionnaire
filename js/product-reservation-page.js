@@ -17,6 +17,7 @@
   };
 
   const productNameEl = document.getElementById("product-name");
+  const productTagsEl = document.getElementById("product-tags");
   const price10mlEl = document.getElementById("price-10ml");
   const price30mlEl = document.getElementById("price-30ml");
   const quantity10mlEl = document.getElementById("quantity-10ml");
@@ -42,6 +43,15 @@
     } else {
       statusEl.removeAttribute("data-tone");
     }
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
   }
 
   function getQrToken() {
@@ -110,6 +120,13 @@
   function renderProduct() {
     const productName = state.product?.product_name || "QR商品";
     if (productNameEl) productNameEl.textContent = productName;
+    const tags = Array.isArray(state.product?.product_tags)
+      ? state.product.product_tags.map((tag) => String(tag || "").trim()).filter(Boolean).slice(0, 3)
+      : [];
+    if (productTagsEl) {
+      productTagsEl.hidden = !tags.length;
+      productTagsEl.innerHTML = tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("");
+    }
     document.title = `${productName} | QR商品作成依頼`;
   }
 

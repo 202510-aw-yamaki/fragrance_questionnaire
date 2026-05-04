@@ -12,6 +12,22 @@
     fresh: "フレッシュ",
     woody: "ウッディ"
   };
+  const DEFAULT_PRODUCT_TAGS = [
+    "フローラル",
+    "フレッシュ",
+    "ウッディ",
+    "スパイシー",
+    "スウィート",
+    "シトラス",
+    "ハーバル",
+    "パウダリー",
+    "ムスク",
+    "グリーン",
+    "ティー",
+    "アンバー"
+  ];
+  const QR_PRODUCT_SETTING_KEY = "qr_product_public_settings";
+  const MAX_PRODUCT_TAG_SELECTION = 3;
   const SESSION_STATUS_LABELS = {
     draft: "下書き",
     ready: "接客準備",
@@ -83,12 +99,13 @@
   const addCustomerActionRecipeRowEl = document.getElementById("add-customer-action-recipe-row");
   const normalizeCustomerActionRecipeEl = document.getElementById("normalize-customer-action-recipe");
   const customerActionApplyEl = document.querySelector("[data-customer-action-apply]");
-  const productNamePreviewEl = document.getElementById("product-name-preview");
+  const productTagListEl = document.getElementById("product-tag-list");
+  const productTagNoteEl = document.getElementById("product-tag-note");
   const consentStaffNameEl = document.getElementById("consent-staff-name");
   const consentCheckedAtEl = document.getElementById("consent-checked-at");
   const CUSTOMER_ACTION_TITLES = {
     fragrance: "香りのバランス調整",
-    product: "香水の名前を決めましょう",
+    product: "香水の名前とタグを選びましょう",
     consent: "確認事項"
   };
 
@@ -108,6 +125,8 @@
   let previsitRecipeItems = [];
   let previsitRecipeModalSnapshot = null;
   let customerActionMode = "fragrance";
+  let productTagOptions = [...DEFAULT_PRODUCT_TAGS];
+  let selectedProductTags = [];
 
   function escapeHtml(value) {
     return String(value ?? "")
@@ -127,6 +146,30 @@
     if (!saveStatusEl) return;
     saveStatusEl.textContent = message;
     saveStatusEl.className = kind === "error" ? "admin-error" : "admin-note";
+  }
+
+  function normalizeProductTags(value) {
+    const source = Array.isArray(value)
+      ? value
+      : String(value ?? "").split(/[\n,、]/);
+    const seen = new Set();
+    return source
+      .map((tag) => String(tag || "").trim())
+      .filter(Boolean)
+      .filter((tag) => {
+        const key = tag.toLowerCase();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
+      .slice(0, 24);
+  }
+
+  function normalizeSelectedProductTags(value) {
+    const allowed = new Set(productTagOptions.map((tag) => tag.toLowerCase()));
+    return normalizeProductTags(value)
+      .filter((tag) => !allowed.size || allowed.has(tag.toLowerCase()))
+      .slice(0, MAX_PRODUCT_TAG_SELECTION);
   }
 
   function getReservationId() {
@@ -169,6 +212,8 @@
   }
 
   function readPrevisitRecipeItems() {
+    const dbItems = getUsableRecipeItems(workshop?.previsit_recipe_items);
+    if (dbItems.length) return dbItems;
     try {
       const key = getPrevisitRecipeKey();
       if (!key) return [];
@@ -179,11 +224,16 @@
     }
   }
 
-  function persistPrevisitRecipeItems() {
+  function persistPrevisitRecipeItemsToSession() {
     const key = getPrevisitRecipeKey();
     if (key) {
       window.sessionStorage.setItem(key, JSON.stringify(previsitRecipeItems));
     }
+  }
+
+  async function persistPrevisitRecipeItems() {
+    persistPrevisitRecipeItemsToSession();
+    await savePrevisitRecipeToDb();
   }
 
   function getBackHref() {
@@ -492,13 +542,48 @@
     setText("staff-detail-summary-workshop", workshopStatus);
   }
 
-  function updateCustomerActionSummary() {
-    if (productNamePreviewEl) {
-      productNamePreviewEl.textContent = getProductName() || "未入力";
+  function getProductTags() {
+    selectedProductTags = normalizeSelectedProductTags(selectedProductTags);
+    return [...selectedProductTags];
+  }
+
+  function renderProductTagOptions() {
+    if (!productTagListEl) return;
+    const selected = new Set(getProductTags().map((tag) => tag.toLowerCase()));
+    productTagListEl.innerHTML = productTagOptions.map((tag) => {
+      const isSelected = selected.has(tag.toLowerCase());
+      return `<button class="staff-product-tag${isSelected ? " is-selected" : ""}" type="button" data-product-tag="${escapeHtml(tag)}" aria-pressed="${isSelected ? "true" : "false"}">${escapeHtml(tag)}</button>`;
+    }).join("");
+    productTagListEl.querySelectorAll("[data-product-tag]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const tag = button.dataset.productTag || "";
+        const current = getProductTags();
+        const exists = current.some((item) => item.toLowerCase() === tag.toLowerCase());
+        if (exists) {
+          selectedProductTags = current.filter((item) => item.toLowerCase() !== tag.toLowerCase());
+        } else if (current.length >= MAX_PRODUCT_TAG_SELECTION) {
+          setStatus(`商品ページタグは${MAX_PRODUCT_TAG_SELECTION}つまで選択できます。`, "error");
+          return;
+        } else {
+          selectedProductTags = current.concat(tag);
+        }
+        updateCustomerActionSummary();
+        renderQr(false);
+      });
+    });
+    if (productTagNoteEl) {
+      const count = selected.size;
+      productTagNoteEl.textContent = count
+        ? `${count}件選択中です。`
+        : "QR商品ページに表示するタグを選択してください。";
     }
+  }
+
+  function updateCustomerActionSummary() {
     document.querySelectorAll("[data-product-name-suggestion]").forEach((item) => {
       item.classList.toggle("is-selected", item.dataset.productNameSuggestion === getProductName());
     });
+    renderProductTagOptions();
     if (consentStaffNameEl) {
       const staffName = window.AdminAuth?.getStaffDisplayName
         ? window.AdminAuth.getStaffDisplayName(session)
@@ -524,7 +609,8 @@
       staffSummary: staffSummaryEl?.value || "",
       productName: productNameEl?.value || "",
       personalInfoConsent: Boolean(personalInfoConsentEl?.checked),
-      thirdPartyOrderConsent: Boolean(thirdPartyOrderConsentEl?.checked)
+      thirdPartyOrderConsent: Boolean(thirdPartyOrderConsentEl?.checked),
+      productTags: [...selectedProductTags]
     };
   }
 
@@ -537,6 +623,7 @@
     if (hearingNoteEl) hearingNoteEl.value = snapshot.hearingNote || "";
     if (staffSummaryEl) staffSummaryEl.value = snapshot.staffSummary || "";
     if (productNameEl) productNameEl.value = snapshot.productName || "";
+    selectedProductTags = normalizeSelectedProductTags(snapshot.productTags || []);
     if (personalInfoConsentEl) personalInfoConsentEl.checked = Boolean(snapshot.personalInfoConsent);
     if (thirdPartyOrderConsentEl) thirdPartyOrderConsentEl.checked = Boolean(snapshot.thirdPartyOrderConsent);
     updateAxisTotal();
@@ -950,6 +1037,34 @@
     previsitRecipeSummaryEl.innerHTML = `<p class="staff-previsit-status is-ready">配合提案は設定済み</p>`;
   }
 
+  async function savePrevisitRecipeToDb() {
+    if (!reservation?.id || !staffProfile?.id) return null;
+    const payload = {
+      reservation_id: reservation.id,
+      questionnaire_result_id: reservation.questionnaire_result_id || null,
+      staff_profile_id: staffProfile.id,
+      pre_visit_axes: normalizeAxes(questionnaire?.final_axes || reservation.axes || {}),
+      reservation_axes: normalizeAxes(reservation.axes || {}),
+      previsit_recipe_items: getPrevisitProposalItems(),
+      previsit_recipe_axes: getPrevisitProposalAxes(),
+      status: workshop?.status || sessionStatusEl.value || "draft",
+      updated_at: new Date().toISOString()
+    };
+    const recordId = recordIdEl.value || workshop?.id || "";
+    const saved = recordId
+      ? await window.AdminData.updateRow("workshop_sessions", recordId, payload)
+      : await window.AdminData.upsertRow("workshop_sessions", payload, "reservation_id");
+    const savedRow = saved?.[0] || null;
+    if (savedRow?.id) {
+      workshop = { ...(workshop || {}), ...savedRow };
+      recordIdEl.value = savedRow.id;
+      sessionStatusEl.value = savedRow.status || payload.status;
+    } else {
+      workshop = { ...(workshop || {}), ...payload, id: recordId };
+    }
+    return workshop;
+  }
+
   function getRecommendedRecipeItems() {
     const rankMaterials = window.FragranceMasterData?.rankMaterials;
     const axes = reservation?.axes || questionnaire?.adjusted_axes || questionnaire?.final_axes || {};
@@ -1015,7 +1130,7 @@
     previsitRecipeModalEl.querySelector(".staff-customer-action-close")?.focus();
   }
 
-  function closePrevisitRecipeModal(options = {}) {
+  async function closePrevisitRecipeModal(options = {}) {
     if (!previsitRecipeModalEl) return;
     if (!options.apply && isPrevisitRecipeModalDirty()) {
       const shouldDiscard = window.confirm("事前配合の変更を反映せずに閉じますか？");
@@ -1025,9 +1140,15 @@
     }
     if (options.apply) {
       previsitRecipeItems = collectPrevisitRecipeItems();
-      persistPrevisitRecipeItems();
       renderPrevisitRecipeSummary();
-      setStatus("事前配合を反映しました。");
+      setStatus("事前配合をDBに保存しています。");
+      try {
+        await persistPrevisitRecipeItems();
+        setStatus("事前配合をDBに保存しました。");
+      } catch (error) {
+        persistPrevisitRecipeItemsToSession();
+        setStatus(error?.message || "事前配合のDB保存に失敗しました。SQL適用状況を確認してください。", "error");
+      }
     }
     previsitRecipeModalEl.hidden = true;
     document.body.classList.remove("portal-modal-open");
@@ -1118,8 +1239,10 @@
     const recipeItems = collectRecipeItems();
     const axes = normalizeAxes(getCurrentFinalAxes());
     const consents = getProductConsentState();
+    const productTags = getProductTags();
     return {
       productName,
+      productTags,
       recipeItems,
       axes,
       hasFinalAxes: hasAxisValue(axes),
@@ -1374,6 +1497,7 @@
     if (thirdPartyOrderConsentEl) {
       thirdPartyOrderConsentEl.checked = Boolean(fragranceProduct?.third_party_order_consent);
     }
+    selectedProductTags = normalizeSelectedProductTags(fragranceProduct?.product_tags || []);
     if (hearingNoteEl) {
       hearingNoteEl.value = getHearingMemoKey() ? window.sessionStorage.getItem(getHearingMemoKey()) || "" : "";
     }
@@ -1419,6 +1543,9 @@
       AXIS_ORDER.forEach((axis) => {
         target.searchParams.set(axis, String(Number(axes[axis] || 0)));
       });
+      if (readiness.productTags.length) {
+        target.searchParams.set("tags", readiness.productTags.join(","));
+      }
     }
     return {
       productId,
@@ -1473,6 +1600,7 @@
       questionnaire_result_id: reservation.questionnaire_result_id || null,
       customer_id: reservation.customer_id || fragranceProduct?.customer_id || null,
       product_name: readiness.productName || fragranceProduct?.product_name,
+      product_tags: readiness.productTags,
       final_axes: readiness.axes,
       recipe_items: readiness.recipeItems,
       created_by_staff_id: fragranceProduct?.created_by_staff_id || staffProfile.id,
@@ -1538,6 +1666,8 @@
       staff_summary: staffSummaryEl?.value.trim() || null,
       pre_visit_axes: normalizeAxes(questionnaire?.final_axes || reservation.axes || {}),
       reservation_axes: normalizeAxes(reservation.axes || {}),
+      previsit_recipe_items: getPrevisitProposalItems(),
+      previsit_recipe_axes: getPrevisitProposalAxes(),
       final_axes: normalizeAxes(getCurrentFinalAxes()),
       recipe_items: collectRecipeItems(),
       status: submitModeEl.value === "complete" ? "completed" : (sessionStatusEl.value || "draft"),
@@ -1590,7 +1720,7 @@
       return false;
     }
 
-    const [slotRows, questionnaireRows, workshopRows, materialPointRows] = await Promise.all([
+    const [slotRows, questionnaireRows, workshopRows, materialPointRows, settingRows] = await Promise.all([
       reservation.slot_id
         ? window.AdminData.listRows("reservation_slots", {
             filters: [{ operator: "eq", column: "id", value: reservation.slot_id }],
@@ -1610,6 +1740,10 @@
       window.AdminData.listRows("material_points", {
         filters: [{ operator: "eq", column: "is_active", value: true }],
         orders: [{ column: "sort_order", ascending: true }]
+      }).catch(() => []),
+      window.AdminData.listRows("admin_settings", {
+        filters: [{ operator: "eq", column: "setting_key", value: QR_PRODUCT_SETTING_KEY }],
+        limit: 1
       }).catch(() => [])
     ]);
 
@@ -1640,6 +1774,8 @@
       .map((row) => window.FragranceMasterData?.normalizeMaterialRow
         ? window.FragranceMasterData.normalizeMaterialRow(row)
         : row);
+    const configuredTags = normalizeProductTags(settingRows[0]?.setting_value?.product_tags);
+    productTagOptions = configuredTags.length ? configuredTags : [...DEFAULT_PRODUCT_TAGS];
     return true;
   }
 

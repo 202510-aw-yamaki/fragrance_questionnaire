@@ -9,6 +9,20 @@
     shop_phone: "03-1234-5678",
     business_hours: "11:00〜19:00"
   };
+  const DEFAULT_PRODUCT_TAGS = [
+    "フローラル",
+    "フレッシュ",
+    "ウッディ",
+    "スパイシー",
+    "スウィート",
+    "シトラス",
+    "ハーバル",
+    "パウダリー",
+    "ムスク",
+    "グリーン",
+    "ティー",
+    "アンバー"
+  ];
   const WEEKDAY_LABELS = ["日", "月", "火", "水", "木", "金", "土"];
   const todayLabelEl = document.getElementById("settings-today-label");
   const todayStaffEl = document.getElementById("settings-today-staff");
@@ -24,6 +38,7 @@
   const qrMaxVolumeEl = document.getElementById("qr-max-volume-ml");
   const qrShopPhoneEl = document.getElementById("qr-shop-phone");
   const qrBusinessHoursEl = document.getElementById("qr-business-hours");
+  const qrProductTagsEl = document.getElementById("qr-product-tags");
   const qrSettingsNoteEl = document.getElementById("qr-settings-note");
   const TEMP_TODAY_STAFF_FIXTURES = [
     { staffName: "仮スタッフA", shiftLabel: "出勤時間 10:00 - 18:00" },
@@ -847,8 +862,26 @@
       price_30ml: Number(source.price_30ml ?? source.price30ml ?? QR_DEFAULT_SETTINGS.price_30ml),
       max_volume_ml: Number(source.max_volume_ml ?? source.maxVolumeMl ?? QR_DEFAULT_SETTINGS.max_volume_ml),
       shop_phone: String(source.shop_phone ?? source.shopPhone ?? QR_DEFAULT_SETTINGS.shop_phone),
-      business_hours: String(source.business_hours ?? source.businessHours ?? QR_DEFAULT_SETTINGS.business_hours)
+      business_hours: String(source.business_hours ?? source.businessHours ?? QR_DEFAULT_SETTINGS.business_hours),
+      product_tags: normalizeProductTags(source.product_tags ?? source.productTags)
     };
+  }
+
+  function normalizeProductTags(value) {
+    const source = Array.isArray(value)
+      ? value
+      : String(value ?? "").split(/[\n,、]/);
+    const seen = new Set();
+    return source
+      .map((tag) => String(tag || "").trim())
+      .filter(Boolean)
+      .filter((tag) => {
+        const key = tag.toLowerCase();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
+      .slice(0, 24);
   }
 
   function setQrSettingsNote(message, isError = false) {
@@ -865,6 +898,10 @@
     if (qrMaxVolumeEl) qrMaxVolumeEl.value = String(settings.max_volume_ml);
     if (qrShopPhoneEl) qrShopPhoneEl.value = settings.shop_phone;
     if (qrBusinessHoursEl) qrBusinessHoursEl.value = settings.business_hours;
+    if (qrProductTagsEl) {
+      const tags = settings.product_tags.length ? settings.product_tags : DEFAULT_PRODUCT_TAGS;
+      qrProductTagsEl.value = tags.join("\n");
+    }
   }
 
   function readQrSettingsForm() {
@@ -873,7 +910,8 @@
       price_30ml: qrPrice30mlEl?.value,
       max_volume_ml: qrMaxVolumeEl?.value,
       shop_phone: qrShopPhoneEl?.value,
-      business_hours: qrBusinessHoursEl?.value
+      business_hours: qrBusinessHoursEl?.value,
+      product_tags: qrProductTagsEl?.value
     });
   }
 

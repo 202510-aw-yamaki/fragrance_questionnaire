@@ -69,8 +69,8 @@
         <article class="admin-panel staff-detail-share-panel">
           <div class="staff-detail-panel-tab staff-detail-panel-tab--share">お客様共有アクション</div>
           <div class="staff-detail-share-actions">
-            <button class="staff-detail-share-action" type="button" data-customer-action="fragrance"><span class="staff-share-icon" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false"><path d="M14 9v30M24 9v30M34 9v30" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="14" cy="18" r="5" fill="currentColor"/><circle cx="24" cy="30" r="5" fill="currentColor"/><circle cx="34" cy="22" r="5" fill="currentColor"/></svg></span><strong>お客様と香りを調整する</strong><small>香りの方向性を確認しながら、微調整を行います。</small></button>
-            <button class="staff-detail-share-action" type="button" data-customer-action="product"><span class="staff-share-icon" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false"><path d="M17 8h14l2 10v22a4 4 0 0 1-4 4H19a4 4 0 0 1-4-4V18l2-10Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M18 20h12M18 33h12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M20 8V4h8v4" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg></span><strong>商品名を決める</strong><small>お客様と一緒に、香水の名前を決めます。</small></button>
+            <button class="staff-detail-share-action" type="button" data-customer-action="fragrance"><span class="staff-share-icon" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false"><path d="M14 9v30M24 9v30M34 9v30" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="14" cy="18" r="5" fill="currentColor"/><circle cx="24" cy="30" r="5" fill="currentColor"/><circle cx="34" cy="22" r="5" fill="currentColor"/></svg></span><strong>お客様と香りを調整する</strong></button>
+            <button class="staff-detail-share-action" type="button" data-customer-action="product"><span class="staff-share-icon" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false"><path d="M17 8h14l2 10v22a4 4 0 0 1-4 4H19a4 4 0 0 1-4-4V18l2-10Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M18 20h12M18 33h12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M20 8V4h8v4" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg></span><strong>商品名を決める</strong></button>
           </div>
         </article>
         </div>
@@ -212,10 +212,13 @@
               <button class="staff-product-suggestion" type="button" data-product-name-suggestion="朝の白檀">朝の白檀</button>
             </div>
           </section>
-          <section class="staff-customer-product-preview">
-            <span>QR商品ページでの表示</span>
-            <strong id="product-name-preview">未入力</strong>
-            <small>この名前は、メールで届くQR商品ページに表示されます。</small>
+          <section class="staff-customer-product-tags">
+            <div class="staff-product-tag-head">
+              <h3>商品ページタグ</h3>
+              <small>最大3つまで選択</small>
+            </div>
+            <div class="staff-product-tag-list" id="product-tag-list"></div>
+            <p class="admin-note" id="product-tag-note">管理者設定のタグ候補から選択します。</p>
           </section>
         </div>
       </div>

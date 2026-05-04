@@ -610,7 +610,7 @@
     try {
       const { data, error } = await client
         .from("fragrance_products")
-        .select("id, product_name")
+        .select("id, product_name, product_tags")
         .eq("id", qrCode.fragrance_product_id)
         .maybeSingle();
       if (error) throw error;

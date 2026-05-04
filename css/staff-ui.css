@@ -675,7 +675,7 @@ body[data-page="staff-customer-detail"] .staff-main::before {
 .staff-detail-share-action::after {
   content: ">";
   grid-column: 3;
-  grid-row: 1 / span 2;
+  grid-row: 1;
   align-self: center;
   color: var(--gold-dark);
   font-family: var(--serif);
@@ -684,7 +684,7 @@ body[data-page="staff-customer-detail"] .staff-main::before {
 
 .staff-detail-share-action span {
   grid-column: 1;
-  grid-row: 1 / span 2;
+  grid-row: 1;
   width: 62px;
   height: 62px;
   display: grid;
@@ -712,16 +712,9 @@ body[data-page="staff-customer-detail"] .staff-main::before {
 .staff-detail-share-action strong {
   grid-column: 2;
   grid-row: 1;
-  align-self: end;
+  align-self: center;
   font-family: var(--serif);
   font-size: 22px;
-}
-
-.staff-detail-share-action small {
-  grid-column: 2;
-  grid-row: 2;
-  color: var(--muted);
-  line-height: 1.5;
 }
 
 .staff-customer-action-modal .portal-modal-backdrop {
@@ -830,7 +823,7 @@ body[data-page="staff-customer-detail"] .staff-main::before {
 
 .staff-customer-balance-card,
 .staff-customer-product-entry,
-.staff-customer-product-preview,
+.staff-customer-product-tags,
 .staff-consent-check,
 .staff-consent-meta {
   border: 1px solid var(--line);
@@ -939,27 +932,54 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   outline: 0;
 }
 
-.staff-customer-product-preview {
+.staff-customer-product-tags {
   display: grid;
-  place-items: center;
-  align-content: center;
-  min-height: 220px;
-  text-align: center;
+  gap: 14px;
+  align-content: start;
 }
 
-.staff-customer-product-preview span {
-  color: var(--gold-dark);
-  font-weight: 800;
+.staff-product-tag-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-.staff-customer-product-preview strong {
-  margin: 18px 0 10px;
-  font-family: var(--serif);
-  font-size: clamp(32px, 4vw, 48px);
+.staff-product-tag-head h3 {
+  margin: 0;
+  font-size: 18px;
 }
 
-.staff-customer-product-preview small {
+.staff-product-tag-head small,
+.staff-customer-product-tags .admin-note {
   color: var(--muted);
+  font-weight: 700;
+}
+
+.staff-product-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.staff-product-tag {
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 253, 249, 0.92);
+  padding: 8px 14px;
+  color: var(--ink);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.staff-product-tag.is-selected,
+.staff-product-tag:hover,
+.staff-product-tag:focus-visible {
+  border-color: rgba(84, 120, 77, 0.46);
+  background: rgba(242, 250, 240, 0.88);
+  color: var(--green);
+  outline: 0;
 }
 
 .staff-consent-check-list {

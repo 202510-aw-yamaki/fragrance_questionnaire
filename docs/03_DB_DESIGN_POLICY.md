@@ -176,3 +176,14 @@ QR商品ページのアクセス記録は `record_qr_product_access()` を入口
 - 会員ページから予約・アンケートへ遷移した場合だけ、URLの `member=1` と保存payloadの `link_customer=true` を明示的な会員予約フラグとして扱う。
 - `create_public_reservation()` と `create_questionnaire_result()` は `link_customer=true` のときだけ `current_customer_profile_id()` を使う。
 - フロント側はゲスト予約保存時に `persistSession: false` のSupabase clientを使い、同じブラウザに残った別会員のAuthセッションを読まない。
+
+## 2026-05-04 staff previsit recipe and product tag note
+
+スタッフ詳細画面の事前配合提案とQR商品タグの要望に合わせ、DB上の保存先を以下に分ける。
+
+- `workshop_sessions.previsit_recipe_items`: 来店前にスタッフが作った提案配合。
+- `workshop_sessions.previsit_recipe_axes`: 提案配合を5軸表示用に補正した値。
+- `fragrance_products.product_tags`: QR商品ページに表示する完成品タグ。商品名と同じく完成品に紐づく表示情報として扱う。
+- 管理者が選べるタグ候補は `admin_settings.setting_key = 'qr_product_public_settings'` の `product_tags` に保持する。
+
+事前配合はブラウザ一時保存ではなく、予約に紐づく `workshop_sessions` から復元できる状態を正とする。QR経由の第三者を `customers` に入れない方針は変更しない。
