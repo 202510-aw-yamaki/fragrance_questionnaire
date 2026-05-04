@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="../css/rebuild-ui.css">
 </head>
 <body class="admin-page admin-reference-page admin-dashboard-page" data-page="admin-dashboard">
+  <div class="admin-dashboard-artboard" id="admin-dashboard-artboard">
   <header class="admin-header" id="admin-header">
     <div class="admin-header-inner site-container admin-header-inner--manager">
       <a class="admin-brand" href="admin-dashboard.html?role=manager">
@@ -30,7 +31,7 @@
     <section class="admin-page-title admin-dashboard-title"><div><h1>管理者ダッシュボード</h1></div><a class="admin-notification-pill" id="admin-qr-notification-trigger" href="admin-qr-requests.html" role="button">QR関連通知 <strong id="manager-qr-request-count">10</strong></a></section>
     <section class="kpi-grid admin-dashboard-kpis">
       <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>本日の予約</p><strong class="kpi-value"><span id="kpi-reservations">8</span>件</strong><small>前日比 +<span id="kpi-reservations-week">2</span>件</small></div></article>
-      <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>未確認予約</p><strong class="kpi-value"><span id="kpi-unconfirmed-reservations">0</span>件</strong><small>前日比 -1件</small></div></article>
+      <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>未確認予約</p><strong class="kpi-value"><span id="kpi-unconfirmed-reservations">2</span>件</strong><small>前日比 -1件</small></div></article>
       <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>QR作成依頼</p><strong class="kpi-value"><span id="kpi-qr-requests">5</span>件</strong><small>前日比 +1件</small></div></article>
       <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>期限超過未対応</p><strong class="kpi-value"><span id="kpi-overdue-requests">1</span>件</strong><small>前日比 ±0件</small></div></article>
       <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>発送準備中</p><strong class="kpi-value"><span id="kpi-shipping-pending">3</span>件</strong><small>前日比 +1件</small></div></article>
@@ -122,6 +123,7 @@
         <button class="admin-btn secondary" type="button" data-admin-qr-modal-close>閉じる</button>
       </div>
     </section>
+  </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabase-config.js"></script>

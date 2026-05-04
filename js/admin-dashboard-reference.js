@@ -1,4 +1,18 @@
 (function () {
+  const artboard = document.getElementById("admin-dashboard-artboard");
+
+  function fitDashboardArtboard() {
+    if (!artboard) return;
+    const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    const roundedScale = Math.max(0.32, Math.min(1, scale));
+    document.documentElement.style.setProperty("--dashboard-artboard-scale", String(roundedScale));
+    document.body.style.minHeight = `${1080 * roundedScale}px`;
+    window.scrollTo(0, 0);
+  }
+
+  fitDashboardArtboard();
+  window.addEventListener("resize", fitDashboardArtboard);
+
   const modal = document.getElementById("admin-qr-modal");
   const trigger = document.getElementById("admin-qr-notification-trigger");
   if (!modal || !trigger) return;
