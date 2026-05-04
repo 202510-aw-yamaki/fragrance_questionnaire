@@ -950,3 +950,16 @@
   - `node --check js/public-data.js`
   - `node --check js/staff-customer-detail-page.js`
   - `git diff --check`
+
+### 2026-05-04 接客詳細の予約者情報フォールバック修正
+- 対象:
+  - `js/staff-customer-detail-page.js`
+- 背景:
+  - ユーザー確認で、予約時に `test` / `test@example` を入力したはずなのに、会員プロフィール側の名前・メールが表示されている指摘があった。
+  - DB側で `reservations.customer_name` / `reservations.customer_email` が未適用の場合、会員プロフィールへのフォールバックが保存漏れを隠してしまうため、予約時入力情報としては不適切だった。
+- 実装:
+  - 接客詳細のお客様名・メール表示は `fragranceCustomerDraft:<reservation.id>` と `reservations.customer_name/customer_email` のみに限定した。
+  - `customers.display_name/email` への表示フォールバックを外し、会員登録状況とは別の情報として扱うように戻した。
+- 確認:
+  - `node --check js/staff-customer-detail-page.js`
+  - `git diff --check`

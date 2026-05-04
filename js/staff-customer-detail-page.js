@@ -85,7 +85,6 @@
   let materialRows = [];
   let materialDataReady = false;
   let customerDraft = null;
-  let customerProfile = null;
 
   function escapeHtml(value) {
     return String(value ?? "")
@@ -292,11 +291,11 @@
   }
 
   function getCustomerDisplayName() {
-    return customerDraft?.name || reservation?.customer_name || customerProfile?.display_name || "未入力";
+    return customerDraft?.name || reservation?.customer_name || "未入力";
   }
 
   function getCustomerDisplayEmail() {
-    return customerDraft?.email || reservation?.customer_email || customerProfile?.email || "未入力";
+    return customerDraft?.email || reservation?.customer_email || "未入力";
   }
 
   function renderCustomerProfile() {
@@ -978,7 +977,7 @@
       return false;
     }
 
-    const [slotRows, questionnaireRows, workshopRows, materialPointRows, customerRows] = await Promise.all([
+    const [slotRows, questionnaireRows, workshopRows, materialPointRows] = await Promise.all([
       reservation.slot_id
         ? window.AdminData.listRows("reservation_slots", {
             filters: [{ operator: "eq", column: "id", value: reservation.slot_id }],
@@ -998,20 +997,12 @@
       window.AdminData.listRows("material_points", {
         filters: [{ operator: "eq", column: "is_active", value: true }],
         orders: [{ column: "sort_order", ascending: true }]
-      }).catch(() => []),
-      reservation.customer_id
-        ? window.AdminData.listRows("customers", {
-            filters: [{ operator: "eq", column: "id", value: reservation.customer_id }],
-            select: "id, email, display_name",
-            limit: 1
-          }).catch(() => [])
-        : Promise.resolve([])
+      }).catch(() => [])
     ]);
 
     slot = slotRows[0] || null;
     questionnaire = questionnaireRows[0] || null;
     workshop = workshopRows[0] || null;
-    customerProfile = customerRows[0] || null;
     const productRows = workshop?.id
       ? await window.AdminData.listRows("fragrance_products", {
           filters: [{ operator: "eq", column: "workshop_session_id", value: workshop.id }],
@@ -1042,8 +1033,8 @@
   function bindEvents() {
     customerEditOpenEl?.addEventListener("click", () => {
       customerDraft = readCustomerDraft() || {};
-      customerNameEl.value = customerDraft.name || reservation?.customer_name || customerProfile?.display_name || "";
-      customerEmailEl.value = customerDraft.email || reservation?.customer_email || customerProfile?.email || "";
+      customerNameEl.value = customerDraft.name || reservation?.customer_name || "";
+      customerEmailEl.value = customerDraft.email || reservation?.customer_email || "";
       customerPhoneEl.value = customerDraft.phone || "";
       customerConsentEl.checked = Boolean(customerDraft.consent);
       customerModalEl.hidden = false;
