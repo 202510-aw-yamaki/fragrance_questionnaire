@@ -353,6 +353,14 @@ as $$
   limit 1;
 $$;
 
+create or replace function public.should_link_current_customer(p_payload jsonb)
+returns boolean
+language sql
+immutable
+as $$
+  select lower(coalesce(p_payload ->> 'link_customer', 'false')) in ('true', '1', 'yes', 'on');
+$$;
+
 create or replace function public.current_portal_role()
 returns text
 language sql
@@ -491,7 +499,10 @@ begin
   )
   values (
     v_result_code,
-    public.current_customer_profile_id(),
+    case
+      when public.should_link_current_customer(p_payload) then public.current_customer_profile_id()
+      else null
+    end,
     p_payload -> 'step1_answers_json',
     p_payload -> 'step1_answer_keys_json',
     p_payload -> 'step2_answers_json',
@@ -579,7 +590,10 @@ begin
   values (
     v_reservation_code,
     nullif(p_payload ->> 'questionnaire_result_id', '')::uuid,
-    public.current_customer_profile_id(),
+    case
+      when public.should_link_current_customer(p_payload) then public.current_customer_profile_id()
+      else null
+    end,
     coalesce(nullif(p_payload ->> 'questionnaire_flow_status', ''), 'skipped'),
     p_payload ->> 'questionnaire_sync_error',
     nullif(p_payload ->> 'slot_id', '')::uuid,
@@ -1433,6 +1447,7 @@ grant execute on function public.create_public_reservation(jsonb) to anon, authe
 grant execute on function public.fetch_reservation_by_code(text) to anon, authenticated;
 grant execute on function public.qr_product_public_max_volume_ml() to anon, authenticated;
 grant execute on function public.current_customer_profile_id() to anon, authenticated;
+grant execute on function public.should_link_current_customer(jsonb) to anon, authenticated;
 grant execute on function public.fetch_customer_portal_summary() to authenticated;
 grant execute on function public.record_qr_product_access(text) to anon, authenticated;
 

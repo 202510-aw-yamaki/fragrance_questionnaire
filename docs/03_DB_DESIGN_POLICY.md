@@ -167,3 +167,12 @@ QR商品ページのアクセス記録は `record_qr_product_access()` を入口
 - 管理画面側の予約枠は `slot_label` に `11:00-12:00` のような時間幅を持つため、公開予約時にフロントで分数へ変換して保存する
 - `slot_label` は予約日時表示用として維持し、所要時間表示は `duration_minutes` を優先する
 - `create_public_reservation()` と `fetch_reservation_by_code()` は `duration_minutes` を扱う
+
+## 2026-05-04 explicit customer link note
+
+予約・アンケート結果を会員に紐づけるかどうかは、ブラウザ内に残ったSupabase Authセッションの有無だけでは判断しない。
+
+- 通常の公開予約はゲスト予約として扱い、`reservations.customer_id` と `questionnaire_results.customer_id` は `null` のままにする。
+- 会員ページから予約・アンケートへ遷移した場合だけ、URLの `member=1` と保存payloadの `link_customer=true` を明示的な会員予約フラグとして扱う。
+- `create_public_reservation()` と `create_questionnaire_result()` は `link_customer=true` のときだけ `current_customer_profile_id()` を使う。
+- フロント側はゲスト予約保存時に `persistSession: false` のSupabase clientを使い、同じブラウザに残った別会員のAuthセッションを読まない。

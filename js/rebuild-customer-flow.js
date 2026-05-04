@@ -12,6 +12,7 @@
   const STEP1_ANSWERS_KEY = "fragranceStep1Answers";
   const DRAFT_KEY = "fragranceReservationDraft";
   const CONFIRMATION_KEY = "fragranceReservationConfirmation";
+  const MEMBER_RESERVATION_PARAM = "member";
   const DEFAULT_AXES = { floral: 56, fresh: 58, woody: 45, spicy: 36, sweet: 52 };
   const RESULT_AXIS_ORDER = ["floral", "fresh", "woody", "spicy", "sweet"];
   const RESULT_AXIS_LABELS = {
@@ -57,6 +58,17 @@
       woody: "Trivia_Q7_woody.png"
     }
   };
+
+  function isMemberReservationIntent() {
+    return new URLSearchParams(window.location.search).get(MEMBER_RESERVATION_PARAM) === "1";
+  }
+
+  function withMemberReservationIntent(path) {
+    if (!isMemberReservationIntent()) return path;
+    const [base, hash = ""] = String(path || "").split("#");
+    const separator = base.includes("?") ? "&" : "?";
+    return `${base}${separator}${MEMBER_RESERVATION_PARAM}=1${hash ? `#${hash}` : ""}`;
+  }
 
   const STEP1_QUESTIONS = [
     {
@@ -557,9 +569,10 @@
         step1AnswerKeys: { ...answers },
         axesAfterStep1,
         branchKey,
+        customerLinkIntent: isMemberReservationIntent(),
         startedAt: new Date().toISOString()
       });
-      window.location.href = "questionnaire_step2.html";
+      window.location.href = withMemberReservationIntent("questionnaire_step2.html");
     });
     $("return-top-btn")?.addEventListener("click", () => { navigateAfterDiscardCheck("../index.html"); });
     $("return-top-btn-mobile")?.addEventListener("click", () => { navigateAfterDiscardCheck("../index.html"); });
@@ -807,9 +820,14 @@
         selected_finish: nextState.selectedFinish,
         summary_headline: nextState.summaryHeadline,
         summary_body: nextState.summaryBody
-      });
+      }, { linkCustomer: isMemberReservationIntent() });
       if (result?.id) {
-        writeJson(SCORE_STATE_KEY, { ...nextState, questionnaireResultId: result.id, questionnaireResultCode: result.result_code || questionnaireResultCode });
+        writeJson(SCORE_STATE_KEY, {
+          ...nextState,
+          questionnaireResultId: result.id,
+          questionnaireResultCode: result.result_code || questionnaireResultCode,
+          customerLinkIntent: isMemberReservationIntent()
+        });
       }
       keepStep2Result = true;
       window.location.href = await getPostQuestionnaireResultHref();
@@ -909,15 +927,16 @@
   }
 
   async function getPostQuestionnaireResultHref() {
+    if (!isMemberReservationIntent()) return "fragrance-graph.html";
     try {
       const data = await window.FragrancePublicData?.loadCustomerPortalData?.();
       if (data?.customer && (data.products || []).some((row) => getProductAxes(row))) {
-        return "fragrance-compare.html";
+        return withMemberReservationIntent("fragrance-compare.html");
       }
     } catch (error) {
       console.error("Failed to decide questionnaire result page.", error);
     }
-    return "fragrance-graph.html";
+    return withMemberReservationIntent("fragrance-graph.html");
   }
 
   async function initGraph() {
@@ -1094,7 +1113,7 @@
           resultCode: nextState.questionnaireResultCode
         }, { adjusted_axes: axes, final_axes: axes, updated_at: new Date().toISOString() });
       }
-      window.location.href = "reservation.html";
+      window.location.href = withMemberReservationIntent("reservation.html");
     }
     ["reserve-link", "header-reserve-link"].forEach((id) => {
       $(id)?.addEventListener("click", navigateToReservation);
@@ -1318,7 +1337,7 @@
     });
 
     if (reserveLink && !currentAxes) {
-      reserveLink.href = "questionnaire.html";
+      reserveLink.href = withMemberReservationIntent("questionnaire.html");
       reserveLink.textContent = "アンケートへ進む";
     }
     detailOpen?.addEventListener("click", () => {
@@ -1343,7 +1362,7 @@
         summaryHeadline: "前回と比較した香りバランス",
         summaryBody: comment
       });
-      window.location.href = "reservation.html";
+      window.location.href = withMemberReservationIntent("reservation.html");
     });
   }
 
@@ -1351,6 +1370,7 @@
     const state = readJson(SCORE_STATE_KEY, {});
     const draft = readJson(DRAFT_KEY, {});
     const axes = { ...DEFAULT_AXES, ...(draft.axes || state.adjustedAxes || state.finalAxes || {}) };
+    const linkCustomer = isMemberReservationIntent();
     const slots = (await window.FragrancePublicData?.fetchPublicReservationSlots?.() || [])
       .filter((slot) => slot?.slot_date)
       .sort((left, right) => {
@@ -1541,11 +1561,13 @@
       setFormStatus("予約内容を保存しています。");
       confirmButton.disabled = true;
       try {
-        const synced = await window.FragrancePublicData?.syncQuestionnaireResultFromState?.(state);
+        const customerLinkOptions = { linkCustomer };
+        const synced = await window.FragrancePublicData?.syncQuestionnaireResultFromState?.(state, customerLinkOptions);
+        const questionnaireResultId = synced?.id || null;
         const durationMinutes = selectedSlot ? getSlotDurationMinutes(selectedSlot) : 60;
         const payload = {
-          questionnaire_result_id: synced?.id || state.questionnaireResultId || null,
-          questionnaire_flow_status: synced?.id ? "linked" : (state.questionnaireCompletedAt ? "answered_unsaved" : "skipped"),
+          questionnaire_result_id: questionnaireResultId,
+          questionnaire_flow_status: questionnaireResultId ? "linked" : (state.questionnaireCompletedAt ? "answered_unsaved" : "skipped"),
           questionnaire_sync_error: synced?.id ? null : (state.questionnaireCompletedAt ? "questionnaire_result_insert_failed" : null),
           customer_name: customerName,
           customer_email: customerEmail,
@@ -1561,7 +1583,7 @@
           axes,
           status: "confirmed"
         };
-        const reservation = await window.FragrancePublicData?.createReservation?.(payload);
+        const reservation = await window.FragrancePublicData?.createReservation?.(payload, customerLinkOptions);
         if (reservation) {
           writeJson(CONFIRMATION_KEY, { ...payload, ...reservation });
           if (reservation.id) writeJson(`fragranceCustomerDraft:${reservation.id}`, { name: customerName, email: customerEmail });

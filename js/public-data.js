@@ -63,6 +63,16 @@
     return data || null;
   }
 
+  function shouldLinkCustomerRecord(options = {}) {
+    return options.linkCustomer === true || options.link_customer === true;
+  }
+
+  function getPublicWriteClient(options = {}) {
+    return shouldLinkCustomerRecord(options)
+      ? window.getSupabaseClient?.()
+      : (window.getSupabaseGuestClient?.() || window.getSupabaseClient?.());
+  }
+
   function hasQuestionnaireCompletionState(scoreState) {
     return Boolean(
       scoreState &&
@@ -94,8 +104,13 @@
     };
   }
 
-  async function syncQuestionnaireResultFromState(scoreState) {
-    if (scoreState?.questionnaireResultId && scoreState?.questionnaireResultCode) {
+  async function syncQuestionnaireResultFromState(scoreState, options = {}) {
+    const linkCustomer = shouldLinkCustomerRecord(options);
+    if (
+      scoreState?.questionnaireResultId &&
+      scoreState?.questionnaireResultCode &&
+      scoreState.customerLinkIntent === linkCustomer
+    ) {
       return {
         id: scoreState.questionnaireResultId,
         result_code: scoreState.questionnaireResultCode
@@ -103,7 +118,10 @@
     }
     const payload = buildQuestionnaireResultPayload(scoreState);
     if (!payload) return null;
-    return createQuestionnaireResult(payload);
+    if (scoreState?.questionnaireResultId && scoreState.customerLinkIntent !== linkCustomer) {
+      delete payload.result_code;
+    }
+    return createQuestionnaireResult(payload, options);
   }
 
   async function loadActiveScoringConfig() {
@@ -143,14 +161,16 @@
     }
   }
 
-  async function createQuestionnaireResult(payload) {
-    const client = window.getSupabaseClient?.();
+  async function createQuestionnaireResult(payload, options = {}) {
+    const linkCustomer = shouldLinkCustomerRecord(options);
+    const client = getPublicWriteClient(options);
     if (!client) return null;
     const resultCode = payload.result_code || createCode("QR");
     const editToken = getOrCreateEditToken(resultCode);
-    const currentCustomer = await getCurrentCustomerProfile();
+    const currentCustomer = linkCustomer ? await getCurrentCustomerProfile() : null;
     const customerPayload = currentCustomer?.id ? { customer_id: currentCustomer.id } : {};
-    const rpcPayload = { ...payload, ...customerPayload, result_code: resultCode, edit_token_hash: editToken };
+    const writePayload = { ...payload, ...customerPayload, result_code: resultCode, edit_token_hash: editToken };
+    const rpcPayload = { ...writePayload, link_customer: linkCustomer };
     try {
       const { data, error } = await client.rpc("create_questionnaire_result", { p_payload: rpcPayload });
       if (error) throw error;
@@ -164,7 +184,7 @@
     try {
       const { data, error } = await client
         .from("questionnaire_results")
-        .upsert([rpcPayload], { onConflict: "result_code" })
+        .upsert([writePayload], { onConflict: "result_code" })
         .select("id, result_code")
         .single();
       if (error) throw error;
@@ -275,14 +295,15 @@
     };
   }
 
-  async function createReservation(payload) {
-    const client = window.getSupabaseClient?.();
+  async function createReservation(payload, options = {}) {
+    const linkCustomer = shouldLinkCustomerRecord(options);
+    const client = getPublicWriteClient(options);
     if (!client) return null;
     const reservationCode = payload.reservation_code || createCode("FR");
-    const currentCustomer = await getCurrentCustomerProfile();
+    const currentCustomer = linkCustomer ? await getCurrentCustomerProfile() : null;
     const customerPayload = currentCustomer?.id ? { customer_id: currentCustomer.id } : {};
     const reservationPayload = { ...payload, ...customerPayload };
-    const rpcPayload = { ...reservationPayload, reservation_code: reservationCode };
+    const rpcPayload = { ...reservationPayload, reservation_code: reservationCode, link_customer: linkCustomer };
     try {
       const { data, error } = await client.rpc("create_public_reservation", { p_payload: rpcPayload });
       if (error) throw error;

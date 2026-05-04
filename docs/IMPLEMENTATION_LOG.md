@@ -737,6 +737,31 @@
   - 861px〜1160px は横並びを維持しつつ、カード余白、日付セル、時間ボタン、予約者情報の左カラム幅を調整。
 - 確認:
   - `git diff --check`
+
+### 2026-05-04 ゲスト予約と会員予約の明示分離
+- 対象:
+  - `js/supabase-client.js`
+  - `js/public-data.js`
+  - `js/rebuild-customer-flow.js`
+  - `js/customer-auth-page.js`
+  - `customer/index.html`
+  - `supabase/migrations/20260504120000_reservation_contact_persistence_guard.sql`
+  - `supabase/schema.sql`
+  - `docs/03_DB_DESIGN_POLICY.md`
+- 背景:
+  - 同じブラウザに残ったSupabase Authセッションだけで `customer_id` が入り、家族など別利用者の予約が前の会員情報に引っ張られる問題がある。
+- 実装:
+  - ゲスト予約保存用に `persistSession: false` のSupabase clientを追加した。
+  - 通常の公開予約ではゲストclientを使い、会員ページからの `member=1` 導線だけ `linkCustomer` として通常clientを使うようにした。
+  - 予約保存とアンケート同期の両方で `linkCustomer` を渡すようにした。
+  - 古い `sessionStorage` のアンケート結果IDは、今回の会員/ゲスト意図と一致する場合だけ再利用し、不一致時は新しい結果コードで保存するようにした。
+  - DB関数側も `link_customer=true` の場合だけ `current_customer_profile_id()` を使うようにした。
+- 確認:
+  - `node --check js/supabase-client.js`
+  - `node --check js/public-data.js`
+  - `node --check js/rebuild-customer-flow.js`
+  - `node --check js/customer-auth-page.js`
+  - `git diff --check`
   - Playwrightで 1100px / 1000px の横並び維持と 860px の縦積み切替を確認。
 
 ### 2026-05-03 予約完了ページの見本反映と所要時間保存

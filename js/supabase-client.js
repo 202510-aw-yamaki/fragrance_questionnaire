@@ -28,6 +28,23 @@
     return window.supabaseClient;
   }
 
+  function getSupabaseGuestClient() {
+    if (!isSupabaseConfigured()) return null;
+    if (window.supabaseGuestClient) return window.supabaseGuestClient;
+    if (!window.supabase || typeof window.supabase.createClient !== "function") return null;
+    const config = getConfig();
+    window.supabaseGuestClient = window.supabase.createClient(config.url, config.anonKey, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+        storageKey: "fragrance-guest-reservation-auth"
+      }
+    });
+    return window.supabaseGuestClient;
+  }
+
   window.getSupabaseClient = getSupabaseClient;
+  window.getSupabaseGuestClient = getSupabaseGuestClient;
   window.isSupabaseConfigured = isSupabaseConfigured;
 })();

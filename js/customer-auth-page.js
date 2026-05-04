@@ -319,7 +319,7 @@
               <p>スタッフ　${escapeHtml(getPortalStaffName(row))}</p>
             </div>
             <span>${escapeHtml(getPortalStatusLabel(row))}</span>
-            <a href="../customer/reservation.html" aria-label="${escapeHtml(name)}を予約する">›</a>
+            <a href="../customer/reservation.html?member=1" aria-label="${escapeHtml(name)}を予約する">›</a>
           </article>
         `;
       }).join("");
@@ -329,7 +329,7 @@
       <article class="portal-card">
         <strong>${escapeHtml(row.product_name || row.reservation_code || row.slot_label || "-")}</strong>
         <p class="admin-note">${escapeHtml(row.created_at || row.slot_label || row.status || "")}</p>
-        ${type === "product" ? `<a class="btn secondary" href="../customer/reservation.html">再予約へ</a>` : ""}
+        ${type === "product" ? `<a class="btn secondary" href="../customer/reservation.html?member=1">再予約へ</a>` : ""}
       </article>
     `).join("");
   }
