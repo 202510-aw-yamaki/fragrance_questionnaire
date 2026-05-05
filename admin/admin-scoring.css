@@ -96,14 +96,24 @@ body.admin-scoring-page .admin-page-title .portal-hero-copy:not(.admin-reference
   margin-top: 14px;
 }
 
-.admin-scoring-page .admin-scoring-question-tabs {
+.admin-scoring-page .admin-scoring-question-tabs,
+.admin-scoring-page .admin-scoring-branch-tabs {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   margin-top: 14px;
 }
 
-.admin-scoring-page .admin-scoring-question-tabs button {
+.admin-scoring-page .admin-scoring-question-tabs {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.admin-scoring-page .admin-scoring-branch-tabs {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 10px;
+}
+
+.admin-scoring-page .admin-scoring-question-tabs button,
+.admin-scoring-page .admin-scoring-branch-tabs button {
   min-height: 40px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -112,59 +122,34 @@ body.admin-scoring-page .admin-page-title .portal-hero-copy:not(.admin-reference
   font-weight: 800;
 }
 
-.admin-scoring-page .admin-scoring-question-tabs button.is-active {
+.admin-scoring-page .admin-scoring-question-tabs button.is-active,
+.admin-scoring-page .admin-scoring-branch-tabs button.is-active {
   border-color: rgba(76, 123, 71, 0.45);
   background: #4f7b49;
   color: #fffdf9;
 }
 
 .admin-scoring-page .question-link {
-  display: grid;
-  grid-template-columns: 38px minmax(0, 1fr);
-  align-items: center;
-  gap: 12px;
+  display: block;
   width: 100%;
-  min-height: 68px;
+  min-height: 48px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  padding: 10px 12px;
+  padding: 12px 14px;
   background: rgba(255, 253, 249, 0.86);
   color: var(--ink);
   text-align: left;
   cursor: pointer;
-}
-
-.admin-scoring-page .question-link span {
-  display: inline-grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 999px;
-  background: rgba(243, 139, 28, 0.12);
-  color: #c97916;
-  font-size: 16px;
-  font-weight: 800;
-}
-
-.admin-scoring-page .question-link strong,
-.admin-scoring-page .question-link small {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
-.admin-scoring-page .question-link strong {
-  display: block;
   font-family: var(--serif);
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: 700;
 }
 
-.admin-scoring-page .question-link small {
-  display: block;
-  grid-column: 2;
-  margin-top: 4px;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
+.admin-scoring-page .question-link.is-active,
+.admin-scoring-page .question-link:hover {
+  border-color: rgba(76, 123, 71, 0.45);
+  background: rgba(76, 123, 71, 0.08);
+  color: #3f6f3e;
 }
 
 .admin-scoring-page .admin-scoring-status-pills {
@@ -181,6 +166,41 @@ body.admin-scoring-page .admin-page-title .portal-hero-copy:not(.admin-reference
 .admin-scoring-page .admin-form-stack {
   display: grid;
   gap: 16px;
+}
+
+.admin-scoring-page .admin-scoring-config-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.admin-scoring-page .admin-scoring-config-strip details {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 253, 249, 0.86);
+}
+
+.admin-scoring-page .admin-scoring-config-strip details[open] {
+  grid-column: 1 / -1;
+  padding: 0 14px 14px;
+}
+
+.admin-scoring-page .admin-scoring-config-strip summary {
+  min-height: 44px;
+  padding: 12px 14px;
+  color: #704c24;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.admin-scoring-page .admin-scoring-empty-state {
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  padding: 22px;
+  color: var(--muted);
+  background: rgba(255, 253, 249, 0.72);
+  font-weight: 700;
 }
 
 .admin-scoring-page .portal-scoring-panel-card,
@@ -312,5 +332,13 @@ body.admin-scoring-page .admin-page-title .portal-hero-copy:not(.admin-reference
   .admin-scoring-page .admin-scoring-question-list {
     position: static;
     max-height: none;
+  }
+
+  .admin-scoring-page .admin-scoring-config-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-scoring-page .admin-scoring-config-strip details[open] {
+    grid-column: auto;
   }
 }

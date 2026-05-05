@@ -1418,3 +1418,21 @@
   - `node --check js/admin-scoring-page.js`
   - `git diff --check`
   - in-app browserでプレビューカードが表示されないこと、STEP1/STEP2の質問一覧が切り替わることを確認した。
+
+### 2026-05-05 管理者 配点ロジックページの選択式編集レイアウト修正
+- 対象:
+  - `admin/admin-scoring.html`
+  - `admin/admin-scoring.css`
+  - `js/admin-scoring-page.js`
+- 背景:
+  - ユーザー注釈で、前回のレイアウトは全設問や基本設定を大きく常時表示しており、意図と違って崩れて見えることが確認された。
+  - 左の質問一覧は短いQ番号だけにし、STEP2は分岐ごとに表示を切り替える必要があった。
+- 実装:
+  - 左の質問一覧カードから通し番号とSTEPラベルを削除し、STEP1はQ1〜Q5だけを表示するようにした。
+  - STEP2選択時はFloral/Fresh/Woodyの分岐ボタンを表示し、選択分岐のQ6/Q7と共通Q8だけを表示するようにした。
+  - 右側の編集エリアは、左のQを選択した時だけ該当の1問を描画するようにした。
+  - 基本設定、分岐テンプレート、仕上げテンプレートは上部の折りたたみ設定バーへ移し、初期表示で大きく占有しないようにした。
+- 確認:
+  - `node --check js/admin-scoring-page.js`
+  - `git diff --check`
+  - in-app browserで初期表示、STEP1一覧、STEP2分岐切り替え、Q選択時の単一設問表示を確認した。

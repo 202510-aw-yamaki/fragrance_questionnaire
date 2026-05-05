@@ -20,11 +20,15 @@
   const importTriggerButtons = Array.from(document.querySelectorAll("[data-scoring-import-trigger]"));
   const importInput = document.getElementById("scoring-import-json");
   const questionStepTabs = Array.from(document.querySelectorAll("[data-question-step-tab]"));
+  const questionBranchTabsMount = document.getElementById("scoring-branch-tabs");
+  const questionBranchTabs = Array.from(document.querySelectorAll("[data-question-branch-tab]"));
   let activeConfigRow = null;
   let workingConfig = window.FragranceMasterData.createDefaultScoringConfig();
   let draftHasUnsavedChanges = false;
   let questionModalSnapshot = "";
   let activeQuestionStep = "step1";
+  let activeQuestionBranch = "floral";
+  let activeQuestionSelection = null;
   ensureScoringModals();
   syncStaticScoringCopy();
 
@@ -236,34 +240,44 @@
 
   function getQuestionListItems(step = activeQuestionStep) {
     if (step === "step2") {
-      const branchItems = Object.entries(STEP2_SCHEMA).flatMap(([branchKey, schemaList]) => {
-        return schemaList.map((schema) => ({
-          kind: "step2",
-          branch: branchKey,
-          schema,
-          label: BRANCH_SHORT_LABELS[branchKey] || branchKey,
-          displayId: schema.id
-        }));
-      });
-      return branchItems.concat([{ kind: "q8", schema: Q8_SCHEMA, label: "共通", displayId: "Q8" }]);
+      const schemaList = STEP2_SCHEMA[activeQuestionBranch] || [];
+      const branchItems = schemaList.map((schema) => ({
+        kind: "step2",
+        branch: activeQuestionBranch,
+        schema,
+        displayText: `${schema.id} ${BRANCH_SHORT_LABELS[activeQuestionBranch] || activeQuestionBranch}`
+      }));
+      return branchItems.concat([{ kind: "q8", schema: Q8_SCHEMA, displayText: "Q8 共通" }]);
     }
-    return STEP1_SCHEMA.map((schema) => ({ kind: "step1", schema, label: "STEP1", displayId: schema.id }));
+    return STEP1_SCHEMA.map((schema) => ({ kind: "step1", schema, displayText: schema.id }));
   }
 
   function renderQuestionList() {
     if (!questionListMount) return;
+    if (questionBranchTabsMount) questionBranchTabsMount.hidden = activeQuestionStep !== "step2";
     questionStepTabs.forEach((button) => {
       const isActive = button.dataset.questionStepTab === activeQuestionStep;
       button.classList.toggle("is-active", isActive);
       button.setAttribute("aria-selected", String(isActive));
     });
-    questionListMount.innerHTML = getQuestionListItems().map((item, index) => {
+    questionBranchTabs.forEach((button) => {
+      const isActive = button.dataset.questionBranchTab === activeQuestionBranch;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-selected", String(isActive));
+    });
+    questionListMount.innerHTML = getQuestionListItems().map((item) => {
       const anchorId = getQuestionAnchorId(item.kind, item.schema.id, item.branch);
+      const isActive = activeQuestionSelection && activeQuestionSelection.anchorId === anchorId;
       return `
-        <button class="question-link" type="button" data-question-target="${escapeHtml(anchorId)}">
-          <span>${index + 1}</span>
-          <strong>${escapeHtml(item.displayId || item.schema.id)}</strong>
-          <small>${escapeHtml(item.label)}</small>
+        <button
+          class="question-link${isActive ? " is-active" : ""}"
+          type="button"
+          data-question-kind="${escapeHtml(item.kind)}"
+          data-question-id="${escapeHtml(item.schema.id)}"
+          data-question-branch="${escapeHtml(item.branch || "")}"
+          data-question-target="${escapeHtml(anchorId)}"
+        >
+          ${escapeHtml(item.displayText || item.schema.id)}
         </button>
       `;
     }).join("");
@@ -274,17 +288,33 @@
     questionStepTabs.forEach((button) => {
       button.onclick = () => {
         activeQuestionStep = button.dataset.questionStepTab || "step1";
+        activeQuestionSelection = null;
+        renderSelectedQuestionArea();
+        renderQuestionList();
+        bindQuestionList();
+      };
+    });
+    questionBranchTabs.forEach((button) => {
+      button.onclick = () => {
+        activeQuestionBranch = button.dataset.questionBranchTab || "floral";
+        activeQuestionSelection = null;
+        renderSelectedQuestionArea();
         renderQuestionList();
         bindQuestionList();
       };
     });
     questionListMount.querySelectorAll("[data-question-target]").forEach((button) => {
       button.addEventListener("click", () => {
-        const target = document.getElementById(button.dataset.questionTarget);
-        if (!target) return;
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-        target.classList.add("is-highlighted");
-        window.setTimeout(() => target.classList.remove("is-highlighted"), 900);
+        activeQuestionSelection = {
+          kind: button.dataset.questionKind,
+          questionId: button.dataset.questionId,
+          branch: button.dataset.questionBranch || "",
+          anchorId: button.dataset.questionTarget
+        };
+        renderSelectedQuestionArea();
+        bindEditorInputs();
+        renderQuestionList();
+        bindQuestionList();
       });
     });
   }
@@ -507,12 +537,22 @@
   function renderBranchSettingsArea() {
     if (!branchSettingsMount) return;
     branchSettingsMount.innerHTML = `
-      <div class="portal-scoring-branch-layout">
-        <div class="portal-scoring-branch-shell">
-          <div class="portal-scoring-branch-shell-basic">${renderSimpleFieldCard()}</div>
-          <div class="portal-scoring-branch-shell-main">${renderBranchTemplateCard()}</div>
-        </div>
-        <div class="portal-scoring-branch-weight-wrap">${renderBranchWeightCard()}</div>
+      <div class="admin-scoring-config-strip">
+        <details>
+          <summary>基本設定</summary>
+          ${renderSimpleFieldCard()}
+        </details>
+        <details>
+          <summary>分岐テンプレート</summary>
+          <div class="portal-scoring-branch-layout">
+            <div class="portal-scoring-branch-shell-main">${renderBranchTemplateCard()}</div>
+            <div class="portal-scoring-branch-weight-wrap">${renderBranchWeightCard()}</div>
+          </div>
+        </details>
+        <details>
+          <summary>仕上げテンプレート</summary>
+          ${renderFinishTemplateCard()}
+        </details>
       </div>
     `;
   }
@@ -571,12 +611,52 @@
     if (finishCard && explanation) finishCard.appendChild(explanation);
   }
 
+  function clearSelectedQuestionMounts() {
+    [step1Mount, step2Mount, q8Mount, finishMount].forEach((mount) => {
+      if (mount) mount.innerHTML = "";
+    });
+  }
+
+  function renderSelectedQuestionArea() {
+    clearSelectedQuestionMounts();
+    if (!activeQuestionSelection) {
+      if (step1Mount) {
+        step1Mount.innerHTML = `<div class="admin-scoring-empty-state">左の質問一覧から編集する設問を選択してください。</div>`;
+      }
+      return;
+    }
+    const { kind, questionId, branch } = activeQuestionSelection;
+    const schema = getQuestionSourceSchema(kind, questionId, branch);
+    if (!schema) return;
+    if (kind === "step2") {
+      step2Mount.innerHTML = renderMatrixQuestionCard(
+        schema,
+        (resolvedQuestionId, answerKey, axis, resolvedBranch) => workingConfig.step2ScoreMap?.[resolvedBranch]?.[resolvedQuestionId]?.[answerKey]?.[axis],
+        { kind: "step2", branch },
+        { textEditable: true }
+      );
+      return;
+    }
+    if (kind === "q8") {
+      q8Mount.innerHTML = renderMatrixQuestionCard(
+        schema,
+        (resolvedQuestionId, answerKey, axis) => workingConfig.q8ScoreMap?.[answerKey]?.[axis],
+        { kind: "q8" },
+        { textEditable: true }
+      );
+      return;
+    }
+    step1Mount.innerHTML = renderMatrixQuestionCard(
+      schema,
+      (resolvedQuestionId, answerKey, axis) => workingConfig.step1ScoreMap?.[resolvedQuestionId]?.[answerKey]?.[axis],
+      { kind: "step1" },
+      { textEditable: true }
+    );
+  }
+
   function renderEditor() {
     renderBranchSettingsArea();
-    renderStep1Area();
-    renderStep2Area();
-    renderQ8Area();
-    renderFinishArea();
+    renderSelectedQuestionArea();
     bindEditorInputs();
     renderQuestionList();
     bindQuestionList();
