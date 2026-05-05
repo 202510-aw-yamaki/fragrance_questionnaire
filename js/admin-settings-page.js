@@ -132,7 +132,7 @@
             </div>
             <div class="portal-settings-duty-tabs" id="staff-duty-tabs" hidden>
               <button class="portal-settings-duty-tab is-active" type="button" data-duty-tab="basic" aria-selected="true">週の通常勤務</button>
-              <button class="portal-settings-duty-tab" type="button" data-duty-tab="individual" aria-selected="false">月別の個別調整</button>
+              <button class="portal-settings-duty-tab" type="button" data-duty-tab="individual" aria-selected="false">週の個別調整</button>
             </div>
             <div class="portal-settings-duty-table portal-settings-duty-pane" data-duty-pane="basic">
               <p class="portal-settings-duty-helper">ここで設定した曜日と時間が、このスタッフの通常の出勤日時になります。</p>
@@ -145,13 +145,12 @@
               <div class="portal-week-pattern portal-settings-duty-body" id="staff-weekly-pattern"></div>
             </div>
             <div class="portal-settings-duty-table portal-settings-duty-pane" data-duty-pane="individual" hidden>
-              <div class="portal-settings-month-toolbar">
-                <button class="admin-btn secondary" type="button" data-duty-month-prev>前月</button>
-                <strong id="staff-duty-month-label"></strong>
-                <button class="admin-btn secondary" type="button" data-duty-month-current>今月</button>
-                <button class="admin-btn secondary" type="button" data-duty-month-next>翌月</button>
+              <div class="portal-settings-week-toolbar">
+                <button class="admin-btn secondary" type="button" data-duty-week-prev>前週</button>
+                <strong id="staff-duty-week-label"></strong>
+                <button class="admin-btn secondary" type="button" data-duty-week-next>翌週</button>
               </div>
-              <p class="portal-settings-duty-helper">通常勤務と違う日だけ保存されます。急な出勤、短縮勤務、休みを月単位で調整できます。</p>
+              <p class="portal-settings-duty-helper">通常勤務と違う日だけ保存されます。急な出勤、短縮勤務、休みを週単位で調整できます。</p>
               <div class="portal-settings-duty-head-row portal-settings-duty-head-row--date" aria-hidden="true">
                 <span>日付</span>
                 <span>出勤</span>
@@ -202,10 +201,9 @@
   const dutyTabButtons = Array.from(staffModalEl?.querySelectorAll("[data-duty-tab]") || []);
   const dutyPaneEls = Array.from(staffModalEl?.querySelectorAll("[data-duty-pane]") || []);
   const dutyBaseSummaryEl = document.getElementById("staff-duty-base-summary");
-  const dutyMonthLabelEl = document.getElementById("staff-duty-month-label");
-  const dutyMonthPrevButtonEl = staffModalEl?.querySelector("[data-duty-month-prev]") || null;
-  const dutyMonthCurrentButtonEl = staffModalEl?.querySelector("[data-duty-month-current]") || null;
-  const dutyMonthNextButtonEl = staffModalEl?.querySelector("[data-duty-month-next]") || null;
+  const dutyWeekLabelEl = document.getElementById("staff-duty-week-label");
+  const dutyWeekPrevButtonEl = staffModalEl?.querySelector("[data-duty-week-prev]") || null;
+  const dutyWeekNextButtonEl = staffModalEl?.querySelector("[data-duty-week-next]") || null;
   const state = {
     settingRowMap: new Map(),
     staffDirectory: [],
@@ -217,7 +215,7 @@
     selectedStaffId: "",
     staffModalMode: "create",
     staffDutyTab: "basic",
-    staffDutyMonthOffset: 0,
+    staffDutyWeekOffset: 0,
     staffDateOverridesDirty: false,
     storeDirty: false,
     staffModalDirty: false
@@ -257,10 +255,6 @@
     return next;
   }
 
-  function addMonths(date, amount) {
-    return new Date(date.getFullYear(), date.getMonth() + amount, 1);
-  }
-
   function formatDateKey(date) {
     return [
       date.getFullYear(),
@@ -273,13 +267,18 @@
     return `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}`;
   }
 
-  function formatYearMonth(date) {
-    return `${date.getFullYear()}年${date.getMonth() + 1}月`;
-  }
-
   function formatWeekLabel(startDate) {
     const endDate = addDays(startDate, 6);
     return `${formatMonthDay(startDate)} 〜 ${formatMonthDay(endDate)}`;
+  }
+
+  function formatDutyWeekLabel(startDate) {
+    const endDate = addDays(startDate, 6);
+    const startLabel = `${startDate.getMonth() + 1}月${startDate.getDate()}日`;
+    const endLabel = startDate.getMonth() === endDate.getMonth()
+      ? `${endDate.getDate()}日`
+      : `${endDate.getMonth() + 1}月${endDate.getDate()}日`;
+    return `${startLabel}〜${endLabel}`;
   }
 
   function normalizeTime(value, fallback) {
@@ -468,19 +467,20 @@
     return Array.from({ length: count }, (_, index) => addDays(start, index));
   }
 
-  function getDutyMonthStart() {
+  function getCurrentWeekStartDate() {
     const today = createLocalDate(new Date());
-    return addMonths(new Date(today.getFullYear(), today.getMonth(), 1), state.staffDutyMonthOffset);
+    const day = today.getDay();
+    const mondayOffset = day === 0 ? -6 : 1 - day;
+    return addDays(today, mondayOffset);
   }
 
-  function getMonthDates(monthStart) {
-    const start = new Date(monthStart.getFullYear(), monthStart.getMonth(), 1);
-    const nextMonth = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 1);
-    const dates = [];
-    for (let date = start; date < nextMonth; date = addDays(date, 1)) {
-      dates.push(createLocalDate(date));
-    }
-    return dates;
+  function getDutyWeekStart() {
+    return addDays(getCurrentWeekStartDate(), state.staffDutyWeekOffset * 7);
+  }
+
+  function getDutyWeekDates() {
+    const start = getDutyWeekStart();
+    return Array.from({ length: 7 }, (_, index) => addDays(start, index));
   }
 
   function normalizeName(value) {
@@ -704,9 +704,10 @@
 
   function renderStaffDateOverrides(staff) {
     if (!datePatternEl || !staff?.id) return;
-    const monthStart = getDutyMonthStart();
-    const dates = getMonthDates(monthStart);
-    if (dutyMonthLabelEl) dutyMonthLabelEl.textContent = formatYearMonth(monthStart);
+    const weekStart = getDutyWeekStart();
+    const dates = getDutyWeekDates();
+    if (dutyWeekLabelEl) dutyWeekLabelEl.textContent = formatDutyWeekLabel(weekStart);
+    if (dutyWeekPrevButtonEl) dutyWeekPrevButtonEl.disabled = state.staffDutyWeekOffset <= 0;
     datePatternEl.innerHTML = dates.map((date) => {
       const dateKey = formatDateKey(date);
       const shift = getShiftForDate(staff, dateKey);
@@ -830,11 +831,11 @@
     });
   }
 
-  function setDutyMonthOffset(offset) {
+  function setDutyWeekOffset(offset) {
     if (state.staffDutyTab === "individual") {
       mergeVisibleDateOverridesIntoDraft(buildDutyStaffFromModal());
     }
-    state.staffDutyMonthOffset = offset;
+    state.staffDutyWeekOffset = Math.max(0, offset);
     if (state.staffDutyTab === "individual") {
       renderStaffDateOverrides(buildDutyStaffFromModal());
     }
@@ -850,7 +851,7 @@
       staffDutyNameEl.textContent = staff?.staffName || "";
     }
     if (dutyTabsEl) dutyTabsEl.hidden = mode !== "duty";
-    state.staffDutyMonthOffset = 0;
+    state.staffDutyWeekOffset = 0;
     state.staffDateOverridesDirty = false;
     if (datePatternEl && mode !== "duty") datePatternEl.innerHTML = "";
     if (mode === "duty") {
@@ -1566,16 +1567,12 @@
     });
   });
 
-  dutyMonthPrevButtonEl?.addEventListener("click", () => {
-    setDutyMonthOffset(state.staffDutyMonthOffset - 1);
+  dutyWeekPrevButtonEl?.addEventListener("click", () => {
+    setDutyWeekOffset(state.staffDutyWeekOffset - 1);
   });
 
-  dutyMonthCurrentButtonEl?.addEventListener("click", () => {
-    setDutyMonthOffset(0);
-  });
-
-  dutyMonthNextButtonEl?.addEventListener("click", () => {
-    setDutyMonthOffset(state.staffDutyMonthOffset + 1);
+  dutyWeekNextButtonEl?.addEventListener("click", () => {
+    setDutyWeekOffset(state.staffDutyWeekOffset + 1);
   });
 
   if (datePatternEl) {

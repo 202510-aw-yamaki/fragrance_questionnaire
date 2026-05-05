@@ -287,7 +287,7 @@ body.admin-settings-page .admin-page-title--center .eyebrow {
 
 .admin-settings-page .portal-settings-duty-head-row--date,
 .admin-settings-page .portal-settings-date-duty-row {
-  grid-template-columns: 76px minmax(104px, 1fr) minmax(104px, 1fr) 76px 62px 58px;
+  grid-template-columns: 84px 128px 128px 104px minmax(88px, 1fr) 76px;
 }
 
 .admin-settings-page .portal-settings-duty-head-row {
@@ -304,9 +304,9 @@ body.admin-settings-page .admin-page-title--center .eyebrow {
 }
 
 .admin-settings-page .portal-settings-date-pattern {
-  max-height: 360px;
-  overflow: auto;
-  padding-right: 4px;
+  max-height: none;
+  overflow: visible;
+  padding-right: 0;
 }
 
 .admin-settings-page .portal-settings-duty-row {
@@ -315,6 +315,11 @@ body.admin-settings-page .admin-page-title--center .eyebrow {
   border: 1px solid rgba(221, 196, 166, 0.76);
   border-radius: 8px;
   background: rgba(255, 253, 249, 0.94);
+}
+
+.admin-settings-page .portal-settings-date-duty-row {
+  min-height: 52px;
+  padding: 6px 10px;
 }
 
 .admin-settings-page .portal-settings-duty-row.is-off {
@@ -343,6 +348,10 @@ body.admin-settings-page .admin-page-title--center .eyebrow {
   width: 100%;
   min-height: 38px;
   padding: 6px 8px;
+}
+
+.admin-settings-page .portal-settings-date-duty-row .portal-settings-duty-time input {
+  min-height: 34px;
 }
 
 .admin-settings-page .portal-settings-duty-time input:disabled {
@@ -380,23 +389,34 @@ body.admin-settings-page .admin-page-title--center .eyebrow {
 }
 
 .admin-settings-page .portal-settings-duty-reset {
+  justify-self: end;
   min-height: 34px;
   padding: 6px 10px;
   font-size: 13px;
 }
 
-.admin-settings-page .portal-settings-month-toolbar {
+.admin-settings-page .portal-settings-date-duty-row .portal-settings-duty-reset {
+  min-height: 32px;
+  padding-block: 5px;
+}
+
+.admin-settings-page .portal-settings-week-toolbar {
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: auto 1fr auto;
   gap: 8px;
   align-items: center;
 }
 
-.admin-settings-page .portal-settings-month-toolbar strong {
+.admin-settings-page .portal-settings-week-toolbar strong {
   justify-self: center;
   color: var(--ink);
   font-family: var(--serif);
   font-size: 20px;
+}
+
+.admin-settings-page .portal-settings-week-toolbar .admin-btn:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
 }
 
 @media (max-width: 1180px) {
@@ -413,7 +433,7 @@ body.admin-settings-page .admin-page-title--center .eyebrow {
 
   .admin-settings-page .portal-settings-duty-head-row--date,
   .admin-settings-page .portal-settings-date-duty-row {
-    grid-template-columns: 72px 96px 96px 70px 56px 54px;
+    grid-template-columns: 72px 104px 104px 86px minmax(64px, 1fr) 66px;
   }
 }
 
@@ -437,7 +457,7 @@ body.admin-settings-page .admin-page-title--center .eyebrow {
   .admin-settings-page .portal-settings-duty-row:not(.portal-settings-date-duty-row),
   .admin-settings-page .portal-settings-duty-head-row--date,
   .admin-settings-page .portal-settings-date-duty-row,
-  .admin-settings-page .portal-settings-month-toolbar {
+  .admin-settings-page .portal-settings-week-toolbar {
     grid-template-columns: 1fr;
   }
 
