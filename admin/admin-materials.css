@@ -87,9 +87,76 @@ body.admin-materials-page .admin-main {
   margin: 0;
 }
 
+.admin-material-create-modal[hidden] {
+  display: none !important;
+}
+
+.admin-material-create-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+}
+
+.admin-material-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(47, 33, 24, 0.42);
+}
+
+.admin-material-modal-card {
+  position: relative;
+  z-index: 1;
+  width: min(640px, 100%);
+  border: 1px solid rgba(221, 196, 166, 0.82);
+  border-radius: 10px;
+  background: rgba(255, 253, 249, 0.98);
+  box-shadow: 0 26px 70px rgba(86, 54, 28, 0.22);
+  padding: 22px;
+}
+
+.admin-material-modal-head,
+.admin-material-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.admin-material-modal-head {
+  margin-bottom: 18px;
+}
+
+.admin-material-modal-head h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 24px;
+}
+
+.admin-material-create-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.admin-material-create-tags {
+  display: grid;
+  gap: 7px;
+  margin-top: 14px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.admin-material-modal-actions {
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
 .admin-materials-workbench {
   display: grid;
-  grid-template-columns: 270px minmax(390px, 1fr) 280px;
+  grid-template-columns: minmax(250px, 0.8fr) minmax(445px, 1.3fr) minmax(245px, 0.8fr);
   gap: 12px;
   align-items: start;
 }
@@ -128,6 +195,8 @@ body.admin-materials-page .admin-main {
 .admin-material-list {
   display: grid;
   gap: 8px;
+  align-content: start;
+  grid-auto-rows: 68px;
   min-height: 352px;
 }
 
@@ -136,7 +205,8 @@ body.admin-materials-page .admin-main {
   grid-template-columns: 1fr auto;
   gap: 12px;
   align-items: center;
-  min-height: 58px;
+  min-height: 0;
+  height: 68px;
   padding: 9px 12px;
   border: 1px solid rgba(221, 196, 166, 0.82);
   border-radius: 8px;
@@ -185,21 +255,21 @@ body.admin-materials-page .admin-main {
 }
 
 .admin-material-pagination span {
-  min-width: 76px;
+  min-width: 48px;
   color: var(--muted);
   font-weight: 700;
   text-align: center;
 }
 
 .admin-material-pagination .admin-btn {
-  min-width: 82px;
+  min-width: 72px;
   min-height: 40px;
-  padding: 8px 12px;
+  padding: 8px 10px;
 }
 
 .admin-material-field-grid {
   display: grid;
-  grid-template-columns: minmax(130px, 0.8fr) minmax(170px, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -297,16 +367,18 @@ body.admin-materials-page .admin-main {
 .admin-material-radar svg {
   width: 100%;
   height: 100%;
+  overflow: visible;
 }
 
 .admin-material-radar .radar-grid {
-  fill: rgba(213, 173, 115, 0.08);
-  stroke: rgba(218, 188, 151, 0.7);
-  stroke-width: 1.5;
+  fill: none;
+  stroke: rgba(213, 173, 115, 0.5);
+  stroke-width: 1;
 }
 
-.admin-material-radar .radar-grid-inner {
-  fill: rgba(255, 253, 249, 0.35);
+.admin-material-radar .radar-axis {
+  stroke: rgba(213, 173, 115, 0.34);
+  stroke-width: 1;
 }
 
 .admin-material-radar .radar-value {
@@ -316,31 +388,40 @@ body.admin-materials-page .admin-main {
   stroke-linejoin: round;
 }
 
-.admin-axis-preview-list {
+.admin-material-radar .radar-label {
+  fill: var(--muted);
+  font-size: 12px;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+.admin-preview-tags {
   display: grid;
+  gap: 10px;
+}
+
+.admin-preview-tags-title {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.admin-preview-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
 }
 
-.admin-axis-preview-item {
-  display: flex;
+.admin-preview-tag-row span {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  min-height: 34px;
-  padding: 7px 10px;
+  min-height: 30px;
+  padding: 6px 11px;
   border: 1px solid rgba(221, 196, 166, 0.62);
-  border-radius: 8px;
+  border-radius: 999px;
   background: rgba(255, 253, 249, 0.62);
-}
-
-.admin-axis-preview-item span {
-  color: var(--muted);
+  color: #7a4a20;
   font-size: 13px;
-}
-
-.admin-axis-preview-item strong {
-  color: #5b743e;
-  font-size: 16px;
 }
 
 .admin-materials-page .admin-bottom-savebar {
@@ -379,7 +460,7 @@ body.admin-materials-page .admin-main {
   }
 
   .admin-material-list {
-    min-height: auto;
+    min-height: 352px;
   }
 }
 
@@ -391,6 +472,7 @@ body.admin-materials-page .admin-main {
 
   .admin-material-title-tools,
   .admin-material-field-grid,
+  .admin-material-create-grid,
   .admin-material-sub-field-grid,
   .admin-material-slider-list label {
     grid-template-columns: 1fr;

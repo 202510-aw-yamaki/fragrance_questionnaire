@@ -24,10 +24,16 @@
   const pageNextButton = document.getElementById("material-page-next");
   const pageStatusEl = document.getElementById("material-page-status");
   const previewNameEl = document.getElementById("material-preview-name");
-  const radarPolygonEl = document.getElementById("material-radar-polygon");
+  const radarSvgEl = document.getElementById("material-radar-svg");
   const axisPreviewListEl = document.getElementById("material-axis-preview-list");
   const tagPreviewEl = document.getElementById("material-tag-preview");
   const tagInput = document.getElementById("material-tags");
+  const createModal = document.getElementById("material-create-modal");
+  const createForm = document.getElementById("material-create-form");
+  const createCodeInput = document.getElementById("material-create-code");
+  const createNameInput = document.getElementById("material-create-name");
+  const createCategoryInput = document.getElementById("material-create-category");
+  const createTagsInput = document.getElementById("material-create-tags");
   let cachedRows = [];
   let selectedCode = "";
   let currentPage = 1;
@@ -84,6 +90,21 @@
     return AXIS_ORDER.reduce((sum, axis) => sum + Number(axes?.[axis] || 0), 0);
   }
 
+  function sortOrderToDisplayOrder(sortOrder) {
+    const value = Number(sortOrder || 0);
+    if (!value) return 1;
+    return Math.max(1, Math.round(value / 10));
+  }
+
+  function displayOrderToSortOrder(displayOrder) {
+    return Math.max(1, Number(displayOrder || 1)) * 10;
+  }
+
+  function getNextDisplayOrder() {
+    const maxOrder = cachedRows.reduce((max, row) => Math.max(max, sortOrderToDisplayOrder(row.sort_order)), 0);
+    return maxOrder + 1;
+  }
+
   function renderFormTotal() {
     const total = getAxesTotal(getAxesInput());
     formTotal.textContent = String(total);
@@ -106,7 +127,7 @@
     AXIS_ORDER.forEach((axis) => {
       document.getElementById(`axis-${axis}`).value = normalized.point_axes?.[axis] ?? 0;
     });
-    document.getElementById("material-sort").value = normalized.sort_order ?? 0;
+    document.getElementById("material-sort").value = sortOrderToDisplayOrder(normalized.sort_order);
     document.getElementById("material-note").value = normalized.note || "";
     tagInput.value = normalized.tags.join(", ");
     document.getElementById("material-active").checked = normalized.is_active !== false;
@@ -130,7 +151,7 @@
       note: document.getElementById("material-note").value.trim() || null,
       tags: normalizeTags(tagInput.value),
       is_active: document.getElementById("material-active").checked,
-      sort_order: Number(document.getElementById("material-sort").value || 0)
+      sort_order: displayOrderToSortOrder(document.getElementById("material-sort").value)
     });
   }
 
@@ -208,6 +229,12 @@
     };
   }
 
+  function setPageForSelectedCode(code) {
+    const rows = getFilteredRows();
+    const index = rows.findIndex((row) => row.material_code === code);
+    if (index >= 0) currentPage = Math.floor(index / PAGE_SIZE) + 1;
+  }
+
   function renderPagination(filteredRows, pageCount) {
     pageStatusEl.textContent = `${currentPage} / ${pageCount}`;
     pagePrevButton.disabled = currentPage <= 1;
@@ -272,17 +299,21 @@
       : `<span>タグ未設定</span>`;
   }
 
-  function getRadarPoints(axes) {
-    const center = { x: 120, y: 120 };
-    const maxRadius = 100;
-    const angles = [-90, -18, 54, 126, 198];
+  function getRadarPoint(center, radius, index, scale) {
+    const radians = (-Math.PI / 2) + ((Math.PI * 2 * index) / AXIS_ORDER.length);
+    return {
+      x: center.x + Math.cos(radians) * radius * scale,
+      y: center.y + Math.sin(radians) * radius * scale
+    };
+  }
+
+  function getRadarPoints(axes, scale = null) {
+    const center = { x: 130, y: 130 };
+    const maxRadius = 84;
     return AXIS_ORDER.map((axis, index) => {
       const value = Math.max(0, Math.min(100, Number(axes?.[axis] || 0)));
-      const radius = (value / 100) * maxRadius;
-      const radians = (angles[index] * Math.PI) / 180;
-      const x = center.x + Math.cos(radians) * radius;
-      const y = center.y + Math.sin(radians) * radius;
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
+      const point = getRadarPoint(center, maxRadius, index, scale ?? (value / 100));
+      return `${point.x.toFixed(1)},${point.y.toFixed(1)}`;
     }).join(" ");
   }
 
@@ -290,16 +321,69 @@
     const target = row || readFormRow();
     previewNameEl.textContent = target?.material_name || "選択中の原料";
     const axes = target?.point_axes || {};
-    radarPolygonEl.setAttribute("points", getRadarPoints(axes));
-    axisPreviewListEl.innerHTML = AXIS_ORDER.map((axis) => {
-      const value = Number(axes?.[axis] || 0);
-      return `
-        <div class="admin-axis-preview-item">
-          <span>${AXIS_LABELS[axis]}</span>
-          <strong>${value}</strong>
-        </div>
-      `;
-    }).join("");
+    const center = { x: 130, y: 130 };
+    const radius = 84;
+    radarSvgEl.innerHTML = `
+      ${[0.25, 0.5, 0.75, 1].map((scale) => `<polygon class="radar-grid" points="${getRadarPoints(axes, scale)}"></polygon>`).join("")}
+      ${AXIS_ORDER.map((axis, index) => {
+        const end = getRadarPoint(center, radius, index, 1);
+        const label = getRadarPoint(center, radius, index, 1.33);
+        return `
+          <line class="radar-axis" x1="${center.x}" y1="${center.y}" x2="${end.x.toFixed(1)}" y2="${end.y.toFixed(1)}"></line>
+          <text class="radar-label" x="${label.x.toFixed(1)}" y="${label.y.toFixed(1)}">${escapeHtml(AXIS_LABELS[axis])}</text>
+        `;
+      }).join("")}
+      <polygon id="material-radar-polygon" class="radar-value" points="${getRadarPoints(axes)}"></polygon>
+    `;
+    const tags = normalizeTags(target?.tags);
+    axisPreviewListEl.innerHTML = `
+      <div class="admin-preview-tags-title">設定タグ</div>
+      <div class="admin-preview-tag-row">
+        ${tags.length ? tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("") : "<span>タグ未設定</span>"}
+      </div>
+    `;
+  }
+
+  function openCreateModal() {
+    const nextCode = `new-material-${Date.now()}`;
+    createCodeInput.value = nextCode;
+    createNameInput.value = "";
+    createCategoryInput.value = "Top";
+    createTagsInput.value = "";
+    createModal.hidden = false;
+    createNameInput.focus();
+  }
+
+  function closeCreateModal() {
+    createModal.hidden = true;
+  }
+
+  function createMaterialFromModal(data) {
+    const code = data.material_code || `new-material-${Date.now()}`;
+    if (cachedRows.some((row) => row.material_code === code)) {
+      setStatus("同じ原料コードがすでにあります。別のコードを指定してください。", "error");
+      return false;
+    }
+    const row = normalizeRow({
+      material_code: code,
+      material_name: data.material_name || "新規原料",
+      category: data.category || "Top",
+      point_axes: { floral: 20, fresh: 20, woody: 20, spicy: 20, sweet: 20 },
+      tags: normalizeTags(data.tags),
+      note: null,
+      is_active: true,
+      sort_order: displayOrderToSortOrder(getNextDisplayOrder())
+    });
+    cachedRows.push(row);
+    searchInput.value = "";
+    categoryFilter.value = "";
+    selectedCode = row.material_code;
+    setPageForSelectedCode(row.material_code);
+    fillForm(row);
+    renderRows();
+    document.querySelector(".admin-material-inline-card")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setStatus("新規原料を追加しました。中央の編集画面で5軸ポイントとタグを調整してDB保存してください。");
+    return true;
   }
 
   function createNewMaterial() {
@@ -377,6 +461,16 @@
     renderRows();
   }
 
+  async function reloadMaterialsFromDatabase() {
+    const focusCode = selectedCode;
+    await getAllMaterials();
+    if (focusCode && cachedRows.some((row) => row.material_code === focusCode)) {
+      selectedCode = focusCode;
+      setPageForSelectedCode(focusCode);
+    }
+    renderRows();
+  }
+
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     persistFormToCache();
@@ -384,12 +478,28 @@
   });
 
   resetButton.addEventListener("click", () => {
-    resetForm();
-    renderRows();
+    reloadMaterialsFromDatabase();
   });
   seedButton.addEventListener("click", saveMaterialsToDatabase);
   createButton.addEventListener("click", () => {
-    createNewMaterial();
+    persistFormToCache();
+    openCreateModal();
+  });
+  createForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const created = createMaterialFromModal({
+      material_code: createCodeInput.value.trim(),
+      material_name: createNameInput.value.trim(),
+      category: createCategoryInput.value || "Top",
+      tags: createTagsInput.value
+    });
+    if (created) closeCreateModal();
+  });
+  createModal.querySelectorAll("[data-material-create-close]").forEach((button) => {
+    button.addEventListener("click", closeCreateModal);
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !createModal.hidden) closeCreateModal();
   });
   exportButton.addEventListener("click", () => {
     persistFormToCache();

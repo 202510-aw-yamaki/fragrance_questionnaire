@@ -48,6 +48,28 @@
 
     <input id="material-import-file" type="file" accept="application/json" hidden>
 
+    <div class="admin-material-create-modal" id="material-create-modal" hidden>
+      <div class="admin-material-modal-backdrop" data-material-create-close></div>
+      <section class="admin-material-modal-card" role="dialog" aria-modal="true" aria-labelledby="material-create-title">
+        <div class="admin-material-modal-head">
+          <h2 id="material-create-title">新規原料を作成</h2>
+          <button class="admin-btn secondary" type="button" data-material-create-close>閉じる</button>
+        </div>
+        <form id="material-create-form">
+          <div class="admin-material-create-grid">
+            <label>原料コード<input id="material-create-code" required autocomplete="off"></label>
+            <label>原料名<input id="material-create-name" required autocomplete="off"></label>
+            <label>カテゴリ<select id="material-create-category"><option>Top</option><option>Middle</option><option>Last</option></select></label>
+          </div>
+          <label class="admin-material-create-tags">任意タグ<input id="material-create-tags" type="text" placeholder="例: フローラル, 軽やか"></label>
+          <div class="admin-material-modal-actions">
+            <button class="admin-btn secondary" type="button" data-material-create-close>キャンセル</button>
+            <button class="admin-btn gold" type="submit">作成して編集</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
     <section class="admin-materials-workbench">
       <article class="admin-panel admin-reference-card admin-material-list-card">
         <div class="admin-material-card-head">
@@ -66,7 +88,7 @@
       <article class="admin-panel admin-reference-card admin-material-inline-card">
         <div class="admin-material-card-head">
           <h2>原料編集</h2>
-          <button class="admin-btn secondary" id="material-reset" type="button">選択を戻す</button>
+          <button class="admin-btn secondary" id="material-reset" type="button">DBから再読込</button>
         </div>
         <form class="admin-material-editor-form" id="material-form">
           <input id="material-id" type="hidden">
@@ -76,7 +98,7 @@
             <label>カテゴリ<select id="material-category"><option>Top</option><option>Middle</option><option>Last</option></select></label>
           </div>
           <div class="admin-material-sub-field-grid">
-            <label>表示順<input id="material-sort" type="number" value="0"></label>
+            <label>表示順位<input id="material-sort" type="number" min="1" step="1" value="1"></label>
             <label class="admin-material-active-field"><input id="material-active" type="checkbox" checked> 有効</label>
           </div>
           <h3>5軸スライダー</h3>
@@ -98,13 +120,11 @@
         <h2>グラフ</h2>
         <h3 id="material-preview-name">選択中の原料</h3>
         <div class="admin-material-radar" aria-hidden="true">
-          <svg viewBox="0 0 240 240" role="img">
-            <polygon class="radar-grid" points="120,18 217,89 180,204 60,204 23,89"></polygon>
-            <polygon class="radar-grid radar-grid-inner" points="120,58 179,101 156,171 84,171 61,101"></polygon>
+          <svg id="material-radar-svg" viewBox="0 0 260 260" role="img" aria-label="5軸グラフ">
             <polygon id="material-radar-polygon" class="radar-value" points="120,120 120,120 120,120 120,120 120,120"></polygon>
           </svg>
         </div>
-        <div class="admin-axis-preview-list" id="material-axis-preview-list"></div>
+        <div class="admin-preview-tags" id="material-axis-preview-list" aria-label="設定タグ"></div>
       </article>
     </section>
 
