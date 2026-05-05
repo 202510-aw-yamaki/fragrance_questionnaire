@@ -70,6 +70,25 @@
       </section>
     </div>
 
+    <div class="admin-material-meta-modal" id="material-meta-modal" hidden>
+      <div class="admin-material-modal-backdrop" data-material-meta-close></div>
+      <section class="admin-material-modal-card" role="dialog" aria-modal="true" aria-labelledby="material-meta-title">
+        <div class="admin-material-modal-head">
+          <h2 id="material-meta-title">タグとメモを編集</h2>
+          <button class="admin-btn secondary" type="button" data-material-meta-close>閉じる</button>
+        </div>
+        <form id="material-meta-form">
+          <label class="admin-material-tags-field">任意タグ<input id="material-tags" type="text" placeholder="例: フローラル, 軽やか, 春"></label>
+          <div class="admin-material-tag-row" id="material-tag-preview"></div>
+          <label class="admin-material-note-field">メモ<textarea id="material-note" rows="5"></textarea></label>
+          <div class="admin-material-modal-actions">
+            <button class="admin-btn secondary" type="button" data-material-meta-close>キャンセル</button>
+            <button class="admin-btn gold" type="submit">反映</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
     <section class="admin-materials-workbench">
       <article class="admin-panel admin-reference-card admin-material-list-card">
         <div class="admin-material-card-head">
@@ -99,6 +118,7 @@
           </div>
           <div class="admin-material-sub-field-grid">
             <label>表示順位<input id="material-sort" type="number" min="1" step="1" value="1"></label>
+            <button class="admin-btn secondary admin-material-meta-button" id="material-meta-edit" type="button">タグ・メモ編集</button>
             <label class="admin-material-active-field"><input id="material-active" type="checkbox" checked> 有効</label>
           </div>
           <h3>5軸スライダー</h3>
@@ -110,9 +130,6 @@
             <label><span>スウィート</span><input id="axis-sweet" type="range" min="0" max="100" step="1" value="0"><b id="axis-sweet-value">0</b></label>
           </div>
           <p class="admin-note" id="material-total-note">合計 <span id="material-total">0</span> / 100</p>
-          <label class="admin-material-tags-field">任意タグ<input id="material-tags" type="text" placeholder="例: フローラル, 軽やか, 春"></label>
-          <div class="admin-material-tag-row" id="material-tag-preview"></div>
-          <label class="admin-material-note-field">メモ<textarea id="material-note" rows="3"></textarea></label>
         </form>
       </article>
 

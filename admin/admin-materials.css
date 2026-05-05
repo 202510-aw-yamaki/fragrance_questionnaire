@@ -224,15 +224,14 @@ body.admin-materials-page .admin-main {
 .admin-material-list-item strong {
   display: block;
   font-family: var(--serif);
+  color: var(--text);
   font-size: 17px;
   line-height: 1.25;
 }
 
-.admin-material-list-item span {
+.admin-material-list-item > span {
   display: block;
-  margin-top: 4px;
-  color: var(--muted);
-  font-size: 12px;
+  min-width: 0;
 }
 
 .admin-material-list-item em {
@@ -263,8 +262,13 @@ body.admin-materials-page .admin-main {
 
 .admin-material-pagination .admin-btn {
   min-width: 72px;
-  min-height: 40px;
-  padding: 8px 10px;
+  min-height: 34px;
+  padding: 6px 9px;
+  border-color: rgba(196, 145, 89, 0.38);
+  background: rgba(255, 253, 249, 0.52);
+  box-shadow: none;
+  color: #9a672e;
+  font-size: 13px;
 }
 
 .admin-material-field-grid {
@@ -275,20 +279,39 @@ body.admin-materials-page .admin-main {
 
 .admin-material-sub-field-grid {
   display: grid;
-  grid-template-columns: 130px minmax(130px, 0.35fr);
+  grid-template-columns: 130px minmax(130px, 1fr) auto;
   gap: 14px;
   margin: 14px 0 18px;
 }
 
 .admin-material-active-field {
-  min-height: 52px;
+  min-height: 44px;
   display: flex !important;
   align-items: center;
-  gap: 10px;
-  padding: 0 14px;
-  border: 1px solid var(--line);
+  gap: 8px;
+  padding: 0 10px;
+  border: 1px solid rgba(221, 196, 166, 0.5);
   border-radius: 8px;
-  background: rgba(255, 253, 249, 0.88);
+  background: rgba(255, 253, 249, 0.52);
+  color: var(--muted);
+  font-size: 13px;
+  box-shadow: none;
+}
+
+.admin-material-active-field input {
+  width: 18px;
+  height: 18px;
+  accent-color: #6a8152;
+}
+
+.admin-material-meta-button {
+  align-self: end;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-color: rgba(196, 145, 89, 0.48);
+  background: rgba(255, 253, 249, 0.64);
+  box-shadow: none;
+  font-size: 13px;
 }
 
 .admin-material-inline-card h3,
@@ -422,6 +445,23 @@ body.admin-materials-page .admin-main {
   background: rgba(255, 253, 249, 0.62);
   color: #7a4a20;
   font-size: 13px;
+}
+
+.admin-preview-note-title {
+  margin-top: 6px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.admin-preview-note {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(221, 196, 166, 0.62);
+  border-radius: 8px;
+  background: rgba(255, 253, 249, 0.62);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.7;
 }
 
 .admin-materials-page .admin-bottom-savebar {

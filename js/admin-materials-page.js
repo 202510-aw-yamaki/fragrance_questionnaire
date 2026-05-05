@@ -28,6 +28,9 @@
   const axisPreviewListEl = document.getElementById("material-axis-preview-list");
   const tagPreviewEl = document.getElementById("material-tag-preview");
   const tagInput = document.getElementById("material-tags");
+  const metaButton = document.getElementById("material-meta-edit");
+  const metaModal = document.getElementById("material-meta-modal");
+  const metaForm = document.getElementById("material-meta-form");
   const createModal = document.getElementById("material-create-modal");
   const createForm = document.getElementById("material-create-form");
   const createCodeInput = document.getElementById("material-create-code");
@@ -267,12 +270,10 @@
     }
     rowsEl.innerHTML = pageRows.map((row) => {
       const activeClass = row.material_code === selectedCode ? " is-active" : "";
-      const tags = row.tags?.length ? ` / ${row.tags.join("・")}` : "";
       return `
         <button class="admin-material-list-item${activeClass}" type="button" data-material-code="${escapeHtml(row.material_code)}">
           <span>
             <strong>${escapeHtml(row.material_name || "名称未設定")}</strong>
-            <span>${escapeHtml(row.material_code || "コード未設定")}${escapeHtml(tags)}</span>
           </span>
           <em>${escapeHtml(row.category || "未設定")}</em>
         </button>
@@ -341,7 +342,22 @@
       <div class="admin-preview-tag-row">
         ${tags.length ? tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("") : "<span>タグ未設定</span>"}
       </div>
+      <div class="admin-preview-note-title">簡易メモ</div>
+      <p class="admin-preview-note">${escapeHtml(target?.note || "メモ未設定")}</p>
     `;
+  }
+
+  function openMetaModal() {
+    const row = cachedRows.find((item) => item.material_code === selectedCode) || readFormRow();
+    tagInput.value = row.tags.join(", ");
+    document.getElementById("material-note").value = row.note || "";
+    renderTagPreview(row.tags);
+    metaModal.hidden = false;
+    tagInput.focus();
+  }
+
+  function closeMetaModal() {
+    metaModal.hidden = true;
   }
 
   function openCreateModal() {
@@ -480,6 +496,19 @@
   resetButton.addEventListener("click", () => {
     reloadMaterialsFromDatabase();
   });
+  metaButton.addEventListener("click", () => {
+    persistFormToCache();
+    openMetaModal();
+  });
+  metaForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    persistFormToCache();
+    renderRows();
+    closeMetaModal();
+  });
+  metaModal.querySelectorAll("[data-material-meta-close]").forEach((button) => {
+    button.addEventListener("click", closeMetaModal);
+  });
   seedButton.addEventListener("click", saveMaterialsToDatabase);
   createButton.addEventListener("click", () => {
     persistFormToCache();
@@ -500,6 +529,7 @@
   });
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !createModal.hidden) closeCreateModal();
+    if (event.key === "Escape" && !metaModal.hidden) closeMetaModal();
   });
   exportButton.addEventListener("click", () => {
     persistFormToCache();
@@ -557,7 +587,10 @@
     currentPage += 1;
     renderRows();
   });
-  ["material-code", "material-name", "material-category", "material-sort", "material-active", "material-note", "material-tags"].forEach((id) => {
+  tagInput.addEventListener("input", () => {
+    renderTagPreview(normalizeTags(tagInput.value));
+  });
+  ["material-code", "material-name", "material-category", "material-sort", "material-active"].forEach((id) => {
     document.getElementById(id).addEventListener("input", () => {
       persistFormToCache();
       renderRows();
