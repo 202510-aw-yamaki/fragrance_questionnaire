@@ -8,6 +8,9 @@
 
 ## 2026-05-04 Latest Staff Page State
 
+2026-05-06追記:
+`staff/staff-reservations.html` は、ログイン中スタッフの `staff_profiles.id` に紐づく予約だけを表示する。判定は `reservations.staff_profile_id` と `reservation_slots.staff_profile_id` を優先し、既存データ向けに枠の `staff_profile_id` が未設定の場合のみ `reservation_slots.instructor_name` とログインスタッフ名の一致を補助条件にする。スタッフプロフィール未登録時は予約一覧を表示せず、管理者への紐づけ依頼を出す。
+
 この節は 2026-05-04 時点のスタッフ系ページの最新状態です。下部に古い課題として `staff-customer-detail.html` に商品名入力欄がない等の記述が残っている場合でも、現在は本節を優先してください。
 
 - `staff/staff-slots.html`

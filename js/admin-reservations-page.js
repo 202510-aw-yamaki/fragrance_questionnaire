@@ -13,6 +13,8 @@
   let reservations = [];
   let slotMap = new Map();
   let questionnaireMap = new Map();
+  let session = null;
+  let staffProfile = null;
 
   const BRANCH_LABELS = {
     floral: "フローラル",
@@ -74,6 +76,32 @@
       "\"": "&quot;",
       "'": "&#039;"
     }[char]));
+  }
+
+  function normalizeName(value) {
+    return String(value || "").trim().toLowerCase();
+  }
+
+  function getStaffNameCandidates() {
+    return new Set([
+      staffProfile?.staff_name,
+      staffProfile?.display_name,
+      window.AdminAuth.getStaffDisplayName(session)
+    ].map(normalizeName).filter(Boolean));
+  }
+
+  function isAssignedSlot(slot) {
+    if (!staffProfile?.id || !slot) return false;
+    if (slot.staff_profile_id === staffProfile.id) return true;
+    if (slot.staff_profile_id) return false;
+    const instructorName = normalizeName(slot.instructor_name);
+    return instructorName ? getStaffNameCandidates().has(instructorName) : false;
+  }
+
+  function isAssignedReservation(row) {
+    if (!staffProfile?.id) return false;
+    if (row.staff_profile_id === staffProfile.id) return true;
+    return isAssignedSlot(slotMap.get(row.slot_id));
   }
 
   function renderSummary(rows) {
@@ -186,14 +214,23 @@
   }
 
   async function loadBaseData() {
+    staffProfile = await window.AdminAuth.getStaffProfile?.(session);
+    if (!staffProfile?.id) {
+      reservations = [];
+      slotMap = new Map();
+      questionnaireMap = new Map();
+      if (emptyEl) emptyEl.textContent = "スタッフプロフィールが未登録です。管理者にスタッフ紐づけを依頼してください。";
+      return;
+    }
     const [reservationRows, slotRows] = await Promise.all([
       window.AdminData.listRows("reservations", { orders: [{ column: "created_at", ascending: false }], select: "*" }).catch(() => []),
       window.AdminData.listRows("reservation_slots", {
         orders: [{ column: "slot_date", ascending: true }, { column: "slot_time", ascending: true }]
       }).catch(() => [])
     ]);
-    reservations = reservationRows || [];
     slotMap = new Map((slotRows || []).map((row) => [row.id, row]));
+    reservations = (reservationRows || []).filter(isAssignedReservation);
+    if (emptyEl) emptyEl.textContent = "このスタッフに紐づく予約はありません。";
     const questionnaireIds = [...new Set(reservations.map((row) => row.questionnaire_result_id).filter(Boolean))];
     const questionnaireRows = questionnaireIds.length
       ? await window.AdminData.listRows("questionnaire_results", {
@@ -219,7 +256,7 @@
 
   async function bootstrap() {
     const role = "staff";
-    const session = await window.AdminAuth.requireAdminSession();
+    session = await window.AdminAuth.requireAdminSession();
     if (!session) return;
     window.AdminAuth.persistPortalRole(role);
     window.AdminAuth.renderAdminHeader("reservations", {
