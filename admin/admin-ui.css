@@ -4801,3 +4801,164 @@ body.admin-dashboard-page .admin-dashboard-artboard .admin-qr-modal-grid {
     grid-template-columns: 1fr;
   }
 }
+
+/* 2026-05-05 dashboard: annotated status readability */
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-title h1 {
+  font-size: 38px;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .kpi-card p {
+  font-size: 22px;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-kpis .kpi-value {
+  font-size: 48px;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .kpi-card small {
+  font-size: 17px;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-status-block {
+  grid-template-columns: 76px 1fr;
+  min-height: 112px;
+  gap: 12px 18px;
+  padding: 16px 18px;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-status-block:nth-of-type(3) {
+  min-height: 96px;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-status-block::before,
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-status-block::after {
+  grid-row: 1 / span 2;
+  align-self: center;
+  justify-self: center;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-status-block::before {
+  width: 60px;
+  height: 60px;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-status-block::after {
+  width: 28px;
+  height: 28px;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-status-block h3 {
+  align-self: end;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  font-size: 24px;
+  line-height: 1.25;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-status-block h3 strong {
+  min-height: 30px;
+  padding: 0 14px;
+  font-size: 16px;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-status-block .portal-list-body {
+  align-self: start;
+  gap: 10px;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-staff-card {
+  min-width: 152px;
+  min-height: 42px;
+  grid-template-columns: 1fr;
+  padding: 8px 14px;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-staff-card span:first-child {
+  font-size: 19px;
+  line-height: 1.2;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-staff-card span:nth-child(2),
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-staff-card strong {
+  display: none;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-slot-card {
+  min-width: 154px;
+  min-height: 58px;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  padding: 8px 12px;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-slot-card span {
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-slot-card strong {
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-slot-card small,
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-slot-total {
+  display: none;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-previsit-card {
+  min-width: 280px;
+  min-height: 54px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 18px;
+  align-items: center;
+  padding: 10px 14px;
+  border: 1px solid rgba(196, 145, 89, 0.34);
+  border-radius: 8px;
+  background: rgba(255, 253, 249, 0.92);
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-previsit-card span {
+  color: #2d211a;
+  font-family: var(--serif);
+  font-size: 19px;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-previsit-card strong {
+  color: #b45c5c;
+  font-size: 22px;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-previsit-card.is-ready strong {
+  color: #55794e;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-previsit-card small {
+  grid-column: 1 / span 2;
+  color: #7c715f;
+  font-size: 14px;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-action-card {
+  min-height: 120px !important;
+  grid-template-columns: 68px minmax(0, 1fr) 18px !important;
+  gap: 14px;
+  padding: 18px 20px;
+  align-items: center;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-action-card h3 {
+  font-size: 21px;
+  line-height: 1.35;
+  word-break: keep-all;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-action-card p {
+  display: none;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel .portal-dashboard-row span,
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel .admin-empty {
+  font-size: 20px;
+}

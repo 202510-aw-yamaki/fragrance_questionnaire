@@ -22,6 +22,7 @@
   const statusBlockHeadings = document.querySelectorAll(".admin-dashboard-status-block h3");
   const todayShiftHeadingEl = statusBlockHeadings[0] || null;
   const slotSummaryHeadingEl = statusBlockHeadings[1] || null;
+  const previsitProposalHeadingEl = statusBlockHeadings[2] || null;
   const qrModalTabsEl = document.querySelector(".admin-qr-modal-tabs");
   const qrModalListEl = document.querySelector(".admin-qr-modal-list");
   const qrModalSummaryEl = document.querySelector(".admin-qr-modal-side dl");
@@ -119,6 +120,15 @@
     }
   }
 
+  function parseJsonValue(value, fallbackValue) {
+    if (typeof value !== "string") return value ?? fallbackValue;
+    try {
+      return JSON.parse(value);
+    } catch (error) {
+      return fallbackValue;
+    }
+  }
+
   function formatDueDate(value) {
     if (!value) return "期限未設定";
     const date = new Date(value);
@@ -207,6 +217,16 @@
     return `${LABELS.total}${totalCapacity}${LABELS.slotUnit}\u4e2d${reservedCount}${LABELS.slotUnit}${LABELS.reserved}\uff08${percent}%\uff09`;
   }
 
+  function hasPrevisitRecipeItems(workshop) {
+    const items = parseJsonValue(workshop?.previsit_recipe_items, []);
+    return Array.isArray(items) && items.some((item) => Number(item?.amount || 0) > 0);
+  }
+
+  function isActiveReservationForPreparation(row) {
+    const status = String(row?.status || "confirmed").toLowerCase();
+    return !["canceled", "cancelled", "completed"].includes(status);
+  }
+
   function setStatusHeading(element, title, meta) {
     if (!element) return;
     element.innerHTML = `<span>${escapeHtml(title)}</span>${meta ? `<strong>${escapeHtml(meta)}</strong>` : ""}`;
@@ -241,8 +261,7 @@
       return `
         <article class="admin-dashboard-slot-card ${tone}">
           <span>${escapeHtml(bucket.label)}</span>
-          <strong>${getUsagePercent(bucket.reserved, bucket.capacity)}%</strong>
-          <small>${escapeHtml(`${bucket.reserved}${LABELS.slotUnit}${LABELS.reserved} / ${bucket.capacity}${LABELS.slotUnit}`)}</small>
+          <strong>${escapeHtml(`${bucket.reserved}/${bucket.capacity}${LABELS.slotUnit}`)}</strong>
         </article>
       `;
     }).join("");
@@ -264,13 +283,12 @@
       });
       const workingCount = staffStates.filter((staff) => staff.isWorking).length;
       setStatusHeading(todayShiftHeadingEl, LABELS.todayStaff, `${LABELS.attending} ${workingCount}${LABELS.peopleUnit}`);
-      todayShiftsEl.innerHTML = staffStates.map((staff) => `
-        <article class="admin-dashboard-staff-card ${staff.isWorking ? "" : "is-off"}">
+      const workingStaff = staffStates.filter((staff) => staff.isWorking);
+      todayShiftsEl.innerHTML = workingStaff.length ? workingStaff.map((staff) => `
+        <article class="admin-dashboard-staff-card">
           <span>${escapeHtml(staff.staffName)}</span>
-          <span>${staff.isWorking ? LABELS.attending : LABELS.dayOff}</span>
-          <strong>${escapeHtml(staff.reservationCount)}</strong>
         </article>
-      `).join("");
+      `).join("") : `<p class="admin-empty">本日の出勤スタッフはありません。</p>`;
       return;
     }
     const groups = todaySlots.reduce((acc, slot) => {
@@ -292,8 +310,6 @@
     todayShiftsEl.innerHTML = Array.from(groups.values()).map((group) => `
       <article class="admin-dashboard-staff-card">
         <span>${escapeHtml(group.staffName)}</span>
-        <span>${LABELS.attending}</span>
-        <strong>${group.reservations}</strong>
       </article>
     `).join("");
   }
@@ -308,34 +324,29 @@
     }, new Map());
   }
 
-  function renderCoverage(slots, staffRows = []) {
+  function renderPrevisitProposalChecks(slots, reservations, workshopRows = []) {
     const today = formatDateKey(new Date());
-    const twoWeekLimit = formatDateKey(addDays(createLocalDate(new Date()), 13));
-    if (staffRows.length) {
-      coverageEl.innerHTML = staffRows.map((staff) => {
-        const staffSlots = getSlotsForStaff(slots, staff.staffName, today, twoWeekLimit);
-        return `
-          <article class="portal-dashboard-row portal-dashboard-row--coverage">
-            <span>${escapeHtml(staff.staffName)}</span>
-            <strong class="${staffSlots.length ? "portal-ok-text" : "portal-ng-text"}">${staffSlots.length ? "OK" : "NG"}</strong>
-          </article>
-        `;
-      }).join("");
+    const slotMap = new Map(slots.map((row) => [row.id, row]));
+    const workshopMap = new Map((workshopRows || []).filter((row) => row.reservation_id).map((row) => [row.reservation_id, row]));
+    const targetReservations = reservations.filter((row) => {
+      const slot = slotMap.get(row.slot_id);
+      return slot?.slot_date >= today && isActiveReservationForPreparation(row);
+    });
+    const pendingReservations = targetReservations.filter((row) => !hasPrevisitRecipeItems(workshopMap.get(row.id)));
+    const completedCount = targetReservations.length - pendingReservations.length;
+    setStatusHeading(previsitProposalHeadingEl, "来店前提案配合確認", `未完了 ${pendingReservations.length}件`);
+    if (!coverageEl) return;
+    if (!targetReservations.length) {
+      coverageEl.innerHTML = `<p class="admin-empty">確認対象の予約はありません。</p>`;
       return;
     }
-    const grouped = groupByStaff(slots.filter((row) => row.is_active !== false && row.slot_date >= today && row.slot_date <= twoWeekLimit));
-
-    if (!grouped.size) {
-      coverageEl.innerHTML = `<p class="admin-empty">確認できる予約枠はありません。</p>`;
-      return;
-    }
-
-    coverageEl.innerHTML = Array.from(grouped.entries()).map(([staffName, staffSlots]) => `
-      <article class="portal-dashboard-row portal-dashboard-row--coverage">
-        <span>${escapeHtml(staffName)}</span>
-        <strong class="${staffSlots.length ? "portal-ok-text" : "portal-ng-text"}">${staffSlots.length ? "OK" : "NG"}</strong>
+    coverageEl.innerHTML = `
+      <article class="admin-dashboard-previsit-card ${pendingReservations.length ? "is-warn" : "is-ready"}">
+        <span>未完了</span>
+        <strong>${pendingReservations.length}件</strong>
+        <small>確認済み ${completedCount}件 / 対象 ${targetReservations.length}件</small>
       </article>
-    `).join("");
+    `;
   }
 
   function renderNextWeekSummary(slots, reservations, staffRows = []) {
@@ -383,12 +394,8 @@
     const totalCapacity = slotRows.reduce((total, slot) => total + getSlotCapacity(slot), 0);
     const reservedCount = countReservationsForSlots(slotRows, reservationMap);
     const usageText = formatSlotUsage(totalCapacity, reservedCount);
-    setStatusHeading(slotSummaryHeadingEl, LABELS.slotStatus, "");
+    setStatusHeading(slotSummaryHeadingEl, LABELS.slotStatus, usageText);
     nextWeekSummaryEl.innerHTML = `
-      <article class="admin-dashboard-slot-total">
-        <span>${escapeHtml(usageText)}</span>
-        <strong>${getUsagePercent(reservedCount, totalCapacity)}%</strong>
-      </article>
       ${buildSlotStatusCards(slotRows, reservationMap)}
     `;
   }
@@ -697,7 +704,7 @@
       ]
     });
 
-    const [reservations, slots, scoringRows, materials, settingsRows, qrNotificationRows, emailEventRows, qrRequestRows] = await Promise.all([
+    const [reservations, slots, scoringRows, materials, settingsRows, qrNotificationRows, emailEventRows, qrRequestRows, workshopRows] = await Promise.all([
       window.AdminData.listRows("reservations", { orders: [{ column: "created_at", ascending: false }] }).catch(() => []),
       window.AdminData.listRows("reservation_slots", { filters: [{ operator: "in", column: "status", value: ["open", "recommended", "closed"] }] }).catch(() => []),
       window.AdminData.listRows("scoring_configs", { filters: [{ operator: "eq", column: "is_active", value: true }], limit: 1 }).catch(() => []),
@@ -721,6 +728,9 @@
       window.AdminData.listRows("qr_product_requests", {
         orders: [{ column: "created_at", ascending: false }],
         select: "id, request_code, status, requester_email, quantity_10ml, quantity_30ml, total_volume_ml, availability_due_at, available_email_sent_at, reminder_email_sent_at, expires_at, created_at, updated_at"
+      }).catch(() => []),
+      window.AdminData.listRows("workshop_sessions", {
+        select: "id, reservation_id, previsit_recipe_items, previsit_recipe_axes, status, updated_at"
       }).catch(() => [])
     ]);
 
@@ -758,7 +768,7 @@
 
     renderTodayShifts(slots, reservations, staffRows, shiftOverrides);
     renderSlotSummary(slots, reservations);
-    renderCoverage(slots, staffRows);
+    renderPrevisitProposalChecks(slots, reservations, workshopRows);
     renderScoringSummary(scoringRows[0] || null);
     renderMaterialLinks(materials);
     renderQrNotifications(qrNotificationRows, emailEventRows, qrRequestRows);
