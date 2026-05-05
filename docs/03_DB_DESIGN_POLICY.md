@@ -202,3 +202,11 @@ QR商品ページのアクセス記録は `record_qr_product_access()` を入口
 - `fragrance_products` の公開判定は `has_active_public_product_qr(product_id)` で行う。
 - `product_qr_codes` のスタッフ所有判定は `can_current_staff_access_fragrance_product(product_id)` で行う。
 - どちらも `security definer` 関数で判定し、ポリシー本文で相互にbase tableを直接参照しない。
+
+## 2026-05-06 material points tags note
+
+管理者の原料ポイント編集ページで任意タグを扱うため、`material_points` に `tags jsonb not null default '[]'::jsonb` を追加する。
+
+- タグは原料検索、JSON保存、JSON読込、DB保存の対象に含める。
+- 既存RLS方針は変更せず、公開側の原料参照に必要な anon select grant に `tags` を追加する。
+- 原料ポイントの正本は引き続き `material_points` であり、DBが空または取得できない場合だけフロント側テンプレートを表示する。

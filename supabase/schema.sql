@@ -105,6 +105,7 @@ create table if not exists public.material_points (
   material_name text not null,
   category text,
   point_axes jsonb not null,
+  tags jsonb not null default '[]'::jsonb,
   note text,
   is_active boolean not null default true,
   sort_order integer not null default 0,
@@ -1524,7 +1525,7 @@ grant insert (
   updated_at
 ) on public.reservations to anon;
 grant select (config_json, version, updated_at, is_active) on public.scoring_configs to anon;
-grant select (id, material_code, material_name, category, point_axes, note, is_active, sort_order, updated_at) on public.material_points to anon;
+grant select (id, material_code, material_name, category, point_axes, tags, note, is_active, sort_order, updated_at) on public.material_points to anon;
 grant select (id, slot_code, slot_date, slot_time, slot_label, instructor_name, status, sort_order, is_active) on public.reservation_slots to anon;
 grant select (setting_key, setting_value, updated_at, is_public) on public.admin_settings to anon;
 grant select (id, product_name, product_tags) on public.fragrance_products to anon;

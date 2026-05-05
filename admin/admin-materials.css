@@ -1,0 +1,378 @@
+/* Admin material points page styles. Shared admin primitives stay in admin-ui.css. */
+
+body.admin-materials-page {
+  padding-top: 66px;
+}
+
+body.admin-materials-page .admin-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 80;
+}
+
+body.admin-materials-page .admin-header-inner {
+  min-height: 66px;
+  width: min(100% - 48px, 1180px);
+  padding: 8px 0;
+}
+
+body.admin-materials-page .admin-brand {
+  gap: 10px;
+  font-size: 23px;
+}
+
+body.admin-materials-page .admin-brand-logo,
+body.admin-materials-page .admin-brand-logo img {
+  width: 38px;
+  height: 50px;
+  max-width: 38px;
+  max-height: 50px;
+}
+
+body.admin-materials-page .admin-brand-meta {
+  font-size: 11px;
+}
+
+body.admin-materials-page .admin-main {
+  width: min(100% - 48px, 1320px);
+  padding: 28px 0 24px;
+}
+
+.admin-material-title-row {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(520px, 0.9fr);
+  gap: 22px;
+  align-items: end;
+  margin-bottom: 14px;
+  min-height: auto;
+  text-align: left;
+}
+
+.admin-material-title-row .eyebrow {
+  justify-content: flex-start;
+}
+
+.admin-material-title-row h1 {
+  margin: 4px 0 0;
+  font-size: clamp(32px, 3vw, 42px);
+}
+
+.admin-material-title-row .portal-hero-copy {
+  margin-top: 8px;
+  font-size: 15px;
+}
+
+.admin-material-title-tools {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) 120px 130px;
+  gap: 10px;
+  align-items: end;
+}
+
+.admin-material-title-tools label,
+.admin-material-editor-form label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.admin-material-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  min-height: 32px;
+  margin-bottom: 14px;
+}
+
+.admin-material-status-row .admin-note {
+  margin: 0;
+}
+
+.admin-materials-workbench {
+  display: grid;
+  grid-template-columns: 250px minmax(380px, 1fr) 270px;
+  gap: 12px;
+  align-items: start;
+}
+
+.admin-material-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.admin-material-list-card .admin-material-card-head {
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.admin-material-list-card .admin-material-card-head .admin-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.admin-material-card-head h2,
+.admin-material-preview-panel h2 {
+  margin-bottom: 0;
+}
+
+.admin-material-list {
+  display: grid;
+  gap: 8px;
+  min-height: 584px;
+}
+
+.admin-material-list-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 64px;
+  padding: 9px 12px;
+  border: 1px solid rgba(221, 196, 166, 0.82);
+  border-radius: 8px;
+  background: rgba(255, 253, 249, 0.84);
+  color: var(--text);
+  text-align: left;
+}
+
+.admin-material-list-item.is-active {
+  border-color: #d7831e;
+  background: #fff8ee;
+  box-shadow: 0 8px 20px rgba(118, 74, 35, 0.1);
+}
+
+.admin-material-list-item strong {
+  display: block;
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.25;
+}
+
+.admin-material-list-item span {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.admin-material-list-item em {
+  min-width: 62px;
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: #f4eadc;
+  color: #7a4a20;
+  font-size: 12px;
+  font-style: normal;
+  text-align: center;
+}
+
+.admin-material-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.admin-material-pagination span {
+  min-width: 76px;
+  color: var(--muted);
+  font-weight: 700;
+  text-align: center;
+}
+
+.admin-material-pagination .admin-btn {
+  min-width: 82px;
+  min-height: 40px;
+  padding: 8px 12px;
+}
+
+.admin-material-field-grid {
+  display: grid;
+  grid-template-columns: minmax(130px, 0.8fr) minmax(170px, 1fr);
+  gap: 12px;
+}
+
+.admin-material-sub-field-grid {
+  display: grid;
+  grid-template-columns: 130px minmax(130px, 0.35fr);
+  gap: 14px;
+  margin: 14px 0 18px;
+}
+
+.admin-material-active-field {
+  min-height: 52px;
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 253, 249, 0.88);
+}
+
+.admin-material-inline-card h3,
+.admin-material-preview-panel h3 {
+  margin: 18px 0 12px;
+  font-family: var(--serif);
+  font-size: 20px;
+}
+
+.admin-material-slider-list {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-material-slider-list label {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr) 50px;
+  gap: 10px;
+  align-items: center;
+}
+
+.admin-material-slider-list input[type="range"] {
+  min-height: 6px;
+  accent-color: #6a8152;
+}
+
+.admin-material-slider-list b {
+  min-height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(221, 196, 166, 0.88);
+  border-radius: 8px;
+  color: #5b743e;
+  font-size: 18px;
+}
+
+#material-total-note {
+  margin: 12px 0 16px;
+}
+
+#material-total-note.admin-note-warning {
+  color: #b64040;
+}
+
+.admin-material-tags-field,
+.admin-material-note-field {
+  margin-top: 14px;
+}
+
+.admin-material-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 34px;
+  margin-top: 10px;
+}
+
+.admin-material-tag-row span {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 13px;
+  border: 1px solid rgba(221, 196, 166, 0.88);
+  border-radius: 999px;
+  background: #f8f0e7;
+  color: #7a4a20;
+  font-size: 13px;
+}
+
+.admin-material-radar {
+  width: min(100%, 260px);
+  aspect-ratio: 1;
+  margin: 8px auto 18px;
+}
+
+.admin-material-radar svg {
+  width: 100%;
+  height: 100%;
+}
+
+.admin-material-radar .radar-grid {
+  fill: rgba(213, 173, 115, 0.08);
+  stroke: rgba(218, 188, 151, 0.7);
+  stroke-width: 1.5;
+}
+
+.admin-material-radar .radar-grid-inner {
+  fill: rgba(255, 253, 249, 0.35);
+}
+
+.admin-material-radar .radar-value {
+  fill: rgba(106, 129, 82, 0.24);
+  stroke: rgba(89, 111, 55, 0.9);
+  stroke-width: 4;
+  stroke-linejoin: round;
+}
+
+.admin-axis-preview-list {
+  display: grid;
+  grid-template-columns: 92px 1fr 34px;
+  gap: 10px 12px;
+  align-items: center;
+}
+
+.admin-axis-preview-list meter {
+  width: 100%;
+  height: 10px;
+}
+
+.admin-materials-page .admin-bottom-savebar {
+  position: sticky;
+  bottom: 0;
+  z-index: 35;
+  flex-wrap: nowrap;
+  margin-bottom: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  backdrop-filter: blur(12px);
+}
+
+.admin-materials-page .admin-reference-savebar .admin-btn {
+  flex: 1 1 0;
+  min-width: min(220px, 100%);
+  min-height: 56px;
+  font-size: 20px;
+}
+
+@media (max-width: 900px) {
+  .admin-material-title-row,
+  .admin-materials-workbench {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-material-list {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 760px) {
+  body.admin-materials-page .admin-main,
+  body.admin-materials-page .admin-header-inner {
+    width: min(100% - 28px, 100%);
+  }
+
+  .admin-material-title-tools,
+  .admin-material-field-grid,
+  .admin-material-sub-field-grid,
+  .admin-material-slider-list label {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-material-card-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-materials-page .admin-bottom-savebar {
+    flex-wrap: wrap;
+  }
+}

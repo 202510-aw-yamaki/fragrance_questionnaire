@@ -1417,39 +1417,6 @@ body.admin-page .admin-logout {
   padding: 0;
 }
 
-.admin-material-kpis {
-  display: none;
-}
-
-.admin-materials-workbench {
-  display: grid;
-  grid-template-columns: 320px minmax(0, 1fr) 340px;
-  gap: 24px;
-  align-items: start;
-}
-
-.admin-materials-workbench .section {
-  padding: 24px;
-}
-
-.admin-material-inline-card,
-.admin-material-preview-panel {
-  min-height: 520px;
-}
-
-.admin-axis-preview-list {
-  display: grid;
-  grid-template-columns: 86px 1fr;
-  gap: 10px 14px;
-  align-items: center;
-  margin-top: 20px;
-}
-
-.admin-axis-preview-list meter {
-  width: 100%;
-  height: 12px;
-}
-
 .admin-radar-placeholder {
   width: min(260px, 100%);
   aspect-ratio: 1;
@@ -1582,7 +1549,6 @@ body.admin-page .admin-logout {
 @media (max-width: 1180px) {
   .admin-dashboard-kpis,
   .admin-scoring-workbench,
-  .admin-materials-workbench,
   .admin-qr-settings-layout,
   .admin-qr-settings-main {
     grid-template-columns: 1fr;
@@ -2793,8 +2759,7 @@ body.admin-reference-page .admin-note {
 }
 
 .admin-scoring-answer-matrix button,
-.admin-reference-dashed-button,
-.admin-material-tag-row button {
+.admin-reference-dashed-button {
   border: 1px dashed rgba(215, 131, 30, 0.5);
   border-radius: 8px;
   background: rgba(255, 253, 249, 0.92);
@@ -2815,9 +2780,7 @@ body.admin-reference-page .admin-note {
   margin-bottom: 18px;
 }
 
-.admin-scoring-preview-question h3,
-.admin-material-preview-panel h3,
-.admin-material-inline-card h3 {
+.admin-scoring-preview-question h3 {
   margin: 0 0 10px;
   font-family: var(--serif);
   font-size: 18px;
@@ -2866,185 +2829,6 @@ body.admin-reference-page .admin-note {
   font-family: var(--serif);
   font-size: 18px;
   font-weight: 700;
-}
-
-/* Materials reference */
-.admin-materials-page .admin-materials-workbench {
-  grid-template-columns: 360px minmax(520px, 1fr) 420px;
-  gap: 28px;
-}
-
-.admin-material-reference-list {
-  display: grid;
-  gap: 0;
-  overflow: hidden;
-  border: 1px solid rgba(221, 196, 166, 0.82);
-  border-radius: 9px;
-}
-
-.admin-material-reference-list a {
-  min-height: 78px;
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  padding: 0 18px;
-  border-bottom: 1px solid rgba(221, 196, 166, 0.82);
-  background: rgba(255, 253, 249, 0.8);
-  font-family: var(--serif);
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.admin-material-reference-list a:last-child {
-  border-bottom: 0;
-}
-
-.admin-material-reference-list a.is-active {
-  border: 1px solid #d7831e;
-  background: #fff8ee;
-  color: #7a4a20;
-}
-
-.material-icon {
-  width: 48px;
-  height: 48px;
-  display: inline-grid;
-  place-items: center;
-  border-radius: 999px;
-  background: #f8e8e2;
-}
-
-.material-icon::before {
-  content: "";
-  width: 20px;
-  height: 20px;
-  border: 2px solid #c84747;
-  border-radius: 50% 50% 45% 45%;
-}
-
-.material-icon.green { background: #eef2e5; }
-.material-icon.green::before { border-color: #678153; }
-.material-icon.wood { background: #f4eadc; }
-.material-icon.wood::before { border-color: #a76a2e; border-radius: 4px; }
-.material-icon.lavender { background: #f0eaf2; }
-.material-icon.lavender::before { border-color: #70709c; }
-.material-icon.musk { background: #f0eeee; }
-.material-icon.musk::before { border-color: #7b7b7b; border-radius: 999px; }
-
-.admin-material-field-grid {
-  display: grid;
-  grid-template-columns: 1fr 170px 170px;
-  gap: 22px;
-  margin-bottom: 22px;
-}
-
-.admin-material-field-grid label {
-  display: grid;
-  gap: 9px;
-}
-
-.admin-material-toggle {
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.admin-material-toggle b,
-.admin-material-toggle em {
-  padding: 9px 16px;
-  border-radius: 999px;
-  font-style: normal;
-}
-
-.admin-material-toggle b {
-  background: #e9efe2;
-  color: #557341;
-}
-
-.admin-material-toggle em {
-  color: #9e9188;
-}
-
-.admin-material-slider-list {
-  display: grid;
-  gap: 18px;
-  margin-bottom: 24px;
-}
-
-.admin-material-slider-list label {
-  display: grid;
-  grid-template-columns: 120px 1fr 70px;
-  gap: 18px;
-  align-items: center;
-}
-
-.admin-material-slider-list input[type="range"] {
-  min-height: 6px;
-  accent-color: #6a8152;
-}
-
-.admin-material-slider-list b {
-  min-height: 44px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(221, 196, 166, 0.88);
-  border-radius: 8px;
-  color: #5b743e;
-  font-size: 22px;
-}
-
-.admin-material-tag-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.admin-material-tag-row span,
-.admin-material-tag-row button {
-  min-height: 38px;
-  padding: 8px 18px;
-  border: 1px solid rgba(221, 196, 166, 0.88);
-  border-radius: 8px;
-  background: #f8f0e7;
-  color: #7a4a20;
-  font-family: var(--serif);
-}
-
-.admin-reference-radar {
-  width: 245px;
-  aspect-ratio: 1;
-  display: grid;
-  place-items: center;
-  margin: 12px auto 24px;
-  background:
-    repeating-radial-gradient(circle, transparent 0 17%, rgba(218, 188, 151, 0.58) 17.4% 18%, transparent 18.4% 24%),
-    conic-gradient(from 18deg, rgba(213, 173, 115, 0.16), rgba(92, 120, 72, 0.12), rgba(213, 173, 115, 0.16));
-  clip-path: polygon(50% 3%, 96% 37%, 78% 93%, 22% 93%, 4% 37%);
-}
-
-.admin-reference-radar span {
-  width: 67%;
-  aspect-ratio: 1;
-  border: 4px solid rgba(89, 111, 55, 0.78);
-  background: rgba(214, 169, 86, 0.12);
-  clip-path: polygon(50% 10%, 86% 40%, 72% 82%, 28% 82%, 14% 40%);
-}
-
-.admin-reference-radar.radar-rose span {
-  border-color: rgba(235, 104, 110, 0.82);
-  background: rgba(236, 112, 116, 0.16);
-}
-
-body.admin-reference-page .admin-axis-preview-list {
-  grid-template-columns: 90px 1fr 22px;
-  gap: 9px 14px;
-  align-items: center;
-}
-
-body.admin-reference-page .admin-axis-preview-list meter {
-  width: 100%;
-  height: 10px;
 }
 
 /* QR settings reference */
@@ -3496,28 +3280,9 @@ body.admin-reference-page .admin-axis-preview-list meter {
     font-size: 16px;
   }
 
-  .admin-reference-radar {
-    width: 190px;
-  }
-
   .admin-reference-bottom-strip {
     grid-template-columns: 1fr 160px 190px 190px;
     gap: 12px;
-  }
-
-  .admin-materials-page .admin-materials-workbench {
-    grid-template-columns: 250px minmax(0, 1fr) 280px;
-    gap: 12px;
-  }
-
-  .admin-material-field-grid,
-  .admin-material-slider-list label {
-    grid-template-columns: 1fr;
-  }
-
-  .admin-material-reference-list a {
-    min-height: 62px;
-    font-size: 15px;
   }
 
   .admin-qr-reference-layout {
@@ -3641,7 +3406,6 @@ body.admin-reference-page .admin-axis-preview-list meter {
   }
 
   .admin-scoring-reference-workbench,
-  .admin-materials-page .admin-materials-workbench,
   .admin-qr-reference-layout,
   .admin-qr-settings-page .admin-qr-settings-main,
   .admin-dashboard-main-grid,

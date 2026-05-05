@@ -2,54 +2,75 @@
   const AXIS_ORDER = window.FragranceMasterData.AXIS_ORDER;
   const AXIS_LABELS = window.FragranceMasterData.AXIS_LABELS;
   const CATEGORY_ORDER = { Top: 0, Middle: 1, Last: 2 };
-  const MATERIAL_SAVE_NOTE_KEY = "material_points_save_note";
+  const PAGE_SIZE = 8;
   const collator = new Intl.Collator("ja", { sensitivity: "base", numeric: true });
   const rowsEl = document.getElementById("material-rows");
   const form = document.getElementById("material-form");
-  const modalEl = document.getElementById("material-modal");
   const searchInput = document.getElementById("material-search");
   const categoryFilter = document.getElementById("material-filter");
   const sortModeEl = document.getElementById("material-sort-mode");
-  const templateSelect = document.getElementById("material-template-select");
   const summaryCount = document.getElementById("material-count");
   const formTotal = document.getElementById("material-total");
+  const totalNote = document.getElementById("material-total-note");
   const seedStatus = document.getElementById("material-seed-status");
-  const totalKpi = document.getElementById("materials-kpi-total");
-  const activeKpi = document.getElementById("materials-kpi-active");
-  const templateKpi = document.getElementById("materials-kpi-template");
   const currentSortEl = document.getElementById("material-current-sort");
-  const saveNoteEl = document.getElementById("material-save-note");
-  const chipGridEl = document.getElementById("material-chip-grid");
   const seedButton = document.getElementById("material-seed-btn");
-  const saveDbButtons = Array.from(new Set([
-    seedButton,
-    ...document.querySelectorAll("[data-material-save-db]")
-  ].filter(Boolean)));
   const resetButton = document.getElementById("material-reset");
-  const applyTemplateButton = document.getElementById("material-template-apply");
   const createButton = document.getElementById("material-create-button");
-  const exportButtons = Array.from(new Set([
-    document.getElementById("material-export-json"),
-    ...document.querySelectorAll("[data-material-export-json]")
-  ].filter(Boolean)));
+  const exportButton = document.getElementById("material-export-json");
   const importTriggerButton = document.getElementById("material-import-trigger");
   const importInput = document.getElementById("material-import-file");
+  const pagePrevButton = document.getElementById("material-page-prev");
+  const pageNextButton = document.getElementById("material-page-next");
+  const pageStatusEl = document.getElementById("material-page-status");
+  const previewNameEl = document.getElementById("material-preview-name");
+  const radarPolygonEl = document.getElementById("material-radar-polygon");
+  const axisPreviewListEl = document.getElementById("material-axis-preview-list");
+  const tagPreviewEl = document.getElementById("material-tag-preview");
+  const tagInput = document.getElementById("material-tags");
   let cachedRows = [];
+  let selectedCode = "";
+  let currentPage = 1;
+  let dataSource = "db";
 
   function getTemplates() {
     return window.FragranceMasterData.createMaterialTemplates();
   }
 
+  function normalizeTags(value) {
+    if (Array.isArray(value)) {
+      return value.map((tag) => String(tag).trim()).filter(Boolean);
+    }
+    if (typeof value === "string") {
+      return value.split(/[,\n、]/).map((tag) => tag.trim()).filter(Boolean);
+    }
+    return [];
+  }
+
   function normalizeRow(row) {
-    return window.FragranceMasterData.normalizeMaterialRow(row);
+    const normalized = window.FragranceMasterData.normalizeMaterialRow(row);
+    return {
+      id: row?.id || "",
+      ...normalized,
+      tags: normalizeTags(row?.tags)
+    };
   }
 
-  function openModal() {
-    modalEl.hidden = false;
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (match) => {
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#039;"
+      }[match];
+    });
   }
 
-  function closeModal() {
-    modalEl.hidden = true;
+  function setStatus(message, type = "note") {
+    seedStatus.className = type === "error" ? "admin-error" : "admin-note";
+    seedStatus.textContent = message;
   }
 
   function getAxesInput() {
@@ -66,15 +87,20 @@
   function renderFormTotal() {
     const total = getAxesTotal(getAxesInput());
     formTotal.textContent = String(total);
-    formTotal.className = total === 100 ? "admin-note admin-note-success" : "admin-note admin-note-warning";
+    totalNote.className = total === 100 ? "admin-note admin-note-success" : "admin-note admin-note-warning";
+    AXIS_ORDER.forEach((axis) => {
+      const input = document.getElementById(`axis-${axis}`);
+      const output = document.getElementById(`axis-${axis}-value`);
+      if (input && output) output.textContent = String(Number(input.value || 0));
+    });
     return total;
   }
 
-  function fillForm(row, options = {}) {
+  function fillForm(row) {
     const normalized = normalizeRow(row);
-    document.getElementById("material-modal-title").textContent = "新規作成 / 編集";
-    document.getElementById("material-id").value = options.asNew ? "" : row.id || "";
-    document.getElementById("material-code").value = normalized.material_code || "";
+    selectedCode = normalized.material_code || "";
+    document.getElementById("material-id").value = normalized.id || "";
+    document.getElementById("material-code").value = normalized.material_code;
     document.getElementById("material-name").value = normalized.material_name || "";
     document.getElementById("material-category").value = normalized.category || "Top";
     AXIS_ORDER.forEach((axis) => {
@@ -82,73 +108,77 @@
     });
     document.getElementById("material-sort").value = normalized.sort_order ?? 0;
     document.getElementById("material-note").value = normalized.note || "";
+    tagInput.value = normalized.tags.join(", ");
     document.getElementById("material-active").checked = normalized.is_active !== false;
     renderFormTotal();
-    openModal();
+    renderTagPreview(normalized.tags);
+    renderPreview(normalized);
   }
 
   function resetForm() {
-    form.reset();
-    document.getElementById("material-modal-title").textContent = "新規作成 / 編集";
-    document.getElementById("material-id").value = "";
-    document.getElementById("material-category").value = "Top";
-    document.getElementById("material-active").checked = true;
-    AXIS_ORDER.forEach((axis) => {
-      document.getElementById(`axis-${axis}`).value = "0";
+    const selected = cachedRows.find((row) => row.material_code === selectedCode) || cachedRows[0];
+    if (selected) fillForm(selected);
+  }
+
+  function readFormRow() {
+    return normalizeRow({
+      id: document.getElementById("material-id").value,
+      material_code: document.getElementById("material-code").value.trim(),
+      material_name: document.getElementById("material-name").value.trim(),
+      category: document.getElementById("material-category").value || "Top",
+      point_axes: getAxesInput(),
+      note: document.getElementById("material-note").value.trim() || null,
+      tags: normalizeTags(tagInput.value),
+      is_active: document.getElementById("material-active").checked,
+      sort_order: Number(document.getElementById("material-sort").value || 0)
     });
-    document.getElementById("material-sort").value = "0";
-    templateSelect.value = "";
+  }
+
+  function persistFormToCache() {
+    if (!cachedRows.length) return;
+    const nextRow = readFormRow();
+    const index = cachedRows.findIndex((row) => row.material_code === selectedCode);
+    if (index >= 0) {
+      cachedRows[index] = nextRow;
+    }
+    selectedCode = nextRow.material_code;
     renderFormTotal();
+    renderTagPreview(nextRow.tags);
+    renderPreview(nextRow);
   }
 
   async function getAllMaterials() {
-    const rows = await window.AdminData.listRows("material_points", {
-      orders: [
-        { column: "sort_order", ascending: true },
-        { column: "material_code", ascending: true }
-      ]
-    }).catch(() => []);
+    let rows = [];
+    let statusMessage = "";
+    try {
+      rows = await window.AdminData.listRows("material_points", {
+        orders: [
+          { column: "sort_order", ascending: true },
+          { column: "material_code", ascending: true }
+        ]
+      });
+    } catch (error) {
+      statusMessage = `DB取得に失敗したためテンプレートを表示しています。${error?.message || ""}`;
+      rows = [];
+    }
+    dataSource = rows?.length ? "db" : "template";
     const sourceRows = rows?.length ? rows : getTemplates();
     cachedRows = sourceRows.map(normalizeRow);
+    selectedCode = cachedRows[0]?.material_code || "";
+    currentPage = 1;
+    setStatus(statusMessage || (dataSource === "template" ? "DBに原料がないためテンプレートを表示しています。" : `${cachedRows.length}件をDBから取得しました。`));
     return cachedRows;
-  }
-
-  function renderKpis(rows) {
-    totalKpi.textContent = String(rows.length);
-    activeKpi.textContent = String(rows.filter((row) => row.is_active !== false).length);
-    templateKpi.textContent = String(getTemplates().length);
-    currentSortEl.textContent = sortModeEl.options[sortModeEl.selectedIndex]?.text || "登録順（正）";
-  }
-
-  function createMaterialAxisCells(axes) {
-    return AXIS_ORDER.map((axis) => {
-      return `
-        <span class="portal-material-axis-cell">
-          <span>${AXIS_LABELS[axis]}</span>
-          <strong>${Number(axes?.[axis] || 0)}</strong>
-        </span>
-      `;
-    }).join("");
   }
 
   function getSortedRows(rows) {
     const sorted = [...rows];
     const mode = sortModeEl.value;
     sorted.sort((left, right) => {
-      if (mode === "register-desc") {
-        return (right.sort_order - left.sort_order) || collator.compare(right.material_code, left.material_code);
-      }
       if (mode === "name-asc") {
         return collator.compare(left.material_name, right.material_name);
       }
-      if (mode === "name-desc") {
-        return collator.compare(right.material_name, left.material_name);
-      }
       if (mode === "category-asc") {
         return (CATEGORY_ORDER[left.category] ?? 99) - (CATEGORY_ORDER[right.category] ?? 99) || collator.compare(left.material_name, right.material_name);
-      }
-      if (mode === "category-desc") {
-        return (CATEGORY_ORDER[right.category] ?? -1) - (CATEGORY_ORDER[left.category] ?? -1) || collator.compare(right.material_name, left.material_name);
       }
       return (left.sort_order - right.sort_order) || collator.compare(left.material_code, right.material_code);
     });
@@ -159,7 +189,7 @@
     const keyword = (searchInput.value || "").trim().toLowerCase();
     const category = categoryFilter.value || "";
     const filtered = cachedRows.filter((row) => {
-      const matchesKeyword = !keyword || [row.material_code, row.material_name, row.category, row.note]
+      const matchesKeyword = !keyword || [row.material_code, row.material_name, row.category, row.note, ...(row.tags || [])]
         .filter(Boolean)
         .some((value) => String(value).toLowerCase().includes(keyword));
       const matchesCategory = !category || row.category === category;
@@ -168,209 +198,210 @@
     return getSortedRows(filtered);
   }
 
-  function renderChipGrid(rows) {
-    chipGridEl.innerHTML = rows.length
-      ? rows.map((row) => `
-          <button class="admin-chip portal-material-chip" type="button" data-focus-code="${row.material_code}">
-            <span class="portal-material-chip-name">${row.material_name}</span>
-            <span class="portal-material-chip-category">${row.category || "未設定"}</span>
-          </button>
-        `).join("")
-      : `<span class="admin-chip">原料未登録</span>`;
-    chipGridEl.querySelectorAll("[data-focus-code]").forEach((button) => {
-      button.addEventListener("click", () => {
-        const target = rowsEl.querySelector(`[data-material-code="${button.dataset.focusCode}"]`);
-        if (target) {
-          target.classList.add("is-focused");
-          target.scrollIntoView({ behavior: "smooth", block: "center" });
-          window.setTimeout(() => target.classList.remove("is-focused"), 1600);
-        }
-      });
-    });
+  function getPagedRows(rows) {
+    const pageCount = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+    currentPage = Math.min(Math.max(1, currentPage), pageCount);
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return {
+      pageRows: rows.slice(start, start + PAGE_SIZE),
+      pageCount
+    };
+  }
+
+  function renderPagination(filteredRows, pageCount) {
+    pageStatusEl.textContent = `${currentPage} / ${pageCount}`;
+    pagePrevButton.disabled = currentPage <= 1;
+    pageNextButton.disabled = currentPage >= pageCount || filteredRows.length === 0;
+  }
+
+  function ensureVisibleSelection(rows) {
+    if (!rows.length) {
+      selectedCode = "";
+      return null;
+    }
+    const selected = rows.find((row) => row.material_code === selectedCode) || rows[0];
+    selectedCode = selected.material_code;
+    return selected;
   }
 
   function renderRows() {
     const rows = getFilteredRows();
-    renderKpis(cachedRows);
-    renderChipGrid(rows);
-    summaryCount.textContent = `${rows.length}件を表示中`;
+    const { pageRows, pageCount } = getPagedRows(rows);
+    const selected = ensureVisibleSelection(pageRows);
+    const optionText = sortModeEl.options[sortModeEl.selectedIndex]?.text || "表示順";
+    summaryCount.textContent = `${rows.length}件を表示中 / 全${cachedRows.length}件`;
+    currentSortEl.textContent = `${dataSource === "db" ? "DB" : "テンプレート"} / ${optionText}`;
     rowsEl.innerHTML = "";
     if (!rows.length) {
       rowsEl.innerHTML = `<p class="admin-empty">条件に合う素材がありません。</p>`;
+      renderPagination(rows, pageCount);
+      renderPreview(null);
       return;
     }
-    rows.forEach((row) => {
-      const article = document.createElement("article");
-      article.className = "admin-item-card portal-material-card";
-      article.dataset.materialCode = row.material_code || "";
-      article.innerHTML = `
-        <div class="portal-material-card-main">
-          <h3 class="portal-material-card-name">${row.material_name || "名称未設定"}</h3>
-          <div class="portal-material-axis-row">
-            ${createMaterialAxisCells(row.point_axes)}
-            <span class="portal-category-pill">${row.category || "未設定"}</span>
-          </div>
-        </div>
-        <div class="portal-material-card-foot">
-          <p class="admin-note">${row.note || "メモ未設定"}</p>
-          <button class="admin-btn primary" data-edit-code="${row.material_code}" type="button">編集</button>
-        </div>
+    rowsEl.innerHTML = pageRows.map((row) => {
+      const activeClass = row.material_code === selectedCode ? " is-active" : "";
+      const tags = row.tags?.length ? ` / ${row.tags.join("・")}` : "";
+      return `
+        <button class="admin-material-list-item${activeClass}" type="button" data-material-code="${escapeHtml(row.material_code)}">
+          <span>
+            <strong>${escapeHtml(row.material_name || "名称未設定")}</strong>
+            <span>${escapeHtml(row.material_code || "コード未設定")}${escapeHtml(tags)}</span>
+          </span>
+          <em>${escapeHtml(row.category || "未設定")}</em>
+        </button>
       `;
-      rowsEl.appendChild(article);
-    });
-
-    rowsEl.querySelectorAll("[data-edit-code]").forEach((button) => {
+    }).join("");
+    renderPagination(rows, pageCount);
+    rowsEl.querySelectorAll("[data-material-code]").forEach((button) => {
       button.addEventListener("click", () => {
-        const target = cachedRows.find((row) => row.material_code === button.dataset.editCode);
-        if (target) fillForm(target);
+        const target = cachedRows.find((row) => row.material_code === button.dataset.materialCode);
+        if (target) {
+          selectedCode = target.material_code;
+          fillForm(target);
+          renderRows();
+        }
       });
     });
+    if (selected) fillForm(selected);
+  }
 
-    const focusCode = new URLSearchParams(window.location.search).get("focus");
-    if (focusCode) {
-      const targetCard = rowsEl.querySelector(`[data-material-code="${focusCode}"]`);
-      if (targetCard) {
-        targetCard.classList.add("is-focused");
-        targetCard.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
+  function renderTagPreview(tags) {
+    const normalized = normalizeTags(tags);
+    tagPreviewEl.innerHTML = normalized.length
+      ? normalized.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")
+      : `<span>タグ未設定</span>`;
+  }
+
+  function getRadarPoints(axes) {
+    const center = { x: 120, y: 120 };
+    const maxRadius = 100;
+    const angles = [-90, -18, 54, 126, 198];
+    return AXIS_ORDER.map((axis, index) => {
+      const value = Math.max(0, Math.min(100, Number(axes?.[axis] || 0)));
+      const radius = (value / 100) * maxRadius;
+      const radians = (angles[index] * Math.PI) / 180;
+      const x = center.x + Math.cos(radians) * radius;
+      const y = center.y + Math.sin(radians) * radius;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(" ");
+  }
+
+  function renderPreview(row) {
+    const target = row || readFormRow();
+    previewNameEl.textContent = target?.material_name || "選択中の原料";
+    const axes = target?.point_axes || {};
+    radarPolygonEl.setAttribute("points", getRadarPoints(axes));
+    axisPreviewListEl.innerHTML = AXIS_ORDER.map((axis) => {
+      const value = Number(axes?.[axis] || 0);
+      return `
+        <span>${AXIS_LABELS[axis]}</span>
+        <meter min="0" max="100" value="${value}"></meter>
+        <span>${value}</span>
+      `;
+    }).join("");
+  }
+
+  function createNewMaterial() {
+    const code = `new-material-${Date.now()}`;
+    const nextSort = cachedRows.reduce((max, row) => Math.max(max, Number(row.sort_order || 0)), 0) + 10;
+    const row = normalizeRow({
+      material_code: code,
+      material_name: "新規原料",
+      category: "Top",
+      point_axes: { floral: 20, fresh: 20, woody: 20, spicy: 20, sweet: 20 },
+      tags: [],
+      note: null,
+      is_active: true,
+      sort_order: nextSort
+    });
+    cachedRows.push(row);
+    searchInput.value = "";
+    categoryFilter.value = "";
+    selectedCode = row.material_code;
+    currentPage = Math.max(1, Math.ceil(getFilteredRows().length / PAGE_SIZE));
+    fillForm(row);
+    renderRows();
+    setStatus("新規原料を追加しました。内容を調整してDB保存してください。");
+  }
+  function createMaterialPayload(row, index, savedAt) {
+    const normalized = normalizeRow(row);
+    const total = getAxesTotal(normalized.point_axes);
+    if (!normalized.material_code || !normalized.material_name) {
+      throw new Error("原料コードと原料名は必須です。");
     }
-  }
-
-  function renderTemplateOptions() {
-    const templates = getTemplates();
-    templateSelect.innerHTML = `<option value="">選択してください</option>${templates.map((row) => {
-      return `<option value="${row.material_code}">${row.material_name} / ${row.category}</option>`;
-    }).join("")}`;
-  }
-
-  async function loadMaterialSaveNote() {
-    if (!saveNoteEl) return;
-    const rows = await window.AdminData.listRows("admin_settings", {
-      filters: [{ operator: "eq", column: "setting_key", value: MATERIAL_SAVE_NOTE_KEY }],
-      limit: 1
-    }).catch(() => []);
-    const value = rows?.[0]?.setting_value;
-    if (!value) return;
-    saveNoteEl.value = typeof value === "string" ? value : (value.note || "");
-  }
-
-  async function saveMaterialSaveNote(savedAt) {
-    if (!saveNoteEl) return;
-    await window.AdminData.upsertRow("admin_settings", {
-      setting_key: MATERIAL_SAVE_NOTE_KEY,
-      setting_value: {
-        note: saveNoteEl.value.trim(),
-        saved_at: savedAt
-      },
+    if (total !== 100) {
+      throw new Error(`${normalized.material_name} の5軸ポイント合計が100ではありません。`);
+    }
+    return {
+      material_code: normalized.material_code,
+      material_name: normalized.material_name,
+      category: normalized.category || "Top",
+      point_axes: normalized.point_axes,
+      tags: normalized.tags,
+      note: normalized.note || null,
+      is_active: normalized.is_active !== false,
+      sort_order: Number(normalized.sort_order || ((index + 1) * 10)),
       updated_at: savedAt
-    }, "setting_key");
+    };
   }
 
   async function saveMaterialsToDatabase() {
+    persistFormToCache();
     const savedAt = new Date().toISOString();
-    const payload = (cachedRows.length ? cachedRows : getTemplates()).map((row, index) => {
-      const normalized = normalizeRow(row);
-      return {
-        ...normalized,
-        sort_order: Number(normalized.sort_order || ((index + 1) * 10)),
-        updated_at: savedAt
-      };
-    });
+    let payload = [];
     try {
+      payload = (cachedRows.length ? cachedRows : getTemplates()).map((row, index) => createMaterialPayload(row, index, savedAt));
       await window.AdminData.upsertRow("material_points", payload, "material_code");
-      await saveMaterialSaveNote(savedAt);
     } catch (error) {
-      seedStatus.className = "admin-error";
-      seedStatus.textContent = error?.message || "データベース保存に失敗しました。";
+      setStatus(error?.message || "データベース保存に失敗しました。", "error");
       return;
     }
-    seedStatus.className = "admin-note";
-    seedStatus.textContent = `${payload.length}件をデータベースに保存しました。`;
+    setStatus(`${payload.length}件をデータベースに保存しました。`);
     await getAllMaterials();
     renderRows();
   }
 
-  async function importRowsFromJson(rows) {
-    const payload = rows.map((row, index) => {
+  function importRowsFromJson(rows) {
+    cachedRows = rows.map((row, index) => {
       const normalized = normalizeRow(row);
       return {
         ...normalized,
-        sort_order: Number(normalized.sort_order || ((index + 1) * 10)),
-        updated_at: new Date().toISOString()
+        sort_order: Number(normalized.sort_order || ((index + 1) * 10))
       };
     });
-    await window.AdminData.upsertRow("material_points", payload, "material_code");
-    seedStatus.className = "admin-note";
-    seedStatus.textContent = `${payload.length}件を Json から反映しました。`;
-    await getAllMaterials();
+    dataSource = "json";
+    selectedCode = cachedRows[0]?.material_code || "";
+    currentPage = 1;
+    setStatus(`${cachedRows.length}件をJSONから読み込みました。DB保存で反映してください。`);
     renderRows();
   }
 
-  form.addEventListener("submit", async (event) => {
+  form.addEventListener("submit", (event) => {
     event.preventDefault();
-    const axes = getAxesInput();
-    const total = getAxesTotal(axes);
-    if (total !== 100) {
-      seedStatus.className = "admin-error";
-      seedStatus.textContent = "5種の方向性ポイント合計が 100 のときだけ保存できます。";
-      return;
-    }
-    const payload = {
-      material_code: document.getElementById("material-code").value.trim(),
-      material_name: document.getElementById("material-name").value.trim(),
-      category: document.getElementById("material-category").value || "Top",
-      point_axes: axes,
-      note: document.getElementById("material-note").value.trim() || null,
-      is_active: document.getElementById("material-active").checked,
-      sort_order: Number(document.getElementById("material-sort").value || 0),
-      updated_at: new Date().toISOString()
-    };
-    const id = document.getElementById("material-id").value;
-    try {
-      if (id) {
-        await window.AdminData.updateRow("material_points", id, payload);
-      } else {
-        await window.AdminData.insertRow("material_points", payload);
-      }
-    } catch (error) {
-      seedStatus.className = "admin-error";
-      seedStatus.textContent = error?.message || "Save failed.";
-      return;
-    }
-    seedStatus.className = "admin-note";
-    seedStatus.textContent = "保存しました。";
-    closeModal();
-    resetForm();
-    await getAllMaterials();
+    persistFormToCache();
     renderRows();
   });
 
   resetButton.addEventListener("click", () => {
     resetForm();
+    renderRows();
   });
-  saveDbButtons.forEach((button) => {
-    button.addEventListener("click", saveMaterialsToDatabase);
-  });
+  seedButton.addEventListener("click", saveMaterialsToDatabase);
   createButton.addEventListener("click", () => {
-    resetForm();
-    openModal();
+    createNewMaterial();
   });
-  applyTemplateButton.addEventListener("click", () => {
-    const selectedCode = templateSelect.value;
-    const target = getTemplates().find((row) => row.material_code === selectedCode);
-    if (target) fillForm(target, { asNew: true });
-  });
-  exportButtons.forEach((exportButton) => exportButton.addEventListener("click", () => {
-    const blob = new Blob([JSON.stringify(getFilteredRows(), null, 2)], { type: "application/json" });
+  exportButton.addEventListener("click", () => {
+    persistFormToCache();
+    const exportRows = getFilteredRows().map((row) => normalizeRow(row));
+    const blob = new Blob([JSON.stringify(exportRows, null, 2)], { type: "application/json" });
     const url = window.URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
     anchor.download = "material-points.json";
     anchor.click();
     window.URL.revokeObjectURL(url);
-    seedStatus.className = "admin-note";
-    seedStatus.textContent = "現在の原料一覧を Json ファイルとして保存しました。";
-  }));
+    setStatus("現在の表示対象をJSONファイルとして保存しました。");
+  });
   importTriggerButton.addEventListener("click", () => {
     importInput.click();
   });
@@ -383,23 +414,48 @@
       if (!Array.isArray(parsed)) {
         throw new Error("Json 読込は配列形式の原料データに対応しています。");
       }
-      await importRowsFromJson(parsed);
+      importRowsFromJson(parsed);
     } catch (error) {
-      seedStatus.className = "admin-error";
-      seedStatus.textContent = error.message || "Json 読込に失敗しました。";
+      setStatus(error.message || "Json 読込に失敗しました。", "error");
     } finally {
       importInput.value = "";
     }
   });
-  searchInput.addEventListener("input", renderRows);
-  categoryFilter.addEventListener("change", renderRows);
-  sortModeEl.addEventListener("change", renderRows);
-  AXIS_ORDER.forEach((axis) => {
-    document.getElementById(`axis-${axis}`).addEventListener("input", renderFormTotal);
+  searchInput.addEventListener("input", () => {
+    persistFormToCache();
+    currentPage = 1;
+    renderRows();
   });
-  document.querySelectorAll("[data-modal-close]").forEach((button) => {
-    button.addEventListener("click", () => {
-      closeModal();
+  categoryFilter.addEventListener("change", () => {
+    persistFormToCache();
+    currentPage = 1;
+    renderRows();
+  });
+  sortModeEl.addEventListener("change", () => {
+    persistFormToCache();
+    currentPage = 1;
+    renderRows();
+  });
+  pagePrevButton.addEventListener("click", () => {
+    persistFormToCache();
+    currentPage -= 1;
+    renderRows();
+  });
+  pageNextButton.addEventListener("click", () => {
+    persistFormToCache();
+    currentPage += 1;
+    renderRows();
+  });
+  ["material-code", "material-name", "material-category", "material-sort", "material-active", "material-note", "material-tags"].forEach((id) => {
+    document.getElementById(id).addEventListener("input", () => {
+      persistFormToCache();
+      renderRows();
+    });
+  });
+  AXIS_ORDER.forEach((axis) => {
+    document.getElementById(`axis-${axis}`).addEventListener("input", () => {
+      persistFormToCache();
+      renderRows();
     });
   });
 
@@ -418,10 +474,8 @@
     });
     const focusCode = new URLSearchParams(window.location.search).get("focus");
     if (focusCode) searchInput.value = focusCode;
-    renderTemplateOptions();
-    resetForm();
-    await loadMaterialSaveNote();
     await getAllMaterials();
+    if (focusCode && cachedRows.some((row) => row.material_code === focusCode)) selectedCode = focusCode;
     renderRows();
   }
 
