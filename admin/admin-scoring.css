@@ -98,7 +98,7 @@ body.admin-scoring-page .admin-page-title .portal-hero-copy:not(.admin-reference
 }
 
 .admin-scoring-page .admin-scoring-reference-workbench {
-  grid-template-columns: minmax(250px, 280px) minmax(0, 1fr);
+  grid-template-columns: minmax(220px, 240px) minmax(0, 1fr);
   align-items: start;
   gap: 18px;
 }
@@ -361,11 +361,22 @@ body.admin-scoring-page .admin-page-title .portal-hero-copy:not(.admin-reference
 .admin-scoring-page .portal-scoring-number-stepper button {
   width: 32px;
   min-height: 36px;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(199, 128, 37, 0.72);
   border-radius: 7px;
-  background: rgba(255, 253, 249, 0.95);
-  color: #9b6a35;
-  font-weight: 800;
+  background: linear-gradient(180deg, #fffaf0 0%, #f6dfbd 100%);
+  color: #8d561e;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.86) inset, 0 1px 3px rgba(73, 45, 19, 0.12);
+  cursor: pointer;
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.admin-scoring-page .portal-scoring-number-stepper button:hover,
+.admin-scoring-page .portal-scoring-number-stepper button:focus-visible {
+  border-color: #c78025;
+  background: #f0c16e;
+  color: #51320f;
 }
 
 .admin-scoring-page .portal-scoring-number-stepper input {
@@ -481,6 +492,10 @@ body.admin-scoring-page .admin-page-title .portal-hero-copy:not(.admin-reference
   max-width: 100%;
 }
 
+.portal-scoring-config-modal-card .portal-scoring-weight-grid {
+  margin-top: 52px;
+}
+
 .portal-scoring-config-modal-card .portal-scoring-finish-table {
   overflow-x: auto;
 }
@@ -578,7 +593,7 @@ body.portal-scoring-modal-open {
 
 @media (min-width: 1280px) {
   .admin-scoring-page .admin-scoring-reference-workbench {
-    grid-template-columns: minmax(260px, 300px) minmax(0, 1fr);
+    grid-template-columns: minmax(230px, 250px) minmax(0, 1fr);
     gap: 18px;
   }
 }
@@ -623,5 +638,9 @@ body.portal-scoring-modal-open {
 
   .portal-scoring-config-modal-card .portal-scoring-weight-card {
     position: static;
+  }
+
+  .portal-scoring-config-modal-card .portal-scoring-weight-grid {
+    margin-top: 0;
   }
 }
