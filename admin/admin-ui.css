@@ -5094,8 +5094,17 @@ body.admin-dashboard-page .admin-dashboard-artboard .kpi-card .decor-icon {
 }
 
 body.admin-dashboard-page .admin-dashboard-artboard .kpi-card .decor-icon::before {
-  inset: 15px !important;
-  border-width: 2px !important;
+  top: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: 50% !important;
+  width: 29px !important;
+  height: 29px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: currentColor !important;
+  box-shadow: none !important;
+  transform: translate(-50%, -50%) !important;
 }
 
 body.admin-dashboard-page .admin-dashboard-artboard .kpi-card p {
@@ -5111,7 +5120,7 @@ body.admin-dashboard-page .admin-dashboard-artboard .kpi-card small {
 }
 
 body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-main-grid {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr) !important;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) !important;
   gap: 18px !important;
   margin-bottom: 18px !important;
 }
@@ -5157,9 +5166,15 @@ body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-status-bloc
 }
 
 body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-status-block h3 strong {
-  min-height: 24px !important;
-  padding: 0 10px !important;
-  font-size: 12px !important;
+  display: inline !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: #55794e !important;
+  font-size: 15px !important;
+  line-height: 1.25 !important;
 }
 
 body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-staff-card {
@@ -5255,6 +5270,20 @@ body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-action-card
 body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-action-card .decor-icon {
   width: 50px !important;
   height: 50px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-action-card .decor-icon::before {
+  top: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: 50% !important;
+  width: 28px !important;
+  height: 28px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: currentColor !important;
+  box-shadow: none !important;
+  transform: translate(-50%, -50%) !important;
 }
 
 body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-action-card h3 {
