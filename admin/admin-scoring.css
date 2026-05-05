@@ -289,14 +289,19 @@ body.admin-scoring-page .admin-page-title .portal-hero-copy:not(.admin-reference
 
 .admin-scoring-page .portal-scoring-score-row {
   display: grid;
-  grid-template-columns: 36px minmax(142px, 1fr) repeat(5, minmax(44px, 54px));
+  grid-template-columns: 56px minmax(126px, 210px) repeat(5, minmax(44px, 54px));
   align-items: center;
   gap: 8px;
+  justify-content: start;
   min-width: 0;
 }
 
 .admin-scoring-page .portal-scoring-score-row > * {
   min-width: 0;
+}
+
+.admin-scoring-page .portal-scoring-score-row > strong {
+  white-space: nowrap;
 }
 
 .admin-scoring-page .portal-scoring-score-row:not(.portal-scoring-score-head) {
@@ -451,6 +456,23 @@ body.admin-scoring-page .admin-page-title .portal-hero-copy:not(.admin-reference
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.portal-scoring-config-modal-card .portal-scoring-basic-card {
+  justify-self: center;
+  width: min(720px, 100%);
+}
+
+.portal-scoring-config-modal-card .portal-scoring-basic-card .admin-grid.cols-4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(116px, 140px));
+  justify-content: center;
+  gap: 12px;
+}
+
+.portal-scoring-config-modal-card .portal-scoring-basic-field {
+  display: grid;
+  gap: 6px;
+}
+
 .portal-scoring-config-modal-card .portal-scoring-branch-card {
   padding: 14px;
 }
@@ -585,7 +607,8 @@ body.portal-scoring-modal-open {
 
 .admin-scoring-page .admin-reference-bottom-strip {
   width: min(100%, 1280px);
-  grid-template-columns: minmax(0, 1fr) 140px 180px 180px;
+  grid-template-columns: 140px 180px 180px;
+  justify-content: end;
   gap: 12px;
   margin-top: 16px;
   padding: 16px 22px;
@@ -633,6 +656,10 @@ body.portal-scoring-modal-open {
 
   .portal-scoring-config-modal-card .portal-scoring-branch-layout,
   .portal-scoring-config-modal-card .portal-scoring-branch-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-scoring-config-modal-card .portal-scoring-basic-card .admin-grid.cols-4 {
     grid-template-columns: 1fr;
   }
 

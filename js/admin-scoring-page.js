@@ -282,6 +282,18 @@
     return `scoring-card-${kind}-${branch || "main"}-${questionId}`.replace(/[^a-zA-Z0-9_-]/g, "-");
   }
 
+  function selectInitialQuestion() {
+    const firstQuestion = STEP1_SCHEMA[0];
+    if (!firstQuestion) return;
+    activeQuestionStep = "step1";
+    activeQuestionSelection = {
+      kind: "step1",
+      questionId: firstQuestion.id,
+      branch: "",
+      anchorId: getQuestionAnchorId("step1", firstQuestion.id)
+    };
+  }
+
   function getQuestionListItems(step = activeQuestionStep) {
     if (step === "step2") {
       const schemaList = STEP2_SCHEMA[activeQuestionBranch] || [];
@@ -1089,6 +1101,9 @@
 
   function applyWorkingConfig(config, message, options = {}) {
     workingConfig = cloneConfig(config);
+    if (options.selectInitialQuestion || !activeQuestionSelection) {
+      selectInitialQuestion();
+    }
     refreshJsonPreview();
     renderOverview(workingConfig);
     renderEditor();
@@ -1110,6 +1125,7 @@
     activeVersionEl.textContent = activeConfigRow?.version ?? "-";
     activeNoteEl.textContent = activeConfigRow?.note ?? "-";
     activeUpdatedEl.textContent = activeConfigRow?.updated_at ? String(activeConfigRow.updated_at).slice(0, 16).replace("T", " ") : "-";
+    if (activeConfigRow) selectInitialQuestion();
     applyWorkingConfig(activeConfigRow?.config_json || window.FragranceMasterData.createDefaultScoringConfig(), activeConfigRow ? "現在の active 設定をフォームへ読み込みました。" : "active 設定がないため、初期テンプレートを表示しています。");
   }
 

@@ -1484,3 +1484,20 @@
   - `node --check js/admin-scoring-page.js`
   - `git diff --check`
   - in-app browserで質問一覧幅、質問編集エリア幅、分岐テンプレートモーダル、ステッパーボタンの表示を確認した。
+
+### 2026-05-05 管理者・配点ロジックページの初期表示と余白調整
+- 対象:
+  - `admin/admin-scoring.html`
+  - `admin/admin-scoring.css`
+  - `js/admin-scoring-page.js`
+- 背景:
+  - ユーザー注釈で、回答入力欄が `NONE` ラベルにかぶること、下部説明文が不要なこと、DB読込後の初期表示、基本設定モーダルの余白調整が求められた。
+- 実装:
+  - DB読込前後で編集エリアが空にならないよう、初期表示時にSTEP1のQ1を自動選択するようにした。
+  - 回答行のラベル列と回答テキスト入力幅を見直し、`NONE` ラベルと入力欄が重ならないようにした。
+  - 下部の説明テキストを削除し、保存/JSON操作ボタンだけを右寄せ表示にした。
+  - 基本設定モーダルの入力群を中央寄せでコンパクトにした。
+- 確認:
+  - `node --check js/admin-scoring-page.js`
+  - `git diff --check`
+  - in-app browserで初期Q1表示、NONE行の入力欄、基本設定モーダル、下部ボタン表示を確認した。
