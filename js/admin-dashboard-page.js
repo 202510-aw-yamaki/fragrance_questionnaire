@@ -27,6 +27,8 @@
   const qrModalListEl = document.querySelector(".admin-qr-modal-list");
   const qrModalSummaryEl = document.querySelector(".admin-qr-modal-side dl");
   const qrModalNoteEl = document.querySelector(".admin-qr-modal-side p");
+  const footerLastLoginEl = document.getElementById("admin-footer-last-login");
+  const footerLoginUserEl = document.getElementById("admin-footer-login-user");
   const qrModalState = {
     activeKey: "overdue",
     categories: null
@@ -134,6 +136,46 @@
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return "期限未設定";
     return `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+  }
+
+  function formatAdminDateTime(value) {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
+    return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日（${weekdays[date.getDay()]}） ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+  }
+
+  function resolveAdminLoginName(session, staffProfile) {
+    const metadata = session?.user?.user_metadata || {};
+    const candidates = [
+      staffProfile?.display_name,
+      staffProfile?.staff_name,
+      metadata.staff_name,
+      metadata.display_name,
+      metadata.full_name,
+      metadata.name
+    ];
+    const resolved = candidates.find((value) => String(value || "").trim());
+    if (resolved) return String(resolved).trim();
+    const email = session?.user?.email || "";
+    return email.includes("@") ? email.split("@")[0] : "取得できません";
+  }
+
+  function renderAdminFooter(session, staffProfile = null) {
+    if (footerLastLoginEl) {
+      const lastLoginLabel = formatAdminDateTime(session?.user?.last_sign_in_at);
+      footerLastLoginEl.textContent = lastLoginLabel
+        ? `最終ログイン：${lastLoginLabel}`
+        : "最終ログイン：取得できません";
+    }
+    if (footerLoginUserEl) {
+      const email = String(session?.user?.email || "").trim();
+      const loginName = resolveAdminLoginName(session, staffProfile);
+      footerLoginUserEl.textContent = email
+        ? `ログインユーザー：${loginName}（${email}）`
+        : `ログインユーザー：${loginName}`;
+    }
   }
 
   function normalizeName(value) {
@@ -703,6 +745,10 @@
         { href: "admin-materials.html", label: "原料ポイント", key: "materials" }
       ]
     });
+    const staffProfile = window.AdminAuth.getStaffProfile
+      ? await window.AdminAuth.getStaffProfile(session).catch(() => null)
+      : null;
+    renderAdminFooter(session, staffProfile);
 
     const [reservations, slots, scoringRows, materials, settingsRows, qrNotificationRows, emailEventRows, qrRequestRows, workshopRows] = await Promise.all([
       window.AdminData.listRows("reservations", { orders: [{ column: "created_at", ascending: false }] }).catch(() => []),

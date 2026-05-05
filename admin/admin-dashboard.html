@@ -30,11 +30,11 @@
   <main class="admin-main">
     <section class="admin-page-title admin-dashboard-title"><div><h1>管理者ダッシュボード</h1></div><a class="admin-notification-pill" id="admin-qr-notification-trigger" href="admin-qr-requests.html" role="button">QR関連通知 <strong id="manager-qr-request-count">10</strong></a></section>
     <section class="kpi-grid admin-dashboard-kpis">
-      <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>本日の予約</p><strong class="kpi-value"><span id="kpi-reservations">8</span>件</strong><small>前日比 +<span id="kpi-reservations-week">2</span>件</small></div></article>
-      <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>未確認予約</p><strong class="kpi-value"><span id="kpi-unconfirmed-reservations">2</span>件</strong><small>前日比 -1件</small></div></article>
-      <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>QR作成依頼</p><strong class="kpi-value"><span id="kpi-qr-requests">5</span>件</strong><small>前日比 +1件</small></div></article>
-      <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>期限超過未対応</p><strong class="kpi-value"><span id="kpi-overdue-requests">1</span>件</strong><small>前日比 ±0件</small></div></article>
-      <article class="admin-panel kpi-card"><span class="decor-icon" aria-hidden="true"></span><div><p>発送準備中</p><strong class="kpi-value"><span id="kpi-shipping-pending">3</span>件</strong><small>前日比 +1件</small></div></article>
+      <article class="admin-panel kpi-card"><p>本日の予約</p><div class="kpi-card-body"><span class="decor-icon" aria-hidden="true"></span><div class="kpi-card-metrics"><strong class="kpi-value"><span id="kpi-reservations">8</span>件</strong><small>前日比 +<span id="kpi-reservations-week">2</span>件</small></div></div></article>
+      <article class="admin-panel kpi-card"><p>未確認予約</p><div class="kpi-card-body"><span class="decor-icon" aria-hidden="true"></span><div class="kpi-card-metrics"><strong class="kpi-value"><span id="kpi-unconfirmed-reservations">2</span>件</strong><small>前日比 -1件</small></div></div></article>
+      <article class="admin-panel kpi-card"><p>QR作成依頼</p><div class="kpi-card-body"><span class="decor-icon" aria-hidden="true"></span><div class="kpi-card-metrics"><strong class="kpi-value"><span id="kpi-qr-requests">5</span>件</strong><small>前日比 +1件</small></div></div></article>
+      <article class="admin-panel kpi-card"><p>期限超過未対応</p><div class="kpi-card-body"><span class="decor-icon" aria-hidden="true"></span><div class="kpi-card-metrics"><strong class="kpi-value"><span id="kpi-overdue-requests">1</span>件</strong><small>前日比 ±0件</small></div></div></article>
+      <article class="admin-panel kpi-card"><p>発送準備中</p><div class="kpi-card-body"><span class="decor-icon" aria-hidden="true"></span><div class="kpi-card-metrics"><strong class="kpi-value"><span id="kpi-shipping-pending">3</span>件</strong><small>前日比 +1件</small></div></div></article>
     </section>
     <section class="admin-dashboard-main-grid section">
       <article class="admin-panel admin-dashboard-status-panel">
@@ -89,7 +89,7 @@
       <div id="manager-material-links"></div>
     </section>
   </main>
-  <footer class="admin-reference-footer"><span>最終ログイン：2024年5月21日（火）09:42</span><span>ログインユーザー：管理者 佐藤（admin@example.com）</span><strong>セキュア接続中</strong></footer>
+  <footer class="admin-reference-footer"><span id="admin-footer-last-login">最終ログイン：取得中</span><span id="admin-footer-login-user">ログインユーザー：取得中</span></footer>
   <div class="admin-qr-modal" id="admin-qr-modal" hidden>
     <div class="admin-qr-modal-backdrop" data-admin-qr-modal-close></div>
     <section class="admin-qr-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="admin-qr-modal-title">

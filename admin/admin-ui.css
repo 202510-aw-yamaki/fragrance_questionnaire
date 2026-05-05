@@ -4966,6 +4966,8 @@ body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel .a
 /* 2026-05-05 dashboard: use real viewport sizing instead of scaled mockup artboard */
 body.admin-dashboard-page {
   min-height: 100vh !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
   background: #fffaf4;
 }
 
@@ -4988,6 +4990,9 @@ body.admin-dashboard-page .admin-dashboard-artboard {
 body.admin-dashboard-page .admin-dashboard-artboard .admin-header {
   height: auto !important;
   min-height: 66px !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 80 !important;
 }
 
 body.admin-dashboard-page .admin-dashboard-artboard .admin-header-inner {
@@ -5082,10 +5087,26 @@ body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-kpis {
 
 body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-kpis .kpi-card {
   width: auto !important;
-  min-height: 120px !important;
-  grid-template-columns: 56px 1fr !important;
-  gap: 12px !important;
+  min-height: 130px !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: auto 1fr !important;
+  align-content: start !important;
+  gap: 10px !important;
   padding: 18px 16px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .kpi-card .kpi-card-body {
+  display: grid !important;
+  grid-template-columns: 52px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .kpi-card .kpi-card-metrics {
+  min-width: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
 }
 
 body.admin-dashboard-page .admin-dashboard-artboard .kpi-card .decor-icon {
@@ -5109,14 +5130,17 @@ body.admin-dashboard-page .admin-dashboard-artboard .kpi-card .decor-icon::befor
 
 body.admin-dashboard-page .admin-dashboard-artboard .kpi-card p {
   font-size: 16px !important;
+  text-align: center !important;
 }
 
 body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-kpis .kpi-value {
   font-size: 31px !important;
+  margin-top: 0 !important;
 }
 
 body.admin-dashboard-page .admin-dashboard-artboard .kpi-card small {
   font-size: 12px !important;
+  margin-top: 4px !important;
 }
 
 body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-main-grid {
@@ -5302,6 +5326,13 @@ body.admin-dashboard-page .admin-dashboard-artboard .admin-reference-footer {
   margin: 12px auto 0 !important;
   padding: 12px 0 !important;
   font-size: 11px !important;
+  flex-wrap: wrap !important;
+  gap: 8px 24px !important;
+  justify-content: flex-start !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-reference-footer span {
+  white-space: nowrap !important;
 }
 
 body.admin-dashboard-page .admin-dashboard-artboard .admin-qr-modal {

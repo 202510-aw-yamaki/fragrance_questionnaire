@@ -1196,3 +1196,24 @@
   - `node --check js/admin-dashboard-reference.js`
   - `git diff --check`
   - in-app browserで1024px表示時に、KPI/アクションカードのアイコン中央揃え、ステータス見出し右側のテキスト表示、`2:1` カラム、アクションカード文言を確認。
+
+### 2026-05-05 管理者ダッシュボードのKPIとログイン表示修正
+- 対象:
+  - `admin/admin-dashboard.html`
+  - `admin/admin-ui.css`
+  - `js/admin-dashboard-page.js`
+- 背景:
+  - ユーザー注釈で、footerの `管理者 佐藤` や `2024年5月21日` がフレーバーテキストに見えるため、実際のログイン情報を表示したい要望があった。
+  - `セキュア接続中` は誤解を生むため不要という指摘があった。
+  - KPIカードは、見出しを1行、その下をアイコンと件数/前日比の2カラムにしたい要望があった。
+  - ヘッダーはスクロール時も追従させたい要望があった。
+- 実装:
+  - footerを静的文言からID付き要素に変更し、Supabase Authセッションの `last_sign_in_at`、メールアドレス、staff_profilesまたはuser_metadata由来の表示名を出すようにした。
+  - `セキュア接続中` の表示を削除した。
+  - KPIカードのHTML構造を、見出し行と `アイコン + 件数/前日比` 行に分けた。
+  - 管理者ダッシュボードの古い固定アートボード用overflowを通常スクロールに戻し、ヘッダーをsticky表示にした。
+- 確認:
+  - `node --check js/admin-dashboard-page.js`
+  - `node --check js/admin-dashboard-reference.js`
+  - `git diff --check`
+  - in-app browserで1024px表示時に、KPIの見出し/下段2カラム、footerの実ログイン情報表示、`セキュア接続中` の削除、ヘッダー表示を確認。
