@@ -7,3 +7,6 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Supabase local CLI state
+supabase/.temp/
