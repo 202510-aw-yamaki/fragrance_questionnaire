@@ -126,12 +126,277 @@ body.admin-settings-page .admin-page-title--center .eyebrow {
   font-size: 14px;
 }
 
+.admin-reference-staff-actions {
+  display: inline-flex;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
 .portal-settings-modal-note {
   margin: 0;
 }
 
 .portal-settings-modal-note.admin-error {
   border: 1px solid rgba(210, 85, 80, 0.3);
+}
+
+.admin-settings-page .portal-modal {
+  z-index: 140;
+  padding: 18px;
+}
+
+.admin-settings-page .portal-modal-dialog--settings {
+  width: min(900px, 100%);
+  max-height: calc(100vh - 36px);
+  padding: 18px;
+}
+
+.admin-settings-page .portal-settings-modal-form {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-settings-page .portal-settings-modal-card {
+  padding: 18px;
+  border-radius: 8px;
+}
+
+.admin-settings-page .portal-settings-modal-title {
+  margin: 0 0 12px;
+  font-size: 26px;
+}
+
+.admin-settings-page .portal-settings-credential-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 14px;
+}
+
+.admin-settings-page .portal-settings-password-wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.admin-settings-page .portal-settings-visibility-toggle {
+  min-height: 44px;
+  padding-inline: 14px;
+}
+
+.admin-settings-page .portal-settings-shift-staff-banner {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 10px;
+  padding: 6px 12px;
+  border: 1px solid rgba(77, 118, 69, 0.28);
+  border-radius: 999px;
+  background: rgba(239, 248, 233, 0.86);
+  color: var(--green);
+  font-weight: 800;
+}
+
+.admin-settings-page .portal-settings-duty-card {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-settings-page .portal-settings-duty-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.admin-settings-page .portal-settings-duty-head h3 {
+  margin: 0 0 4px;
+  font-size: 24px;
+}
+
+.admin-settings-page .portal-settings-duty-head p,
+.admin-settings-page .portal-settings-duty-helper {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.admin-settings-page .portal-settings-duty-summary {
+  display: grid;
+  min-width: 190px;
+  gap: 2px;
+  padding: 8px 12px;
+  border: 1px solid rgba(221, 196, 166, 0.78);
+  border-radius: 8px;
+  background: rgba(255, 251, 244, 0.92);
+  color: var(--muted);
+}
+
+.admin-settings-page .portal-settings-duty-summary span,
+.admin-settings-page .portal-settings-duty-summary small {
+  font-size: 12px;
+}
+
+.admin-settings-page .portal-settings-duty-summary strong {
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.admin-settings-page .portal-settings-duty-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 4px;
+  border: 1px solid rgba(221, 196, 166, 0.78);
+  border-radius: 8px;
+  background: rgba(255, 251, 244, 0.86);
+}
+
+.admin-settings-page .portal-settings-duty-tab {
+  min-height: 40px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.admin-settings-page .portal-settings-duty-tab.is-active {
+  background: var(--green);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(77, 118, 69, 0.18);
+}
+
+.admin-settings-page .portal-settings-duty-table {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-settings-page .portal-settings-duty-head-row,
+.admin-settings-page .portal-settings-duty-row {
+  display: grid;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-settings-page .portal-settings-duty-head-row--week,
+.admin-settings-page .portal-settings-duty-row:not(.portal-settings-date-duty-row) {
+  grid-template-columns: 56px minmax(112px, 1fr) minmax(112px, 1fr) 86px;
+}
+
+.admin-settings-page .portal-settings-duty-head-row--date,
+.admin-settings-page .portal-settings-date-duty-row {
+  grid-template-columns: 76px minmax(104px, 1fr) minmax(104px, 1fr) 76px 62px 58px;
+}
+
+.admin-settings-page .portal-settings-duty-head-row {
+  padding: 0 10px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin-settings-page .portal-settings-duty-body,
+.admin-settings-page .portal-settings-date-pattern {
+  display: grid;
+  gap: 6px;
+}
+
+.admin-settings-page .portal-settings-date-pattern {
+  max-height: 360px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.admin-settings-page .portal-settings-duty-row {
+  min-height: 48px;
+  padding: 8px 10px;
+  border: 1px solid rgba(221, 196, 166, 0.76);
+  border-radius: 8px;
+  background: rgba(255, 253, 249, 0.94);
+}
+
+.admin-settings-page .portal-settings-duty-row.is-off {
+  background: rgba(248, 241, 232, 0.7);
+}
+
+.admin-settings-page .portal-settings-duty-row.is-modified {
+  border-color: rgba(199, 136, 38, 0.58);
+  background: rgba(255, 248, 236, 0.96);
+}
+
+.admin-settings-page .portal-settings-duty-day {
+  display: grid;
+  gap: 1px;
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.admin-settings-page .portal-settings-duty-day small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.admin-settings-page .portal-settings-duty-time input {
+  width: 100%;
+  min-height: 38px;
+  padding: 6px 8px;
+}
+
+.admin-settings-page .portal-settings-duty-time input:disabled {
+  opacity: 0.42;
+}
+
+.admin-settings-page .portal-settings-duty-off {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.admin-settings-page .portal-settings-duty-off input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--green);
+}
+
+.admin-settings-page .portal-settings-duty-badge {
+  justify-self: start;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(239, 248, 233, 0.9);
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin-settings-page .portal-settings-duty-badge.is-modified {
+  background: rgba(252, 237, 212, 0.94);
+  color: #b46a00;
+}
+
+.admin-settings-page .portal-settings-duty-reset {
+  min-height: 34px;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.admin-settings-page .portal-settings-month-toolbar {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.admin-settings-page .portal-settings-month-toolbar strong {
+  justify-self: center;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 20px;
 }
 
 @media (max-width: 1180px) {
@@ -145,11 +410,46 @@ body.admin-settings-page .admin-page-title--center .eyebrow {
     padding: 10px 8px;
     font-size: 13px;
   }
+
+  .admin-settings-page .portal-settings-duty-head-row--date,
+  .admin-settings-page .portal-settings-date-duty-row {
+    grid-template-columns: 72px 96px 96px 70px 56px 54px;
+  }
 }
 
 @media (max-width: 760px) {
   .admin-settings-page .admin-settings-layout,
   .admin-inline-fields {
     grid-template-columns: 1fr;
+  }
+
+  .admin-settings-page .portal-modal {
+    padding: 10px;
+  }
+
+  .admin-settings-page .portal-modal-dialog--settings {
+    padding: 12px;
+  }
+
+  .admin-settings-page .portal-settings-credential-grid,
+  .admin-settings-page .portal-settings-duty-head,
+  .admin-settings-page .portal-settings-duty-head-row--week,
+  .admin-settings-page .portal-settings-duty-row:not(.portal-settings-date-duty-row),
+  .admin-settings-page .portal-settings-duty-head-row--date,
+  .admin-settings-page .portal-settings-date-duty-row,
+  .admin-settings-page .portal-settings-month-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-settings-page .portal-settings-duty-head {
+    display: grid;
+  }
+
+  .admin-settings-page .portal-settings-duty-head-row {
+    display: none;
+  }
+
+  .admin-settings-page .portal-settings-date-pattern {
+    max-height: none;
   }
 }

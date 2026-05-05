@@ -124,15 +124,19 @@
           <section class="admin-panel admin-panel-soft portal-settings-modal-card portal-settings-duty-card">
             <div class="portal-settings-shift-staff-banner" id="staff-duty-name-display" hidden></div>
             <div class="portal-settings-duty-head">
-              <h3>勤務設定</h3>
-              <p class="admin-note">曜日ごとの基準出勤 / 退勤 / 休み設定</p>
+              <div>
+                <h3>勤務設定</h3>
+                <p class="admin-note">曜日別の通常勤務を基準に、急な出勤・休みだけ日別で調整します。</p>
+              </div>
+              <div class="portal-settings-duty-summary" id="staff-duty-base-summary"></div>
             </div>
             <div class="portal-settings-duty-tabs" id="staff-duty-tabs" hidden>
-              <button class="portal-settings-duty-tab is-active" type="button" data-duty-tab="basic" aria-selected="true">基本設定</button>
-              <button class="portal-settings-duty-tab" type="button" data-duty-tab="individual" aria-selected="false">個別設定</button>
+              <button class="portal-settings-duty-tab is-active" type="button" data-duty-tab="basic" aria-selected="true">週の通常勤務</button>
+              <button class="portal-settings-duty-tab" type="button" data-duty-tab="individual" aria-selected="false">月別の個別調整</button>
             </div>
             <div class="portal-settings-duty-table portal-settings-duty-pane" data-duty-pane="basic">
-              <div class="portal-settings-duty-head-row" aria-hidden="true">
+              <p class="portal-settings-duty-helper">ここで設定した曜日と時間が、このスタッフの通常の出勤日時になります。</p>
+              <div class="portal-settings-duty-head-row portal-settings-duty-head-row--week" aria-hidden="true">
                 <span>曜日</span>
                 <span>出勤</span>
                 <span>退勤</span>
@@ -141,11 +145,20 @@
               <div class="portal-week-pattern portal-settings-duty-body" id="staff-weekly-pattern"></div>
             </div>
             <div class="portal-settings-duty-table portal-settings-duty-pane" data-duty-pane="individual" hidden>
-              <div class="portal-settings-duty-head-row" aria-hidden="true">
+              <div class="portal-settings-month-toolbar">
+                <button class="admin-btn secondary" type="button" data-duty-month-prev>前月</button>
+                <strong id="staff-duty-month-label"></strong>
+                <button class="admin-btn secondary" type="button" data-duty-month-current>今月</button>
+                <button class="admin-btn secondary" type="button" data-duty-month-next>翌月</button>
+              </div>
+              <p class="portal-settings-duty-helper">通常勤務と違う日だけ保存されます。急な出勤、短縮勤務、休みを月単位で調整できます。</p>
+              <div class="portal-settings-duty-head-row portal-settings-duty-head-row--date" aria-hidden="true">
                 <span>日付</span>
                 <span>出勤</span>
                 <span>退勤</span>
                 <span>休み</span>
+                <span>状態</span>
+                <span></span>
               </div>
               <div class="portal-settings-date-pattern" id="staff-date-pattern"></div>
             </div>
@@ -188,6 +201,11 @@
   const dutyTabsEl = document.getElementById("staff-duty-tabs");
   const dutyTabButtons = Array.from(staffModalEl?.querySelectorAll("[data-duty-tab]") || []);
   const dutyPaneEls = Array.from(staffModalEl?.querySelectorAll("[data-duty-pane]") || []);
+  const dutyBaseSummaryEl = document.getElementById("staff-duty-base-summary");
+  const dutyMonthLabelEl = document.getElementById("staff-duty-month-label");
+  const dutyMonthPrevButtonEl = staffModalEl?.querySelector("[data-duty-month-prev]") || null;
+  const dutyMonthCurrentButtonEl = staffModalEl?.querySelector("[data-duty-month-current]") || null;
+  const dutyMonthNextButtonEl = staffModalEl?.querySelector("[data-duty-month-next]") || null;
   const state = {
     settingRowMap: new Map(),
     staffDirectory: [],
@@ -199,6 +217,7 @@
     selectedStaffId: "",
     staffModalMode: "create",
     staffDutyTab: "basic",
+    staffDutyMonthOffset: 0,
     staffDateOverridesDirty: false,
     storeDirty: false,
     staffModalDirty: false
@@ -238,6 +257,10 @@
     return next;
   }
 
+  function addMonths(date, amount) {
+    return new Date(date.getFullYear(), date.getMonth() + amount, 1);
+  }
+
   function formatDateKey(date) {
     return [
       date.getFullYear(),
@@ -248,6 +271,10 @@
 
   function formatMonthDay(date) {
     return `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}`;
+  }
+
+  function formatYearMonth(date) {
+    return `${date.getFullYear()}年${date.getMonth() + 1}月`;
   }
 
   function formatWeekLabel(startDate) {
@@ -441,6 +468,21 @@
     return Array.from({ length: count }, (_, index) => addDays(start, index));
   }
 
+  function getDutyMonthStart() {
+    const today = createLocalDate(new Date());
+    return addMonths(new Date(today.getFullYear(), today.getMonth(), 1), state.staffDutyMonthOffset);
+  }
+
+  function getMonthDates(monthStart) {
+    const start = new Date(monthStart.getFullYear(), monthStart.getMonth(), 1);
+    const nextMonth = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 1);
+    const dates = [];
+    for (let date = start; date < nextMonth; date = addDays(date, 1)) {
+      dates.push(createLocalDate(date));
+    }
+    return dates;
+  }
+
   function normalizeName(value) {
     return String(value || "").trim().toLowerCase();
   }
@@ -550,7 +592,35 @@
     });
   }
 
-  function syncDatePatternState() {
+  function readDateRowValue(row, staff) {
+    const dateKey = row.dataset.dateRow;
+    const base = getBaseShiftForDate(staff, dateKey);
+    return {
+      staffId: staff.id,
+      date: dateKey,
+      isWorking: row.querySelector(`[data-date-off="${dateKey}"]`)?.checked !== true,
+      startTime: normalizeTime(row.querySelector(`[data-date-start="${dateKey}"]`)?.value, base.startTime),
+      endTime: normalizeTime(row.querySelector(`[data-date-end="${dateKey}"]`)?.value, base.endTime)
+    };
+  }
+
+  function refreshDateRowOverrideState(row, staff) {
+    if (!row || !staff?.id) return;
+    const dateKey = row.dataset.dateRow;
+    const base = getBaseShiftForDate(staff, dateKey);
+    const value = readDateRowValue(row, staff);
+    const isModified = !isSameShiftAsBase(value, base);
+    row.classList.toggle("is-modified", isModified);
+    const badge = row.querySelector("[data-date-state]");
+    if (badge) {
+      badge.textContent = isModified ? "変更" : "通常";
+      badge.classList.toggle("is-modified", isModified);
+    }
+    const resetButton = row.querySelector("[data-date-reset]");
+    if (resetButton) resetButton.disabled = !isModified;
+  }
+
+  function syncDatePatternState(staff = buildDutyStaffFromModal()) {
     if (!datePatternEl) return;
     datePatternEl.querySelectorAll("[data-date-row]").forEach((row) => {
       const isOff = row.querySelector("[data-date-off]")?.checked === true;
@@ -558,6 +628,7 @@
       row.querySelectorAll('input[type="time"]').forEach((input) => {
         input.disabled = isOff;
       });
+      refreshDateRowOverrideState(row, staff);
     });
   }
 
@@ -591,6 +662,23 @@
     }, {});
   }
 
+  function updateDutyBaseSummary(staff) {
+    if (!dutyBaseSummaryEl || !staff?.weeklyPattern) return;
+    const workingLabels = WEEKDAY_LABELS.filter((_, dayIndex) => staff.weeklyPattern[String(dayIndex)]?.isWorking !== false);
+    const workingTimes = Array.from(new Set(workingLabels.map((label) => {
+      const dayIndex = WEEKDAY_LABELS.indexOf(label);
+      const pattern = staff.weeklyPattern[String(dayIndex)] || {};
+      return `${normalizeTime(pattern.startTime, staff.defaultStart)}-${normalizeTime(pattern.endTime, staff.defaultEnd)}`;
+    })));
+    const dayText = workingLabels.length ? workingLabels.join("・") : "出勤なし";
+    const timeText = workingTimes.length === 1 ? workingTimes[0] : `${workingTimes.length}パターン`;
+    dutyBaseSummaryEl.innerHTML = `
+      <span>通常勤務</span>
+      <strong>${escapeHtml(dayText)}</strong>
+      <small>${escapeHtml(timeText)}</small>
+    `;
+  }
+
   function buildDutyStaffFromModal() {
     const { defaultStart, defaultEnd } = deriveDefaultTimesFromModal();
     return normalizeStaff({
@@ -616,12 +704,16 @@
 
   function renderStaffDateOverrides(staff) {
     if (!datePatternEl || !staff?.id) return;
-    const dates = getWeekDates(14);
+    const monthStart = getDutyMonthStart();
+    const dates = getMonthDates(monthStart);
+    if (dutyMonthLabelEl) dutyMonthLabelEl.textContent = formatYearMonth(monthStart);
     datePatternEl.innerHTML = dates.map((date) => {
       const dateKey = formatDateKey(date);
       const shift = getShiftForDate(staff, dateKey);
+      const base = getBaseShiftForDate(staff, dateKey);
+      const isModified = !isSameShiftAsBase(shift, base);
       return `
-        <article class="portal-settings-duty-row portal-settings-date-duty-row" data-date-row="${dateKey}">
+        <article class="portal-settings-duty-row portal-settings-date-duty-row ${shift.isWorking === false ? "is-off" : ""} ${isModified ? "is-modified" : ""}" data-date-row="${dateKey}">
           <strong class="portal-settings-duty-day">
             ${formatMonthDay(date)}
             <small>${WEEKDAY_LABELS[date.getDay()]}</small>
@@ -634,28 +726,51 @@
           </div>
           <label class="portal-settings-duty-off">
             <input type="checkbox" data-date-off="${dateKey}" ${shift.isWorking === false ? "checked" : ""}>
+            <span>休み</span>
           </label>
+          <span class="portal-settings-duty-badge ${isModified ? "is-modified" : ""}" data-date-state>${isModified ? "変更" : "通常"}</span>
+          <button class="admin-btn secondary portal-settings-duty-reset" type="button" data-date-reset="${dateKey}" ${isModified ? "" : "disabled"}>戻す</button>
         </article>
       `;
     }).join("");
-    syncDatePatternState();
+    syncDatePatternState(staff);
     state.staffDateOverridesDirty = false;
   }
 
   function readDateOverridesFromModal(staff) {
     if (!datePatternEl || !staff?.id) return [];
     return Array.from(datePatternEl.querySelectorAll("[data-date-row]")).map((row) => {
-      const dateKey = row.dataset.dateRow;
-      const base = getBaseShiftForDate(staff, dateKey);
-      const value = {
-        staffId: staff.id,
-        date: dateKey,
-        isWorking: row.querySelector(`[data-date-off="${dateKey}"]`)?.checked !== true,
-        startTime: normalizeTime(row.querySelector(`[data-date-start="${dateKey}"]`)?.value, base.startTime),
-        endTime: normalizeTime(row.querySelector(`[data-date-end="${dateKey}"]`)?.value, base.endTime)
-      };
+      const base = getBaseShiftForDate(staff, row.dataset.dateRow);
+      const value = readDateRowValue(row, staff);
       return isSameShiftAsBase(value, base) ? null : stripOverrideForSave(value);
     }).filter(Boolean);
+  }
+
+  function mergeVisibleDateOverridesIntoDraft(staff) {
+    if (!datePatternEl || !staff?.id || !state.staffDateOverridesDirty) return;
+    const visibleDateKeys = new Set(
+      Array.from(datePatternEl.querySelectorAll("[data-date-row]")).map((row) => row.dataset.dateRow)
+    );
+    state.shiftOverrides = state.shiftOverrides
+      .filter((row) => row.staffId !== staff.id || !visibleDateKeys.has(row.date))
+      .concat(readDateOverridesFromModal(staff));
+    state.staffDateOverridesDirty = false;
+  }
+
+  function resetDateOverrideRow(dateKey) {
+    if (!datePatternEl || !dateKey) return;
+    const row = datePatternEl.querySelector(`[data-date-row="${dateKey}"]`);
+    if (!row) return;
+    const staff = buildDutyStaffFromModal();
+    const base = getBaseShiftForDate(staff, dateKey);
+    const startInput = row.querySelector(`[data-date-start="${dateKey}"]`);
+    const endInput = row.querySelector(`[data-date-end="${dateKey}"]`);
+    const offInput = row.querySelector(`[data-date-off="${dateKey}"]`);
+    if (startInput) startInput.value = base.startTime;
+    if (endInput) endInput.value = base.endTime;
+    if (offInput) offInput.checked = base.isWorking === false;
+    state.staffDateOverridesDirty = true;
+    syncDatePatternState(staff);
   }
 
   function renderWeeklyPatternInputs(staff) {
@@ -697,6 +812,9 @@
   }
 
   function setDutyTab(tab) {
+    if (state.staffDutyTab === "individual" && tab !== "individual" && state.staffDateOverridesDirty) {
+      mergeVisibleDateOverridesIntoDraft(buildDutyStaffFromModal());
+    }
     const nextTab = state.staffModalMode === "duty" && tab === "individual" ? "individual" : "basic";
     state.staffDutyTab = nextTab;
     if (nextTab === "individual" && !state.staffDateOverridesDirty) {
@@ -712,6 +830,16 @@
     });
   }
 
+  function setDutyMonthOffset(offset) {
+    if (state.staffDutyTab === "individual") {
+      mergeVisibleDateOverridesIntoDraft(buildDutyStaffFromModal());
+    }
+    state.staffDutyMonthOffset = offset;
+    if (state.staffDutyTab === "individual") {
+      renderStaffDateOverrides(buildDutyStaffFromModal());
+    }
+  }
+
   function setStaffModalMode(mode, staff, isTemporary = false) {
     state.staffModalMode = mode;
     if (staffModalEl) staffModalEl.dataset.mode = mode;
@@ -722,6 +850,7 @@
       staffDutyNameEl.textContent = staff?.staffName || "";
     }
     if (dutyTabsEl) dutyTabsEl.hidden = mode !== "duty";
+    state.staffDutyMonthOffset = 0;
     state.staffDateOverridesDirty = false;
     if (datePatternEl && mode !== "duty") datePatternEl.innerHTML = "";
     if (mode === "duty") {
@@ -768,17 +897,20 @@
           </div>
           <label class="portal-settings-duty-off">
             <input type="checkbox" data-weekday-off="${dayIndex}" ${pattern.isWorking === false ? "checked" : ""}>
+            <span>休み</span>
           </label>
         </article>
       `;
     }).join("");
     syncWeeklyPatternState();
+    updateDutyBaseSummary(staff);
   }
 
   function launchStaffModal(staff, mode = "") {
     const isTemporary = staff?.isTemporary === true;
     const modalMode = mode || (staff && !isTemporary ? "edit" : "create");
     const temporaryTimes = extractShiftTimes(staff?.todayShiftLabel, "10:00", "18:00");
+    const storeTimes = getStoreBusinessTimes();
     const target = isTemporary
       ? normalizeStaff({
         staffName: staff?.staffName || "",
@@ -787,7 +919,11 @@
         defaultEnd: temporaryTimes.endTime,
         weeklyPattern: buildDefaultWeeklyPattern(temporaryTimes.startTime, temporaryTimes.endTime)
       })
-      : (staff ? normalizeStaff(staff) : normalizeStaff({}));
+      : (staff ? normalizeStaff(staff) : normalizeStaff({
+        defaultStart: storeTimes.startTime,
+        defaultEnd: storeTimes.endTime,
+        weeklyPattern: buildStoreWeeklyPattern()
+      }));
     staffModalTitleEl.textContent = modalMode === "duty"
       ? "スタッフ出勤管理"
       : (modalMode === "edit" ? "スタッフ編集" : "スタッフ新規登録");
@@ -850,7 +986,12 @@
         <tr>
           <td>${escapeHtml(staff.staffName)}</td>
           <td>${escapeHtml(getRoleLabel(staff.role))}</td>
-          <td><button class="admin-btn secondary" type="button" data-staff-edit="${escapeHtml(staff.id)}">編集</button></td>
+          <td>
+            <div class="admin-reference-staff-actions">
+              <button class="admin-btn secondary" type="button" data-staff-edit="${escapeHtml(staff.id)}">編集</button>
+              <button class="admin-btn secondary" type="button" data-staff-duty="${escapeHtml(staff.id)}">勤務</button>
+            </div>
+          </td>
         </tr>
       `;
     }).join("");
@@ -1041,6 +1182,44 @@
     };
   }
 
+  function getStoreBusinessTimes() {
+    const info = normalizeStoreInfo(readSettingValue(STORE_PUBLIC_INFO_KEY));
+    return {
+      startTime: normalizeTime(info.open_time, STORE_DEFAULT_INFO.open_time),
+      endTime: normalizeTime(info.close_time, STORE_DEFAULT_INFO.close_time)
+    };
+  }
+
+  function getStoreClosedDayIndexes() {
+    const info = normalizeStoreInfo(readSettingValue(STORE_PUBLIC_INFO_KEY));
+    const text = String(info.closed_days || "");
+    if (!text || /無休|なし/.test(text)) return new Set();
+    return new Set(WEEKDAY_LABELS
+      .map((label, index) => {
+        const separated = new RegExp(`(^|[、,・/\\s])${label}($|[、,・/\\s])`).test(text);
+        const weekday = text.includes(`${label}曜`);
+        const weekendPair = (label === "土" || label === "日") && text.includes("土日");
+        return separated || weekday || weekendPair ? index : null;
+      })
+      .filter((index) => index !== null));
+  }
+
+  function buildStoreWeeklyPattern() {
+    const storeTimes = getStoreBusinessTimes();
+    const closedDays = getStoreClosedDayIndexes();
+    return Array.from({ length: 7 }, (_, day) => [
+      String(day),
+      {
+        isWorking: !closedDays.has(day),
+        startTime: storeTimes.startTime,
+        endTime: storeTimes.endTime
+      }
+    ]).reduce((acc, [day, value]) => {
+      acc[day] = value;
+      return acc;
+    }, {});
+  }
+
   function normalizeProductTags(value) {
     const source = Array.isArray(value)
       ? value
@@ -1208,12 +1387,7 @@
       const index = state.staffDirectory.findIndex((row) => row.id === payload.id);
       if (index >= 0) state.staffDirectory[index] = payload;
       if (state.staffDateOverridesDirty) {
-        const visibleDateKeys = new Set(
-          Array.from(datePatternEl?.querySelectorAll("[data-date-row]") || []).map((row) => row.dataset.dateRow)
-        );
-        state.shiftOverrides = state.shiftOverrides
-          .filter((row) => row.staffId !== payload.id || !visibleDateKeys.has(row.date))
-          .concat(readDateOverridesFromModal(payload));
+        mergeVisibleDateOverridesIntoDraft(payload);
       }
       try {
         await saveSetting(STAFF_SETTING_KEY, state.staffDirectory.map(stripStaffForSave));
@@ -1366,8 +1540,23 @@
   }
 
   weeklyPatternEl.addEventListener("change", (event) => {
-    if (event.target instanceof HTMLInputElement && event.target.matches("[data-weekday-off]")) {
+    if (event.target instanceof HTMLInputElement) {
       syncWeeklyPatternState();
+      const staff = buildDutyStaffFromModal();
+      updateDutyBaseSummary(staff);
+      if (state.staffDutyTab === "individual" && !state.staffDateOverridesDirty) {
+        renderStaffDateOverrides(staff);
+      }
+    }
+  });
+
+  weeklyPatternEl.addEventListener("input", (event) => {
+    if (event.target instanceof HTMLInputElement) {
+      const staff = buildDutyStaffFromModal();
+      updateDutyBaseSummary(staff);
+      if (state.staffDutyTab === "individual" && !state.staffDateOverridesDirty) {
+        renderStaffDateOverrides(staff);
+      }
     }
   });
 
@@ -1377,18 +1566,35 @@
     });
   });
 
+  dutyMonthPrevButtonEl?.addEventListener("click", () => {
+    setDutyMonthOffset(state.staffDutyMonthOffset - 1);
+  });
+
+  dutyMonthCurrentButtonEl?.addEventListener("click", () => {
+    setDutyMonthOffset(0);
+  });
+
+  dutyMonthNextButtonEl?.addEventListener("click", () => {
+    setDutyMonthOffset(state.staffDutyMonthOffset + 1);
+  });
+
   if (datePatternEl) {
+    datePatternEl.addEventListener("click", (event) => {
+      const resetButton = event.target instanceof Element ? event.target.closest("[data-date-reset]") : null;
+      if (!resetButton) return;
+      resetDateOverrideRow(resetButton.dataset.dateReset);
+    });
+
     datePatternEl.addEventListener("change", (event) => {
-      if (event.target instanceof HTMLInputElement && event.target.matches("[data-date-off]")) {
-        syncDatePatternState();
-      }
       if (event.target instanceof HTMLInputElement) {
         state.staffDateOverridesDirty = true;
+        syncDatePatternState(buildDutyStaffFromModal());
       }
     });
     datePatternEl.addEventListener("input", (event) => {
       if (event.target instanceof HTMLInputElement) {
         state.staffDateOverridesDirty = true;
+        syncDatePatternState(buildDutyStaffFromModal());
       }
     });
   }
@@ -1450,9 +1656,15 @@
 
   staffTableBodyEl?.addEventListener("click", (event) => {
     if (!(event.target instanceof Element)) return;
-    const button = event.target.closest("[data-staff-edit]");
-    if (!(button instanceof HTMLElement)) return;
-    const target = getStoredStaffById(button.dataset.staffEdit);
+    const dutyButton = event.target.closest("[data-staff-duty]");
+    if (dutyButton instanceof HTMLElement) {
+      const target = getStoredStaffById(dutyButton.dataset.staffDuty);
+      if (target) openStaffDutyModal(target);
+      return;
+    }
+    const editButton = event.target.closest("[data-staff-edit]");
+    if (!(editButton instanceof HTMLElement)) return;
+    const target = getStoredStaffById(editButton.dataset.staffEdit);
     if (target) launchStaffModal(target);
   });
 
