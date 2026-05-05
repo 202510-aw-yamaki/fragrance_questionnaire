@@ -126,6 +126,14 @@ body.admin-settings-page .admin-page-title--center .eyebrow {
   font-size: 14px;
 }
 
+.portal-settings-modal-note {
+  margin: 0;
+}
+
+.portal-settings-modal-note.admin-error {
+  border: 1px solid rgba(210, 85, 80, 0.3);
+}
+
 @media (max-width: 1180px) {
   .admin-settings-page .admin-settings-layout {
     grid-template-columns: minmax(300px, 0.9fr) minmax(420px, 1.1fr);

@@ -74,7 +74,7 @@
     staffModalEl.innerHTML = `
       <div class="portal-modal-backdrop" data-modal-close="staff-modal"></div>
       <div class="portal-modal-dialog portal-modal-dialog--settings">
-        <form class="admin-form portal-settings-modal-form" id="staff-form">
+        <form class="admin-form portal-settings-modal-form" id="staff-form" novalidate>
           <input id="staff-id" type="hidden">
           <input id="staff-email" type="hidden">
           <input id="staff-phone" type="hidden">
@@ -103,7 +103,7 @@
               <label class="portal-settings-field portal-settings-password-field">
                 <span>Authパスワード</span>
                 <span class="portal-settings-password-wrap">
-                  <input id="staff-password" type="password" autocomplete="new-password" placeholder="保存時にSupabase Authへ設定">
+                  <input id="staff-password" type="password" minlength="6" autocomplete="new-password" placeholder="保存時にSupabase Authへ設定">
                   <button class="admin-btn secondary portal-settings-visibility-toggle" type="button" data-toggle-password="staff-password">表示</button>
                 </span>
               </label>
@@ -114,7 +114,7 @@
               <label class="portal-settings-field portal-settings-password-field" data-manager-auth-row hidden>
                 <span>管理者Authパス</span>
                 <span class="portal-settings-password-wrap">
-                  <input id="manager-password" type="password" autocomplete="new-password" placeholder="保存時にSupabase Authへ設定">
+                  <input id="manager-password" type="password" minlength="6" autocomplete="new-password" placeholder="保存時にSupabase Authへ設定">
                   <button class="admin-btn secondary portal-settings-visibility-toggle" type="button" data-toggle-password="manager-password">表示</button>
                 </span>
               </label>
@@ -151,6 +151,7 @@
             </div>
           </section>
 
+          <p class="portal-settings-modal-note admin-note" id="staff-modal-note" hidden></p>
           <div class="admin-actions portal-settings-modal-actions">
             <button class="admin-btn secondary portal-settings-modal-close" type="button" data-modal-close="staff-modal">閉じる</button>
             <button class="admin-btn primary" type="submit">保存</button>
@@ -178,6 +179,7 @@
   const staffCredentialCardEl = staffModalEl?.querySelector(".portal-settings-credential-card") || null;
   const staffDutyCardEl = staffModalEl?.querySelector(".portal-settings-duty-card") || null;
   const staffDutyNameEl = document.getElementById("staff-duty-name-display");
+  const staffModalNoteEl = document.getElementById("staff-modal-note");
   const staffShiftButtonEl = document.getElementById("staff-shift-button");
   const staffManageLabelEl = manageSelectEl?.closest(".portal-settings-select")?.querySelector("span") || null;
   const shiftManageLabelEl = shiftManageSelectEl?.closest(".portal-settings-select")?.querySelector("span") || null;
@@ -473,6 +475,14 @@
     return state.slots.filter((row) => row.is_active !== false && row.slot_date === dateKey && normalizeName(row.instructor_name) === normalizeName(staffName));
   }
 
+  function setStaffModalNote(message, isError) {
+    if (!staffModalNoteEl) return;
+    const text = String(message || "").trim();
+    staffModalNoteEl.hidden = !text;
+    staffModalNoteEl.textContent = text;
+    staffModalNoteEl.className = `portal-settings-modal-note ${isError ? "admin-error" : "admin-note"}`;
+  }
+
   function getBaseShiftForDate(staff, dateKey) {
     const date = new Date(`${dateKey}T00:00:00`);
     const pattern = staff.weeklyPattern[String(date.getDay())] || {};
@@ -491,6 +501,8 @@
   }
 
   function setControlNote(message, isError) {
+    const isModalOpen = staffModalEl && staffModalEl.hidden === false;
+    if (isModalOpen) setStaffModalNote(message, isError);
     if (!controlNoteEl) return;
     controlNoteEl.hidden = !String(message || "").trim();
     controlNoteEl.textContent = message;
@@ -788,6 +800,7 @@
     renderStaffWeeklyPattern(target);
     setStaffModalMode(modalMode, target, isTemporary);
     state.staffModalDirty = false;
+    setStaffModalNote("", false);
     setControlNote("", false);
     openModal(staffModalEl);
   }

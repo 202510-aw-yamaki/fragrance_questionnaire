@@ -1308,3 +1308,18 @@
 - 確認:
   - `node --check js/admin-settings-page.js`
   - `git diff --check`
+
+### 2026-05-05 管理者基本設定スタッフ保存エラー表示修正
+- 対象:
+  - `admin/admin-settings.css`
+  - `js/admin-settings-page.js`
+- 背景:
+  - ユーザー注釈で、スタッフ登録モーダルの保存ボタンを押しても保存されないように見える問題があった。
+  - 6文字未満のAuthパスワード、重複ID、Edge Function未設定などの保存停止理由が、モーダル外の非表示領域へ出ていた。
+- 実装:
+  - スタッフ登録モーダル内に保存結果/エラー表示欄を追加した。
+  - モーダル内の入力エラーや保存失敗理由を保存ボタン付近へ表示するようにした。
+  - 独自バリデーション表示を優先するため、スタッフフォームを `novalidate` にした。
+- 確認:
+  - `node --check js/admin-settings-page.js`
+  - `git diff --check`
