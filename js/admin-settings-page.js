@@ -125,7 +125,7 @@
             <div class="portal-settings-shift-staff-banner" id="staff-duty-name-display" hidden></div>
             <div class="portal-settings-duty-head">
               <div>
-                <h3>勤務設定</h3>
+                <h3 id="staff-duty-title">勤務設定</h3>
                 <p class="admin-note">曜日別の通常勤務を基準に、急な出勤・休みだけ日別で調整します。</p>
               </div>
               <div class="portal-settings-duty-summary" id="staff-duty-base-summary"></div>
@@ -191,6 +191,7 @@
   const staffCredentialCardEl = staffModalEl?.querySelector(".portal-settings-credential-card") || null;
   const staffDutyCardEl = staffModalEl?.querySelector(".portal-settings-duty-card") || null;
   const staffDutyNameEl = document.getElementById("staff-duty-name-display");
+  const staffDutyTitleEl = document.getElementById("staff-duty-title");
   const staffModalNoteEl = document.getElementById("staff-modal-note");
   const staffShiftButtonEl = document.getElementById("staff-shift-button");
   const staffManageLabelEl = manageSelectEl?.closest(".portal-settings-select")?.querySelector("span") || null;
@@ -662,20 +663,27 @@
     }, {});
   }
 
+  function buildAllWorkingWeeklyPattern(defaultStart, defaultEnd) {
+    return Array.from({ length: 7 }, (_, day) => [
+      String(day),
+      {
+        isWorking: true,
+        startTime: defaultStart,
+        endTime: defaultEnd
+      }
+    ]).reduce((acc, [day, value]) => {
+      acc[day] = value;
+      return acc;
+    }, {});
+  }
+
   function updateDutyBaseSummary(staff) {
     if (!dutyBaseSummaryEl || !staff?.weeklyPattern) return;
     const workingLabels = WEEKDAY_LABELS.filter((_, dayIndex) => staff.weeklyPattern[String(dayIndex)]?.isWorking !== false);
-    const workingTimes = Array.from(new Set(workingLabels.map((label) => {
-      const dayIndex = WEEKDAY_LABELS.indexOf(label);
-      const pattern = staff.weeklyPattern[String(dayIndex)] || {};
-      return `${normalizeTime(pattern.startTime, staff.defaultStart)}-${normalizeTime(pattern.endTime, staff.defaultEnd)}`;
-    })));
     const dayText = workingLabels.length ? workingLabels.join("・") : "出勤なし";
-    const timeText = workingTimes.length === 1 ? workingTimes[0] : `${workingTimes.length}パターン`;
     dutyBaseSummaryEl.innerHTML = `
       <span>通常勤務</span>
       <strong>${escapeHtml(dayText)}</strong>
-      <small>${escapeHtml(timeText)}</small>
     `;
   }
 
@@ -847,8 +855,12 @@
     if (staffCredentialCardEl) staffCredentialCardEl.hidden = mode === "duty";
     if (staffDutyCardEl) staffDutyCardEl.hidden = mode === "edit";
     if (staffDutyNameEl) {
-      staffDutyNameEl.hidden = mode !== "duty";
-      staffDutyNameEl.textContent = staff?.staffName || "";
+      staffDutyNameEl.hidden = true;
+      staffDutyNameEl.textContent = "";
+    }
+    if (staffDutyTitleEl) {
+      const staffName = String(staff?.staffName || "").trim();
+      staffDutyTitleEl.textContent = mode === "duty" && staffName ? `${staffName}さんの勤務設定` : "勤務設定";
     }
     if (dutyTabsEl) dutyTabsEl.hidden = mode !== "duty";
     state.staffDutyWeekOffset = 0;
@@ -923,7 +935,7 @@
       : (staff ? normalizeStaff(staff) : normalizeStaff({
         defaultStart: storeTimes.startTime,
         defaultEnd: storeTimes.endTime,
-        weeklyPattern: buildStoreWeeklyPattern()
+        weeklyPattern: buildAllWorkingWeeklyPattern(storeTimes.startTime, storeTimes.endTime)
       }));
     staffModalTitleEl.textContent = modalMode === "duty"
       ? "スタッフ出勤管理"
@@ -1189,36 +1201,6 @@
       startTime: normalizeTime(info.open_time, STORE_DEFAULT_INFO.open_time),
       endTime: normalizeTime(info.close_time, STORE_DEFAULT_INFO.close_time)
     };
-  }
-
-  function getStoreClosedDayIndexes() {
-    const info = normalizeStoreInfo(readSettingValue(STORE_PUBLIC_INFO_KEY));
-    const text = String(info.closed_days || "");
-    if (!text || /無休|なし/.test(text)) return new Set();
-    return new Set(WEEKDAY_LABELS
-      .map((label, index) => {
-        const separated = new RegExp(`(^|[、,・/\\s])${label}($|[、,・/\\s])`).test(text);
-        const weekday = text.includes(`${label}曜`);
-        const weekendPair = (label === "土" || label === "日") && text.includes("土日");
-        return separated || weekday || weekendPair ? index : null;
-      })
-      .filter((index) => index !== null));
-  }
-
-  function buildStoreWeeklyPattern() {
-    const storeTimes = getStoreBusinessTimes();
-    const closedDays = getStoreClosedDayIndexes();
-    return Array.from({ length: 7 }, (_, day) => [
-      String(day),
-      {
-        isWorking: !closedDays.has(day),
-        startTime: storeTimes.startTime,
-        endTime: storeTimes.endTime
-      }
-    ]).reduce((acc, [day, value]) => {
-      acc[day] = value;
-      return acc;
-    }, {});
   }
 
   function normalizeProductTags(value) {
