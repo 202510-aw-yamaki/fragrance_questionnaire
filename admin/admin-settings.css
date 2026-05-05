@@ -332,11 +332,13 @@ body.admin-settings-page .admin-page-title--center .eyebrow {
 }
 
 .admin-settings-page .portal-settings-duty-day {
-  display: grid;
-  gap: 1px;
-  color: var(--ink);
-  font-size: 15px;
-  line-height: 1.2;
+    display: grid;
+    gap: 1px;
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.2;
+    grid-auto-flow: column;
+    align-items: center;
 }
 
 .admin-settings-page .portal-settings-duty-day small {
@@ -431,10 +433,6 @@ body.admin-settings-page .admin-page-title--center .eyebrow {
     font-size: 13px;
   }
 
-  .admin-settings-page .portal-settings-duty-head-row--date,
-  .admin-settings-page .portal-settings-date-duty-row {
-    grid-template-columns: 72px 104px 104px 86px minmax(64px, 1fr) 66px;
-  }
 }
 
 @media (max-width: 760px) {
