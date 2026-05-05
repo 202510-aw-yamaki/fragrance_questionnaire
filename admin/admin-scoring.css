@@ -1,0 +1,175 @@
+/* Admin scoring page styles. Shared admin primitives stay in admin-ui.css. */
+
+body.admin-scoring-page {
+  padding-top: 66px;
+}
+
+body.admin-scoring-page .admin-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 80;
+}
+
+body.admin-scoring-page .admin-header-inner {
+  min-height: 66px;
+  width: min(100% - 48px, 1180px);
+  padding: 8px 0;
+}
+
+body.admin-scoring-page .admin-brand {
+  gap: 10px;
+  font-size: 23px;
+}
+
+body.admin-scoring-page .admin-brand-logo {
+  width: 38px;
+  height: 50px;
+  max-width: 38px;
+  max-height: 50px;
+  flex: 0 0 38px;
+}
+
+body.admin-scoring-page .admin-brand-logo img {
+  width: 38px;
+  height: 50px;
+  max-width: 38px;
+  max-height: 50px;
+}
+
+body.admin-scoring-page .admin-brand-meta {
+  font-size: 11px;
+}
+
+body.admin-scoring-page .admin-main {
+  width: min(100% - 48px, 1280px);
+  padding: 28px 0 24px;
+}
+
+body.admin-scoring-page .admin-page-title--center {
+  min-height: auto;
+  justify-content: flex-start;
+  place-items: center start;
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+body.admin-scoring-page .admin-page-title--center > div {
+  width: 100%;
+}
+
+body.admin-scoring-page .admin-page-title--center .eyebrow {
+  justify-content: flex-start;
+}
+
+body.admin-scoring-page .admin-page-title h1 {
+  margin-top: 4px;
+  font-size: clamp(32px, 3vw, 42px);
+}
+
+body.admin-scoring-page .admin-page-title .portal-hero-copy:not(.admin-reference-hidden-copy) {
+  display: none;
+}
+
+.admin-scoring-page .admin-scoring-reference-workbench {
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 14px;
+}
+
+.admin-scoring-page .admin-scoring-question-list,
+.admin-scoring-page .admin-scoring-editor-card,
+.admin-scoring-page .admin-scoring-preview-card {
+  padding: 22px;
+}
+
+.admin-scoring-page .admin-scoring-preview-card {
+  grid-column: 2;
+}
+
+.admin-scoring-page .question-link {
+  min-height: 64px;
+  gap: 12px;
+  padding: 0 14px;
+  font-size: 16px;
+}
+
+.admin-scoring-page .question-link span {
+  width: 36px;
+  height: 36px;
+  font-size: 20px;
+}
+
+.admin-scoring-page .admin-scoring-status-pills {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.admin-scoring-page .admin-scoring-status-pills span {
+  padding: 6px 14px;
+  font-size: 13px;
+}
+
+.admin-scoring-page .admin-scoring-answer-matrix .matrix-head,
+.admin-scoring-page .admin-scoring-answer-matrix .matrix-row {
+  grid-template-columns: 36px minmax(96px, 1.1fr) repeat(5, minmax(48px, 0.7fr)) 32px;
+  gap: 8px;
+}
+
+.admin-scoring-page .admin-scoring-answer-matrix .matrix-row {
+  min-height: 74px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.admin-scoring-page .admin-scoring-answer-matrix input {
+  min-height: 42px;
+  font-size: 17px;
+}
+
+.admin-scoring-page .admin-reference-dashed-button {
+  min-height: 48px;
+  margin-top: 14px;
+  font-size: 16px;
+}
+
+.admin-scoring-page .admin-reference-bottom-strip {
+  width: min(100%, 1280px);
+  grid-template-columns: minmax(0, 1fr) 140px 180px 180px;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 16px 22px;
+}
+
+@media (min-width: 1280px) {
+  .admin-scoring-page .admin-scoring-reference-workbench {
+    grid-template-columns: 240px minmax(600px, 1fr) 300px;
+    gap: 16px;
+  }
+
+  .admin-scoring-page .admin-scoring-preview-card {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 860px) {
+  body.admin-scoring-page .admin-main {
+    width: min(100% - 28px, 760px);
+  }
+
+  .admin-scoring-page .admin-scoring-reference-workbench,
+  .admin-scoring-page .admin-scoring-preview-card,
+  .admin-scoring-page .admin-reference-bottom-strip {
+    grid-template-columns: 1fr;
+    grid-column: auto;
+  }
+
+  .admin-scoring-page .admin-scoring-answer-matrix {
+    overflow-x: auto;
+  }
+
+  .admin-scoring-page .admin-scoring-answer-matrix .matrix-head,
+  .admin-scoring-page .admin-scoring-answer-matrix .matrix-row {
+    min-width: 640px;
+  }
+}
