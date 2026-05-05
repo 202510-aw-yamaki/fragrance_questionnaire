@@ -1272,3 +1272,20 @@
   - `git diff --check`
   - `http://127.0.0.1:8000/admin/admin-settings.html?role=manager` が 200 で返ることを確認。
   - in-app browserでロゴ縮小、ヘッダー表示、スタッフ一覧のDB行表示、予約基本設定削除を確認。
+
+### 2026-05-05 管理者基本設定ページの注釈対応
+- 対象:
+  - `admin/admin-settings.html`
+  - `admin/admin-settings.css`
+  - `js/admin-dashboard-page.js`
+- 背景:
+  - ユーザー注釈で、基本設定ページの説明文削除、ページタイトル左寄せ、スタッフ一覧とダッシュボードのスタッフ表示元の不一致確認が必要になった。
+  - 店舗情報がどこから取得・保存されるかの確認が必要になった。
+- 実装:
+  - 基本設定ページの説明文を削除し、ページタイトルを左寄せ表示にした。
+  - 管理者ダッシュボードのスタッフ一覧も `staff_profiles` を優先して取得し、勤務表示用の補助情報だけ `admin_settings.staff_directory` から補完するようにした。
+  - 店舗情報は `admin_settings.store_public_info` を読み書きする構成であることを確認した。
+- 確認:
+  - `node --check js/admin-dashboard-page.js`
+  - `node --check js/admin-settings-page.js`
+  - `git diff --check`

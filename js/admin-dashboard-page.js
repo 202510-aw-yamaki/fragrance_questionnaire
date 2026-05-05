@@ -188,12 +188,41 @@
   }
 
   function normalizeStaff(row, index = 0) {
-    const staffName = normalizeName(row.staffName || row.staff_name || row.name) || `${LABELS.staffPrefix}${index + 1}`;
+    const staffName = normalizeName(row.staffName || row.staff_name || row.display_name || row.name) || `${LABELS.staffPrefix}${index + 1}`;
     return {
       id: normalizeName(row.id || row.staffId || row.staff_id || staffName || index),
+      staffCode: normalizeName(row.staffCode || row.staff_code || row.login_id),
       staffName,
       weeklyPattern: row.weeklyPattern || row.weekly_pattern || {}
     };
+  }
+
+  function mergeStaffProfilesWithSettings(staffProfileRows, storedStaffRows) {
+    const storedById = new Map();
+    const storedByCode = new Map();
+    const storedByName = new Map();
+    storedStaffRows.forEach((staff) => {
+      if (staff.id) storedById.set(staff.id, staff);
+      if (staff.staffCode) storedByCode.set(staff.staffCode, staff);
+      if (staff.staffName) storedByName.set(staff.staffName, staff);
+    });
+    return (staffProfileRows || [])
+      .filter((row) => row && row.is_active !== false)
+      .map((row, index) => {
+        const profileStaff = normalizeStaff({
+          id: row.id,
+          staffCode: row.login_id,
+          staffName: row.staff_name || row.display_name
+        }, index);
+        const storedStaff = storedById.get(profileStaff.id)
+          || storedByCode.get(profileStaff.staffCode)
+          || storedByName.get(profileStaff.staffName)
+          || {};
+        return {
+          ...profileStaff,
+          weeklyPattern: storedStaff.weeklyPattern || {}
+        };
+      });
   }
 
   function normalizeShiftOverride(row) {
@@ -204,10 +233,15 @@
     };
   }
 
-  function getDashboardStaffRows(slots, settingsRows) {
+  function getDashboardStaffRows(staffProfileRows, slots, settingsRows) {
     const storedStaff = readSettingValue(settingsRows, STAFF_SETTING_KEY);
+    const normalizedStoredStaff = Array.isArray(storedStaff) ? storedStaff.map(normalizeStaff) : [];
+    const profileStaff = mergeStaffProfilesWithSettings(staffProfileRows, normalizedStoredStaff);
+    if (profileStaff.length) {
+      return profileStaff;
+    }
     if (Array.isArray(storedStaff) && storedStaff.length) {
-      return storedStaff.map(normalizeStaff);
+      return normalizedStoredStaff;
     }
     const derivedNames = Array.from(new Set(
       slots.map((row) => normalizeName(row.instructor_name)).filter(Boolean)
@@ -755,12 +789,16 @@
       : null;
     renderAdminFooter(session, staffProfile);
 
-    const [reservations, slots, scoringRows, materials, settingsRows, qrNotificationRows, emailEventRows, qrRequestRows, workshopRows] = await Promise.all([
+    const [reservations, slots, scoringRows, materials, settingsRows, staffProfileRows, qrNotificationRows, emailEventRows, qrRequestRows, workshopRows] = await Promise.all([
       window.AdminData.listRows("reservations", { orders: [{ column: "created_at", ascending: false }] }).catch(() => []),
       window.AdminData.listRows("reservation_slots", { filters: [{ operator: "in", column: "status", value: ["open", "recommended", "closed"] }] }).catch(() => []),
       window.AdminData.listRows("scoring_configs", { filters: [{ operator: "eq", column: "is_active", value: true }], limit: 1 }).catch(() => []),
       window.AdminData.listRows("material_points").catch(() => []),
       window.AdminData.listRows("admin_settings", { filters: [{ operator: "in", column: "setting_key", value: [STAFF_SETTING_KEY, SHIFT_SETTING_KEY] }] }).catch(() => []),
+      window.AdminData.listRows("staff_profiles", {
+        select: "id, login_id, staff_name, display_name, role, is_active, created_at, updated_at",
+        orders: [{ column: "role", ascending: true }, { column: "staff_name", ascending: true }]
+      }).catch(() => []),
       window.AdminData.listRows("notification_events", {
         filters: [
           { operator: "in", column: "event_type", value: ["qr_product_requested", "qr_inactive_access_spike", "qr_request_overdue"] },
@@ -785,7 +823,7 @@
       }).catch(() => [])
     ]);
 
-    const staffRows = getDashboardStaffRows(slots, settingsRows);
+    const staffRows = getDashboardStaffRows(staffProfileRows, slots, settingsRows);
     const shiftOverrides = getShiftOverrides(settingsRows);
     const todayKey = formatDateKey(new Date());
     const slotMap = new Map(slots.map((row) => [row.id, row]));

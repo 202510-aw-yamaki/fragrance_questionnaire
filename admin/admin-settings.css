@@ -42,6 +42,20 @@ body.admin-settings-page .admin-brand-meta {
   font-size: 11px;
 }
 
+body.admin-settings-page .admin-page-title--center {
+  justify-content: flex-start;
+  place-items: center start;
+  text-align: left;
+}
+
+body.admin-settings-page .admin-page-title--center > div {
+  width: 100%;
+}
+
+body.admin-settings-page .admin-page-title--center .eyebrow {
+  justify-content: flex-start;
+}
+
 .admin-settings-layout {
   display: grid;
   grid-template-columns: minmax(360px, 0.9fr) minmax(520px, 1.2fr);
