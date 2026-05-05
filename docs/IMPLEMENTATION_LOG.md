@@ -1217,3 +1217,20 @@
   - `node --check js/admin-dashboard-reference.js`
   - `git diff --check`
   - in-app browserで1024px表示時に、KPIの見出し/下段2カラム、footerの実ログイン情報表示、`セキュア接続中` の削除、ヘッダー表示を確認。
+
+### 2026-05-05 管理者ダッシュボードの初期ダミー表示抑制
+- 対象:
+  - `admin/admin-dashboard.html`
+  - `admin/admin-ui.css`
+  - `js/admin-dashboard-page.js`
+- 背景:
+  - ユーザー確認で、ページ読込前にHTML直書きの件数やサンプル通知が一瞬表示される指摘があった。
+- 実装:
+  - HTML初期状態のダミー件数、スタッフ名、予約枠、QR通知サンプルを削除し、読み込み中表示へ置き換えた。
+  - `is-data-loading` 中はKPI件数・前日比・QR通知件数を非表示にし、実データ描画後に表示するようにした。
+  - ダッシュボード描画完了時に `is-data-loading` を外す処理を追加した。
+- 確認:
+  - `node --check js/admin-dashboard-page.js`
+  - `node --check js/admin-dashboard-reference.js`
+  - `git diff --check`
+  - in-app browserでリロード直後に読み込み中表示となり、描画完了後に実データ表示へ切り替わることを確認。

@@ -5079,6 +5079,13 @@ body.admin-dashboard-page .admin-dashboard-artboard .admin-notification-pill str
   font-size: 13px !important;
 }
 
+body.admin-dashboard-page .admin-dashboard-artboard.is-data-loading .admin-dashboard-kpis .kpi-value,
+body.admin-dashboard-page .admin-dashboard-artboard.is-data-loading .admin-dashboard-kpis small,
+body.admin-dashboard-page .admin-dashboard-artboard.is-data-loading .admin-notification-pill strong,
+body.admin-dashboard-page .admin-dashboard-artboard.is-data-loading #manager-qr-request-panel-count {
+  visibility: hidden !important;
+}
+
 body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-kpis {
   grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
   gap: 16px !important;

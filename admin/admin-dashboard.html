@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="admin-ui.css">
 </head>
 <body class="admin-page admin-reference-page admin-dashboard-page" data-page="admin-dashboard">
-  <div class="admin-dashboard-artboard" id="admin-dashboard-artboard">
+  <div class="admin-dashboard-artboard is-data-loading" id="admin-dashboard-artboard">
   <header class="admin-header" id="admin-header">
     <div class="admin-header-inner site-container admin-header-inner--manager">
       <a class="admin-brand" href="admin-dashboard.html?role=manager">
@@ -28,13 +28,13 @@
     </div>
   </header>
   <main class="admin-main">
-    <section class="admin-page-title admin-dashboard-title"><div><h1>管理者ダッシュボード</h1></div><a class="admin-notification-pill" id="admin-qr-notification-trigger" href="admin-qr-requests.html" role="button">QR関連通知 <strong id="manager-qr-request-count">10</strong></a></section>
+    <section class="admin-page-title admin-dashboard-title"><div><h1>管理者ダッシュボード</h1></div><a class="admin-notification-pill" id="admin-qr-notification-trigger" href="admin-qr-requests.html" role="button">QR関連通知 <strong id="manager-qr-request-count">0</strong></a></section>
     <section class="kpi-grid admin-dashboard-kpis">
-      <article class="admin-panel kpi-card"><p>本日の予約</p><div class="kpi-card-body"><span class="decor-icon" aria-hidden="true"></span><div class="kpi-card-metrics"><strong class="kpi-value"><span id="kpi-reservations">8</span>件</strong><small>前日比 +<span id="kpi-reservations-week">2</span>件</small></div></div></article>
-      <article class="admin-panel kpi-card"><p>未確認予約</p><div class="kpi-card-body"><span class="decor-icon" aria-hidden="true"></span><div class="kpi-card-metrics"><strong class="kpi-value"><span id="kpi-unconfirmed-reservations">2</span>件</strong><small>前日比 -1件</small></div></div></article>
-      <article class="admin-panel kpi-card"><p>QR作成依頼</p><div class="kpi-card-body"><span class="decor-icon" aria-hidden="true"></span><div class="kpi-card-metrics"><strong class="kpi-value"><span id="kpi-qr-requests">5</span>件</strong><small>前日比 +1件</small></div></div></article>
-      <article class="admin-panel kpi-card"><p>期限超過未対応</p><div class="kpi-card-body"><span class="decor-icon" aria-hidden="true"></span><div class="kpi-card-metrics"><strong class="kpi-value"><span id="kpi-overdue-requests">1</span>件</strong><small>前日比 ±0件</small></div></div></article>
-      <article class="admin-panel kpi-card"><p>発送準備中</p><div class="kpi-card-body"><span class="decor-icon" aria-hidden="true"></span><div class="kpi-card-metrics"><strong class="kpi-value"><span id="kpi-shipping-pending">3</span>件</strong><small>前日比 +1件</small></div></div></article>
+      <article class="admin-panel kpi-card"><p>本日の予約</p><div class="kpi-card-body"><span class="decor-icon" aria-hidden="true"></span><div class="kpi-card-metrics"><strong class="kpi-value"><span id="kpi-reservations">0</span>件</strong><small>前日比 +<span id="kpi-reservations-week">0</span>件</small></div></div></article>
+      <article class="admin-panel kpi-card"><p>未確認予約</p><div class="kpi-card-body"><span class="decor-icon" aria-hidden="true"></span><div class="kpi-card-metrics"><strong class="kpi-value"><span id="kpi-unconfirmed-reservations">0</span>件</strong><small>前日比 -0件</small></div></div></article>
+      <article class="admin-panel kpi-card"><p>QR作成依頼</p><div class="kpi-card-body"><span class="decor-icon" aria-hidden="true"></span><div class="kpi-card-metrics"><strong class="kpi-value"><span id="kpi-qr-requests">0</span>件</strong><small>前日比 +0件</small></div></div></article>
+      <article class="admin-panel kpi-card"><p>期限超過未対応</p><div class="kpi-card-body"><span class="decor-icon" aria-hidden="true"></span><div class="kpi-card-metrics"><strong class="kpi-value"><span id="kpi-overdue-requests">0</span>件</strong><small>前日比 ±0件</small></div></div></article>
+      <article class="admin-panel kpi-card"><p>発送準備中</p><div class="kpi-card-body"><span class="decor-icon" aria-hidden="true"></span><div class="kpi-card-metrics"><strong class="kpi-value"><span id="kpi-shipping-pending">0</span>件</strong><small>前日比 +0件</small></div></div></article>
     </section>
     <section class="admin-dashboard-main-grid section">
       <article class="admin-panel admin-dashboard-status-panel">
@@ -42,21 +42,13 @@
         <div class="admin-dashboard-status-block">
           <h3>本日のスタッフ</h3>
           <div id="manager-today-shifts" class="portal-list-body">
-            <span class="admin-reference-chip">佐藤 花子</span>
-            <span class="admin-reference-chip">鈴木 健太</span>
-            <span class="admin-reference-chip">田中 美香</span>
-            <span class="admin-reference-chip">山本 直樹</span>
-            <span class="admin-reference-chip">高橋 優子</span>
-            <span class="admin-reference-chip">+1名</span>
+            <p class="admin-empty">本日のスタッフを読み込み中です。</p>
           </div>
         </div>
         <div class="admin-dashboard-status-block">
           <h3>予約枠状況</h3>
           <div id="manager-next-week-summary" class="portal-list-body admin-dashboard-inline-list">
-            <span class="admin-reference-slot"><b>10:00-12:00</b><small>4 / 6枠</small></span>
-            <span class="admin-reference-slot is-full"><b>13:00-15:00</b><small>6 / 6枠</small></span>
-            <span class="admin-reference-slot is-warn"><b>15:30-17:30</b><small>5 / 6枠</small></span>
-            <span class="admin-reference-slot"><b>18:00-20:00</b><small>5 / 10枠</small></span>
+            <p class="admin-empty">予約枠状況を読み込み中です。</p>
           </div>
         </div>
         <div class="admin-dashboard-status-block">
@@ -68,12 +60,9 @@
       </article>
       <article class="admin-panel admin-dashboard-qr-panel">
         <h2>QR関連通知</h2>
-        <strong class="kpi-value" id="manager-qr-request-panel-count">10</strong>
+        <strong class="kpi-value" id="manager-qr-request-panel-count">0</strong>
         <div id="manager-qr-request-list" class="portal-list-body">
-          <article class="portal-dashboard-row portal-dashboard-row--summary is-alert"><span>3営業日超過未対応</span><small>対応期限を超過しているQR作成依頼があります。</small><strong>1件</strong></article>
-          <article class="portal-dashboard-row portal-dashboard-row--summary"><span>受付終了QRアクセス急増</span><small>受付終了後もアクセスが急増しているQRがあります。</small><strong>2件</strong></article>
-          <article class="portal-dashboard-row portal-dashboard-row--summary is-mail"><span>再案内判断が必要</span><small>返信・対応が必要な再案内リクエストがあります。</small><strong>3件</strong></article>
-          <a class="admin-btn" href="admin-qr-requests.html?role=manager">QR通知一覧へ</a>
+          <p class="admin-empty">QR通知を読み込み中です。</p>
         </div>
       </article>
     </section>

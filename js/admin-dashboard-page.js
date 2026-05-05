@@ -19,6 +19,7 @@
   const qrRequestCountEl = document.getElementById("manager-qr-request-count");
   const qrRequestPanelCountEl = document.getElementById("manager-qr-request-panel-count");
   const qrRequestListEl = document.getElementById("manager-qr-request-list");
+  const dashboardArtboardEl = document.getElementById("admin-dashboard-artboard");
   const statusBlockHeadings = document.querySelectorAll(".admin-dashboard-status-block h3");
   const todayShiftHeadingEl = statusBlockHeadings[0] || null;
   const slotSummaryHeadingEl = statusBlockHeadings[1] || null;
@@ -176,6 +177,10 @@
         ? `ログインユーザー：${loginName}（${email}）`
         : `ログインユーザー：${loginName}`;
     }
+  }
+
+  function finishDashboardLoading() {
+    dashboardArtboardEl?.classList.remove("is-data-loading");
   }
 
   function normalizeName(value) {
@@ -818,6 +823,7 @@
     renderScoringSummary(scoringRows[0] || null);
     renderMaterialLinks(materials);
     renderQrNotifications(qrNotificationRows, emailEventRows, qrRequestRows);
+    finishDashboardLoading();
   }
 
   bootstrap();
