@@ -30,6 +30,7 @@
   let activeQuestionBranch = "floral";
   let activeQuestionSelection = null;
   ensureScoringModals();
+  ensureScoringTitleActions();
   syncStaticScoringCopy();
 
   const BRANCH_LABELS = {
@@ -50,6 +51,12 @@
     woody: "Wo",
     spicy: "Sp",
     sweet: "Sw"
+  };
+
+  const CONFIG_MODAL_TITLES = {
+    basic: "基本設定",
+    branch: "分岐テンプレート",
+    finish: "仕上げテンプレート"
   };
 
   function cloneConfig(config) {
@@ -137,8 +144,45 @@
       `);
     }
 
+    if (!document.getElementById("scoring-config-modal")) {
+      document.body.insertAdjacentHTML("beforeend", `
+        <div class="portal-scoring-modal" id="scoring-config-modal" hidden>
+          <div class="portal-scoring-modal-backdrop" data-scoring-config-close></div>
+          <section class="admin-panel portal-scoring-modal-card portal-scoring-config-modal-card" role="dialog" aria-modal="true" aria-labelledby="scoring-config-modal-title">
+            <div class="portal-scoring-modal-head">
+              <div>
+                <p class="portal-hero-label">SCORING SETTINGS</p>
+                <h2 id="scoring-config-modal-title">基本設定</h2>
+              </div>
+              <button class="admin-btn secondary portal-scoring-modal-close" data-scoring-config-close type="button">閉じる</button>
+            </div>
+            <div class="portal-scoring-config-modal-body" id="scoring-config-modal-body"></div>
+          </section>
+        </div>
+      `);
+    }
+
     const legacyNote = document.getElementById("scoring-note");
     if (legacyNote?.closest("label")) legacyNote.closest("label").classList.add("portal-scoring-hidden-note-field");
+  }
+
+  function ensureScoringTitleActions() {
+    const titleBlock = document.querySelector(".admin-page-title--center > div");
+    const title = titleBlock?.querySelector("h1");
+    if (!titleBlock || !title || titleBlock.querySelector(".admin-scoring-title-row")) return;
+    const row = document.createElement("div");
+    row.className = "admin-scoring-title-row";
+    titleBlock.insertBefore(row, title);
+    row.appendChild(title);
+    const actions = document.createElement("div");
+    actions.className = "admin-scoring-title-actions";
+    actions.setAttribute("aria-label", "配点設定メニュー");
+    actions.innerHTML = `
+      <button class="admin-btn secondary" type="button" data-scoring-config-modal="basic">基本設定</button>
+      <button class="admin-btn secondary" type="button" data-scoring-config-modal="branch">分岐テンプレート</button>
+      <button class="admin-btn secondary" type="button" data-scoring-config-modal="finish">仕上げテンプレート</button>
+    `;
+    row.appendChild(actions);
   }
 
   function syncStaticScoringCopy(explanation = document.querySelector(".portal-scoring-explanation")) {
@@ -536,25 +580,38 @@
 
   function renderBranchSettingsArea() {
     if (!branchSettingsMount) return;
-    branchSettingsMount.innerHTML = `
-      <div class="admin-scoring-config-strip">
-        <details>
-          <summary>基本設定</summary>
-          ${renderSimpleFieldCard()}
-        </details>
-        <details>
-          <summary>分岐テンプレート</summary>
-          <div class="portal-scoring-branch-layout">
-            <div class="portal-scoring-branch-shell-main">${renderBranchTemplateCard()}</div>
-            <div class="portal-scoring-branch-weight-wrap">${renderBranchWeightCard()}</div>
-          </div>
-        </details>
-        <details>
-          <summary>仕上げテンプレート</summary>
-          ${renderFinishTemplateCard()}
-        </details>
-      </div>
-    `;
+    branchSettingsMount.innerHTML = "";
+  }
+
+  function renderConfigModalBody(kind) {
+    const body = document.getElementById("scoring-config-modal-body");
+    if (!body) return;
+    if (kind === "branch") {
+      body.innerHTML = `
+        <div class="portal-scoring-branch-layout">
+          <div class="portal-scoring-branch-shell-main">${renderBranchTemplateCard()}</div>
+          <div class="portal-scoring-branch-weight-wrap">${renderBranchWeightCard()}</div>
+        </div>
+      `;
+    } else if (kind === "finish") {
+      body.innerHTML = renderFinishTemplateCard();
+    } else {
+      body.innerHTML = renderSimpleFieldCard();
+    }
+    bindEditorInputs(body);
+  }
+
+  function openConfigModal(kind) {
+    const modalKind = CONFIG_MODAL_TITLES[kind] ? kind : "basic";
+    const modal = document.getElementById("scoring-config-modal");
+    const title = document.getElementById("scoring-config-modal-title");
+    if (title) title.textContent = CONFIG_MODAL_TITLES[modalKind];
+    renderConfigModalBody(modalKind);
+    setModalOpen(modal, true);
+  }
+
+  function closeConfigModal() {
+    setModalOpen(document.getElementById("scoring-config-modal"), false);
   }
 
   function renderStep1Area() {
@@ -676,13 +733,13 @@
     markDraftDirty();
   }
 
-  function bindEditorInputs() {
-    document.querySelectorAll("[data-config-field]").forEach((input) => {
+  function bindEditorInputs(root = document) {
+    root.querySelectorAll("[data-config-field]").forEach((input) => {
       input.addEventListener("input", () => {
         setNestedNumber(input.dataset.configField, input.value);
       });
     });
-    document.querySelectorAll("[data-branch-template]").forEach((input) => {
+    root.querySelectorAll("[data-branch-template]").forEach((input) => {
       input.addEventListener("input", () => {
         const branchKey = input.dataset.branchTemplate;
         const axis = input.dataset.axis;
@@ -692,7 +749,7 @@
         markDraftDirty();
       });
     });
-    document.querySelectorAll("[data-branch-weight-axis]").forEach((input) => {
+    root.querySelectorAll("[data-branch-weight-axis]").forEach((input) => {
       input.addEventListener("input", () => {
         workingConfig.branchDistanceWeights[input.dataset.branchWeightAxis] = Number(input.value || 0);
         refreshJsonPreview();
@@ -700,7 +757,7 @@
         markDraftDirty();
       });
     });
-    document.querySelectorAll("[data-matrix-kind]").forEach((input) => {
+    root.querySelectorAll("[data-matrix-kind]").forEach((input) => {
       input.addEventListener("input", () => {
         const kind = input.dataset.matrixKind;
         const questionId = input.dataset.question;
@@ -719,7 +776,7 @@
         markDraftDirty();
       });
     });
-    document.querySelectorAll("[data-finish-template]").forEach((input) => {
+    root.querySelectorAll("[data-finish-template]").forEach((input) => {
       input.addEventListener("input", () => {
         const templateKey = input.dataset.finishTemplate;
         const axis = input.dataset.axis;
@@ -732,7 +789,7 @@
         markDraftDirty();
       });
     });
-    document.querySelectorAll("[data-question-edit]").forEach((button) => {
+    root.querySelectorAll("[data-question-edit]").forEach((button) => {
       button.addEventListener("click", () => {
         openQuestionModal(button.dataset.questionKind, button.dataset.questionId, button.dataset.branch || "");
       });
@@ -938,6 +995,12 @@
     document.querySelectorAll("[data-scoring-save-close]").forEach((button) => {
       button.addEventListener("click", closeSaveModal);
     });
+    document.querySelectorAll("[data-scoring-config-modal]").forEach((button) => {
+      button.addEventListener("click", () => openConfigModal(button.dataset.scoringConfigModal));
+    });
+    document.querySelectorAll("[data-scoring-config-close]").forEach((button) => {
+      button.addEventListener("click", closeConfigModal);
+    });
     document.getElementById("scoring-save-modal-form").addEventListener("submit", async (event) => {
       event.preventDefault();
       const note = document.getElementById("scoring-note-modal").value.trim();
@@ -953,6 +1016,7 @@
       if (event.key !== "Escape") return;
       closeQuestionModal();
       closeSaveModal();
+      closeConfigModal();
     });
     document.addEventListener("click", (event) => {
       const stepperButton = event.target.closest("[data-stepper-delta]");

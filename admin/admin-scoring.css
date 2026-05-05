@@ -72,6 +72,31 @@ body.admin-scoring-page .admin-page-title .portal-hero-copy:not(.admin-reference
   display: none;
 }
 
+.admin-scoring-page .admin-scoring-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+}
+
+.admin-scoring-page .admin-scoring-title-row h1 {
+  margin: 4px 0 0;
+}
+
+.admin-scoring-page .admin-scoring-title-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.admin-scoring-page .admin-scoring-title-actions .admin-btn {
+  min-height: 40px;
+  padding: 8px 14px;
+  white-space: nowrap;
+}
+
 .admin-scoring-page .admin-scoring-reference-workbench {
   grid-template-columns: minmax(250px, 280px) minmax(0, 1fr);
   align-items: start;
@@ -225,6 +250,12 @@ body.admin-scoring-page .admin-page-title .portal-hero-copy:not(.admin-reference
   gap: 14px;
 }
 
+.admin-scoring-page .portal-scoring-question-edit {
+  flex: 0 0 auto;
+  min-width: 72px;
+  white-space: nowrap;
+}
+
 .admin-scoring-page .admin-card-head h3 {
   margin: 0;
   font-family: var(--serif);
@@ -303,6 +334,104 @@ body.admin-scoring-page .admin-page-title .portal-hero-copy:not(.admin-reference
   font-size: 15px;
 }
 
+.portal-scoring-modal[hidden] {
+  display: none !important;
+}
+
+.portal-scoring-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.portal-scoring-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(39, 27, 20, 0.48);
+}
+
+.portal-scoring-modal-card {
+  position: relative;
+  z-index: 1;
+  width: min(920px, 100%);
+  max-height: min(820px, calc(100vh - 48px));
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 253, 249, 0.96);
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+
+.portal-scoring-config-modal-card {
+  width: min(1120px, 100%);
+}
+
+.portal-scoring-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.portal-scoring-modal-head h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 26px;
+}
+
+.portal-scoring-config-modal-body {
+  display: grid;
+  gap: 16px;
+}
+
+.portal-scoring-modal-field,
+.portal-scoring-axis-field,
+.portal-scoring-answer-label {
+  display: grid;
+  gap: 6px;
+}
+
+.portal-scoring-answer-editor {
+  display: grid;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+.portal-scoring-answer-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.2fr) repeat(5, minmax(86px, 0.8fr));
+  align-items: end;
+  gap: 8px;
+  min-width: 760px;
+}
+
+.portal-scoring-answer-row-head {
+  align-items: center;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.portal-scoring-answer-row:not(.portal-scoring-answer-row-head) {
+  border: 1px solid rgba(224, 190, 154, 0.78);
+  border-radius: 8px;
+  padding: 10px;
+  background: rgba(255, 253, 249, 0.76);
+}
+
+.portal-scoring-answer-label span {
+  font-weight: 800;
+  color: var(--green);
+}
+
+body.portal-scoring-modal-open {
+  overflow: hidden;
+}
+
 .admin-scoring-page .admin-reference-bottom-strip {
   width: min(100%, 1280px);
   grid-template-columns: minmax(0, 1fr) 140px 180px 180px;
@@ -321,6 +450,15 @@ body.admin-scoring-page .admin-page-title .portal-hero-copy:not(.admin-reference
 @media (max-width: 860px) {
   body.admin-scoring-page .admin-main {
     width: min(100% - 28px, 760px);
+  }
+
+  .admin-scoring-page .admin-scoring-title-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-scoring-page .admin-scoring-title-actions {
+    justify-content: flex-start;
   }
 
   .admin-scoring-page .admin-scoring-reference-workbench,
