@@ -56,38 +56,15 @@
         </div>
         <p class="admin-reference-table-label">スタッフ一覧</p>
         <table class="admin-reference-staff-table">
-          <thead><tr><th>スタッフ名</th><th>役割</th><th>在籍状況</th><th></th></tr></thead>
-          <tbody>
-            <tr><td><span class="staff-avatar">山田</span>山田 花子</td><td>店長</td><td><i class="status-dot"></i>在籍中</td><td>︙</td></tr>
-            <tr><td><span class="staff-avatar pink">佐藤</span>佐藤 優子</td><td>スタッフ</td><td><i class="status-dot"></i>在籍中</td><td>︙</td></tr>
-            <tr><td><span class="staff-avatar green">鈴木</span>鈴木 大輔</td><td>スタッフ</td><td><i class="status-dot"></i>在籍中</td><td>︙</td></tr>
-            <tr><td><span class="staff-avatar peach">田中</span>田中 美咲</td><td>スタッフ</td><td><i class="status-dot is-off"></i>休職中</td><td>︙</td></tr>
+          <thead><tr><th>スタッフ名</th><th>役割</th><th></th></tr></thead>
+          <tbody id="settings-staff-table-body">
+            <tr><td colspan="3">スタッフ情報を読み込んでいます。</td></tr>
           </tbody>
         </table>
-        <p class="admin-note">全4件を表示中</p>
-      </article>
-      <article class="admin-panel admin-reference-card admin-settings-reservation-card">
-        <h2>予約基本設定</h2>
-        <div class="admin-form-stack">
-          <label>予約枠の標準時間<select id="reservation-duration-setting"><option>60分</option><option>90分</option><option>120分</option></select></label>
-          <label>休憩時間<select id="reservation-break-setting"><option>15分</option><option>30分</option><option>なし</option></select></label>
-          <label>最大予約数<select id="reservation-limit-setting"><option>6件/日</option><option>8件/日</option><option>10件/日</option></select></label>
-          <label>通知メール設定<select id="reservation-mail-setting"><option>予約完了・リマインダーを送信する</option><option>予約完了のみ送信する</option></select></label>
-          <p class="admin-note">予約リマインダーは予約時刻の24時間前に送信されます。</p>
-        </div>
+        <p class="admin-note" id="settings-staff-table-note">登録済みスタッフを表示します。</p>
       </article>
     </section>
     <div class="admin-bottom-savebar admin-reference-savebar"><button class="admin-btn gold" id="settings-save-button" type="button">設定を保存</button></div>
-    <section class="admin-panel admin-settings-qr-link">
-      <div class="admin-reference-qr-info">
-        <span class="admin-reference-badge-icon" aria-hidden="true"></span>
-        <div>
-          <h2>QR商品設定は専用ページで管理します</h2>
-          <p class="admin-note">QR価格の設定・編集は「QR設定」ページで行ってください。ここでは基本情報のみを設定します。</p>
-        </div>
-      </div>
-      <a class="admin-btn secondary" href="admin-qr-settings.html?role=manager">QR設定を開く</a>
-    </section>
     <section class="section grid-2 admin-reference-hidden-live">
       <article class="admin-panel">
         <h2>予約枠カレンダー</h2>

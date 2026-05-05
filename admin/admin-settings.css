@@ -7,14 +7,49 @@
   font-weight: 700;
 }
 
+body.admin-settings-page {
+  padding-top: 66px;
+}
+
+body.admin-settings-page .admin-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 80;
+}
+
+body.admin-settings-page .admin-header-inner {
+  min-height: 66px;
+  width: min(100% - 48px, 1180px);
+  padding: 8px 0;
+}
+
+body.admin-settings-page .admin-brand {
+  gap: 10px;
+  font-size: 23px;
+}
+
+body.admin-settings-page .admin-brand-logo,
+body.admin-settings-page .admin-brand-logo img {
+  width: 38px;
+  height: 50px;
+  max-width: 38px;
+  max-height: 50px;
+}
+
+body.admin-settings-page .admin-brand-meta {
+  font-size: 11px;
+}
+
 .admin-settings-layout {
   display: grid;
-  grid-template-columns: 1fr 1.25fr 1fr;
+  grid-template-columns: minmax(360px, 0.9fr) minmax(520px, 1.2fr);
   gap: 18px;
 }
 
 .admin-settings-page .admin-settings-layout {
-  grid-template-columns: minmax(330px, 1fr) minmax(420px, 1.18fr) minmax(330px, 1fr);
+  grid-template-columns: minmax(360px, 0.9fr) minmax(520px, 1.2fr);
   gap: 18px;
 }
 
@@ -61,74 +96,25 @@
   white-space: nowrap;
 }
 
+.admin-reference-staff-table th:last-child,
+.admin-reference-staff-table td:last-child {
+  width: 1%;
+  text-align: right;
+}
+
 .admin-reference-staff-table tr:last-child td {
   border-bottom: 0;
 }
 
-.staff-avatar {
-  width: 42px;
-  height: 42px;
-  display: inline-grid;
-  place-items: center;
-  margin-right: 12px;
-  border-radius: 999px;
-  background: #f5eadc;
-  color: #9a6422;
-  font-size: 13px;
-}
-
-.staff-avatar.pink { background: #f4e9eb; color: #96636b; }
-.staff-avatar.green { background: #eef1e7; color: #5c7248; }
-.staff-avatar.peach { background: #f9e7d8; color: #b86f3f; }
-
-.status-dot {
-  width: 10px;
-  height: 10px;
-  display: inline-block;
-  margin-right: 8px;
-  border-radius: 999px;
-  background: #6e8a55;
-}
-
-.status-dot.is-off {
-  background: #e49a21;
-}
-
-.admin-settings-reservation-card .admin-form-stack label {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 9px;
-}
-
-.admin-settings-qr-link {
-  width: min(1540px, calc(100% - 48px));
-  min-height: 136px;
-  display: grid;
-  grid-template-columns: 1fr 250px;
-  gap: 22px;
-  align-items: center;
-  margin: 10px auto 0;
-  padding: 22px 44px;
-}
-
-.admin-reference-qr-info {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
-.admin-reference-badge-icon {
-  width: 88px;
-  height: 88px;
-  flex: 0 0 88px;
-  border: 1px solid rgba(213, 144, 62, 0.24);
-  border-radius: 999px;
-  background: #fbf2e7;
+.admin-reference-staff-table .admin-btn {
+  min-height: 36px;
+  padding: 8px 14px;
+  font-size: 14px;
 }
 
 @media (max-width: 1180px) {
   .admin-settings-page .admin-settings-layout {
-    grid-template-columns: minmax(250px, 0.95fr) minmax(320px, 1.15fr) minmax(250px, 0.95fr);
+    grid-template-columns: minmax(300px, 0.9fr) minmax(420px, 1.1fr);
     gap: 12px;
   }
 
@@ -141,7 +127,6 @@
 
 @media (max-width: 760px) {
   .admin-settings-page .admin-settings-layout,
-  .admin-settings-qr-link,
   .admin-inline-fields {
     grid-template-columns: 1fr;
   }

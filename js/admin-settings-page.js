@@ -45,6 +45,8 @@
   const todayLabelEl = document.getElementById("settings-today-label");
   const todayStaffEl = document.getElementById("settings-today-staff");
   const controlNoteEl = document.getElementById("settings-control-note");
+  const staffTableBodyEl = document.getElementById("settings-staff-table-body");
+  const staffTableNoteEl = document.getElementById("settings-staff-table-note");
   const manageSelectEl = document.getElementById("staff-manage-select");
   const shiftManageSelectEl = document.getElementById("shift-manage-select");
   const calendarRangeEl = document.getElementById("settings-calendar-range");
@@ -89,7 +91,7 @@
               <label class="portal-settings-field">
                 <span>スタッフ権限</span>
                 <select id="staff-role">
-                  <option value="staff">一般スタッフ</option>
+                  <option value="staff">スタッフ</option>
                   <option value="manager">管理者</option>
                 </select>
               </label>
@@ -186,6 +188,7 @@
   const state = {
     settingRowMap: new Map(),
     staffDirectory: [],
+    staffProfileIds: new Set(),
     shiftOverrides: [],
     slots: [],
     reservations: [],
@@ -247,6 +250,35 @@
     return `staff-${text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || Date.now()}`;
   }
 
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "\"": "&quot;",
+      "'": "&#39;"
+    }[char]));
+  }
+
+  function getRoleLabel(role) {
+    return role === "manager" ? "管理者" : "スタッフ";
+  }
+
+  function normalizeStaffProfile(row, index = 0) {
+    const role = row.role === "manager" || row.role === "admin" ? "manager" : "staff";
+    const loginId = normalizeLoginId(row.login_id || row.staff_code || row.staffCode || `staff-${index + 1}`);
+    const staffName = String(row.staff_name || row.display_name || row.name || "").trim() || `スタッフ${index + 1}`;
+    return {
+      id: String(row.id || "").trim(),
+      staffCode: loginId,
+      staffName,
+      role,
+      managerCode: role === "manager" ? loginId : "",
+      email: String(row.email || "").trim(),
+      isActive: row.is_active !== false
+    };
+  }
+
   function buildDefaultWeeklyPattern(defaultStart, defaultEnd) {
     return Array.from({ length: 7 }, (_, day) => {
       return [
@@ -284,13 +316,14 @@
     const defaultStart = normalizeTime(row.defaultStart || row.default_start, "10:00");
     const defaultEnd = normalizeTime(row.defaultEnd || row.default_end, "18:00");
     const name = String(row.staffName || row.staff_name || row.material_name || row.name || "").trim() || `スタッフ${index + 1}`;
-    const role = row.role === "manager" ? "manager" : "staff";
+    const role = row.role === "manager" || row.role === "admin" ? "manager" : "staff";
     const staffCode = normalizeLoginId(row.staffCode || row.staff_code || `staff-${index + 1}`);
     return {
       id: String(row.id || "").trim() || createStaffId(staffCode || name || index),
       staffCode,
       staffName: name,
       role,
+      isActive: row.isActive !== false && row.is_active !== false,
       isTemporary: row.isTemporary === true || row.is_temporary === true,
       todayShiftLabel: String(row.todayShiftLabel || row.today_shift_label || "").trim(),
       staffPassword: "",
@@ -402,10 +435,10 @@
 
   function buildStaffSelectMarkup(staffRows, placeholderText) {
     const options = staffRows.map((staff) => {
-      const suffix = staff.isTemporary ? " / 仮データ" : ` / ${staff.staffCode}`;
-      return `<option value="${staff.id}">${staff.staffName}${suffix}</option>`;
+      const suffix = staff.isTemporary ? " / 仮データ" : ` / ${getRoleLabel(staff.role)}`;
+      return `<option value="${escapeHtml(staff.id)}">${escapeHtml(staff.staffName)}${escapeHtml(suffix)}</option>`;
     }).join("");
-    return `<option value="">${placeholderText}</option>${options}`;
+    return `<option value="">${escapeHtml(placeholderText)}</option>${options}`;
   }
 
   function getReservationCountBySlotIds(slotIds) {
@@ -761,6 +794,26 @@
     return;
   }
 
+  function renderStaffTable() {
+    if (!staffTableBodyEl) return;
+    const rows = state.staffDirectory.filter((staff) => staff.isActive !== false && !staff.isTemporary);
+    if (!rows.length) {
+      staffTableBodyEl.innerHTML = `<tr><td colspan="3">登録済みスタッフはありません。</td></tr>`;
+      if (staffTableNoteEl) staffTableNoteEl.textContent = "登録済みスタッフを表示します。";
+      return;
+    }
+    staffTableBodyEl.innerHTML = rows.map((staff) => {
+      return `
+        <tr>
+          <td>${escapeHtml(staff.staffName)}</td>
+          <td>${escapeHtml(getRoleLabel(staff.role))}</td>
+          <td><button class="admin-btn secondary" type="button" data-staff-edit="${escapeHtml(staff.id)}">編集</button></td>
+        </tr>
+      `;
+    }).join("");
+    if (staffTableNoteEl) staffTableNoteEl.textContent = `全${rows.length}件を表示中`;
+  }
+
   function renderTodayStaff() {
     const today = createLocalDate(new Date());
     const dateKey = formatDateKey(today);
@@ -844,8 +897,30 @@
     renderManageSelect();
     renderShiftManageSelect();
     renderStaffChips();
+    renderStaffTable();
     renderTodayStaff();
     renderCalendar();
+  }
+
+  async function saveStaffProfile(staff, existingId = "") {
+    const loginId = normalizeLoginId(staff.role === "manager" ? (staff.managerCode || staff.staffCode) : staff.staffCode);
+    const payload = {
+      login_id: loginId || null,
+      staff_name: staff.staffName,
+      display_name: staff.staffName,
+      role: staff.role === "manager" ? "manager" : "staff",
+      email: staff.email || null,
+      is_active: staff.isActive !== false,
+      updated_at: new Date().toISOString()
+    };
+    if (existingId && state.staffProfileIds.has(existingId)) {
+      const rows = await window.AdminData.updateRow("staff_profiles", existingId, payload);
+      if (!rows[0]) throw new Error("スタッフプロフィールを更新できませんでした。");
+      return normalizeStaffProfile(rows[0]);
+    }
+    const rows = await window.AdminData.insertRow("staff_profiles", payload);
+    if (!rows[0]) throw new Error("スタッフプロフィールを登録できませんでした。");
+    return normalizeStaffProfile(rows[0]);
   }
 
   async function saveSetting(key, value, options = {}) {
@@ -973,18 +1048,51 @@
     });
   }
 
+  function buildStaffDirectoryFromProfiles(profileRows, storedStaff) {
+    const storedById = new Map(storedStaff.map((staff) => [staff.id, staff]));
+    const storedByCode = new Map(storedStaff.map((staff) => [staff.staffCode, staff]));
+    return profileRows
+      .map(normalizeStaffProfile)
+      .filter((profile) => profile.id && profile.isActive !== false)
+      .map((profile, index) => {
+        const stored = storedById.get(profile.id) || storedByCode.get(profile.staffCode) || {};
+        return normalizeStaff({
+          ...stored,
+          id: profile.id,
+          staffCode: profile.staffCode,
+          staffName: profile.staffName,
+          role: profile.role,
+          managerCode: profile.role === "manager" ? (stored.managerCode || profile.managerCode || profile.staffCode) : "",
+          email: profile.email || stored.email,
+          isActive: profile.isActive
+        }, index);
+      });
+  }
+
   async function loadData() {
-    const [settingsRows, slots, reservations] = await Promise.all([
+    const [settingsRows, slots, reservations, staffProfiles] = await Promise.all([
       window.AdminData.listRows("admin_settings", { orders: [{ column: "updated_at", ascending: false }] }).catch(() => []),
       window.AdminData.listRows("reservation_slots", { orders: [{ column: "slot_date", ascending: true }, { column: "slot_time", ascending: true }] }).catch(() => []),
-      window.AdminData.listRows("reservations", { orders: [{ column: "created_at", ascending: false }] }).catch(() => [])
+      window.AdminData.listRows("reservations", { orders: [{ column: "created_at", ascending: false }] }).catch(() => []),
+      window.AdminData.listRows("staff_profiles", {
+        select: "id, login_id, email, staff_name, display_name, role, is_active, created_at, updated_at",
+        orders: [{ column: "role", ascending: true }, { column: "staff_name", ascending: true }]
+      }).catch((error) => {
+        console.error("Failed to load staff profiles.", error);
+        return [];
+      })
     ]);
     state.settingRowMap = new Map((settingsRows || []).map((row) => [row.setting_key, row]));
     state.slots = slots || [];
     state.reservations = reservations || [];
     const storedStaff = Array.isArray(readSettingValue(STAFF_SETTING_KEY)) ? readSettingValue(STAFF_SETTING_KEY) : [];
     const storedOverrides = Array.isArray(readSettingValue(SHIFT_SETTING_KEY)) ? readSettingValue(SHIFT_SETTING_KEY) : [];
-    state.staffDirectory = storedStaff.map(normalizeStaff);
+    const normalizedStoredStaff = storedStaff.map(normalizeStaff);
+    state.staffDirectory = buildStaffDirectoryFromProfiles(staffProfiles || [], normalizedStoredStaff);
+    state.staffProfileIds = new Set(state.staffDirectory.map((staff) => staff.id));
+    if (!state.staffDirectory.length) {
+      state.staffDirectory = normalizedStoredStaff;
+    }
     if (!state.staffDirectory.length) {
       const derivedNames = Array.from(new Set(state.slots.map((row) => String(row.instructor_name || "").trim()).filter(Boolean)));
       state.staffDirectory = derivedNames.map((name, index) => normalizeStaff({ staffCode: `slot-${index + 1}`, staffName: name }, index));
@@ -993,6 +1101,8 @@
       } else {
         setControlNote("スタッフを新規登録すると、この画面とカレンダーへ反映されます。", false);
       }
+    } else if ((staffProfiles || []).length) {
+      setControlNote("staff_profiles から登録済みスタッフを読み込みました。", false);
     } else {
       setControlNote("登録済みスタッフを読み込みました。", false);
     }
@@ -1090,17 +1200,28 @@
       defaultEnd,
       weeklyPattern
     });
-    const index = state.staffDirectory.findIndex((row) => row.id === payload.id);
-    if (index >= 0) {
-      state.staffDirectory[index] = payload;
-    } else {
-      state.staffDirectory.push(payload);
-    }
-    state.selectedStaffId = payload.id;
     try {
+      const savedProfile = await saveStaffProfile(payload, editingId);
+      const finalPayload = normalizeStaff({
+        ...payload,
+        id: savedProfile.id,
+        staffName: savedProfile.staffName,
+        role: savedProfile.role,
+        managerCode: savedProfile.role === "manager" ? (payload.managerCode || savedProfile.staffCode) : "",
+        email: savedProfile.email || payload.email,
+        isActive: savedProfile.isActive
+      });
+      state.staffProfileIds.add(finalPayload.id);
+      const index = state.staffDirectory.findIndex((row) => row.id === finalPayload.id || row.id === editingId);
+      if (index >= 0) {
+        state.staffDirectory[index] = finalPayload;
+      } else {
+        state.staffDirectory.push(finalPayload);
+      }
+      state.selectedStaffId = finalPayload.id;
       await saveSetting(STAFF_SETTING_KEY, state.staffDirectory.map(stripStaffForSave));
       closeModal(staffModalEl);
-      setControlNote(`${payload.staffName} を保存しました。Supabase Authユーザーとstaff_profilesの紐づけは別途確認してください。`, false);
+      setControlNote(`${finalPayload.staffName} を保存しました。Supabase Authユーザーとの紐づけは必要に応じて確認してください。`, false);
       renderPage();
     } catch (error) {
       setControlNote(error?.message || "スタッフ設定の保存に失敗しました。", true);
@@ -1172,12 +1293,20 @@
       if (!window.confirm(`${target.staffName} を削除します。よろしいですか？`)) {
         return;
       }
+      const shouldDeactivateProfile = state.staffProfileIds.has(staffId);
       state.staffDirectory = state.staffDirectory.filter((row) => row.id !== staffId);
       state.shiftOverrides = state.shiftOverrides.filter((row) => row.staffId !== staffId);
+      state.staffProfileIds.delete(staffId);
       if (state.selectedStaffId === staffId) {
         state.selectedStaffId = state.staffDirectory[0]?.id || "";
       }
       try {
+        if (shouldDeactivateProfile) {
+          await window.AdminData.updateRow("staff_profiles", staffId, {
+            is_active: false,
+            updated_at: new Date().toISOString()
+          });
+        }
         await saveSetting(STAFF_SETTING_KEY, state.staffDirectory.map(stripStaffForSave));
         await saveSetting(SHIFT_SETTING_KEY, state.shiftOverrides.map(stripOverrideForSave));
         closeModal(staffModalEl);
@@ -1191,6 +1320,14 @@
 
   document.getElementById("staff-create-button").addEventListener("click", () => {
     launchStaffModal(null);
+  });
+
+  staffTableBodyEl?.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+    const button = event.target.closest("[data-staff-edit]");
+    if (!(button instanceof HTMLElement)) return;
+    const target = getStoredStaffById(button.dataset.staffEdit);
+    if (target) launchStaffModal(target);
   });
 
   if (staffShiftButtonEl) {
