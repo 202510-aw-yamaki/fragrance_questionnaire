@@ -59,11 +59,6 @@ body.admin-materials-page .admin-main {
   font-size: clamp(32px, 3vw, 42px);
 }
 
-.admin-material-title-row .portal-hero-copy {
-  margin-top: 8px;
-  font-size: 15px;
-}
-
 .admin-material-title-tools {
   display: grid;
   grid-template-columns: minmax(240px, 1fr) 120px 130px;
@@ -94,7 +89,7 @@ body.admin-materials-page .admin-main {
 
 .admin-materials-workbench {
   display: grid;
-  grid-template-columns: 250px minmax(380px, 1fr) 270px;
+  grid-template-columns: 270px minmax(390px, 1fr) 280px;
   gap: 12px;
   align-items: start;
 }
@@ -107,25 +102,33 @@ body.admin-materials-page .admin-main {
   margin-bottom: 16px;
 }
 
-.admin-material-list-card .admin-material-card-head {
-  align-items: flex-start;
-  flex-direction: column;
-}
-
 .admin-material-list-card .admin-material-card-head .admin-btn {
-  width: 100%;
+  white-space: nowrap;
+  min-height: 36px;
+  padding: 7px 14px;
   justify-content: center;
+  font-size: 13px;
 }
 
 .admin-material-card-head h2,
 .admin-material-preview-panel h2 {
+  white-space: nowrap;
   margin-bottom: 0;
+}
+
+.admin-material-inline-card .admin-material-card-head .admin-btn {
+  min-height: 36px;
+  padding: 7px 14px;
+  border-color: rgba(196, 145, 89, 0.48);
+  background: rgba(255, 253, 249, 0.64);
+  box-shadow: none;
+  font-size: 13px;
 }
 
 .admin-material-list {
   display: grid;
   gap: 8px;
-  min-height: 584px;
+  min-height: 352px;
 }
 
 .admin-material-list-item {
@@ -133,7 +136,7 @@ body.admin-materials-page .admin-main {
   grid-template-columns: 1fr auto;
   gap: 12px;
   align-items: center;
-  min-height: 64px;
+  min-height: 58px;
   padding: 9px 12px;
   border: 1px solid rgba(221, 196, 166, 0.82);
   border-radius: 8px;
@@ -286,9 +289,9 @@ body.admin-materials-page .admin-main {
 }
 
 .admin-material-radar {
-  width: min(100%, 260px);
+  width: min(100%, 286px);
   aspect-ratio: 1;
-  margin: 8px auto 18px;
+  margin: 6px auto 18px;
 }
 
 .admin-material-radar svg {
@@ -315,32 +318,58 @@ body.admin-materials-page .admin-main {
 
 .admin-axis-preview-list {
   display: grid;
-  grid-template-columns: 92px 1fr 34px;
-  gap: 10px 12px;
-  align-items: center;
+  gap: 8px;
 }
 
-.admin-axis-preview-list meter {
-  width: 100%;
-  height: 10px;
+.admin-axis-preview-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 34px;
+  padding: 7px 10px;
+  border: 1px solid rgba(221, 196, 166, 0.62);
+  border-radius: 8px;
+  background: rgba(255, 253, 249, 0.62);
+}
+
+.admin-axis-preview-item span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.admin-axis-preview-item strong {
+  color: #5b743e;
+  font-size: 16px;
 }
 
 .admin-materials-page .admin-bottom-savebar {
-  position: sticky;
-  bottom: 0;
-  z-index: 35;
+  position: static;
   flex-wrap: nowrap;
-  margin-bottom: 0;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
+  width: min(100%, 560px);
+  gap: 10px;
+  margin: 18px auto 0;
+  padding: 8px 10px 10px;
+  border: 1px solid rgba(221, 196, 166, 0.72);
+  border-radius: 10px;
+  background: rgba(255, 253, 249, 0.82);
+  box-shadow: 0 6px 18px rgba(98, 59, 26, 0.06);
   backdrop-filter: blur(12px);
 }
 
 .admin-materials-page .admin-reference-savebar .admin-btn {
   flex: 1 1 0;
-  min-width: min(220px, 100%);
-  min-height: 56px;
-  font-size: 20px;
+  min-width: 0;
+  min-height: 40px;
+  padding: 8px 14px;
+  box-shadow: none;
+  font-size: 15px;
+}
+
+.admin-materials-page .admin-reference-savebar .admin-btn.gold {
+  border-color: rgba(196, 145, 89, 0.58);
+  background: rgba(216, 132, 33, 0.14);
+  color: #8a5117;
 }
 
 @media (max-width: 900px) {

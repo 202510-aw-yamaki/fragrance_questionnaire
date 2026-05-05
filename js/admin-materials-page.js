@@ -2,7 +2,7 @@
   const AXIS_ORDER = window.FragranceMasterData.AXIS_ORDER;
   const AXIS_LABELS = window.FragranceMasterData.AXIS_LABELS;
   const CATEGORY_ORDER = { Top: 0, Middle: 1, Last: 2 };
-  const PAGE_SIZE = 8;
+  const PAGE_SIZE = 5;
   const collator = new Intl.Collator("ja", { sensitivity: "base", numeric: true });
   const rowsEl = document.getElementById("material-rows");
   const form = document.getElementById("material-form");
@@ -294,9 +294,10 @@
     axisPreviewListEl.innerHTML = AXIS_ORDER.map((axis) => {
       const value = Number(axes?.[axis] || 0);
       return `
-        <span>${AXIS_LABELS[axis]}</span>
-        <meter min="0" max="100" value="${value}"></meter>
-        <span>${value}</span>
+        <div class="admin-axis-preview-item">
+          <span>${AXIS_LABELS[axis]}</span>
+          <strong>${value}</strong>
+        </div>
       `;
     }).join("");
   }
