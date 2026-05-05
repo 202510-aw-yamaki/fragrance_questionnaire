@@ -481,8 +481,8 @@ body.admin-materials-page .admin-main {
 
 .admin-materials-page .admin-bottom-savebar {
   position: static;
-  flex-wrap: nowrap;
-  width: min(100%, 560px);
+  flex-wrap: wrap;
+  width: min(100%, 760px);
   gap: 10px;
   margin: 18px auto 0;
   padding: 8px 10px 10px;
@@ -491,6 +491,38 @@ body.admin-materials-page .admin-main {
   background: rgba(255, 253, 249, 0.82);
   box-shadow: 0 6px 18px rgba(98, 59, 26, 0.06);
   backdrop-filter: blur(12px);
+}
+
+.admin-material-save-copy {
+  flex: 1 1 100%;
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.admin-material-save-help,
+.admin-material-save-state {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.admin-material-save-help {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.admin-material-save-state {
+  color: #6a8152;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-material-save-state[data-state="dirty"] {
+  color: #b76a1f;
+}
+
+.admin-material-save-state[data-state="error"] {
+  color: #b24235;
 }
 
 .admin-materials-page .admin-reference-savebar .admin-btn {

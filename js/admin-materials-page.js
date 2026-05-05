@@ -13,6 +13,7 @@
   const formTotal = document.getElementById("material-total");
   const totalNote = document.getElementById("material-total-note");
   const seedStatus = document.getElementById("material-seed-status");
+  const saveStateEl = document.getElementById("material-save-state");
   const currentSortEl = document.getElementById("material-current-sort");
   const seedButton = document.getElementById("material-seed-btn");
   const resetButton = document.getElementById("material-reset");
@@ -41,6 +42,10 @@
   let selectedCode = "";
   let currentPage = 1;
   let dataSource = "db";
+  let hasUnsavedChanges = false;
+  let hasMetaDraftChanges = false;
+  let hasCreateDraftChanges = false;
+  let metaDraft = null;
 
   function getTemplates() {
     return window.FragranceMasterData.createMaterialTemplates();
@@ -82,6 +87,30 @@
     seedStatus.textContent = message;
   }
 
+  function setSaveState(message, state = "saved") {
+    if (!saveStateEl) return;
+    saveStateEl.dataset.state = state;
+    saveStateEl.textContent = message;
+  }
+
+  function markUnsaved(message = "未保存の変更があります。DB保存で次回自動読込に反映されます。") {
+    hasUnsavedChanges = true;
+    setSaveState(message, "dirty");
+  }
+
+  function markSaved(message = "DB保存済み。次回から自動読込されます。") {
+    hasUnsavedChanges = false;
+    hasMetaDraftChanges = false;
+    hasCreateDraftChanges = false;
+    metaDraft = null;
+    setSaveState(message, "saved");
+  }
+
+  function confirmDiscardUnsaved(actionLabel) {
+    if (!hasUnsavedChanges && !hasMetaDraftChanges && !hasCreateDraftChanges) return true;
+    return window.confirm(`未保存の変更があります。DB保存せずに${actionLabel}してもよろしいですか？`);
+  }
+
   function getAxesInput() {
     return AXIS_ORDER.reduce((acc, axis) => {
       acc[axis] = Number(document.getElementById(`axis-${axis}`).value || 0);
@@ -106,6 +135,20 @@
   function getNextDisplayOrder() {
     const maxOrder = cachedRows.reduce((max, row) => Math.max(max, sortOrderToDisplayOrder(row.sort_order)), 0);
     return maxOrder + 1;
+  }
+
+  function validateUniqueMaterialCodes(rows) {
+    const seenCodes = new Set();
+    const duplicate = rows.find((row) => {
+      const code = String(row.material_code || "").trim();
+      if (!code) return false;
+      if (seenCodes.has(code)) return true;
+      seenCodes.add(code);
+      return false;
+    });
+    if (duplicate) {
+      throw new Error(`原料コード「${duplicate.material_code}」が重複しています。別のコードに変更してください。`);
+    }
   }
 
   function renderFormTotal() {
@@ -191,6 +234,17 @@
     selectedCode = cachedRows[0]?.material_code || "";
     currentPage = 1;
     setStatus(statusMessage || (dataSource === "template" ? "DBに原料がないためテンプレートを表示しています。" : `${cachedRows.length}件をDBから取得しました。`));
+    hasUnsavedChanges = false;
+    hasMetaDraftChanges = false;
+    hasCreateDraftChanges = false;
+    metaDraft = null;
+    if (statusMessage) {
+      setSaveState("DB取得に失敗しています。表示中テンプレートはDB保存するまで自動読込されません。", "error");
+    } else if (dataSource === "template") {
+      setSaveState("テンプレート表示中です。DB保存すると次回から自動読込されます。", "dirty");
+    } else {
+      markSaved("DBから読込済み。変更はまだありません。");
+    }
     return cachedRows;
   }
 
@@ -351,12 +405,21 @@
     const row = cachedRows.find((item) => item.material_code === selectedCode) || readFormRow();
     tagInput.value = row.tags.join(", ");
     document.getElementById("material-note").value = row.note || "";
+    metaDraft = { tags: tagInput.value, note: document.getElementById("material-note").value };
+    hasMetaDraftChanges = false;
     renderTagPreview(row.tags);
     metaModal.hidden = false;
     tagInput.focus();
   }
 
-  function closeMetaModal() {
+  function closeMetaModal(restoreDraft = true) {
+    if (restoreDraft && metaDraft) {
+      tagInput.value = metaDraft.tags;
+      document.getElementById("material-note").value = metaDraft.note;
+      renderTagPreview(normalizeTags(tagInput.value));
+    }
+    hasMetaDraftChanges = false;
+    metaDraft = null;
     metaModal.hidden = true;
   }
 
@@ -366,11 +429,13 @@
     createNameInput.value = "";
     createCategoryInput.value = "Top";
     createTagsInput.value = "";
+    hasCreateDraftChanges = false;
     createModal.hidden = false;
     createNameInput.focus();
   }
 
   function closeCreateModal() {
+    hasCreateDraftChanges = false;
     createModal.hidden = true;
   }
 
@@ -399,6 +464,7 @@
     renderRows();
     document.querySelector(".admin-material-inline-card")?.scrollIntoView({ behavior: "smooth", block: "start" });
     setStatus("新規原料を追加しました。中央の編集画面で5軸ポイントとタグを調整してDB保存してください。");
+    markUnsaved("新規原料を追加しました。DB保存で次回自動読込に反映されます。");
     return true;
   }
 
@@ -423,6 +489,7 @@
     fillForm(row);
     renderRows();
     setStatus("新規原料を追加しました。内容を調整してDB保存してください。");
+    markUnsaved("新規原料を追加しました。DB保存で次回自動読込に反映されます。");
   }
   function createMaterialPayload(row, index, savedAt) {
     const normalized = normalizeRow(row);
@@ -451,33 +518,41 @@
     const savedAt = new Date().toISOString();
     let payload = [];
     try {
-      payload = (cachedRows.length ? cachedRows : getTemplates()).map((row, index) => createMaterialPayload(row, index, savedAt));
+      const sourceRows = cachedRows.length ? cachedRows : getTemplates();
+      validateUniqueMaterialCodes(sourceRows);
+      payload = sourceRows.map((row, index) => createMaterialPayload(row, index, savedAt));
       await window.AdminData.upsertRow("material_points", payload, "material_code");
     } catch (error) {
       setStatus(error?.message || "データベース保存に失敗しました。", "error");
+      setSaveState("DB保存に失敗しました。変更はまだDBに反映されていません。", "error");
       return;
     }
     setStatus(`${payload.length}件をデータベースに保存しました。`);
     await getAllMaterials();
+    markSaved("DB保存済み。次回から自動読込されます。");
     renderRows();
   }
 
   function importRowsFromJson(rows) {
-    cachedRows = rows.map((row, index) => {
+    const normalizedRows = rows.map((row, index) => {
       const normalized = normalizeRow(row);
       return {
         ...normalized,
         sort_order: Number(normalized.sort_order || ((index + 1) * 10))
       };
     });
+    validateUniqueMaterialCodes(normalizedRows);
+    cachedRows = normalizedRows;
     dataSource = "json";
     selectedCode = cachedRows[0]?.material_code || "";
     currentPage = 1;
     setStatus(`${cachedRows.length}件をJSONから読み込みました。DB保存で反映してください。`);
+    markUnsaved("JSON読込済み。DB保存するまで次回自動読込には反映されません。");
     renderRows();
   }
 
   async function reloadMaterialsFromDatabase() {
+    if (!confirmDiscardUnsaved("DBから再読込")) return;
     const focusCode = selectedCode;
     await getAllMaterials();
     if (focusCode && cachedRows.some((row) => row.material_code === focusCode)) {
@@ -490,6 +565,7 @@
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     persistFormToCache();
+    markUnsaved();
     renderRows();
   });
 
@@ -503,8 +579,10 @@
   metaForm.addEventListener("submit", (event) => {
     event.preventDefault();
     persistFormToCache();
+    hasMetaDraftChanges = false;
+    markUnsaved("タグとメモを反映しました。DB保存で次回自動読込に反映されます。");
     renderRows();
-    closeMetaModal();
+    closeMetaModal(false);
   });
   metaModal.querySelectorAll("[data-material-meta-close]").forEach((button) => {
     button.addEventListener("click", closeMetaModal);
@@ -542,8 +620,15 @@
     anchor.click();
     window.URL.revokeObjectURL(url);
     setStatus("現在の表示対象をJSONファイルとして保存しました。");
+    setSaveState(
+      hasUnsavedChanges
+        ? "JSONをローカル保存しました。DBにはまだ反映されていません。"
+        : "JSONをローカル保存しました。DB保存状態は変わりません。",
+      hasUnsavedChanges ? "dirty" : "saved"
+    );
   });
   importTriggerButton.addEventListener("click", () => {
+    if (!confirmDiscardUnsaved("JSONを読み込み")) return;
     importInput.click();
   });
   importInput.addEventListener("change", async () => {
@@ -588,19 +673,35 @@
     renderRows();
   });
   tagInput.addEventListener("input", () => {
+    if (!metaModal.hidden) hasMetaDraftChanges = true;
     renderTagPreview(normalizeTags(tagInput.value));
+  });
+  document.getElementById("material-note").addEventListener("input", () => {
+    if (!metaModal.hidden) hasMetaDraftChanges = true;
+  });
+  [createCodeInput, createNameInput, createCategoryInput, createTagsInput].forEach((input) => {
+    input.addEventListener("input", () => {
+      if (!createModal.hidden) hasCreateDraftChanges = true;
+    });
   });
   ["material-code", "material-name", "material-category", "material-sort", "material-active"].forEach((id) => {
     document.getElementById(id).addEventListener("input", () => {
       persistFormToCache();
+      markUnsaved();
       renderRows();
     });
   });
   AXIS_ORDER.forEach((axis) => {
     document.getElementById(`axis-${axis}`).addEventListener("input", () => {
       persistFormToCache();
+      markUnsaved();
       renderRows();
     });
+  });
+  window.addEventListener("beforeunload", (event) => {
+    if (!hasUnsavedChanges && !hasMetaDraftChanges && !hasCreateDraftChanges) return;
+    event.preventDefault();
+    event.returnValue = "";
   });
 
   async function bootstrap() {
