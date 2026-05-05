@@ -483,6 +483,12 @@
     staffModalNoteEl.className = `portal-settings-modal-note ${isError ? "admin-error" : "admin-note"}`;
   }
 
+  function setStaffTableNote(message, isError = false) {
+    if (!staffTableNoteEl) return;
+    staffTableNoteEl.textContent = message;
+    staffTableNoteEl.className = isError ? "admin-error" : "admin-note";
+  }
+
   function getBaseShiftForDate(staff, dateKey) {
     const date = new Date(`${dateKey}T00:00:00`);
     const pattern = staff.weeklyPattern[String(date.getDay())] || {};
@@ -836,7 +842,7 @@
     const rows = state.staffDirectory.filter((staff) => staff.isActive !== false && !staff.isTemporary);
     if (!rows.length) {
       staffTableBodyEl.innerHTML = `<tr><td colspan="3">登録済みスタッフはありません。</td></tr>`;
-      if (staffTableNoteEl) staffTableNoteEl.textContent = "登録済みスタッフを表示します。";
+      setStaffTableNote("登録済みスタッフを表示します。");
       return;
     }
     staffTableBodyEl.innerHTML = rows.map((staff) => {
@@ -848,7 +854,7 @@
         </tr>
       `;
     }).join("");
-    if (staffTableNoteEl) staffTableNoteEl.textContent = `全${rows.length}件を表示中`;
+    setStaffTableNote(`全${rows.length}件を表示中`);
   }
 
   function renderTodayStaff() {
@@ -1180,6 +1186,7 @@
 
   staffForm.addEventListener("submit", async (event) => {
     event.preventDefault();
+    setStaffModalNote("保存しています。", false);
     const staffCode = normalizeLoginId(staffCodeEl.value);
     const managerCode = normalizeLoginId(managerCodeEl.value);
     const role = staffRoleEl.value;
@@ -1213,8 +1220,8 @@
         await saveSetting(SHIFT_SETTING_KEY, state.shiftOverrides.map(stripOverrideForSave));
         closeModal(staffModalEl);
         state.staffModalDirty = false;
-        setControlNote(`${payload.staffName} の勤務設定を保存しました。`, false);
         renderPage();
+        setStaffTableNote(`${payload.staffName} の勤務設定を保存しました。`);
       } catch (error) {
         setControlNote(error?.message || "勤務設定の保存に失敗しました。", true);
       }
@@ -1318,14 +1325,29 @@
           linkProfile: true
         }));
       }
-      if (authUpdates.length) {
-        await Promise.all(authUpdates);
-      }
       await saveSetting(STAFF_SETTING_KEY, state.staffDirectory.map(stripStaffForSave));
-      closeModal(staffModalEl);
       state.staffModalDirty = false;
-      setControlNote(`${finalPayload.staffName} を保存しました。${authUpdates.length ? "Authパスワードも反映しました。" : "Authパスワードは変更していません。"}`, false);
+      let authError = null;
+      if (authUpdates.length) {
+        try {
+          await Promise.all(authUpdates);
+        } catch (error) {
+          authError = error;
+        }
+      }
       renderPage();
+      if (authError) {
+        const message = authError?.message || "Authパスワードの反映に失敗しました。";
+        state.staffModalDirty = true;
+        setStaffTableNote(`${finalPayload.staffName} の基本情報は保存しました。Authパスワードは未反映です。`, true);
+        setStaffModalNote(`${finalPayload.staffName} の基本情報は保存しました。Authパスワードの反映に失敗しました: ${message}`, true);
+        return;
+      }
+      staffPasswordEl.value = "";
+      managerPasswordEl.value = "";
+      setStaffModalNote("", false);
+      closeModal(staffModalEl);
+      setStaffTableNote(`${finalPayload.staffName} を保存しました。${authUpdates.length ? "Authパスワードも反映しました。" : "Authパスワードは変更していません。"}`);
     } catch (error) {
       setControlNote(error?.message || "スタッフ設定の保存に失敗しました。", true);
     }
@@ -1414,8 +1436,8 @@
         await saveSetting(SHIFT_SETTING_KEY, state.shiftOverrides.map(stripOverrideForSave));
         closeModal(staffModalEl);
         state.staffModalDirty = false;
-        setControlNote(`${target.staffName} を削除しました。`, false);
         renderPage();
+        setStaffTableNote(`${target.staffName} を削除しました。`);
       } catch (error) {
         setControlNote(error?.message || "スタッフ削除の保存に失敗しました。", true);
       }
