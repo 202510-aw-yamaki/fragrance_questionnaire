@@ -199,3 +199,7 @@ QR発行条件、QR依頼対応、発送先入力、発送完了、通知対応�
 - admin 系スタイルは `admin/admin-ui.css` に単独集約し、`css/rebuild-ui.css` から admin 系セレクタを除去した。
 - 管理者ダッシュボード背景は `img/admin/admin-dashboard-bg.png` を全面背景として使用する。
 - QR関連通知モーダルは「QR依頼一覧へ」「通知設定へ」「閉じる」の明確な遷移・終了操作に整理した。
+
+2026-05-05追記:
+- スタッフ系スタイルも `css/staff-ui.css` に単独集約し、staff 配下のページは `css/rebuild-ui.css` を参照しない運用に変更した。
+- スタッフページで使う `admin-header` / `admin-panel` / `admin-btn` などの共通クラスは `css/staff-ui.css` 側で保持する。
