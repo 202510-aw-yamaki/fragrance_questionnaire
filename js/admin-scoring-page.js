@@ -10,6 +10,7 @@
   const q8Mount = document.getElementById("scoring-q8-section");
   const finishMount = document.getElementById("scoring-finish-section");
   const overviewMount = document.getElementById("scoring-sections");
+  const questionListMount = document.getElementById("scoring-question-list");
   const scoringJson = document.getElementById("scoring-json");
   const scoringStatus = document.getElementById("scoring-status");
   const activeVersionEl = document.getElementById("active-version");
@@ -18,10 +19,12 @@
   const exportButtons = Array.from(document.querySelectorAll("[data-scoring-export]"));
   const importTriggerButtons = Array.from(document.querySelectorAll("[data-scoring-import-trigger]"));
   const importInput = document.getElementById("scoring-import-json");
+  const questionStepTabs = Array.from(document.querySelectorAll("[data-question-step-tab]"));
   let activeConfigRow = null;
   let workingConfig = window.FragranceMasterData.createDefaultScoringConfig();
   let draftHasUnsavedChanges = false;
   let questionModalSnapshot = "";
+  let activeQuestionStep = "step1";
   ensureScoringModals();
   syncStaticScoringCopy();
 
@@ -29,6 +32,12 @@
     floral: "Bloom / floral",
     fresh: "Air / fresh",
     woody: "Deep / woody"
+  };
+
+  const BRANCH_SHORT_LABELS = {
+    floral: "Floral",
+    fresh: "Fresh",
+    woody: "Woody"
   };
 
   const AXIS_SHORT_LABELS = {
@@ -221,6 +230,65 @@
     return workingConfig.step1ScoreMap?.[questionId]?.[answerKey]?.[axis];
   }
 
+  function getQuestionAnchorId(kind, questionId, branch = "") {
+    return `scoring-card-${kind}-${branch || "main"}-${questionId}`.replace(/[^a-zA-Z0-9_-]/g, "-");
+  }
+
+  function getQuestionListItems(step = activeQuestionStep) {
+    if (step === "step2") {
+      const branchItems = Object.entries(STEP2_SCHEMA).flatMap(([branchKey, schemaList]) => {
+        return schemaList.map((schema) => ({
+          kind: "step2",
+          branch: branchKey,
+          schema,
+          label: BRANCH_SHORT_LABELS[branchKey] || branchKey,
+          displayId: schema.id
+        }));
+      });
+      return branchItems.concat([{ kind: "q8", schema: Q8_SCHEMA, label: "共通", displayId: "Q8" }]);
+    }
+    return STEP1_SCHEMA.map((schema) => ({ kind: "step1", schema, label: "STEP1", displayId: schema.id }));
+  }
+
+  function renderQuestionList() {
+    if (!questionListMount) return;
+    questionStepTabs.forEach((button) => {
+      const isActive = button.dataset.questionStepTab === activeQuestionStep;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-selected", String(isActive));
+    });
+    questionListMount.innerHTML = getQuestionListItems().map((item, index) => {
+      const anchorId = getQuestionAnchorId(item.kind, item.schema.id, item.branch);
+      return `
+        <button class="question-link" type="button" data-question-target="${escapeHtml(anchorId)}">
+          <span>${index + 1}</span>
+          <strong>${escapeHtml(item.displayId || item.schema.id)}</strong>
+          <small>${escapeHtml(item.label)}</small>
+        </button>
+      `;
+    }).join("");
+  }
+
+  function bindQuestionList() {
+    if (!questionListMount) return;
+    questionStepTabs.forEach((button) => {
+      button.onclick = () => {
+        activeQuestionStep = button.dataset.questionStepTab || "step1";
+        renderQuestionList();
+        bindQuestionList();
+      };
+    });
+    questionListMount.querySelectorAll("[data-question-target]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const target = document.getElementById(button.dataset.questionTarget);
+        if (!target) return;
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        target.classList.add("is-highlighted");
+        window.setTimeout(() => target.classList.remove("is-highlighted"), 900);
+      });
+    });
+  }
+
   function ensureQuestionScoreTarget(kind, questionId, answerKey, branch) {
     if (kind === "step2") {
       if (!workingConfig.step2ScoreMap[branch]) workingConfig.step2ScoreMap[branch] = {};
@@ -350,6 +418,7 @@
   function renderMatrixQuestionCard(schema, resolveValue, attributes, options = {}) {
     const editableSchema = getEditableQuestionSchema(schema, attributes.kind, attributes.branch);
     const branchAttribute = attributes.branch ? ` data-branch="${escapeHtml(attributes.branch)}"` : "";
+    const anchorId = getQuestionAnchorId(attributes.kind, schema.id, attributes.branch);
     const answerRows = Object.entries(editableSchema.answers).map(([answerKey, answerLabel]) => {
       return `
         <div class="portal-scoring-score-row">
@@ -360,7 +429,7 @@
       `;
     }).join("");
     return `
-      <article class="admin-editor-card portal-scoring-question-card">
+      <article class="admin-editor-card portal-scoring-question-card" id="${escapeHtml(anchorId)}">
         <div class="admin-card-head portal-scoring-question-card-head">
           <div>
             <h3>${escapeHtml(editableSchema.title)}</h3>
@@ -509,6 +578,8 @@
     renderQ8Area();
     renderFinishArea();
     bindEditorInputs();
+    renderQuestionList();
+    bindQuestionList();
   }
 
   function setNestedNumber(path, value) {
@@ -908,5 +979,6 @@
     await loadActiveConfig();
   }
 
+  applyWorkingConfig(workingConfig, "初期テンプレートを表示しています。");
   bootstrap();
 })();

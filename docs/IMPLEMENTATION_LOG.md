@@ -1399,3 +1399,22 @@
 - 確認:
   - in-app browserで `http://localhost:8000/admin/admin-scoring.html?role=manager` を表示し、ヘッダー追従、ロゴサイズ、タイトル位置、カード幅を確認した。
   - `git diff --check`
+
+### 2026-05-05 管理者 配点ロジックページの質問一覧整理
+- 対象:
+  - `admin/admin-scoring.html`
+  - `admin/admin-scoring.css`
+  - `js/admin-scoring-page.js`
+- 背景:
+  - ユーザー確認で、配点ロジックページのプレビュー領域は不要で、左の質問一覧はSTEP1/STEP2を切り替えられる形がよいという方針になった。
+  - 質問一覧に長い質問タイトルを入れるとレイアウトが崩れるため、短いQ番号と区分だけに絞る必要があった。
+- 実装:
+  - 右側のプレビューカードを削除した。
+  - 左の質問一覧にSTEP1/STEP2切り替えボタンを追加した。
+  - STEP1はQ1〜Q5、STEP2はFloral/Fresh/WoodyのQ6/Q7と共通Q8を表示するようにした。
+  - 質問一覧は静的な見本ではなく、`fragrance-master-data.js` の設問スキーマから生成するようにした。
+  - 認証やDB読み込み前でも初期テンプレートの編集UIが表示されるようにした。
+- 確認:
+  - `node --check js/admin-scoring-page.js`
+  - `git diff --check`
+  - in-app browserでプレビューカードが表示されないこと、STEP1/STEP2の質問一覧が切り替わることを確認した。

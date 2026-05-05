@@ -33,58 +33,30 @@
     <section class="admin-scoring-reference-workbench">
       <aside class="admin-panel admin-reference-card admin-scoring-question-list">
         <h2>質問一覧</h2>
-        <nav aria-label="質問一覧">
-          <a href="#" class="question-link"><span>☺</span>Q1 気分</a>
-          <a href="#" class="question-link"><span>♡</span>Q2 好み</a>
-          <a href="#" class="question-link"><span>✾</span>Q3 季節感</a>
-          <a href="#" class="question-link is-active"><span>☞</span>Q4 甘さ</a>
-          <a href="#" class="question-link"><span>♢</span>Q5 深み</a>
-        </nav>
-        <p class="admin-reference-help">質問を選択すると中央の編集内容が切り替わります。</p>
+        <div class="admin-scoring-question-tabs" role="tablist" aria-label="設問ステップ切り替え">
+          <button class="is-active" type="button" data-question-step-tab="step1" role="tab" aria-selected="true">STEP1</button>
+          <button type="button" data-question-step-tab="step2" role="tab" aria-selected="false">STEP2</button>
+        </div>
+        <nav id="scoring-question-list" aria-label="質問一覧"></nav>
+        <p class="admin-reference-help">STEPを切り替えて、編集対象の設問へ移動できます。</p>
       </aside>
       <form class="admin-panel admin-reference-card admin-scoring-editor-card" id="scoring-form">
         <div class="admin-reference-card-head"><h2>質問編集</h2><div class="admin-scoring-status-pills"><span>公開中</span><span>下書き保存あり</span></div></div>
-        <label class="admin-scoring-question-field">質問文<input type="text" value="どのくらい甘さを残したいですか？"></label>
-        <div class="admin-scoring-answer-matrix">
-          <div class="matrix-head"><span></span><span>華やかさ</span><span>甘さ</span><span>爽やかさ</span><span>落ち着き</span><span>深み</span><span></span></div>
-          <div class="matrix-row"><b>1</b><strong>ほとんど<br>甘くない</strong><input value="2"><input value="1"><input value="4"><input value="3"><input value="2"><button type="button">︙</button></div>
-          <div class="matrix-row is-selected"><b>2</b><strong>ほんのり<br>甘い</strong><input value="3"><input value="3"><input value="3"><input value="3"><input value="2"><button type="button">︙</button></div>
-          <div class="matrix-row"><b>3</b><strong>しっかり<br>甘い</strong><input value="4"><input value="5"><input value="2"><input value="4"><input value="3"><button type="button">︙</button></div>
-        </div>
-        <button class="admin-reference-dashed-button" type="button">回答選択肢を追加</button>
-        <div class="admin-reference-hidden-live">
-          <label>note<input id="scoring-note" type="text"></label>
-          <textarea id="scoring-json" rows="10" readonly></textarea>
-          <div class="portal-config-grid" id="scoring-sections"></div>
+        <div class="admin-scoring-live-editor">
           <div id="scoring-branch-settings"></div>
           <div class="admin-form-stack" id="scoring-step1-section"></div>
           <div class="admin-form-stack" id="scoring-q8-section"></div>
           <div class="admin-form-stack" id="scoring-step2-section"></div>
           <div class="admin-form-stack" id="scoring-finish-section"></div>
+        </div>
+        <div class="admin-reference-hidden-live">
+          <label>note<input id="scoring-note" type="text"></label>
+          <textarea id="scoring-json" rows="10" readonly></textarea>
+          <div class="portal-config-grid" id="scoring-sections"></div>
           <button class="admin-btn secondary" id="scoring-load-template" type="button">初期テンプレート</button>
           <button class="admin-btn secondary" id="scoring-load-active" type="button">activeへ戻す</button>
         </div>
       </form>
-      <aside class="admin-panel admin-reference-card admin-scoring-preview-card">
-        <h2>プレビュー</h2>
-        <div class="admin-scoring-preview-question">
-          <h3>質問プレビュー</h3>
-          <p>どのくらい甘さを残したいですか？</p>
-          <label><span></span>ほとんど甘くない</label>
-          <label class="is-active"><span></span>ほんのり甘い</label>
-          <label><span></span>しっかり甘い</label>
-        </div>
-        <h3>5軸プレビュー</h3>
-        <div class="admin-reference-radar radar-rose" aria-hidden="true"><span></span></div>
-        <div class="admin-axis-preview-list">
-          <span>華やかさ</span><meter min="0" max="5" value="3"></meter><span>3</span>
-          <span>甘さ</span><meter min="0" max="5" value="3"></meter><span>3</span>
-          <span>爽やかさ</span><meter min="0" max="5" value="3"></meter><span>3</span>
-          <span>落ち着き</span><meter min="0" max="5" value="3"></meter><span>3</span>
-          <span>深み</span><meter min="0" max="5" value="2"></meter><span>2</span>
-        </div>
-        <p class="admin-reference-help">回答を切り替えると5軸プレビューが変化します。</p>
-      </aside>
     </section>
     <section class="admin-panel admin-reference-bottom-strip">
       <p>クライアントがロジックを柔軟に調整できる設計です。</p>
