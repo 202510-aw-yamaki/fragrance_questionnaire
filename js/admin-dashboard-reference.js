@@ -3,8 +3,7 @@
 
   function fitDashboardArtboard() {
     if (!artboard) return;
-    const scale = Math.min(window.innerWidth / 1920, 1);
-    const roundedScale = Math.max(0.32, Math.min(1, scale));
+    const roundedScale = 1;
     document.documentElement.style.setProperty("--dashboard-artboard-scale", String(roundedScale));
     document.documentElement.style.setProperty("--dashboard-artboard-inverse-scale", String(1 / roundedScale));
     document.documentElement.style.setProperty("--dashboard-modal-width", `${window.innerWidth / roundedScale}px`);

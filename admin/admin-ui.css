@@ -4962,3 +4962,321 @@ body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel .p
 body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel .admin-empty {
   font-size: 20px;
 }
+
+/* 2026-05-05 dashboard: use real viewport sizing instead of scaled mockup artboard */
+body.admin-dashboard-page {
+  min-height: 100vh !important;
+  background: #fffaf4;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  width: 100% !important;
+  min-height: 100vh !important;
+  height: auto !important;
+  overflow: visible !important;
+  transform: none !important;
+  zoom: 1 !important;
+  background:
+    linear-gradient(90deg, rgba(255, 251, 246, 0.78), rgba(255, 251, 246, 0.94) 18%, rgba(255, 251, 246, 0.96) 50%, rgba(255, 251, 246, 0.94) 82%, rgba(255, 251, 246, 0.78)),
+    url("../img/admin/admin-dashboard-bg.png") center / cover no-repeat,
+    #fffaf4 !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-header {
+  height: auto !important;
+  min-height: 66px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-header-inner {
+  width: min(100% - 48px, 1180px) !important;
+  min-height: 66px !important;
+  height: auto !important;
+  padding: 8px 0 !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-brand {
+  width: auto !important;
+  flex: 0 0 auto !important;
+  gap: 10px !important;
+  font-size: 23px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-brand-logo,
+body.admin-dashboard-page .admin-dashboard-artboard .admin-brand-logo img {
+  width: 38px !important;
+  height: 50px !important;
+  max-width: 38px !important;
+  max-height: 50px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-brand-meta {
+  font-size: 11px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-header-actions {
+  gap: 18px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-nav {
+  gap: 18px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-nav a {
+  min-height: 66px !important;
+  gap: 5px !important;
+  font-size: 13px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-nav a::before {
+  width: 18px !important;
+  font-size: 17px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-nav a[data-admin-nav-key="portal-staff"] {
+  min-height: 38px !important;
+  padding: 0 16px !important;
+  font-size: 13px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-logout {
+  min-height: 38px !important;
+  font-size: 13px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-main {
+  width: min(100% - 68px, 1180px) !important;
+  padding: 26px 0 0 !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-title {
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0 0 16px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-title h1 {
+  font-size: 26px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-notification-pill {
+  top: 3px !important;
+  min-height: 36px !important;
+  padding: 0 12px !important;
+  font-size: 13px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-notification-pill strong {
+  min-width: 26px !important;
+  height: 26px !important;
+  font-size: 13px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-kpis {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+  margin-bottom: 18px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-kpis .kpi-card {
+  width: auto !important;
+  min-height: 120px !important;
+  grid-template-columns: 56px 1fr !important;
+  gap: 12px !important;
+  padding: 18px 16px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .kpi-card .decor-icon {
+  width: 52px !important;
+  height: 52px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .kpi-card .decor-icon::before {
+  inset: 15px !important;
+  border-width: 2px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .kpi-card p {
+  font-size: 16px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-kpis .kpi-value {
+  font-size: 31px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .kpi-card small {
+  font-size: 12px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-main-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr) !important;
+  gap: 18px !important;
+  margin-bottom: 18px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-status-panel,
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel {
+  height: auto !important;
+  min-height: 322px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-status-panel > h2,
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel > h2 {
+  min-height: 34px !important;
+  height: 34px !important;
+  padding: 6px 12px !important;
+  font-size: 17px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-status-block {
+  grid-template-columns: 56px 1fr !important;
+  min-height: 84px !important;
+  gap: 8px 14px !important;
+  margin: 10px 12px 0 !important;
+  padding: 11px 14px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-status-block:nth-of-type(3) {
+  min-height: 84px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-status-block::before {
+  width: 46px !important;
+  height: 46px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-status-block::after {
+  width: 22px !important;
+  height: 22px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-status-block h3 {
+  font-size: 18px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-status-block h3 strong {
+  min-height: 24px !important;
+  padding: 0 10px !important;
+  font-size: 12px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-staff-card {
+  min-width: 98px !important;
+  min-height: 34px !important;
+  padding: 6px 10px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-staff-card span:first-child {
+  font-size: 14px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-slot-card {
+  min-width: 100px !important;
+  min-height: 58px !important;
+  padding: 8px 10px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-slot-card span {
+  font-size: 13px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-slot-card strong {
+  font-size: 13px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-previsit-card {
+  min-width: 210px !important;
+  min-height: 48px !important;
+  padding: 8px 12px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-previsit-card span {
+  font-size: 14px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-previsit-card strong {
+  font-size: 18px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-previsit-card small {
+  font-size: 11px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel .portal-list-body {
+  padding: 14px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel .portal-dashboard-row {
+  min-height: 74px !important;
+  grid-template-columns: 50px 1fr 54px 14px !important;
+  gap: 12px !important;
+  padding: 11px 14px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel .portal-dashboard-row::before {
+  width: 46px !important;
+  height: 46px !important;
+  font-size: 22px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel .portal-dashboard-row span,
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel .admin-empty {
+  font-size: 15px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel .portal-dashboard-row small {
+  font-size: 12px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel .portal-dashboard-row strong {
+  font-size: 18px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel .admin-btn {
+  min-height: 34px !important;
+  font-size: 13px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-action-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-action-card {
+  width: auto !important;
+  min-height: 86px !important;
+  grid-template-columns: 52px minmax(0, 1fr) 16px !important;
+  gap: 12px !important;
+  padding: 15px 16px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-action-card .decor-icon {
+  width: 50px !important;
+  height: 50px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-action-card h3 {
+  font-size: 16px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-action-card::after {
+  font-size: 22px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-reference-footer {
+  position: static !important;
+  width: min(100% - 48px, 1180px) !important;
+  height: auto !important;
+  min-height: 46px !important;
+  margin: 12px auto 0 !important;
+  padding: 12px 0 !important;
+  font-size: 11px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-qr-modal {
+  position: fixed !important;
+  width: 100vw !important;
+  height: 100vh !important;
+}
