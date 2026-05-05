@@ -1126,3 +1126,21 @@
   - `fetch_reservation_by_code(text)` を再定義前に `drop function if exists` するようにした。
 - 確認:
   - `git diff --check`
+
+### 2026-05-05 管理者ダッシュボードのQR通知モーダル実データ化
+- 対象:
+  - `admin/admin-dashboard.html`
+  - `admin/admin-ui.css`
+  - `js/admin-dashboard-page.js`
+  - `js/admin-dashboard-reference.js`
+- 背景:
+  - ユーザー確認で、管理者ダッシュボードのハンバーガーメニュー位置、QR関連通知モーダルのサイズ、静的サンプル表示のままになっている通知内容を修正する要望があった。
+- 実装:
+  - ダッシュボードのハンバーガーメニューをアートボード内の右上ボタン直下に開くように限定上書きした。
+  - QR関連通知モーダルをビューポート基準の実表示サイズに戻し、アートボード縮小の影響で小さく見えないようにした。
+  - `notification_events` / `qr_product_requests` / `email_events` を分類し、未対応/期限超過、無効QRアクセス、再案内候補、発送準備中のタブ・一覧・サマリーを実データ由来で描画するようにした。
+- 確認:
+  - `node --check js/admin-dashboard-page.js`
+  - `node --check js/admin-dashboard-reference.js`
+  - `git diff --check`
+  - in-app browserで844px幅表示時にハンバーガーメニューが右上に開くこと、QR関連通知モーダルが大きく表示されること、ゼロ件時の動的表示を確認。

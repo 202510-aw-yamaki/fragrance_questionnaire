@@ -101,19 +101,17 @@
       <button class="admin-qr-modal-close" type="button" data-admin-qr-modal-close aria-label="閉じる">×</button>
       <h2 id="admin-qr-modal-title">QR関連通知</h2>
       <div class="admin-qr-modal-tabs" role="tablist" aria-label="QR関連通知">
-        <button class="is-active" type="button">未対応期限超過 <strong>1</strong></button>
-        <button type="button">無効QRアクセス <strong>1</strong></button>
-        <button type="button">再案内候補 <strong>0</strong></button>
-        <button type="button">発送準備中 <strong>1</strong></button>
+        <button class="is-active" type="button" data-admin-qr-modal-category="overdue">未対応/期限超過 <strong>0</strong></button>
+        <button type="button" data-admin-qr-modal-category="inactive">無効QRアクセス <strong>0</strong></button>
+        <button type="button" data-admin-qr-modal-category="reminder">再案内候補 <strong>0</strong></button>
+        <button type="button" data-admin-qr-modal-category="shipping">発送準備中 <strong>0</strong></button>
       </div>
       <div class="admin-qr-modal-grid">
         <div class="admin-qr-modal-list">
-          <article class="admin-qr-modal-item is-danger"><span class="modal-icon" aria-hidden="true"></span><div><h3>月夜の余韻 <em>期限超過</em></h3><p>状態：3営業日超過</p><p>依頼内容：10ml × 2本</p><p>受付日：2026/05/12</p><p>処理：自動作成不可メール送信済み</p></div><a href="admin-qr-requests.html?role=manager" aria-label="詳細へ">›</a></article>
-          <article class="admin-qr-modal-item is-warning"><span class="modal-icon" aria-hidden="true"></span><div><h3>ひだまりブレンド <em>アクセス増加</em></h3><p>状態：受付終了QRアクセス増加</p><p>直近7日アクセス：34件</p><p>操作：再有効化を検討</p></div><a href="admin-qr-requests.html?role=manager" aria-label="詳細へ">›</a></article>
-          <article class="admin-qr-modal-item is-success"><span class="modal-icon" aria-hidden="true"></span><div><h3>雨上がりの庭 <em>発送準備中</em></h3><p>状態：発送準備中</p><p>担当スタッフ：山田</p><p>操作：詳細を見る</p></div><a href="admin-qr-requests.html?role=manager" aria-label="詳細へ">›</a></article>
+          <p class="admin-empty">QR通知を読み込み中です。</p>
         </div>
         <aside class="admin-qr-modal-side">
-          <section><h3>サマリー</h3><dl><div><dt>期限超過</dt><dd>1件</dd></div><div><dt>無効QRアクセス増加</dt><dd>1件</dd></div><div><dt>発送準備中</dt><dd>1件</dd></div></dl></section>
+          <section><h3>サマリー</h3><dl><div><dt>未対応/期限超過</dt><dd>0件</dd></div><div><dt>無効QRアクセス</dt><dd>0件</dd></div><div><dt>再案内候補</dt><dd>0件</dd></div><div><dt>発送準備中</dt><dd>0件</dd></div></dl></section>
           <p>通知はこの画面では完了扱いにしません。対応・詳細確認はQR依頼一覧で行います。</p>
         </aside>
       </div>

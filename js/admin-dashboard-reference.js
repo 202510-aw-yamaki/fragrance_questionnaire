@@ -6,7 +6,10 @@
     const scale = Math.min(window.innerWidth / 1920, 1);
     const roundedScale = Math.max(0.32, Math.min(1, scale));
     document.documentElement.style.setProperty("--dashboard-artboard-scale", String(roundedScale));
-    document.body.style.minHeight = `${Math.ceil(artboard.scrollHeight * roundedScale)}px`;
+    document.documentElement.style.setProperty("--dashboard-artboard-inverse-scale", String(1 / roundedScale));
+    document.documentElement.style.setProperty("--dashboard-modal-width", `${window.innerWidth / roundedScale}px`);
+    document.documentElement.style.setProperty("--dashboard-modal-height", `${window.innerHeight / roundedScale}px`);
+    document.body.style.minHeight = `${Math.max(window.innerHeight, Math.ceil(artboard.scrollHeight * roundedScale))}px`;
   }
 
   fitDashboardArtboard();
