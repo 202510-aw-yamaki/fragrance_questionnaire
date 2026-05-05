@@ -3,6 +3,7 @@
   const SHIFT_SETTING_KEY = "staff_shift_overrides";
   const QR_PRODUCT_SETTING_KEY = "qr_product_public_settings";
   const STORE_PUBLIC_INFO_KEY = "store_public_info";
+  const AUTH_USER_FUNCTION = "admin-upsert-portal-auth-user";
   const QR_DEFAULT_SETTINGS = {
     price_10ml: 1000,
     price_30ml: 2860,
@@ -102,7 +103,7 @@
               <label class="portal-settings-field portal-settings-password-field">
                 <span>Authパスワード</span>
                 <span class="portal-settings-password-wrap">
-                  <input id="staff-password" type="password" autocomplete="new-password" placeholder="Supabase Authで設定（保存しません）">
+                  <input id="staff-password" type="password" autocomplete="new-password" placeholder="保存時にSupabase Authへ設定">
                   <button class="admin-btn secondary portal-settings-visibility-toggle" type="button" data-toggle-password="staff-password">表示</button>
                 </span>
               </label>
@@ -113,7 +114,7 @@
               <label class="portal-settings-field portal-settings-password-field" data-manager-auth-row hidden>
                 <span>管理者Authパス</span>
                 <span class="portal-settings-password-wrap">
-                  <input id="manager-password" type="password" autocomplete="new-password" placeholder="Supabase Authで設定（保存しません）">
+                  <input id="manager-password" type="password" autocomplete="new-password" placeholder="保存時にSupabase Authへ設定">
                   <button class="admin-btn secondary portal-settings-visibility-toggle" type="button" data-toggle-password="manager-password">表示</button>
                 </span>
               </label>
@@ -196,12 +197,34 @@
     selectedStaffId: "",
     staffModalMode: "create",
     staffDutyTab: "basic",
-    staffDateOverridesDirty: false
+    staffDateOverridesDirty: false,
+    storeDirty: false,
+    staffModalDirty: false
   };
 
   if (staffManageLabelEl) staffManageLabelEl.textContent = "スタッフ登録編集";
   if (shiftManageLabelEl) shiftManageLabelEl.textContent = "スタッフ出勤管理";
   if (staffShiftButtonEl) staffShiftButtonEl.textContent = "スタッフ出勤管理";
+
+  function hasUnsavedChanges() {
+    return state.storeDirty || state.staffModalDirty;
+  }
+
+  function confirmDiscardUnsavedChanges() {
+    if (!hasUnsavedChanges()) return true;
+    return window.confirm("保存されていない変更があります。このページを離れますか？");
+  }
+
+  function confirmDiscardStaffModalChanges() {
+    if (!state.staffModalDirty) return true;
+    return window.confirm("保存されていないスタッフ設定があります。閉じますか？");
+  }
+
+  function closeStaffModalWithGuard() {
+    if (!confirmDiscardStaffModalChanges()) return;
+    state.staffModalDirty = false;
+    closeModal(staffModalEl);
+  }
 
   function createLocalDate(date) {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -764,6 +787,7 @@
     staffDefaultEndEl.value = target.defaultEnd || "18:00";
     renderStaffWeeklyPattern(target);
     setStaffModalMode(modalMode, target, isTemporary);
+    state.staffModalDirty = false;
     setControlNote("", false);
     openModal(staffModalEl);
   }
@@ -921,6 +945,32 @@
     const rows = await window.AdminData.insertRow("staff_profiles", payload);
     if (!rows[0]) throw new Error("スタッフプロフィールを登録できませんでした。");
     return normalizeStaffProfile(rows[0]);
+  }
+
+  function validateAuthPassword(password, label) {
+    if (!password) return "";
+    return password.length >= 6 ? "" : `${label}は6文字以上で入力してください。`;
+  }
+
+  async function savePortalAuthUserPassword({ profileId, loginId, loginPortal, portalRole, password, displayName, linkProfile }) {
+    if (!password) return null;
+    const client = window.getSupabaseClient?.();
+    if (!client?.functions?.invoke) {
+      throw new Error("Supabase Edge Function を呼び出せません。");
+    }
+    const { data, error } = await client.functions.invoke(AUTH_USER_FUNCTION, {
+      body: {
+        profileId,
+        loginId,
+        loginPortal,
+        portalRole,
+        password,
+        displayName,
+        linkProfile: Boolean(linkProfile)
+      }
+    });
+    if (error) throw error;
+    return data || null;
   }
 
   async function saveSetting(key, value, options = {}) {
@@ -1149,6 +1199,7 @@
         await saveSetting(STAFF_SETTING_KEY, state.staffDirectory.map(stripStaffForSave));
         await saveSetting(SHIFT_SETTING_KEY, state.shiftOverrides.map(stripOverrideForSave));
         closeModal(staffModalEl);
+        state.staffModalDirty = false;
         setControlNote(`${payload.staffName} の勤務設定を保存しました。`, false);
         renderPage();
       } catch (error) {
@@ -1176,6 +1227,18 @@
     const hasDuplicateManagerId = role === "manager" && state.staffDirectory.some((row) => row.id !== editingId && normalizeLoginId(row.managerCode) === managerCode);
     if (hasDuplicateManagerId) {
       setControlNote("同じ管理者IDは登録できません。", true);
+      return;
+    }
+    const staffAuthPassword = staffPasswordEl.value.trim();
+    const managerAuthPassword = role === "manager" ? managerPasswordEl.value.trim() : "";
+    const staffPasswordError = validateAuthPassword(staffAuthPassword, "Authパスワード");
+    if (staffPasswordError) {
+      setControlNote(staffPasswordError, true);
+      return;
+    }
+    const managerPasswordError = validateAuthPassword(managerAuthPassword, "管理者Authパス");
+    if (managerPasswordError) {
+      setControlNote(managerPasswordError, true);
       return;
     }
     const derivedTimes = modalMode === "edit" && existingStaff
@@ -1219,9 +1282,36 @@
         state.staffDirectory.push(finalPayload);
       }
       state.selectedStaffId = finalPayload.id;
+      const authUpdates = [];
+      if (staffAuthPassword) {
+        authUpdates.push(savePortalAuthUserPassword({
+          profileId: finalPayload.id,
+          loginId: finalPayload.staffCode,
+          loginPortal: "staff",
+          portalRole: finalPayload.role,
+          password: staffAuthPassword,
+          displayName: finalPayload.staffName,
+          linkProfile: finalPayload.role !== "manager" || !managerAuthPassword
+        }));
+      }
+      if (finalPayload.role === "manager" && managerAuthPassword) {
+        authUpdates.push(savePortalAuthUserPassword({
+          profileId: finalPayload.id,
+          loginId: finalPayload.managerCode || finalPayload.staffCode,
+          loginPortal: "manager",
+          portalRole: "manager",
+          password: managerAuthPassword,
+          displayName: finalPayload.staffName,
+          linkProfile: true
+        }));
+      }
+      if (authUpdates.length) {
+        await Promise.all(authUpdates);
+      }
       await saveSetting(STAFF_SETTING_KEY, state.staffDirectory.map(stripStaffForSave));
       closeModal(staffModalEl);
-      setControlNote(`${finalPayload.staffName} を保存しました。Supabase Authユーザーとの紐づけは必要に応じて確認してください。`, false);
+      state.staffModalDirty = false;
+      setControlNote(`${finalPayload.staffName} を保存しました。${authUpdates.length ? "Authパスワードも反映しました。" : "Authパスワードは変更していません。"}`, false);
       renderPage();
     } catch (error) {
       setControlNote(error?.message || "スタッフ設定の保存に失敗しました。", true);
@@ -1310,6 +1400,7 @@
         await saveSetting(STAFF_SETTING_KEY, state.staffDirectory.map(stripStaffForSave));
         await saveSetting(SHIFT_SETTING_KEY, state.shiftOverrides.map(stripOverrideForSave));
         closeModal(staffModalEl);
+        state.staffModalDirty = false;
         setControlNote(`${target.staffName} を削除しました。`, false);
         renderPage();
       } catch (error) {
@@ -1378,7 +1469,12 @@
 
   document.querySelectorAll("[data-modal-close]").forEach((button) => {
     button.addEventListener("click", () => {
-      closeModal(document.getElementById(button.dataset.modalClose));
+      const targetModal = document.getElementById(button.dataset.modalClose);
+      if (targetModal === staffModalEl) {
+        closeStaffModalWithGuard();
+        return;
+      }
+      closeModal(targetModal);
     });
   });
 
@@ -1395,6 +1491,7 @@
         business_hours: `${info.open_time}〜${info.close_time}`
       }, { isPublic: true });
       fillStoreInfoForm();
+      state.storeDirty = false;
       setStoreInfoNote("店舗情報を保存しました。", false);
     } catch (error) {
       setStoreInfoNote(error?.message || "店舗情報の保存に失敗しました。", true);
@@ -1409,6 +1506,38 @@
   settingsSaveButtonEl?.addEventListener("click", async () => {
     await saveStorePublicInfo();
   });
+
+  storeInfoFormEl?.addEventListener("input", () => {
+    state.storeDirty = true;
+  });
+
+  storeInfoFormEl?.addEventListener("change", () => {
+    state.storeDirty = true;
+  });
+
+  staffForm?.addEventListener("input", () => {
+    state.staffModalDirty = true;
+  });
+
+  staffForm?.addEventListener("change", () => {
+    state.staffModalDirty = true;
+  });
+
+  window.addEventListener("beforeunload", (event) => {
+    if (!hasUnsavedChanges()) return;
+    event.preventDefault();
+    event.returnValue = "";
+  });
+
+  document.addEventListener("click", (event) => {
+    const target = event.target instanceof Element ? event.target : null;
+    if (!target) return;
+    const leaveTarget = target.closest("a[href], .admin-logout");
+    if (!leaveTarget || !hasUnsavedChanges()) return;
+    if (confirmDiscardUnsavedChanges()) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }, true);
 
   qrSettingsFormEl?.addEventListener("submit", async (event) => {
     event.preventDefault();

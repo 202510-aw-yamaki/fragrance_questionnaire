@@ -91,6 +91,13 @@ qr_product_requests.handled_by_staff_id
 - `fragrancePortalLoginIndex` のようなlocalStorage上のログインID一覧は、ログイン可否判定に使わない
 - スタッフ/管理者ロールは `app_metadata` だけを参照し、ユーザー自身が編集できる `user_metadata` は権限根拠にしない
 
+2026-05-05 追記:
+
+- 管理者設定画面で入力されたスタッフ/管理者のAuthパスワードは、`admin_settings` や `staff_profiles` に平文保存しない。
+- パスワード入力がある場合は、管理者セッションを検証する Supabase Edge Function `admin-upsert-portal-auth-user` 経由で Supabase Auth ユーザーへ設定する。
+- Edge Function は service role key をサーバー側環境変数として使い、フロントエンドへ service role key を置かない。
+- `staff_profiles.auth_user_id` は、保存対象プロフィールの主ログインAuthユーザーに紐づける。
+
 ## 2026-04-28 Phase 4 implementation note
 
 ユーザー要望のメール運用方針に合わせ、実送信前の送信イベント管理用に `email_events` を追加する。

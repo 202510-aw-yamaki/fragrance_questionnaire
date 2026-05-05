@@ -1289,3 +1289,22 @@
   - `node --check js/admin-dashboard-page.js`
   - `node --check js/admin-settings-page.js`
   - `git diff --check`
+
+### 2026-05-05 管理者基本設定ページのAuth保存と未保存離脱ガード
+- 対象:
+  - `admin/admin-settings.html`
+  - `js/admin-settings-page.js`
+  - `supabase/functions/admin-upsert-portal-auth-user/index.ts`
+  - `docs/03_DB_DESIGN_POLICY.md`
+- 背景:
+  - ユーザー注釈で、スタッフ/管理者のAuthパスワード入力を保存したい要望があった。
+  - 設定変更後に保存せず離脱する際のバリデーション有無を確認する要望があった。
+- 実装:
+  - Authパスワード入力の文言を、保存時に Supabase Auth へ設定する表示へ変更した。
+  - パスワード入力がある場合は、Edge Function `admin-upsert-portal-auth-user` 経由で Supabase Auth ユーザーを作成/更新する導線を追加した。
+  - パスワードは `admin_settings` や `staff_profiles` に平文保存しない方針を明記した。
+  - 店舗情報保存ボタンの文言を `店舗情報を保存` に変更し、保存範囲を明確にした。
+  - 店舗情報フォームとスタッフモーダルの未保存変更について、ページ離脱・ログアウト・モーダル閉じる操作時の確認を追加した。
+- 確認:
+  - `node --check js/admin-settings-page.js`
+  - `git diff --check`
