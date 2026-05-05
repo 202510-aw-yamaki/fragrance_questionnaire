@@ -601,17 +601,55 @@ body.admin-scoring-page .admin-page-title .portal-hero-copy:not(.admin-reference
   color: var(--green);
 }
 
+.portal-scoring-save-message {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(198, 79, 74, 0.38);
+  border-radius: 8px;
+  background: rgba(198, 79, 74, 0.08);
+  color: #8d342f;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
 body.portal-scoring-modal-open {
   overflow: hidden;
 }
 
 .admin-scoring-page .admin-reference-bottom-strip {
   width: min(100%, 1280px);
-  grid-template-columns: 140px 180px 180px;
-  justify-content: end;
-  gap: 12px;
+  grid-template-columns: minmax(360px, 1fr) minmax(460px, auto);
+  justify-content: space-between;
+  gap: 18px;
   margin-top: 16px;
   padding: 16px 22px;
+}
+
+.admin-scoring-page .admin-scoring-bottom-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.admin-scoring-page .admin-scoring-bottom-group--local {
+  justify-self: end;
+}
+
+.admin-scoring-page .admin-scoring-bottom-group p {
+  margin: 0;
+  color: #6f5e4f;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.admin-scoring-page .admin-scoring-bottom-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 150px);
+  gap: 10px;
 }
 
 @media (min-width: 1280px) {
@@ -639,6 +677,18 @@ body.portal-scoring-modal-open {
   .admin-scoring-page .admin-reference-bottom-strip {
     grid-template-columns: 1fr;
     grid-column: auto;
+  }
+
+  .admin-scoring-page .admin-scoring-bottom-group,
+  .admin-scoring-page .admin-scoring-bottom-group--local {
+    justify-self: stretch;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-scoring-page .admin-scoring-bottom-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
   }
 
   .admin-scoring-page .admin-scoring-question-list {

@@ -134,6 +134,7 @@
               <label class="portal-scoring-modal-field">version メモ
                 <input id="scoring-note-modal" type="text" placeholder="例: spring update">
               </label>
+              <p class="portal-scoring-save-message" id="scoring-save-message" role="alert" hidden></p>
               <div class="admin-actions portal-scoring-modal-actions">
                 <button class="admin-btn secondary" data-scoring-save-close type="button">キャンセル</button>
                 <button class="admin-btn primary" type="submit">新 version を保存</button>
@@ -977,12 +978,21 @@
     const legacyNote = document.getElementById("scoring-note");
     const modalNote = document.getElementById("scoring-note-modal");
     modalNote.value = legacyNote?.value || "";
+    setSaveModalMessage([]);
     setModalOpen(document.getElementById("scoring-save-modal"), true);
     window.requestAnimationFrame(() => modalNote.focus());
   }
 
   function closeSaveModal() {
     setModalOpen(document.getElementById("scoring-save-modal"), false);
+  }
+
+  function setSaveModalMessage(messages = []) {
+    const messageEl = document.getElementById("scoring-save-message");
+    if (!messageEl) return;
+    const list = Array.isArray(messages) ? messages.filter(Boolean) : [messages].filter(Boolean);
+    messageEl.hidden = !list.length;
+    messageEl.textContent = list.join("\n");
   }
 
   function getNumberPrecision(input) {
@@ -1008,6 +1018,84 @@
 
   function hasPendingScoringEdits() {
     return draftHasUnsavedChanges || hasUnsavedQuestionModalChanges();
+  }
+
+  function collectScoringValidationErrors(config) {
+    const errors = [];
+    const maxErrors = 8;
+    let hasMoreErrors = false;
+    const addError = (message) => {
+      if (errors.length < maxErrors) {
+        errors.push(message);
+        return;
+      }
+      hasMoreErrors = true;
+    };
+    const checkNumber = (value, label, range = {}) => {
+      const numberValue = Number(value);
+      if (!Number.isFinite(numberValue)) {
+        addError(`${label} は数値で入力してください。`);
+        return;
+      }
+      if (typeof range.min === "number" && numberValue < range.min) {
+        addError(`${label} は ${range.min} 以上にしてください。`);
+      }
+      if (typeof range.max === "number" && numberValue > range.max) {
+        addError(`${label} は ${range.max} 以下にしてください。`);
+      }
+    };
+    const checkQuestionMap = (scoreMap, schemas, labelPrefix) => {
+      (schemas || []).forEach((schema) => {
+        Object.keys(schema.answers || {}).forEach((answerKey) => {
+          AXIS_ORDER.forEach((axis) => {
+            checkNumber(scoreMap?.[schema.id]?.[answerKey]?.[axis], `${labelPrefix} ${schema.id} ${answerKey} ${AXIS_SHORT_LABELS[axis]}`);
+          });
+        });
+      });
+    };
+
+    if (!window.FragranceMasterData.isExpectedScoringConfig(config)) {
+      addError("配点ロジックの構造が現在のテンプレートと一致していません。");
+    }
+
+    checkNumber(config?.questionWeights?.step1, "STEP1の重み", { min: 0 });
+    checkNumber(config?.questionWeights?.step2, "STEP2の重み", { min: 0 });
+    checkNumber(config?.questionWeights?.finish, "STEP3の重み", { min: 0 });
+    checkNumber(config?.finishBlendRatio, "finishのブレンド比率", { min: 0, max: 1 });
+
+    Object.keys(BRANCH_LABELS).forEach((branchKey) => {
+      AXIS_ORDER.forEach((axis) => {
+        checkNumber(config?.branchTemplates?.[branchKey]?.[axis], `${BRANCH_LABELS[branchKey]} ${AXIS_LABELS[axis]}`);
+      });
+    });
+    AXIS_ORDER.forEach((axis) => {
+      checkNumber(config?.branchDistanceWeights?.[axis], `距離重み ${AXIS_LABELS[axis]}`);
+    });
+
+    checkQuestionMap(config?.step1ScoreMap, STEP1_SCHEMA, "STEP1");
+    Object.entries(STEP2_SCHEMA || {}).forEach(([branchKey, schemas]) => {
+      checkQuestionMap(config?.step2ScoreMap?.[branchKey], schemas, `STEP2 ${BRANCH_SHORT_LABELS[branchKey] || branchKey}`);
+    });
+    Object.keys(Q8_SCHEMA.answers || {}).forEach((answerKey) => {
+      AXIS_ORDER.forEach((axis) => {
+        checkNumber(config?.q8ScoreMap?.[answerKey]?.[axis], `Q8 ${answerKey} ${AXIS_SHORT_LABELS[axis]}`);
+      });
+    });
+
+    const finishEntries = Object.entries(config?.finishTemplates || {});
+    if (!finishEntries.length) {
+      addError("仕上げテンプレートがありません。");
+    }
+    finishEntries.forEach(([templateKey, axes]) => {
+      AXIS_ORDER.forEach((axis) => {
+        checkNumber(axes?.[axis], `仕上げテンプレート ${templateKey} ${AXIS_SHORT_LABELS[axis]}`);
+      });
+    });
+
+    if (hasMoreErrors) {
+      errors.push("ほかにも確認が必要な項目があります。先頭の項目から修正してください。");
+    }
+    return errors;
   }
 
   async function saveScoringConfig(note) {
@@ -1070,12 +1158,21 @@
     document.getElementById("scoring-save-modal-form").addEventListener("submit", async (event) => {
       event.preventDefault();
       const note = document.getElementById("scoring-note-modal").value.trim();
+      const validationErrors = collectScoringValidationErrors(workingConfig);
+      if (validationErrors.length) {
+        setSaveModalMessage(validationErrors);
+        updateStatus(validationErrors[0]);
+        return;
+      }
       try {
-        closeSaveModal();
+        setSaveModalMessage([]);
         await saveScoringConfig(note);
+        closeSaveModal();
       } catch (error) {
         console.error(error);
-        updateStatus("保存に失敗しました。");
+        const message = error?.message ? `保存に失敗しました: ${error.message}` : "保存に失敗しました。";
+        setSaveModalMessage([message]);
+        updateStatus(message);
       }
     });
     document.addEventListener("keydown", (event) => {

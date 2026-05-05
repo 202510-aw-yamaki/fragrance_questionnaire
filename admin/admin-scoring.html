@@ -64,9 +64,17 @@
       </form>
     </section>
     <section class="admin-panel admin-reference-bottom-strip">
-      <button class="admin-btn gold" type="submit" form="scoring-form">保存</button>
-      <button class="admin-btn secondary" data-scoring-export type="button">JSONを書き出す</button>
-      <button class="admin-btn secondary" data-scoring-import-trigger type="button">JSONを読み込む</button>
+      <div class="admin-scoring-bottom-group admin-scoring-bottom-group--database">
+        <button class="admin-btn gold" type="submit" form="scoring-form">保存</button>
+        <p>データベースに保存する場合は左の保存ボタンを押してください</p>
+      </div>
+      <div class="admin-scoring-bottom-group admin-scoring-bottom-group--local">
+        <p>ローカルに保存する場合は右のJSON保存を押してください</p>
+        <div class="admin-scoring-bottom-actions">
+          <button class="admin-btn secondary" data-scoring-export type="button">JSON保存</button>
+          <button class="admin-btn secondary" data-scoring-import-trigger type="button">JSON読込</button>
+        </div>
+      </div>
     </section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
