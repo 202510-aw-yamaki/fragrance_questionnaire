@@ -87,11 +87,13 @@ body.admin-materials-page .admin-main {
   margin: 0;
 }
 
-.admin-material-create-modal[hidden] {
+.admin-material-create-modal[hidden],
+.admin-material-meta-modal[hidden] {
   display: none !important;
 }
 
-.admin-material-create-modal {
+.admin-material-create-modal,
+.admin-material-meta-modal {
   position: fixed;
   inset: 0;
   z-index: 120;
@@ -110,6 +112,8 @@ body.admin-materials-page .admin-main {
   position: relative;
   z-index: 1;
   width: min(640px, 100%);
+  max-height: calc(100vh - 44px);
+  overflow: auto;
   border: 1px solid rgba(221, 196, 166, 0.82);
   border-radius: 10px;
   background: rgba(255, 253, 249, 0.98);
@@ -249,21 +253,22 @@ body.admin-materials-page .admin-main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 6px;
   margin-top: 14px;
 }
 
 .admin-material-pagination span {
-  min-width: 48px;
+  min-width: 42px;
   color: var(--muted);
   font-weight: 700;
   text-align: center;
 }
 
 .admin-material-pagination .admin-btn {
-  min-width: 72px;
+  flex: 0 0 auto;
+  min-width: 60px;
   min-height: 34px;
-  padding: 6px 9px;
+  padding: 5px 7px;
   border-color: rgba(196, 145, 89, 0.38);
   background: rgba(255, 253, 249, 0.52);
   box-shadow: none;
@@ -285,7 +290,9 @@ body.admin-materials-page .admin-main {
 }
 
 .admin-material-active-field {
-  min-height: 44px;
+  align-self: end;
+  height: 50px;
+  min-height: 50px;
   display: flex !important;
   align-items: center;
   gap: 8px;
@@ -301,6 +308,7 @@ body.admin-materials-page .admin-main {
 .admin-material-active-field input {
   width: 18px;
   height: 18px;
+  min-height: 18px;
   accent-color: #6a8152;
 }
 
@@ -367,6 +375,13 @@ body.admin-materials-page .admin-main {
   gap: 8px;
   min-height: 34px;
   margin-top: 10px;
+}
+
+.admin-material-modal-help {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 .admin-material-tag-row span {
