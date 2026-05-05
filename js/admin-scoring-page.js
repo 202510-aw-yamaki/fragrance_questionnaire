@@ -388,7 +388,20 @@
   function renderQuestionScoreCells(kind, questionId, answerKey, branch) {
     return AXIS_ORDER.map((axis) => {
       const value = Number(getQuestionScoreValue(kind, questionId, answerKey, axis, branch) || 0);
-      return `<span class="portal-scoring-score-value">${value}</span>`;
+      const branchAttribute = branch ? ` data-branch="${escapeHtml(branch)}"` : "";
+      return `
+        <input
+          class="portal-scoring-score-input"
+          data-matrix-kind="${escapeHtml(kind)}"
+          data-question="${escapeHtml(questionId)}"
+          data-answer="${escapeHtml(answerKey)}"
+          data-axis="${escapeHtml(axis)}"
+          ${branchAttribute}
+          type="number"
+          step="1"
+          value="${value}"
+        >
+      `;
     }).join("");
   }
 
@@ -491,31 +504,39 @@
 
   function renderMatrixQuestionCard(schema, resolveValue, attributes, options = {}) {
     const editableSchema = getEditableQuestionSchema(schema, attributes.kind, attributes.branch);
-    const branchAttribute = attributes.branch ? ` data-branch="${escapeHtml(attributes.branch)}"` : "";
     const anchorId = getQuestionAnchorId(attributes.kind, schema.id, attributes.branch);
     const answerRows = Object.entries(editableSchema.answers).map(([answerKey, answerLabel]) => {
       return `
         <div class="portal-scoring-score-row">
           <strong>${escapeHtml(answerKey)}</strong>
-          <span class="portal-scoring-score-answer">${escapeHtml(answerLabel)}</span>
+          <input
+            class="portal-scoring-score-answer-input"
+            data-answer-label-inline="${escapeHtml(answerKey)}"
+            type="text"
+            value="${escapeHtml(answerLabel)}"
+          >
           ${renderQuestionScoreCells(attributes.kind, schema.id, answerKey, attributes.branch)}
         </div>
       `;
     }).join("");
     return `
-      <article class="admin-editor-card portal-scoring-question-card" id="${escapeHtml(anchorId)}">
+      <article
+        class="admin-editor-card portal-scoring-question-card"
+        id="${escapeHtml(anchorId)}"
+        data-question-card
+        data-question-kind="${escapeHtml(attributes.kind)}"
+        data-question-id="${escapeHtml(schema.id)}"
+        data-question-branch="${escapeHtml(attributes.branch || "")}"
+      >
         <div class="admin-card-head portal-scoring-question-card-head">
           <div>
-            <h3>${escapeHtml(editableSchema.title)}</h3>
+            <input
+              class="portal-scoring-question-title-input"
+              data-question-title-inline
+              type="text"
+              value="${escapeHtml(editableSchema.title)}"
+            >
           </div>
-          <button
-            class="admin-btn secondary portal-scoring-question-edit"
-            type="button"
-            data-question-edit
-            data-question-kind="${escapeHtml(attributes.kind)}"
-            data-question-id="${escapeHtml(schema.id)}"
-            ${branchAttribute}
-          >編集</button>
         </div>
         <div class="portal-scoring-question-summary">
           <div class="portal-scoring-score-table" aria-label="current point settings">
@@ -719,6 +740,34 @@
     bindQuestionList();
   }
 
+  function updateInlineQuestionText(card) {
+    if (!card) return;
+    const kind = card.dataset.questionKind;
+    const questionId = card.dataset.questionId;
+    const branch = card.dataset.questionBranch || "";
+    const schema = getQuestionSourceSchema(kind, questionId, branch);
+    if (!schema) return;
+    const titleInput = card.querySelector("[data-question-title-inline]");
+    const title = titleInput?.value.trim() || schema.title;
+    const answers = {};
+    let hasTextOverride = title !== schema.title;
+    card.querySelectorAll("[data-answer-label-inline]").forEach((input) => {
+      const answerKey = input.dataset.answerLabelInline;
+      const originalAnswer = schema.answers?.[answerKey] || "";
+      const nextAnswer = input.value.trim() || originalAnswer;
+      answers[answerKey] = nextAnswer;
+      if (nextAnswer !== originalAnswer) hasTextOverride = true;
+    });
+    if (hasTextOverride) {
+      setQuestionTextOverride(kind, questionId, branch, title, answers);
+    } else {
+      clearQuestionTextOverride(kind, questionId, branch);
+    }
+    refreshJsonPreview();
+    renderOverview(workingConfig);
+    markDraftDirty();
+  }
+
   function setNestedNumber(path, value) {
     const parts = path.split(".");
     let target = workingConfig;
@@ -787,6 +836,11 @@
         refreshJsonPreview();
         renderOverview(workingConfig);
         markDraftDirty();
+      });
+    });
+    root.querySelectorAll("[data-question-title-inline], [data-answer-label-inline]").forEach((input) => {
+      input.addEventListener("input", () => {
+        updateInlineQuestionText(input.closest("[data-question-card]"));
       });
     });
     root.querySelectorAll("[data-question-edit]").forEach((button) => {
