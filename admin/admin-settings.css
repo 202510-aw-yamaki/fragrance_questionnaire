@@ -1,0 +1,148 @@
+/* Admin basic settings page styles. Shared admin primitives stay in admin-ui.css. */
+
+.portal-settings-field {
+  display: grid;
+  gap: 8px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.admin-settings-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr 1fr;
+  gap: 18px;
+}
+
+.admin-settings-page .admin-settings-layout {
+  grid-template-columns: minmax(330px, 1fr) minmax(420px, 1.18fr) minmax(330px, 1fr);
+  gap: 18px;
+}
+
+.admin-inline-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.admin-settings-staff-card .admin-btn.primary {
+  min-width: 158px;
+  margin-top: 0;
+  background: rgba(255, 253, 249, 0.96);
+  color: #c97916;
+}
+
+.admin-settings-staff-card .admin-reference-card-head h2 {
+  white-space: nowrap;
+}
+
+.admin-reference-table-label {
+  margin: 4px 0 14px;
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.admin-reference-staff-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border: 1px solid rgba(221, 196, 166, 0.88);
+  border-radius: 8px;
+  background: rgba(255, 253, 249, 0.96);
+  font-family: var(--serif);
+}
+
+.admin-reference-staff-table th,
+.admin-reference-staff-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(221, 196, 166, 0.72);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.admin-reference-staff-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.staff-avatar {
+  width: 42px;
+  height: 42px;
+  display: inline-grid;
+  place-items: center;
+  margin-right: 12px;
+  border-radius: 999px;
+  background: #f5eadc;
+  color: #9a6422;
+  font-size: 13px;
+}
+
+.staff-avatar.pink { background: #f4e9eb; color: #96636b; }
+.staff-avatar.green { background: #eef1e7; color: #5c7248; }
+.staff-avatar.peach { background: #f9e7d8; color: #b86f3f; }
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  margin-right: 8px;
+  border-radius: 999px;
+  background: #6e8a55;
+}
+
+.status-dot.is-off {
+  background: #e49a21;
+}
+
+.admin-settings-reservation-card .admin-form-stack label {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 9px;
+}
+
+.admin-settings-qr-link {
+  width: min(1540px, calc(100% - 48px));
+  min-height: 136px;
+  display: grid;
+  grid-template-columns: 1fr 250px;
+  gap: 22px;
+  align-items: center;
+  margin: 10px auto 0;
+  padding: 22px 44px;
+}
+
+.admin-reference-qr-info {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.admin-reference-badge-icon {
+  width: 88px;
+  height: 88px;
+  flex: 0 0 88px;
+  border: 1px solid rgba(213, 144, 62, 0.24);
+  border-radius: 999px;
+  background: #fbf2e7;
+}
+
+@media (max-width: 1180px) {
+  .admin-settings-page .admin-settings-layout {
+    grid-template-columns: minmax(250px, 0.95fr) minmax(320px, 1.15fr) minmax(250px, 0.95fr);
+    gap: 12px;
+  }
+
+  .admin-reference-staff-table th,
+  .admin-reference-staff-table td {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-settings-page .admin-settings-layout,
+  .admin-settings-qr-link,
+  .admin-inline-fields {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1234,3 +1234,20 @@
   - `node --check js/admin-dashboard-reference.js`
   - `git diff --check`
   - in-app browserでリロード直後に読み込み中表示となり、描画完了後に実データ表示へ切り替わることを確認。
+
+### 2026-05-05 管理者基本設定ページのCSS分離
+- 対象:
+  - `admin/admin-settings.html`
+  - `admin/admin-settings.css`
+  - `admin/admin-ui.css`
+- 背景:
+  - 管理者ページ群をダッシュボードから地続きで整えるため、基本設定ページ固有のCSSを先に分離する要望があった。
+- 実装:
+  - `admin/admin-settings.css` を追加し、基本設定ページのレイアウト、スタッフ一覧、QR案内、設定モーダル入力欄のスタイルを移した。
+  - `admin/admin-settings.html` で専用CSSを読み込むようにした。
+  - `admin/admin-ui.css` から基本設定ページ固有のセレクタを外し、共通UIスタイルと他管理者ページのスタイルを残した。
+- 確認:
+  - `node --check js/admin-settings-page.js`
+  - `git diff --check`
+  - `http://127.0.0.1:8000/admin/admin-settings.html?role=manager` が 200 で返ることを確認。
+  - in-app browserで基本設定ページのレイアウトと専用CSS読み込み後の表示を確認。
