@@ -191,11 +191,12 @@
     state.product = pageData?.product || null;
     renderProduct();
 
-    if (!state.qrCode || !state.product) {
+    const isUnavailableQr = state.qrCode && (state.qrCode.status !== "active" || isQrExpired(state.qrCode));
+    if ((!state.qrCode || !state.product) && !isUnavailableQr) {
       disableForm("このQR商品ページは現在利用できません。");
       return;
     }
-    if (state.qrCode.status !== "active" || isQrExpired(state.qrCode)) {
+    if (isUnavailableQr) {
       disableForm(state.qrCode.inactive_reason || "このQR商品ページは現在受付を停止しています。");
       return;
     }

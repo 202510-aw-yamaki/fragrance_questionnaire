@@ -584,9 +584,42 @@
     }
   }
 
+  function normalizeQrProductPageData(data) {
+    let row = normalizeSingleRow(data);
+    if (typeof row === "string") {
+      try {
+        row = JSON.parse(row);
+      } catch (error) {
+        return null;
+      }
+    }
+    if (!row) return null;
+    return {
+      qrCode: row.qrCode || row.qr_code || null,
+      product: row.product || null
+    };
+  }
+
+  async function fetchQrProductPageDataByRpc(token) {
+    const client = window.getSupabaseClient?.();
+    const qrToken = String(token || "").trim();
+    if (!client || !qrToken) return null;
+    const { data, error } = await client.rpc("fetch_qr_product_public_page", { p_token: qrToken });
+    if (error) throw error;
+    return normalizeQrProductPageData(data);
+  }
+
   async function fetchQrProductPageData(token) {
     const client = window.getSupabaseClient?.();
     if (!client) return null;
+    try {
+      return await fetchQrProductPageDataByRpc(token);
+    } catch (error) {
+      if (!isMissingFunctionError(error)) {
+        console.error("Failed to fetch QR product public page.", error);
+        return null;
+      }
+    }
     const qrCode = await fetchProductQrCodeByToken(token);
     if (!qrCode?.fragrance_product_id) return null;
     if (qrCode.is_available === false) {

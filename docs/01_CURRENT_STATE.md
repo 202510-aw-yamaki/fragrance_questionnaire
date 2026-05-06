@@ -230,6 +230,7 @@ QR発行条件、QR依頼対応、発送先入力、発送完了、通知対応�
 ## 2026-05-06 QR依頼運用処理更新後の現状
 
 - `supabase/schema.sql` は QR運用RPC、`qr_access_logs`、RLS、grant、管理者QR設定の最終状態へ同期済み。
+- 公開QRページの表示取得は `fetch_qr_product_public_page(p_token text)` RPC を入口にし、anon から `product_qr_codes` / `fragrance_products` を直接広く読ませずに商品名・タグ・QR状態を取得する。
 - `process_qr_request_deadlines()` は、期限超過未対応を `auto_unavailable_overdue` にし、元のスタッフ通知を handled 化し、管理者通知とメールイベントを作成する。
 - 作成可能メール後の期限切れは `expired` にし、`qr_request_expired_v1` のメールイベントを作成する。
 - 管理者ダッシュボードのQR通知モーダルでは、依頼者メール・送信先メールをマスク表示する。

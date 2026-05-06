@@ -829,6 +829,11 @@ QR 商品ページを無効化
 QR商品ページ表示時に `record_qr_product_access()` を呼び、`product_qr_codes.access_count` と `last_accessed_at` を更新する入口を追加した。
 無効化QRの直近7日集計、管理者通知しきい値判定、自動無効化は後続フェーズとして扱う。
 
+2026-05-06追記:
+公開QRページの表示取得は `fetch_qr_product_public_page(p_token text)` を正規入口とする。
+このRPCは内部で `record_qr_product_access()` を呼び、`qrCode` と `product` の最小JSONだけを返す。
+anon に `product_qr_codes` / `fragrance_products` の追加select権限は広げない。
+
 ```text
 無効化 QR 商品ページ
 ↓
