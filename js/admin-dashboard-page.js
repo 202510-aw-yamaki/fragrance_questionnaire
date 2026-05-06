@@ -103,6 +103,14 @@
     }[char]));
   }
 
+  function maskEmail(value) {
+    const email = String(value || "").trim();
+    const [name, domain] = email.split("@");
+    if (!name || !domain) return "-";
+    const head = name.slice(0, 2);
+    return `${head}${name.length > 2 ? "***" : "*"}@${domain}`;
+  }
+
   function readSettingValue(settingsRows, key) {
     const row = (settingsRows || []).find((entry) => entry.setting_key === key);
     const value = row?.setting_value;
@@ -650,7 +658,7 @@
     const lines = [
       `状態：${formatQrRequestStatus(row.status)}`,
       `依頼内容：${formatQrQuantity(row)}`,
-      row.requester_email ? `依頼者：${row.requester_email}` : "",
+      row.requester_email ? `依頼者：${maskEmail(row.requester_email)}` : "",
       row.availability_due_at ? `可否判断期限：${formatDueDate(row.availability_due_at)}` : "",
       row.expires_at ? `依頼期限：${formatDueDate(row.expires_at)}` : "",
       row.created_at ? `受付：${formatDueDate(row.created_at)}` : ""
@@ -691,7 +699,7 @@
     const lines = [
       `状態：${row.status || "queued"}`,
       row.template_key ? `テンプレート：${row.template_key}` : "",
-      row.recipient_email ? `送信先：${row.recipient_email}` : "",
+      row.recipient_email ? `送信先：${maskEmail(row.recipient_email)}` : "",
       payload.request_code ? `依頼番号：${payload.request_code}` : "",
       payload.expires_at ? `依頼期限：${formatDueDate(payload.expires_at)}` : "",
       row.created_at ? `作成：${formatDueDate(row.created_at)}` : ""
@@ -748,7 +756,7 @@
       const eventKey = String(row.event_type || row.template_key || "");
       if (eventKey.includes("reminder")) {
         addQrModalItem(categories, "reminder", createQrEmailModalItem(row, "reminder"));
-      } else if (eventKey.includes("overdue") || eventKey.includes("unavailable")) {
+      } else if (eventKey.includes("overdue") || eventKey.includes("unavailable") || eventKey.includes("expired")) {
         addQrModalItem(categories, "overdue", createQrEmailModalItem(row, "overdue"));
       }
     });
@@ -837,6 +845,16 @@
     });
   }
 
+  async function runDeadlineProcessing() {
+    try {
+      await window.AdminData.callRpc("process_qr_request_deadlines", {
+        p_now: new Date().toISOString()
+      });
+    } catch (error) {
+      console.warn("Failed to process QR request deadlines.", error);
+    }
+  }
+
   async function bootstrap() {
     const session = await window.AdminAuth.requireAdminSession();
     if (!session) return;
@@ -855,6 +873,7 @@
       ? await window.AdminAuth.getStaffProfile(session).catch(() => null)
       : null;
     renderAdminFooter(session, staffProfile);
+    await runDeadlineProcessing();
 
     const [reservations, slots, scoringRows, materials, settingsRows, staffProfileRows, qrNotificationRows, reservationNotificationRows, emailEventRows, qrRequestRows, workshopRows] = await Promise.all([
       window.AdminData.listRows("reservations", { orders: [{ column: "created_at", ascending: false }] }).catch(() => []),

@@ -13,6 +13,7 @@
   let qrCodeMap = new Map();
   let staffMap = new Map();
   let emailEventMap = new Map();
+  let canOperateRequests = false;
 
   function getRole() {
     return window.location.pathname.includes("/staff/") ? "staff" : "manager";
@@ -85,6 +86,7 @@
   }
 
   function getActionButtons(row) {
+    if (!canOperateRequests) return "";
     const actions = [];
     if (row.status === "requested") {
       actions.push(["available", "作成可能"]);
@@ -158,6 +160,7 @@
   }
 
   async function runRequestAction(action, requestId) {
+    if (!canOperateRequests) return;
     const rpcMap = {
       available: "mark_qr_request_available",
       unavailable: "mark_qr_request_unavailable",
@@ -171,6 +174,17 @@
     await window.AdminData.callRpc(functionName, params);
     await loadRequests();
     renderRows();
+  }
+
+  async function runDeadlineProcessing(role) {
+    if (role !== "manager") return;
+    try {
+      await window.AdminData.callRpc("process_qr_request_deadlines", {
+        p_now: new Date().toISOString()
+      });
+    } catch (error) {
+      console.warn("Failed to process QR request deadlines.", error);
+    }
   }
 
   async function loadRelatedRows() {
@@ -257,11 +271,13 @@
     const role = getRole();
     const session = await window.AdminAuth.requireAdminSession();
     if (!session) return;
+    canOperateRequests = role === "staff" && window.AdminAuth.getSessionPortalRole?.(session) === "staff";
     window.AdminAuth.persistPortalRole(role);
     window.AdminAuth.renderAdminHeader("qr-requests", {
       role,
       session
     });
+    await runDeadlineProcessing(role);
     await loadRequests();
     renderRows();
   }
