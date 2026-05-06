@@ -287,3 +287,14 @@ tie-break は `floral -> fresh -> woody` とする。
 - Supabase未接続、RPC失敗、insert失敗の場合は完了画面へ遷移しない
 - 失敗時は予約ページ上に再試行案内を表示し、同じ選択内容で再送できる状態に戻す
 - アンケート結果の保存に失敗した場合は既存方針通り、予約自体は継続し `questionnaire_flow_status` / `questionnaire_sync_error` に残す
+
+## 追記: 2026-05-06 おすすめ配合用の回答パターン識別
+
+ユーザー要望により、今回の主実装範囲を「8問アンケート回答パターン → 5軸算出 → 3原料×5%刻み比率の最適レシピ呼び出し → おすすめ配合1件表示」に限定する。
+
+- 回答パターン識別子 `question_signature` は `Q1`〜`Q8`、`branch`、`finish` を固定順で連結する
+- 5軸算出は現行 `scoring_configs` と同じ配点ロジックを使う
+- 表示用5軸は従来のアンケート結果値を使い、比較用5軸は `normalizeAxesToProfile()` で100合計のプロファイルへ変換する
+- おすすめ配合の距離関数は v1 として重みなし L1 距離を使う
+- 計算式は `distance = Σ abs(questionnaireComparableAxes[axis] - recipeComparableAxes[axis])`
+- アルゴリズムバージョンは `recipe-l1-profile-v1` とする

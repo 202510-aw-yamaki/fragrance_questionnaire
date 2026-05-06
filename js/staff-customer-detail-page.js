@@ -119,6 +119,11 @@
   let productQrCode = null;
   let materialRows = [];
   let materialDataReady = false;
+  let recommendationCacheRow = null;
+  let recommendationCacheLookupFailed = false;
+  let recommendationCachePersistKey = "";
+  let scoringConfigVersion = "default";
+  let materialPointsVersion = "default";
   let customerDraft = null;
   let customerActionSnapshot = null;
   let recipeModalSnapshot = null;
@@ -293,6 +298,28 @@
     return AXIS_ORDER.some((axis) => Number(axes?.[axis] || 0) > 0);
   }
 
+  function getQuestionnaireAxes() {
+    const storedAxes = questionnaire?.final_axes || questionnaire?.axes_after_step2 || questionnaire?.adjusted_axes || reservation?.axes || {};
+    if (hasAxisValue(storedAxes)) return normalizeAxes(storedAxes);
+    const calculateAxes = window.FragranceMasterData?.calculateQuestionnaireAxesFromAnswers;
+    const createConfig = window.FragranceMasterData?.createDefaultScoringConfig;
+    if (!calculateAxes || !createConfig || !questionnaire) return normalizeAxes({});
+    return normalizeAxes(calculateAxes(createConfig(), questionnaire));
+  }
+
+  function getQuestionSignature() {
+    return window.FragranceMasterData?.buildQuestionSignatureFromQuestionnaire?.(questionnaire || {}) || "";
+  }
+
+  function getRecommendationCacheKey(signature = getQuestionSignature()) {
+    return [
+      signature,
+      scoringConfigVersion,
+      materialPointsVersion,
+      window.FragranceMasterData?.RECOMMENDATION_ALGORITHM_VERSION || "recipe-l1-profile-v1"
+    ].join("::");
+  }
+
   function getSlotLabel() {
     if (!slot) return reservation?.slot_label || "-";
     return `${slot.slot_date || ""} ${String(slot.slot_time || "").slice(0, 5)}`.trim();
@@ -380,7 +407,7 @@
   }
 
   function getBaseSurveyAxes() {
-    return normalizeAxes(reservation?.axes || questionnaire?.adjusted_axes || questionnaire?.final_axes || {});
+    return getQuestionnaireAxes();
   }
 
   function getUsableRecipeItems(items) {
@@ -780,7 +807,7 @@
 
   function renderAxisCompare() {
     if (!axisCompareEl) return;
-    const currentAxes = reservation?.axes || questionnaire?.adjusted_axes || questionnaire?.final_axes || {};
+    const currentAxes = getQuestionnaireAxes();
     axisCompareEl.innerHTML = `
       <div class="staff-survey-radar-only">
         ${createRadarGraph(currentAxes, "survey")}
@@ -788,96 +815,125 @@
     `;
   }
 
+  function normalizeRecipeItemsForDisplay(items) {
+    return (Array.isArray(items) ? items : [])
+      .map((item) => {
+        const materialCode = item?.material_code || "";
+        const material = materialRows.find((entry) => entry.material_code === materialCode);
+        return {
+          role: item?.role || "ingredient",
+          material_code: materialCode,
+          material_name: item?.material_name || material?.material_name || "",
+          amount: Number(item?.amount || 0),
+          lot: item?.lot || null,
+          note: item?.note || null
+        };
+      })
+      .filter((item) => item.material_code && item.amount > 0);
+  }
+
+  function normalizeRecommendationCacheRow(row) {
+    if (!row?.recipe_items) return null;
+    const items = normalizeRecipeItemsForDisplay(row.recipe_items);
+    if (items.length !== 3) return null;
+    return {
+      question_signature: row.question_signature || getQuestionSignature(),
+      questionnaire_axes: normalizeAxes(row.questionnaire_axes || getQuestionnaireAxes()),
+      questionnaire_comparable_axes: normalizeAxes(row.questionnaire_comparable_axes || {}),
+      recipe_items: items,
+      raw_recipe_axes: normalizeAxes(row.raw_recipe_axes || {}),
+      recipe_comparable_axes: normalizeAxes(row.recipe_comparable_axes || {}),
+      distance_score: Number(row.distance_score || 0),
+      scoring_config_version: row.scoring_config_version || scoringConfigVersion,
+      material_points_version: row.material_points_version || materialPointsVersion,
+      algorithm_version: row.algorithm_version || window.FragranceMasterData?.RECOMMENDATION_ALGORITHM_VERSION || "recipe-l1-profile-v1",
+      source: "cache"
+    };
+  }
+
+  function getSimpleFallbackRecipe() {
+    const rankMaterials = window.FragranceMasterData?.rankMaterials;
+    const axes = getQuestionnaireAxes();
+    if (!rankMaterials || !hasAxisValue(axes)) return null;
+    const ratios = [40, 35, 25];
+    const items = rankMaterials(axes, materialRows, 3).slice(0, 3).map((row, index) => ({
+      role: "ingredient",
+      material_code: row.material_code,
+      material_name: row.material_name,
+      amount: ratios[index] || 0
+    }));
+    return items.length === 3 ? { recipe_items: items, source: "fallback" } : null;
+  }
+
+  function persistComputedRecommendation(recommendation) {
+    const signature = recommendation?.question_signature || getQuestionSignature();
+    if (!signature || !recommendation?.recipe_items?.length || recommendationCacheLookupFailed || !window.AdminData?.upsertRow) return;
+    const cacheKey = getRecommendationCacheKey(signature);
+    if (recommendationCachePersistKey === cacheKey) return;
+    recommendationCachePersistKey = cacheKey;
+    const payload = {
+      question_signature: signature,
+      questionnaire_axes: recommendation.questionnaire_axes || getQuestionnaireAxes(),
+      questionnaire_comparable_axes: recommendation.questionnaire_comparable_axes || {},
+      recipe_items: recommendation.recipe_items,
+      raw_recipe_axes: recommendation.raw_recipe_axes || {},
+      recipe_comparable_axes: recommendation.recipe_comparable_axes || {},
+      distance_score: recommendation.distance_score || 0,
+      scoring_config_version: scoringConfigVersion,
+      material_points_version: materialPointsVersion,
+      algorithm_version: recommendation.algorithm_version || window.FragranceMasterData?.RECOMMENDATION_ALGORITHM_VERSION || "recipe-l1-profile-v1",
+      is_active: true,
+      updated_at: new Date().toISOString()
+    };
+    window.AdminData.upsertRow(
+      "recommendation_recipe_cache",
+      payload,
+      "question_signature,scoring_config_version,material_points_version,algorithm_version"
+    ).then((rows) => {
+      recommendationCacheRow = rows?.[0] || recommendationCacheRow;
+    }).catch(() => {
+      recommendationCacheLookupFailed = true;
+    });
+  }
+
+  function getRecommendedRecipe() {
+    const cached = normalizeRecommendationCacheRow(recommendationCacheRow);
+    if (cached) return cached;
+
+    const findBestRecipe = window.FragranceMasterData?.findBestRecipe;
+    const axes = getQuestionnaireAxes();
+    if (findBestRecipe && hasAxisValue(axes)) {
+      const computed = findBestRecipe(axes, materialRows);
+      if (computed?.recipe_items?.length) {
+        const recommendation = {
+          ...computed,
+          question_signature: getQuestionSignature(),
+          scoring_config_version: scoringConfigVersion,
+          material_points_version: materialPointsVersion,
+          source: "computed"
+        };
+        persistComputedRecommendation(recommendation);
+        return recommendation;
+      }
+    }
+    return getSimpleFallbackRecipe();
+  }
+
   function renderRecommendedMaterials() {
     if (!recommendedMaterialsEl) return;
-    {
-    const rankMaterials = window.FragranceMasterData?.rankMaterials;
-    const axes = reservation?.axes || questionnaire?.adjusted_axes || questionnaire?.final_axes || {};
-    const rankedRows = rankMaterials && hasAxisValue(axes)
-      ? rankMaterials(axes, materialRows, 3)
-      : [];
-    if (!rankedRows.length) {
+    const recommendation = getRecommendedRecipe();
+    const items = normalizeRecipeItemsForDisplay(recommendation?.recipe_items || []);
+    if (!items.length) {
       recommendedMaterialsEl.innerHTML = `<p class="admin-empty">算出できるアンケート結果がありません。</p>`;
       return;
     }
-    const ratios = [40, 35, 25];
     recommendedMaterialsEl.innerHTML = `
       <div class="staff-recommend-blend-list">
-        ${rankedRows.slice(0, 3).map((row, index) => `
+        ${items.map((item) => `
           <article class="staff-recommend-blend-row">
-            <span>${escapeHtml(row.material_name)}</span>
-            <strong>${ratios[index] || 0}%</strong>
+            <span>${escapeHtml(item.material_name)}</span>
+            <strong>${Number(item.amount || 0)}%</strong>
           </article>
-        `).join("")}
-      </div>
-    `;
-    return;
-    }
-    const rankMaterials = window.FragranceMasterData?.rankMaterials;
-    if (!rankMaterials) {
-      recommendedMaterialsEl.innerHTML = `<p class="admin-empty">原料候補を計算できません。</p>`;
-      return;
-    }
-    const sampleRows = [
-      { material_name: "サンプル原料 A", ratio: "--" },
-      { material_name: "サンプル原料 B", ratio: "--" },
-      { material_name: "サンプル原料 C", ratio: "--" }
-    ];
-    const buildGroup = (title, note, axes) => {
-      const incomplete = !materialDataReady || !hasAxisValue(axes);
-      if (incomplete) {
-        return {
-          title,
-          note: `${note} / データ未整備（今後の課題）`,
-          rows: sampleRows,
-          incomplete: true
-        };
-      }
-      const rankedRows = rankMaterials(axes, materialRows, 3);
-      if (!rankedRows.length) {
-        return {
-          title,
-          note: `${note} / データ未整備（今後の課題）`,
-          rows: sampleRows,
-          incomplete: true
-        };
-      }
-      const scoreTotal = rankedRows.reduce((sum, row) => sum + Math.max(1, Number(row.score || 0)), 0);
-      let remainder = 100;
-      const rows = rankedRows.map((row, index) => {
-        const ratio = index === rankedRows.length - 1
-          ? remainder
-          : Math.round((Math.max(1, Number(row.score || 0)) / scoreTotal) * 100);
-        remainder -= ratio;
-        return { material_name: row.material_name, ratio };
-      });
-      return { title, note, rows, incomplete: false };
-    };
-    const groups = [
-      buildGroup("アンケート基準原料割当", "回答時点の方向性の原料と配合割合", questionnaire?.final_axes || {}),
-      buildGroup("予約時基準原料割当", "予約完了時点の方向性の原料と配合割合", reservation?.axes || {})
-    ];
-    recommendedMaterialsEl.innerHTML = `
-      <div class="staff-material-grid">
-        ${groups.map((group) => `
-          <section class="staff-material-group${group.incomplete ? " is-incomplete" : ""}">
-            <div class="staff-material-group-head">
-              <h3>${escapeHtml(group.title)}</h3>
-              <p class="admin-note">${escapeHtml(group.note)}</p>
-            </div>
-            <div class="staff-material-table">
-              <div class="staff-material-row staff-material-head-row">
-                <span class="staff-material-name">原料名</span>
-                <strong class="staff-material-ratio">割合</strong>
-              </div>
-              ${group.rows.map((row) => `
-                <article class="staff-material-row">
-                  <span class="staff-material-name">${escapeHtml(row.material_name)}</span>
-                  <strong class="staff-material-ratio">${escapeHtml(row.ratio)}${group.incomplete ? "" : "%"}</strong>
-                </article>
-              `).join("")}
-            </div>
-          </section>
         `).join("")}
       </div>
     `;
@@ -1066,16 +1122,7 @@
   }
 
   function getRecommendedRecipeItems() {
-    const rankMaterials = window.FragranceMasterData?.rankMaterials;
-    const axes = reservation?.axes || questionnaire?.adjusted_axes || questionnaire?.final_axes || {};
-    if (!rankMaterials || !hasAxisValue(axes)) return [];
-    const ratios = [40, 35, 25];
-    return rankMaterials(axes, materialRows, 3).slice(0, 3).map((row, index) => ({
-      role: "ingredient",
-      material_code: row.material_code,
-      material_name: row.material_name,
-      amount: ratios[index] || 0
-    }));
+    return normalizeRecipeItemsForDisplay(getRecommendedRecipe()?.recipe_items || []);
   }
 
   function applyRecommendedRecipe() {
@@ -1702,6 +1749,28 @@
     }
   }
 
+  async function loadRecommendationCacheRow() {
+    const signature = getQuestionSignature();
+    if (!signature || !window.AdminData?.listRows) return null;
+    try {
+      const rows = await window.AdminData.listRows("recommendation_recipe_cache", {
+        filters: [
+          { operator: "eq", column: "question_signature", value: signature },
+          { operator: "eq", column: "scoring_config_version", value: scoringConfigVersion },
+          { operator: "eq", column: "material_points_version", value: materialPointsVersion },
+          { operator: "eq", column: "algorithm_version", value: window.FragranceMasterData?.RECOMMENDATION_ALGORITHM_VERSION || "recipe-l1-profile-v1" },
+          { operator: "eq", column: "is_active", value: true }
+        ],
+        orders: [{ column: "updated_at", ascending: false }],
+        limit: 1
+      });
+      return rows[0] || null;
+    } catch (error) {
+      recommendationCacheLookupFailed = true;
+      return null;
+    }
+  }
+
   async function loadDetailData() {
     const reservationId = getReservationId();
     if (!reservationId) {
@@ -1720,7 +1789,7 @@
       return false;
     }
 
-    const [slotRows, questionnaireRows, workshopRows, materialPointRows, settingRows] = await Promise.all([
+    const [slotRows, questionnaireRows, workshopRows, materialPointRows, settingRows, scoringRows] = await Promise.all([
       reservation.slot_id
         ? window.AdminData.listRows("reservation_slots", {
             filters: [{ operator: "eq", column: "id", value: reservation.slot_id }],
@@ -1743,6 +1812,12 @@
       }).catch(() => []),
       window.AdminData.listRows("admin_settings", {
         filters: [{ operator: "eq", column: "setting_key", value: QR_PRODUCT_SETTING_KEY }],
+        limit: 1
+      }).catch(() => []),
+      window.AdminData.listRows("scoring_configs", {
+        select: "version, updated_at, is_active",
+        filters: [{ operator: "eq", column: "is_active", value: true }],
+        orders: [{ column: "version", ascending: false }],
         limit: 1
       }).catch(() => [])
     ]);
@@ -1774,6 +1849,11 @@
       .map((row) => window.FragranceMasterData?.normalizeMaterialRow
         ? window.FragranceMasterData.normalizeMaterialRow(row)
         : row);
+    scoringConfigVersion = scoringRows[0]?.version ? `scoring-${scoringRows[0].version}` : "default";
+    materialPointsVersion = window.FragranceMasterData?.createMaterialPointsVersion
+      ? window.FragranceMasterData.createMaterialPointsVersion(materialRows)
+      : "default";
+    recommendationCacheRow = await loadRecommendationCacheRow();
     const configuredTags = normalizeProductTags(settingRows[0]?.setting_value?.product_tags);
     productTagOptions = configuredTags.length ? configuredTags : [...DEFAULT_PRODUCT_TAGS];
     return true;

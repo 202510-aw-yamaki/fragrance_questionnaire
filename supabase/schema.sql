@@ -113,6 +113,28 @@ create table if not exists public.material_points (
   updated_at timestamptz default now()
 );
 
+create table if not exists public.recommendation_recipe_cache (
+  id uuid primary key default gen_random_uuid(),
+  question_signature text not null,
+  questionnaire_axes jsonb not null,
+  questionnaire_comparable_axes jsonb not null default '{}'::jsonb,
+  recipe_items jsonb not null,
+  raw_recipe_axes jsonb not null,
+  recipe_comparable_axes jsonb not null default '{}'::jsonb,
+  distance_score numeric not null,
+  scoring_config_version text not null,
+  material_points_version text not null,
+  algorithm_version text not null default 'recipe-l1-profile-v1',
+  is_active boolean not null default true,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  unique (question_signature, scoring_config_version, material_points_version, algorithm_version)
+);
+
+create index if not exists idx_recommendation_recipe_cache_lookup
+on public.recommendation_recipe_cache (question_signature, scoring_config_version, material_points_version, algorithm_version)
+where is_active = true;
+
 create table if not exists public.admin_settings (
   id uuid primary key default gen_random_uuid(),
   setting_key text unique not null,
@@ -1037,6 +1059,7 @@ alter table public.reservation_slots enable row level security;
 alter table public.reservations enable row level security;
 alter table public.scoring_configs enable row level security;
 alter table public.material_points enable row level security;
+alter table public.recommendation_recipe_cache enable row level security;
 alter table public.admin_settings enable row level security;
 alter table public.workshop_sessions enable row level security;
 alter table public.customers enable row level security;
@@ -1051,6 +1074,10 @@ drop policy if exists "admin reservation slots all" on public.reservation_slots;
 drop policy if exists "admin reservations all" on public.reservations;
 drop policy if exists "admin scoring configs all" on public.scoring_configs;
 drop policy if exists "admin material points all" on public.material_points;
+drop policy if exists "staff select recommendation recipe cache" on public.recommendation_recipe_cache;
+drop policy if exists "staff insert recommendation recipe cache" on public.recommendation_recipe_cache;
+drop policy if exists "staff update recommendation recipe cache" on public.recommendation_recipe_cache;
+drop policy if exists "manager recommendation recipe cache all" on public.recommendation_recipe_cache;
 drop policy if exists "admin settings all" on public.admin_settings;
 drop policy if exists "admin workshop sessions all" on public.workshop_sessions;
 
@@ -1074,6 +1101,25 @@ to anon, authenticated
 using (is_active = true);
 create policy "manager material points all"
 on public.material_points for all
+to authenticated
+using (public.is_manager())
+with check (public.is_manager());
+
+create policy "staff select recommendation recipe cache"
+on public.recommendation_recipe_cache for select
+to authenticated
+using (public.is_staff_member());
+create policy "staff insert recommendation recipe cache"
+on public.recommendation_recipe_cache for insert
+to authenticated
+with check (public.is_staff_member());
+create policy "staff update recommendation recipe cache"
+on public.recommendation_recipe_cache for update
+to authenticated
+using (public.is_staff_member())
+with check (public.is_staff_member());
+create policy "manager recommendation recipe cache all"
+on public.recommendation_recipe_cache for all
 to authenticated
 using (public.is_manager())
 with check (public.is_manager());
@@ -1463,6 +1509,7 @@ revoke all on table public.reservation_slots from anon;
 revoke all on table public.reservations from anon;
 revoke all on table public.scoring_configs from anon;
 revoke all on table public.material_points from anon;
+revoke all on table public.recommendation_recipe_cache from anon;
 revoke all on table public.admin_settings from anon;
 revoke all on table public.workshop_sessions from anon;
 revoke all on table public.customers from anon;
@@ -1537,6 +1584,7 @@ grant select, insert, update, delete on public.reservation_slots to authenticate
 grant select, insert, update, delete on public.reservations to authenticated;
 grant select, insert, update, delete on public.scoring_configs to authenticated;
 grant select, insert, update, delete on public.material_points to authenticated;
+grant select, insert, update, delete on public.recommendation_recipe_cache to authenticated;
 grant select, insert, update, delete on public.admin_settings to authenticated;
 grant select, insert, update, delete on public.workshop_sessions to authenticated;
 grant select, insert, update, delete on public.customers to authenticated;

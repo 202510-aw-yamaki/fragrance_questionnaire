@@ -139,3 +139,16 @@
 - JSON 取込時の `material_points` upsert 失敗は、取込完了扱いにしない
 - 新規作成 / 編集モーダルの `insert` / `update` 失敗は、モーダルを閉じずエラー表示で止める
 - 5軸合計100チェックは既存どおり保存前に行う
+
+## 追記: 2026-05-06 おすすめ配合候補の生成ルール
+
+ユーザー要望により、原料単体ランキングと固定比率ではなく、原料ポイントを使った3原料レシピ探索をおすすめ配合の正とする。
+
+- 対象原料は `material_points.is_active = true` の原料のみ
+- 1レシピは3原料固定
+- 各原料の比率は5%以上、5%刻み、合計100%
+- `raw_recipe_axes` は `sum(material.point_axes[axis] * ratio)` で算出する
+- `raw_recipe_axes` とアンケート5軸は、比較前に `normalizeAxesToProfile()` で同じ100合計スケールへ合わせる
+- 最小距離の1件のみをスタッフ画面のおすすめ配合として扱う
+- 同距離の場合は原料の `sort_order` / `material_code` と比率シグネチャにより決定的に1件へ寄せる
+- 全回答パターンの事前生成は `scripts/precompute-recommendation-cache.js` を使い、保存先は `recommendation_recipe_cache` とする

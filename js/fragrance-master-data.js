@@ -9,6 +9,10 @@
   };
   const SCORING_LOGIC_SOURCE = "deep-research-report-ver.1.1.md";
   const SCORING_LOGIC_VERSION = "2026-04-29";
+  const RECOMMENDATION_ALGORITHM_VERSION = "recipe-l1-profile-v1";
+  const RECOMMENDATION_RECIPE_MATERIAL_COUNT = 3;
+  const RECOMMENDATION_RECIPE_STEP = 5;
+  const RECOMMENDATION_RECIPE_MIN_RATIO = 5;
 
   const STEP1_QUESTION_SCHEMA = [
     {
@@ -697,6 +701,251 @@
     };
   }
 
+  function clampAxisValue(value) {
+    return Math.max(0, Math.min(100, Math.round(Number(value || 0))));
+  }
+
+  function roundAxisValue(value) {
+    return Math.round(Number(value || 0) * 100) / 100;
+  }
+
+  function stableHash(source) {
+    let hash = 2166136261;
+    for (let index = 0; index < source.length; index += 1) {
+      hash ^= source.charCodeAt(index);
+      hash = Math.imul(hash, 16777619);
+    }
+    return (hash >>> 0).toString(36);
+  }
+
+  function initialAxes(config) {
+    const initialScore = Number(config?.initialAxisScore || 50);
+    return AXIS_ORDER.reduce((acc, axis) => {
+      acc[axis] = initialScore;
+      return acc;
+    }, {});
+  }
+
+  function addAxisScore(base, score, weight) {
+    const next = { ...base };
+    AXIS_ORDER.forEach((axis) => {
+      next[axis] = clampAxisValue(Number(next[axis] || 0) + Number(score?.[axis] || 0) * weight);
+    });
+    return next;
+  }
+
+  function getBranchFromAxes(axes) {
+    const normalized = normalizeAxes(axes);
+    const candidates = ["floral", "fresh", "woody"];
+    return candidates.sort((a, b) => Number(normalized[b] || 0) - Number(normalized[a] || 0))[0] || "floral";
+  }
+
+  function normalizeAnswerKey(value, fallback = "A") {
+    if (value === undefined || value === null || String(value).trim() === "") return fallback;
+    const key = String(value).trim().toUpperCase();
+    return key || fallback;
+  }
+
+  function getStep1Answers(source) {
+    return source?.step1Answers
+      || source?.step1_answer_keys_json
+      || source?.step1_answers_json
+      || {};
+  }
+
+  function getStep2Answers(source) {
+    return source?.step2Answers
+      || source?.step2_answer_keys_json
+      || source?.step2_answers_json
+      || {};
+  }
+
+  function calculateStep1Axes(config, answers = {}) {
+    let axes = initialAxes(config);
+    ["Q1", "Q2", "Q3", "Q4", "Q5"].forEach((questionId) => {
+      const key = normalizeAnswerKey(answers[questionId]);
+      const score = config?.step1ScoreMap?.[questionId]?.[key];
+      axes = addAxisScore(axes, score, Number(config?.questionWeights?.step1 || 1));
+    });
+    return axes;
+  }
+
+  function calculateStep2Axes(config, state = {}, answers = {}) {
+    let axes = normalizeAxes(state.axesAfterStep1 || initialAxes(config));
+    const branch = state.branchKey || getBranchFromAxes(axes);
+    ["Q6", "Q7"].forEach((questionId) => {
+      const key = normalizeAnswerKey(answers[questionId]);
+      const score = config?.step2ScoreMap?.[branch]?.[questionId]?.[key];
+      axes = addAxisScore(axes, score, Number(config?.questionWeights?.step2 || 2));
+    });
+    const finishKey = normalizeAnswerKey(answers.Q8 || state.selectedFinish || state.selected_finish);
+    axes = addAxisScore(axes, config?.q8ScoreMap?.[finishKey], Number(config?.questionWeights?.finish || 3));
+    return axes;
+  }
+
+  function calculateQuestionnaireAxesFromAnswers(config, source = {}) {
+    const compatibleConfig = getCompatibleScoringConfig(config || createDefaultScoringConfig());
+    const step1Answers = getStep1Answers(source);
+    const step2Answers = {
+      ...getStep2Answers(source),
+      Q8: getStep2Answers(source).Q8 || source.selectedFinish || source.selected_finish || source.finish
+    };
+    const axesAfterStep1 = calculateStep1Axes(compatibleConfig, step1Answers);
+    const branchKey = source.branchKey || source.branch_key || getBranchFromAxes(axesAfterStep1);
+    return calculateStep2Axes(compatibleConfig, {
+      axesAfterStep1,
+      branchKey,
+      selectedFinish: source.selectedFinish || source.selected_finish || source.finish
+    }, step2Answers);
+  }
+
+  function buildQuestionSignature(source = {}) {
+    const step1Answers = getStep1Answers(source);
+    const step2Answers = getStep2Answers(source);
+    const branch = String(source.branchKey || source.branch_key || source.branch || "").trim().toLowerCase();
+    const finish = normalizeAnswerKey(source.selectedFinish || source.selected_finish || source.finish || step2Answers.Q8, "");
+    const parts = ["Q1", "Q2", "Q3", "Q4", "Q5"].map((questionId) => {
+      const key = normalizeAnswerKey(step1Answers[questionId], "");
+      return key ? `${questionId}=${key}` : "";
+    });
+    ["Q6", "Q7", "Q8"].forEach((questionId) => {
+      const fallback = questionId === "Q8" ? finish : "";
+      const key = normalizeAnswerKey(step2Answers[questionId] || fallback, "");
+      parts.push(key ? `${questionId}=${key}` : "");
+    });
+    if (branch) parts.push(`branch=${branch}`);
+    if (finish) parts.push(`finish=${finish}`);
+    return parts.every(Boolean) && branch && finish ? parts.join("|") : "";
+  }
+
+  function buildQuestionSignatureFromQuestionnaire(row = {}) {
+    return buildQuestionSignature({
+      step1_answer_keys_json: row.step1_answer_keys_json || row.step1_answers_json || {},
+      step2_answer_keys_json: row.step2_answer_keys_json || row.step2_answers_json || {},
+      branch_key: row.branch_key,
+      selected_finish: row.selected_finish
+    });
+  }
+
+  function createMaterialPointsVersion(materialRows) {
+    const payload = (materialRows || [])
+      .map(normalizeMaterialRow)
+      .filter((row) => row.is_active)
+      .sort((a, b) => {
+        if (a.sort_order !== b.sort_order) return a.sort_order - b.sort_order;
+        return String(a.material_code).localeCompare(String(b.material_code));
+      })
+      .map((row) => ({
+        material_code: row.material_code,
+        point_axes: normalizeAxes(row.point_axes),
+        sort_order: row.sort_order
+      }));
+    return `mp-${stableHash(JSON.stringify(payload))}`;
+  }
+
+  function calculateRecipeRawAxes(items = [], materialRows = []) {
+    const materials = new Map((materialRows || []).map(normalizeMaterialRow).map((row) => [row.material_code, row]));
+    const totalAmount = (items || []).reduce((sum, item) => sum + Math.max(0, Number(item?.amount || 0)), 0);
+    if (!items.length || !totalAmount) return null;
+    const axes = AXIS_ORDER.reduce((acc, axis) => {
+      acc[axis] = 0;
+      return acc;
+    }, {});
+    items.forEach((item) => {
+      const material = materials.get(item?.material_code);
+      if (!material || !material.is_active) return;
+      const ratio = Math.max(0, Number(item.amount || 0)) / totalAmount;
+      AXIS_ORDER.forEach((axis) => {
+        axes[axis] += Number(material.point_axes?.[axis] || 0) * ratio;
+      });
+    });
+    return AXIS_ORDER.reduce((acc, axis) => {
+      acc[axis] = roundAxisValue(axes[axis]);
+      return acc;
+    }, {});
+  }
+
+  function getRecommendationRatioPatterns() {
+    const patterns = [];
+    for (let first = RECOMMENDATION_RECIPE_MIN_RATIO; first <= 100; first += RECOMMENDATION_RECIPE_STEP) {
+      for (let second = RECOMMENDATION_RECIPE_MIN_RATIO; second <= 100 - first; second += RECOMMENDATION_RECIPE_STEP) {
+        const third = 100 - first - second;
+        if (third >= RECOMMENDATION_RECIPE_MIN_RATIO && third % RECOMMENDATION_RECIPE_STEP === 0) {
+          patterns.push([first, second, third]);
+        }
+      }
+    }
+    return patterns;
+  }
+
+  function calculateAxisDistance(leftAxes, rightAxes) {
+    return AXIS_ORDER.reduce((sum, axis) => sum + Math.abs(Number(leftAxes?.[axis] || 0) - Number(rightAxes?.[axis] || 0)), 0);
+  }
+
+  function buildRecipeItems(materials, ratios) {
+    return materials.map((material, index) => ({
+      role: "ingredient",
+      material_code: material.material_code,
+      material_name: material.material_name,
+      amount: ratios[index]
+    }));
+  }
+
+  function buildRecipeCandidateSignature(materials, ratios) {
+    return materials.map((material, index) => `${material.material_code}:${ratios[index]}`).join("|");
+  }
+
+  function findBestRecipe(targetAxes, materialRows, options = {}) {
+    const activeRows = (materialRows || [])
+      .map(normalizeMaterialRow)
+      .filter((row) => row.is_active && row.material_code)
+      .sort((a, b) => {
+        if (a.sort_order !== b.sort_order) return a.sort_order - b.sort_order;
+        return String(a.material_code).localeCompare(String(b.material_code));
+      });
+    if (activeRows.length < RECOMMENDATION_RECIPE_MATERIAL_COUNT) return null;
+
+    const questionnaireAxes = normalizeAxes(targetAxes);
+    const questionnaireComparableAxes = normalizeAxesToProfile(questionnaireAxes);
+    const ratioPatterns = options.ratioPatterns || getRecommendationRatioPatterns();
+    let best = null;
+
+    for (let firstIndex = 0; firstIndex < activeRows.length - 2; firstIndex += 1) {
+      for (let secondIndex = firstIndex + 1; secondIndex < activeRows.length - 1; secondIndex += 1) {
+        for (let thirdIndex = secondIndex + 1; thirdIndex < activeRows.length; thirdIndex += 1) {
+          const materials = [activeRows[firstIndex], activeRows[secondIndex], activeRows[thirdIndex]];
+          ratioPatterns.forEach((ratios) => {
+            const recipeItems = buildRecipeItems(materials, ratios);
+            const rawRecipeAxes = calculateRecipeRawAxes(recipeItems, materials);
+            const recipeComparableAxes = normalizeAxesToProfile(rawRecipeAxes);
+            const distanceScore = calculateAxisDistance(questionnaireComparableAxes, recipeComparableAxes);
+            const candidateSignature = buildRecipeCandidateSignature(materials, ratios);
+            if (
+              !best
+              || distanceScore < best.distance_score
+              || (distanceScore === best.distance_score && candidateSignature < best.candidate_signature)
+            ) {
+              best = {
+                questionnaire_axes: questionnaireAxes,
+                questionnaire_comparable_axes: questionnaireComparableAxes,
+                recipe_items: recipeItems,
+                raw_recipe_axes: rawRecipeAxes,
+                recipe_comparable_axes: recipeComparableAxes,
+                distance_score: distanceScore,
+                algorithm_version: RECOMMENDATION_ALGORITHM_VERSION,
+                candidate_signature: candidateSignature
+              };
+            }
+          });
+        }
+      }
+    }
+
+    if (!best) return null;
+    const { candidate_signature, ...recommendation } = best;
+    return recommendation;
+  }
+
   function isExpectedScoringConfig(config) {
     return Boolean(
       config &&
@@ -740,6 +989,7 @@
     AXIS_LABELS,
     SCORING_LOGIC_SOURCE,
     SCORING_LOGIC_VERSION,
+    RECOMMENDATION_ALGORITHM_VERSION,
     STEP1_QUESTION_SCHEMA,
     STEP2_QUESTION_SCHEMA,
     Q8_SCHEMA,
@@ -748,6 +998,17 @@
     normalizeAxes,
     normalizeAxesToProfile,
     normalizeMaterialRow,
+    getBranchFromAxes,
+    calculateStep1Axes,
+    calculateStep2Axes,
+    calculateQuestionnaireAxesFromAnswers,
+    buildQuestionSignature,
+    buildQuestionSignatureFromQuestionnaire,
+    createMaterialPointsVersion,
+    calculateRecipeRawAxes,
+    getRecommendationRatioPatterns,
+    calculateAxisDistance,
+    findBestRecipe,
     isExpectedScoringConfig,
     getCompatibleScoringConfig,
     rankMaterials
