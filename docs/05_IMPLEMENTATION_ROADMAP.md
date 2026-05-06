@@ -21,6 +21,11 @@
 - `docs/05_IMPLEMENTATION_ROADMAP.md`
 - `docs/06_OPEN_ISSUES.md`
 
+2026-05-06 追記:
+QR導線以外の現状実装は現在の正本として扱う。
+QR導線は削除・過去資料化せず、作成可否判断、メール、発送、期限管理、集計を後続課題として維持する。
+旧資料は `docs/archive/`、レイアウト参照画像は `docs/assets/layout-reference/` に整理済み。
+
 UI再構築は2026-05-01に完了しました。
 
 完了内容は以下に退避しました。
@@ -28,7 +33,7 @@ UI再構築は2026-05-01に完了しました。
 `docs/archive/20260501_05_IMPLEMENTATION_ROADMAP_ui_rebuild_completed.md`
 
 2026-05-04追記:
-`レイアウトimg/01`〜`10`、`13`〜`20` は、ユーザー訂正を反映したうえで本リポジトリ内では完了済みとして扱う。
+`docs/assets/layout-reference/01`〜`10`、`13`〜`20` は、ユーザー訂正を反映したうえで本リポジトリ内では完了済みとして扱う。
 完了済みのUI再構築計画は `docs/archive/20260504_UI_REBUILD_PLAN_completed.md` に退避済み。
 通常作業では未着手タスクとして参照しない。
 

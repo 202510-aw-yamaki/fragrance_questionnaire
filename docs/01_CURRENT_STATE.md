@@ -1,8 +1,14 @@
 # Current State
 
+## 2026-05-06 Source Of Truth Note
+
+非QR部分は、現在のHTML/CSS/JS/DB連携状態を本リポジトリ内の正本として扱う。
+QR導線は削除・過去資料化せず、現行資料内の後続課題として維持する。
+旧 `レイアウトimg/` は `docs/assets/layout-reference/` に整理済み。
+
 ## 2026-05-04 Layout Image Completion State
 
-`レイアウトimg/01`〜`10`、`13`〜`20` は、ユーザー訂正を反映したうえで本リポジトリ内では完了済みとして扱う。
+`docs/assets/layout-reference/01`〜`10`、`13`〜`20` は、ユーザー訂正を反映したうえで本リポジトリ内では完了済みとして扱う。
 
 これらは未着手のUI再構築タスクではない。完了済み計画は `docs/archive/20260504_UI_REBUILD_PLAN_completed.md` に退避済み。
 
@@ -164,7 +170,7 @@ QR発行条件、QR依頼対応、発送先入力、発送完了、通知対応�
 ## 2026-05-01 UI再構築後の現状
 
 - 旧HTMLページと旧レイアウトCSSは `archived/layout-rebuild-20260501/` に退避済み。
-- 現行HTMLは `レイアウトimg/` の参照画像を基準に再構築し、共通CSSは `css/rebuild-ui.css` に統合した。
+- 現行HTMLは `docs/assets/layout-reference/` の参照画像を基準に再構築し、共通CSSは `css/rebuild-ui.css` に統合した。
 - `supabase/`、`js/supabase-config.js`、`js/supabase-client.js`、`js/public-data.js`、`js/admin-data.js`、`js/admin-auth.js`、`js/fragrance-master-data.js` は接続・保存・認証の維持対象として残した。
 - 顧客アンケート、結果、予約完了の軽量な画面制御は `js/rebuild-customer-flow.js` に整理した。
 - 会員ログイン/会員トップの画面制御は `js/customer-auth-page.js` に整理した。
@@ -185,7 +191,7 @@ QR発行条件、QR依頼対応、発送先入力、発送完了、通知対応�
 - 予約完了ページとスタッフ詳細ページは、保存済みの名前・メールを参照できる。
 
 2026-05-03追記:
-予約完了ページは `レイアウトimg/10. customer reservation-complete.html 予約完了ページ.png` に合わせ、吟ロゴヘッダーと完了カードの構成へ更新済み。
+予約完了ページは `docs/assets/layout-reference/10. customer reservation-complete.html 予約完了ページ.png` に合わせ、吟ロゴヘッダーと完了カードの構成へ更新済み。
 予約完了メッセージには `reservations.customer_name` を表示し、所要時間は予約時に算出した `reservations.duration_minutes` を表示する。
 
 ## 2026-05-05 管理者ダッシュボード注釈反映

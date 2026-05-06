@@ -1,5 +1,17 @@
 # Implementation Log
 
+## 2026-05-06 Document Organization Note
+
+このログ内の旧パスは、当時の作業記録として残す。
+現在の読み替えは以下とする。
+
+- `レイアウトimg/` -> `docs/assets/layout-reference/`
+- `ユーザー設定フォルダ/` -> `docs/archive/user-settings/`
+- root直下の `deep-research*.md` -> `docs/archive/research/`
+- `docs/presentation/fragrance_questionnaire_architecture_v5.pptx` -> `docs/archive/presentation/fragrance_questionnaire_architecture_v5.pptx`
+- `docs/presentation/fragrance_image_explanations_v1.pptx` -> `docs/archive/presentation/fragrance_image_explanations_v1.pptx`
+- `visual-prototype/` -> `archived/prototypes/visual-prototype-20260504/`
+
 ## 2026-05-04 Staff Detail Handoff Summary
 
 ### Scope

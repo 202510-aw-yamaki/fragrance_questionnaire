@@ -850,11 +850,11 @@ QR商品ページ表示時に `record_qr_product_access()` を呼び、`product_
 QR 商品ページの参考イメージ画像は以下です。
 
 ```text
-レイアウトimg/QRpage-reference.png
+docs/assets/layout-reference/QRpage-reference.png
 ```
 
 2026-04-28 追記:
-上記の `レイアウトimg/QRpage-reference.png` は旧参照名で、実在する目標参照画像は `レイアウトimg/11. customer product-reservation.html QR商品作成依頼ページ.png` です。
+上記の `docs/assets/layout-reference/QRpage-reference.png` は旧参照名で、実在する目標参照画像は `docs/assets/layout-reference/11. customer product-reservation.html QR商品作成依頼ページ.png` です。
 
 この画像は UI の方向性を示す参考です。
 
