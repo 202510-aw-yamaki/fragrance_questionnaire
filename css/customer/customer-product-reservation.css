@@ -1,0 +1,385 @@
+body[data-page="product-reservation"] {
+  background: #fff8f0;
+}
+
+body[data-page="product-reservation"] .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  border-bottom: 1px solid rgba(204, 152, 82, 0.42);
+  background: rgba(255, 251, 246, 0.96);
+  box-shadow: none;
+  backdrop-filter: blur(18px);
+}
+
+body[data-page="product-reservation"] .site-header-inner {
+  width: min(1240px, calc(100% - 48px));
+  min-height: 74px;
+}
+
+body[data-page="product-reservation"] .brand {
+  gap: 12px;
+  color: #312219;
+  font-family: var(--serif);
+  font-size: 24px;
+}
+
+body[data-page="product-reservation"] .brand-mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: #2f5f53;
+  color: #fffaf4;
+  font-size: 20px;
+}
+
+body[data-page="product-reservation"] .qr-product-page {
+  position: relative;
+  min-height: calc(100vh - 74px);
+  padding: 32px 0 34px;
+  border-bottom: 0;
+  background:
+    linear-gradient(90deg, rgba(255, 250, 244, 0.95) 0%, rgba(255, 250, 244, 0.86) 46%, rgba(255, 250, 244, 0.34) 100%),
+    url("../../img/costomer/customer_back.png") center top / cover no-repeat,
+    #fff8f0;
+}
+
+body[data-page="product-reservation"] .qr-product-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 248, 240, 0.08));
+}
+
+body[data-page="product-reservation"] .qr-product-layout {
+  position: relative;
+  z-index: 1;
+  width: min(1220px, calc(100% - 56px));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(290px, 330px);
+  gap: 18px;
+  align-items: stretch;
+}
+
+body[data-page="product-reservation"] .qr-product-request-card,
+body[data-page="product-reservation"] .qr-product-help {
+  border: 1px solid rgba(196, 143, 82, 0.32);
+  border-radius: 8px;
+  background: rgba(255, 253, 249, 0.92);
+  box-shadow: 0 18px 42px rgba(99, 64, 30, 0.1);
+  backdrop-filter: blur(8px);
+}
+
+body[data-page="product-reservation"] .qr-product-request-card {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(250px, 0.88fr) minmax(340px, 1fr);
+  grid-auto-rows: min-content;
+  column-gap: 34px;
+  row-gap: 12px;
+  padding: 34px;
+  text-align: left;
+}
+
+body[data-page="product-reservation"] .qr-product-request-card::before {
+  content: "";
+  grid-column: 1;
+  width: 126px;
+  height: 20px;
+  margin-bottom: 2px;
+  background:
+    linear-gradient(#d5ad6f, #d5ad6f) left 50% / 50px 1px no-repeat,
+    linear-gradient(#d5ad6f, #d5ad6f) right 50% / 50px 1px no-repeat;
+}
+
+body[data-page="product-reservation"] .qr-product-request-card .eyebrow,
+body[data-page="product-reservation"] .qr-product-request-card h1,
+body[data-page="product-reservation"] .qr-product-tags,
+body[data-page="product-reservation"] .qr-product-lead,
+body[data-page="product-reservation"] .qr-product-price-list {
+  grid-column: 1;
+}
+
+body[data-page="product-reservation"] .qr-product-request-card .form-stack {
+  grid-column: 2;
+  grid-row: 1 / span 7;
+  align-self: stretch;
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  padding-left: 30px;
+  border-left: 1px solid rgba(196, 143, 82, 0.24);
+}
+
+body[data-page="product-reservation"] .qr-product-request-card .eyebrow {
+  color: #9a6a2e;
+  font-size: 13px;
+  letter-spacing: 0;
+}
+
+body[data-page="product-reservation"] .qr-product-request-card h1 {
+  margin: 0;
+  color: #2f2018;
+  font-size: 42px;
+  font-weight: 500;
+  line-height: 1.26;
+  overflow-wrap: anywhere;
+}
+
+body[data-page="product-reservation"] .qr-product-tags {
+  gap: 8px;
+  margin: 2px 0 4px;
+}
+
+body[data-page="product-reservation"] .qr-product-tags span {
+  border-radius: 8px;
+  border-color: rgba(47, 95, 83, 0.22);
+  background: rgba(238, 248, 244, 0.74);
+  color: #2f5f53;
+  font-size: 13px;
+}
+
+body[data-page="product-reservation"] .qr-product-lead {
+  margin: 4px 0 10px;
+  color: #6e3c31;
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+body[data-page="product-reservation"] .qr-product-price-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 4px 0 0;
+}
+
+body[data-page="product-reservation"] .qr-product-price-list .portal-card {
+  min-height: 86px;
+  display: grid;
+  align-content: center;
+  gap: 6px;
+  border: 1px solid rgba(196, 143, 82, 0.26);
+  border-radius: 8px;
+  background: rgba(255, 251, 246, 0.72);
+  box-shadow: none;
+  padding: 14px 16px;
+  font-family: var(--serif);
+  font-size: 17px;
+}
+
+body[data-page="product-reservation"] .qr-product-price-list .portal-card span {
+  color: #6a5342;
+}
+
+body[data-page="product-reservation"] .qr-product-price-list .portal-card strong {
+  color: #ba6a54;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+body[data-page="product-reservation"] .qr-product-request-card .qr-field {
+  display: grid;
+  grid-template-columns: minmax(92px, 118px) minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  color: #3d2b20;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: left;
+}
+
+body[data-page="product-reservation"] .quantity-control {
+  grid-template-columns: 42px minmax(68px, 1fr) 42px;
+  gap: 8px;
+}
+
+body[data-page="product-reservation"] .quantity-control button,
+body[data-page="product-reservation"] .quantity-control input,
+body[data-page="product-reservation"] #requester-email {
+  min-height: 46px;
+  border-radius: 8px;
+}
+
+body[data-page="product-reservation"] .quantity-control button {
+  border-color: rgba(186, 106, 84, 0.35);
+  color: #8b4d3d;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+body[data-page="product-reservation"] .quantity-control input,
+body[data-page="product-reservation"] #requester-email {
+  border: 1px solid rgba(196, 143, 82, 0.36);
+  background: #fffdf9;
+  color: #302218;
+  font-size: 17px;
+}
+
+body[data-page="product-reservation"] .qr-request-summary-card {
+  display: grid;
+  gap: 4px;
+  border: 0;
+  border-top: 1px solid rgba(196, 143, 82, 0.24);
+  border-bottom: 1px solid rgba(196, 143, 82, 0.24);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 14px 0;
+  text-align: left;
+}
+
+body[data-page="product-reservation"] .qr-request-summary-card h2 {
+  margin: 0;
+  color: #7e493b;
+  font-size: 17px;
+}
+
+body[data-page="product-reservation"] .qr-request-summary-card p {
+  margin: 0;
+  color: #5d4738;
+  line-height: 1.7;
+}
+
+body[data-page="product-reservation"] .qr-request-summary-card strong {
+  color: #ba6a54;
+  font-size: 26px;
+}
+
+body[data-page="product-reservation"] .status-note {
+  min-height: 22px;
+}
+
+body[data-page="product-reservation"] .qr-product-request-card .main-button {
+  width: 100%;
+  min-height: 58px;
+  border-radius: 8px;
+  font-size: 22px;
+  line-height: 1.25;
+  white-space: normal;
+}
+
+body[data-page="product-reservation"] .qr-product-request-card .admin-note {
+  margin: -2px 0 0;
+  color: #6e5748;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+body[data-page="product-reservation"] .qr-product-help {
+  align-self: stretch;
+  align-content: end;
+  gap: 16px;
+  padding: 24px;
+}
+
+body[data-page="product-reservation"] .qr-product-help .admin-note,
+body[data-page="product-reservation"] .qr-product-contact p {
+  color: #4c382b;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+body[data-page="product-reservation"] .qr-product-contact {
+  border: 1px solid rgba(47, 95, 83, 0.2);
+  border-radius: 8px;
+  background: rgba(244, 250, 247, 0.76);
+  padding: 18px;
+}
+
+body[data-page="product-reservation"] .qr-product-contact p {
+  margin: 0;
+}
+
+body[data-page="product-reservation"] .qr-product-request-card,
+body[data-page="product-reservation"] .qr-product-help,
+body[data-page="product-reservation"] .qr-product-lead,
+body[data-page="product-reservation"] .qr-product-contact {
+  overflow-wrap: anywhere;
+}
+
+body[data-page="product-reservation"] .qr-product-contact p + p {
+  margin-top: 10px;
+}
+
+@media (max-width: 1020px) {
+  body[data-page="product-reservation"] .qr-product-layout {
+    grid-template-columns: 1fr;
+  }
+
+  body[data-page="product-reservation"] .qr-product-request-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body[data-page="product-reservation"] .qr-product-request-card .form-stack {
+    grid-column: 1;
+    grid-row: auto;
+    padding-left: 0;
+    padding-top: 22px;
+    border-left: 0;
+    border-top: 1px solid rgba(196, 143, 82, 0.24);
+  }
+
+  body[data-page="product-reservation"] .qr-product-help {
+    align-content: start;
+  }
+}
+
+@media (max-width: 720px) {
+  body[data-page="product-reservation"] .site-header-inner {
+    width: min(100% - 28px, 1240px);
+    min-height: 64px;
+  }
+
+  body[data-page="product-reservation"] .brand {
+    font-size: 19px;
+  }
+
+  body[data-page="product-reservation"] .brand-mark {
+    width: 32px;
+    height: 32px;
+    font-size: 17px;
+  }
+
+  body[data-page="product-reservation"] .qr-product-page {
+    min-height: calc(100vh - 64px);
+    padding: 18px 0 24px;
+  }
+
+  body[data-page="product-reservation"] .qr-product-layout {
+    width: min(100% - 24px, 1220px);
+    gap: 12px;
+  }
+
+  body[data-page="product-reservation"] .qr-product-request-card,
+  body[data-page="product-reservation"] .qr-product-help {
+    padding: 20px;
+  }
+
+  body[data-page="product-reservation"] .qr-product-request-card h1 {
+    font-size: 32px;
+  }
+
+  body[data-page="product-reservation"] .qr-product-price-list {
+    grid-template-columns: 1fr;
+  }
+
+  body[data-page="product-reservation"] .qr-product-request-card .qr-field {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  body[data-page="product-reservation"] .qr-product-request-card .main-button {
+    font-size: 19px;
+  }
+}
+
+@media (max-width: 420px) {
+  body[data-page="product-reservation"] .qr-product-request-card,
+  body[data-page="product-reservation"] .qr-product-help {
+    padding: 16px;
+  }
+
+  body[data-page="product-reservation"] .quantity-control {
+    grid-template-columns: 40px minmax(60px, 1fr) 40px;
+  }
+}
