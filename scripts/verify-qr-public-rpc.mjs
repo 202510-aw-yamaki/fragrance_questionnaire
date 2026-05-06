@@ -3,12 +3,16 @@ const PUBLIC_ANON_KEY = "sb_publishable_-8P54qFZNzeo-kIbppuNDg_p6nQkDIV";
 const STAFF_DOMAIN = "staff.portal.fragrance.local";
 const MANAGER_DOMAIN = "manager.portal.fragrance.local";
 
-const requiredEnv = [
-  "FRAGRANCE_STAFF_ID",
-  "FRAGRANCE_STAFF_PASSWORD",
-  "FRAGRANCE_MANAGER_ID",
-  "FRAGRANCE_MANAGER_PASSWORD"
-];
+const credentialEnv = {
+  staff: {
+    identifiers: ["FRAGRANCE_STAFF_EMAIL", "FRAGRANCE_STAFF_ID"],
+    password: "FRAGRANCE_STAFF_PASSWORD"
+  },
+  manager: {
+    identifiers: ["FRAGRANCE_MANAGER_EMAIL", "FRAGRANCE_MANAGER_ID"],
+    password: "FRAGRANCE_MANAGER_PASSWORD"
+  }
+};
 
 function createRunId() {
   const now = new Date();
@@ -30,8 +34,16 @@ function portalEmail(identifier, role) {
   return `${raw.toLowerCase()}@${role === "staff" ? STAFF_DOMAIN : MANAGER_DOMAIN}`;
 }
 
+function readFirstEnv(names) {
+  return names.map((name) => process.env[name]).find(Boolean) || "";
+}
+
 function assertEnv() {
-  const missing = requiredEnv.filter((name) => !process.env[name]);
+  const missing = [];
+  for (const [role, config] of Object.entries(credentialEnv)) {
+    if (!readFirstEnv(config.identifiers)) missing.push(config.identifiers.join(" or "));
+    if (!process.env[config.password]) missing.push(config.password);
+  }
   if (missing.length) {
     throw new Error(`Missing required env vars: ${missing.join(", ")}`);
   }
@@ -57,11 +69,19 @@ async function request(path, options = {}) {
 
 async function signIn(identifier, password, role) {
   const email = portalEmail(identifier, role);
-  const body = await request("/auth/v1/token?grant_type=password", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password })
-  });
+  let body;
+  try {
+    body = await request("/auth/v1/token?grant_type=password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+  } catch (error) {
+    const config = credentialEnv[role];
+    throw new Error(
+      `${role} sign-in failed. Check ${config.identifiers.join(" or ")} and ${config.password}. ${error.message}`
+    );
+  }
   const actualRole = String(body?.user?.app_metadata?.portal_role || body?.user?.app_metadata?.role || "").toLowerCase();
   if (role === "staff" && actualRole !== "staff") {
     throw new Error(`Staff login did not return staff role: ${actualRole || "(none)"}`);
@@ -74,6 +94,22 @@ async function signIn(identifier, password, role) {
     user: body.user,
     role: actualRole
   };
+}
+
+function getCredential(role) {
+  const config = credentialEnv[role];
+  return {
+    identifier: readFirstEnv(config.identifiers),
+    password: process.env[config.password]
+  };
+}
+
+function resolveRunId() {
+  const runId = process.env.FRAGRANCE_TEST_RUN_ID || createRunId();
+  if (!runId.startsWith("CODX_QR_TEST_")) {
+    throw new Error("FRAGRANCE_TEST_RUN_ID must start with CODX_QR_TEST_ when provided.");
+  }
+  return runId;
 }
 
 function queryValue(value) {
@@ -285,9 +321,11 @@ async function cleanupFixture(fixture, staffToken) {
 
 async function main() {
   assertEnv();
-  const runId = process.env.FRAGRANCE_TEST_RUN_ID || createRunId();
-  const staff = await signIn(process.env.FRAGRANCE_STAFF_ID, process.env.FRAGRANCE_STAFF_PASSWORD, "staff");
-  const manager = await signIn(process.env.FRAGRANCE_MANAGER_ID, process.env.FRAGRANCE_MANAGER_PASSWORD, "manager");
+  const runId = resolveRunId();
+  const staffCredential = getCredential("staff");
+  const managerCredential = getCredential("manager");
+  const staff = await signIn(staffCredential.identifier, staffCredential.password, "staff");
+  const manager = await signIn(managerCredential.identifier, managerCredential.password, "manager");
   const staffProfile = await getStaffProfile(staff);
   const fixture = await createPublicQrFixture(runId, staff, staffProfile);
   const report = { runId, productId: fixture.product.id, qrId: fixture.qr.id, deadline: null, cleanup: null };
