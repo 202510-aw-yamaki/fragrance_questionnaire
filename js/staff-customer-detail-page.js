@@ -1859,6 +1859,24 @@
     return true;
   }
 
+  async function markReservationNotificationsSeen() {
+    if (!reservation?.id) return;
+    try {
+      await window.AdminData.updateRows("notification_events", {
+        status: "seen",
+        seen_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }, [
+        { operator: "eq", column: "event_type", value: "reservation_created" },
+        { operator: "eq", column: "related_table", value: "reservations" },
+        { operator: "eq", column: "related_id", value: reservation.id },
+        { operator: "eq", column: "status", value: "open" }
+      ]);
+    } catch (error) {
+      console.error("Failed to mark reservation notification as seen.", error);
+    }
+  }
+
   function bindEvents() {
     summaryToggleEl?.addEventListener("click", () => {
       setSummaryCollapsed(!summaryCardEl?.classList.contains("is-collapsed"));
@@ -2027,6 +2045,7 @@
     setStatus("読み込み中です。");
     const loaded = await loadDetailData();
     if (!loaded) return;
+    await markReservationNotificationsSeen();
     renderCustomerProfile();
     renderQuestionnaire();
     fillForm();

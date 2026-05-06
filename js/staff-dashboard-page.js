@@ -28,12 +28,13 @@
   if (!timelineEl || !eventsEl || !dateLabelEl) return;
 
   let session = null;
+  let staffProfile = null;
   let selectedDate = new Date();
   let reservations = [];
   let slots = [];
   let qrNotifications = [];
   let qrRequests = [];
-  let openQrCount = 0;
+  let openNotificationCount = 0;
 
   function createLocalDate(date) {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -134,7 +135,7 @@
 
   function updateNotificationCount() {
     if (!notificationCountEl) return;
-    notificationCountEl.textContent = String(openQrCount);
+    notificationCountEl.textContent = String(openNotificationCount);
   }
 
   function readAssignedStaffName() {
@@ -144,15 +145,31 @@
     return window.AdminAuth.getStaffDisplayName(session);
   }
 
+  function getStaffNameCandidates() {
+    return new Set([
+      staffProfile?.staff_name,
+      staffProfile?.display_name,
+      window.AdminAuth.getStaffDisplayName(session),
+      readAssignedStaffName()
+    ].map(normalizeName).filter(Boolean));
+  }
+
+  function isAssignedSlot(slot) {
+    if (!slot) return false;
+    if (staffProfile?.id && slot.staff_profile_id === staffProfile.id) return true;
+    if (slot.staff_profile_id) return false;
+    const instructorName = normalizeName(slot.instructor_name);
+    return instructorName ? getStaffNameCandidates().has(instructorName) : false;
+  }
+
   function getAssignedSlots() {
-    const staffName = readAssignedStaffName();
-    const instructorSlots = slots.filter((row) => String(row.instructor_name || "").trim());
+    const instructorSlots = slots.filter((row) => row.staff_profile_id || String(row.instructor_name || "").trim());
     if (!instructorSlots.length) {
       noteEl.textContent = "予約枠に担当者名が未設定のため、全枠を表示しています。";
       return slots;
     }
 
-    const matched = slots.filter((row) => normalizeName(row.instructor_name) === normalizeName(staffName));
+    const matched = slots.filter(isAssignedSlot);
     if (!matched.length) {
       noteEl.textContent = "現在の予約枠に一致する担当者名がないため、割当済みデータは 0 件です。";
       return [];
@@ -345,15 +362,39 @@
   function renderQrNotifications() {
     if (!qrRequestCountEl || !qrRequestListEl) return;
     const openRows = qrNotifications.filter((row) => row.status === "open");
-    openQrCount = openRows.length;
+    const qrRows = openRows.filter((row) => row.event_type === "qr_product_requested");
+    openNotificationCount = openRows.length;
     updateNotificationCount();
-    qrRequestCountEl.textContent = String(openRows.length);
+    qrRequestCountEl.textContent = String(qrRows.length);
     if (!openRows.length) {
       qrRequestListEl.innerHTML = `<p class="admin-empty">未対応の通知はありません。</p>`;
       return;
     }
-    qrRequestListEl.innerHTML = openRows.slice(0, 3).map((row) => {
+    const moreHref = openRows.some((row) => row.event_type === "reservation_created")
+      ? window.AdminAuth.appendRoleToHref("staff-reservations.html", "staff")
+      : window.AdminAuth.appendRoleToHref("staff-qr-requests.html", "staff");
+    const moreLabel = openRows.some((row) => row.event_type === "reservation_created") ? "予約一覧を見る" : "QR依頼一覧を見る";
+    qrRequestListEl.innerHTML = openRows.slice(0, 5).map((row) => {
       const payload = parsePayload(row);
+      if (row.event_type === "reservation_created") {
+        const dateTime = [payload.slot_date, String(payload.slot_time || "").slice(0, 5)].filter(Boolean).join(" ");
+        const customerName = payload.customer_name || "お客様";
+        const fragranceLabel = payload.summary_headline || payload.profile_key || "香り傾向未設定";
+        const detailHref = payload.reservation_id
+          ? window.AdminAuth.appendRoleToHref(`staff-customer-detail.html?reservation=${encodeURIComponent(payload.reservation_id)}`, "staff")
+          : window.AdminAuth.appendRoleToHref("staff-reservations.html", "staff");
+        return `
+          <article class="staff-notification-row">
+            <span class="staff-notification-dot" aria-hidden="true"></span>
+            <div>
+              <strong>新しい予約が入りました</strong>
+              <small>${escapeHtml(dateTime || payload.slot_label || "日時未設定")} / ${escapeHtml(customerName)} / ${escapeHtml(fragranceLabel)}</small>
+            </div>
+            <time>${escapeHtml(formatTimeOnly(row.created_at))}</time>
+            <a href="${detailHref}" aria-label="予約詳細へ">›</a>
+          </article>
+        `;
+      }
       const productName = payload.product_name || "QR商品";
       const totalVolume = payload.total_volume_ml ? `${payload.total_volume_ml}ml` : "容量未設定";
       return `
@@ -367,7 +408,7 @@
           <a href="${window.AdminAuth.appendRoleToHref("staff-qr-requests.html", "staff")}" aria-label="QR依頼一覧へ">›</a>
         </article>
       `;
-    }).join("") + `<a class="staff-notification-more" href="${window.AdminAuth.appendRoleToHref("staff-qr-requests.html", "staff")}">すべての通知を見る <span>›</span></a>`;
+    }).join("") + `<a class="staff-notification-more" href="${moreHref}">${moreLabel} <span>›</span></a>`;
   }
 
   async function loadBaseData() {
@@ -378,11 +419,11 @@
       }).catch(() => []),
       window.AdminData.listRows("notification_events", {
         filters: [
-          { operator: "eq", column: "event_type", value: "qr_product_requested" },
+          { operator: "in", column: "event_type", value: ["qr_product_requested", "reservation_created"] },
           { operator: "eq", column: "status", value: "open" }
         ],
         orders: [{ column: "created_at", ascending: false }],
-        limit: 5
+        limit: 8
       }).catch(() => []),
       window.AdminData.listRows("qr_product_requests", {
         filters: [{ operator: "eq", column: "status", value: "shipping_pending" }],
@@ -394,6 +435,18 @@
     slots = slotRows || [];
     qrNotifications = notificationRows || [];
     qrRequests = requestRows || [];
+  }
+
+  function renderDashboard() {
+    renderKpis();
+    renderQrNotifications();
+    renderTimeline();
+    renderMissingDates();
+  }
+
+  async function refreshDashboard() {
+    await loadBaseData();
+    renderDashboard();
   }
 
   prevButton.addEventListener("click", () => {
@@ -409,6 +462,7 @@
   async function bootstrap() {
     session = await window.AdminAuth.requireAdminSession();
     if (!session) return;
+    staffProfile = await window.AdminAuth.getStaffProfile?.(session).catch(() => null);
     window.AdminAuth.persistPortalRole("staff");
     window.AdminAuth.renderAdminHeader("staff-dashboard", {
       role: "staff",
@@ -420,12 +474,10 @@
         { href: "staff-slots.html", label: "予約枠", key: "slots" }
       ]
     });
-    await loadBaseData();
     renderPageHeading();
-    renderKpis();
-    renderQrNotifications();
-    renderTimeline();
-    renderMissingDates();
+    await refreshDashboard();
+    const refreshTimer = window.setInterval(refreshDashboard, 60000);
+    window.addEventListener("pagehide", () => window.clearInterval(refreshTimer));
   }
 
   bootstrap();

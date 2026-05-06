@@ -308,3 +308,14 @@
 - 事前計算結果は `recommendation_recipe_cache` に保存できる。未保存の場合は同じ最適化を画面側で計算し、保存可能な場合はキャッシュへ戻す。
 - 最終配合は従来通りスタッフが接客で調整した内容を `workshop_sessions.recipe_items` に保存する。
 - 法規制約、Top 3表示、多様化、秘匿配合分離、QR再注文拡張は今回の主実装に含めない。
+
+## 2026-05-06 予約通知・過予約防止の実装範囲
+
+- 顧客予約は `create_public_reservation()` RPC 経由で保存し、DB側で無効枠、受付終了枠、過去枠、定員超過を防止する。
+- 予約枠の定員は `reservation_slots.capacity` を正とし、`reservations.status <> 'canceled'` を枠使用中として数える。
+- 顧客予約画面では `slot_full` / `slot_closed` / `slot_past` を日本語メッセージへ変換し、予約完了画面へ遷移せず枠を再読込する。
+- 予約作成時は `notification_events.event_type = 'reservation_created'` を作成し、スタッフダッシュボードに予約日時、お客様名、香り傾向、詳細リンクを表示する。
+- 担当スタッフ判定は `reservation_slots.staff_profile_id` を優先し、既存データ向けに `instructor_name` を補助的に使う。
+- スタッフが予約詳細を開いた時点で、該当予約通知は `seen` に更新する。
+- 管理者ダッシュボードではスタッフ別に本日枠数、本日予約数、今週予約数、接客完了数、来店前提案未完了数、未確認予約通知数を表示する。
+- 通知はアプリ内通知のみとし、メール、LINE、ブラウザPush、詳細な操作監査ログは今回の範囲外とする。

@@ -13,6 +13,7 @@
   const todayShiftsEl = document.getElementById("manager-today-shifts");
   const nextWeekSummaryEl = document.getElementById("manager-next-week-summary");
   const coverageEl = document.getElementById("manager-slot-coverage");
+  const staffOpsSummaryEl = document.getElementById("manager-staff-ops-summary");
   const scoringWeightSummaryEl = document.getElementById("manager-scoring-weight-summary");
   const scoringSummaryEl = document.getElementById("manager-scoring-summary");
   const materialLinksEl = document.getElementById("manager-material-links");
@@ -20,10 +21,10 @@
   const qrRequestPanelCountEl = document.getElementById("manager-qr-request-panel-count");
   const qrRequestListEl = document.getElementById("manager-qr-request-list");
   const dashboardArtboardEl = document.getElementById("admin-dashboard-artboard");
-  const statusBlockHeadings = document.querySelectorAll(".admin-dashboard-status-block h3");
-  const todayShiftHeadingEl = statusBlockHeadings[0] || null;
-  const slotSummaryHeadingEl = statusBlockHeadings[1] || null;
-  const previsitProposalHeadingEl = statusBlockHeadings[2] || null;
+  const todayShiftHeadingEl = document.getElementById("manager-today-shifts-heading");
+  const staffOpsHeadingEl = document.getElementById("manager-staff-ops-heading");
+  const slotSummaryHeadingEl = document.getElementById("manager-slot-summary-heading");
+  const previsitProposalHeadingEl = document.getElementById("manager-previsit-heading");
   const qrModalTabsEl = document.querySelector(".admin-qr-modal-tabs");
   const qrModalListEl = document.querySelector(".admin-qr-modal-list");
   const qrModalSummaryEl = document.querySelector(".admin-qr-modal-side dl");
@@ -262,19 +263,31 @@
     return pattern.isWorking !== false && pattern.is_working !== false;
   }
 
-  function getSlotsForStaff(slots, staffName, startDateKey, endDateKey = startDateKey) {
-    const normalizedStaffName = normalizeName(staffName);
+  function getStaffDisplayName(staff) {
+    return normalizeName(staff?.staffName || staff?.staff_name || staff?.display_name || staff?.name || staff || "");
+  }
+
+  function isSlotAssignedToStaff(slot, staff) {
+    const staffId = normalizeName(staff?.id || staff?.staffId || staff?.staff_id);
+    if (staffId && normalizeName(slot?.staff_profile_id) === staffId) return true;
+    if (slot?.staff_profile_id) return false;
+    const normalizedStaffName = getStaffDisplayName(staff);
+    return normalizedStaffName && normalizeName(slot?.instructor_name) === normalizedStaffName;
+  }
+
+  function getSlotsForStaff(slots, staff, startDateKey, endDateKey = startDateKey) {
     return slots.filter((row) => (
       row.is_active !== false &&
       row.slot_date >= startDateKey &&
       row.slot_date <= endDateKey &&
-      normalizeName(row.instructor_name) === normalizedStaffName
+      isSlotAssignedToStaff(row, staff)
     ));
   }
 
   function createReservationCountMap(reservations) {
     return reservations.reduce((acc, row) => {
       if (!row.slot_id) return acc;
+      if (String(row.status || "").toLowerCase() === "canceled") return acc;
       acc.set(row.slot_id, (acc.get(row.slot_id) || 0) + 1);
       return acc;
     }, new Map());
@@ -354,7 +367,7 @@
     const reservationMap = createReservationCountMap(reservations);
     if (staffRows.length) {
       const staffStates = staffRows.map((staff) => {
-        const staffSlots = getSlotsForStaff(slots, staff.staffName, todayKey);
+        const staffSlots = getSlotsForStaff(slots, staff, todayKey);
         const isWorking = isStaffWorkingOnDate(staff, todayKey, shiftOverrides);
         return {
           staffName: staff.staffName,
@@ -430,6 +443,60 @@
     `;
   }
 
+  function getReservationsForSlots(reservations, slotRows) {
+    const slotIds = new Set(slotRows.map((row) => row.id).filter(Boolean));
+    return reservations.filter((row) => slotIds.has(row.slot_id) && String(row.status || "").toLowerCase() !== "canceled");
+  }
+
+  function getReservationNotificationId(row) {
+    const payload = parsePayload(row);
+    return String(payload.reservation_id || row.related_id || "");
+  }
+
+  function renderStaffOpsSummary(slots, reservations, staffRows = [], workshopRows = [], notificationRows = []) {
+    if (!staffOpsSummaryEl) return;
+    if (!staffRows.length) {
+      setStatusHeading(staffOpsHeadingEl, "スタッフ別運用サマリー", "スタッフ未設定");
+      staffOpsSummaryEl.innerHTML = `<p class="admin-empty">スタッフが登録されていません。</p>`;
+      return;
+    }
+
+    const today = formatDateKey(new Date());
+    const weekLimit = formatDateKey(addDays(createLocalDate(new Date()), 6));
+    const workshopMap = new Map((workshopRows || []).filter((row) => row.reservation_id).map((row) => [row.reservation_id, row]));
+    const reservationNotifications = (notificationRows || []).filter((row) => (
+      row.event_type === "reservation_created" &&
+      row.status === "open"
+    ));
+    let totalUnseen = 0;
+
+    staffOpsSummaryEl.innerHTML = staffRows.map((staff) => {
+      const todaySlots = getSlotsForStaff(slots, staff, today);
+      const weekSlots = getSlotsForStaff(slots, staff, today, weekLimit);
+      const allStaffSlots = slots.filter((slot) => slot.is_active !== false && isSlotAssignedToStaff(slot, staff));
+      const todayReservations = getReservationsForSlots(reservations, todaySlots);
+      const weekReservations = getReservationsForSlots(reservations, weekSlots);
+      const allStaffReservationIds = new Set(getReservationsForSlots(reservations, allStaffSlots).map((row) => String(row.id)));
+      const completedCount = weekReservations.filter((row) => (
+        row.status === "completed" || workshopMap.get(row.id)?.status === "completed"
+      )).length;
+      const pendingPrevisitCount = weekReservations
+        .filter(isActiveReservationForPreparation)
+        .filter((row) => !hasPrevisitRecipeItems(workshopMap.get(row.id))).length;
+      const unseenCount = reservationNotifications.filter((row) => allStaffReservationIds.has(getReservationNotificationId(row))).length;
+      totalUnseen += unseenCount;
+      return `
+        <article class="portal-dashboard-row portal-dashboard-row--summary">
+          <span>${escapeHtml(staff.staffName)}</span>
+          <small>本日 ${todaySlots.length}枠・${todayReservations.length}件 / 今週 ${weekReservations.length}件 / 完了 ${completedCount}件</small>
+          <strong>提案未 ${pendingPrevisitCount} / 未確認 ${unseenCount}</strong>
+        </article>
+      `;
+    }).join("");
+
+    setStatusHeading(staffOpsHeadingEl, "スタッフ別運用サマリー", `未確認予約通知 ${totalUnseen}件`);
+  }
+
   function renderNextWeekSummary(slots, reservations, staffRows = []) {
     if (!nextWeekSummaryEl) return;
     const today = formatDateKey(new Date());
@@ -438,7 +505,7 @@
     const reservationMap = createReservationCountMap(reservations);
     if (staffRows.length) {
       nextWeekSummaryEl.innerHTML = staffRows.map((staff) => {
-        const staffSlots = getSlotsForStaff(slots, staff.staffName, today, weekLimit);
+        const staffSlots = getSlotsForStaff(slots, staff, today, weekLimit);
         const reservationCount = countReservationsForSlots(staffSlots, reservationMap);
         return `
           <article class="portal-dashboard-row portal-dashboard-row--summary">
@@ -789,7 +856,7 @@
       : null;
     renderAdminFooter(session, staffProfile);
 
-    const [reservations, slots, scoringRows, materials, settingsRows, staffProfileRows, qrNotificationRows, emailEventRows, qrRequestRows, workshopRows] = await Promise.all([
+    const [reservations, slots, scoringRows, materials, settingsRows, staffProfileRows, qrNotificationRows, reservationNotificationRows, emailEventRows, qrRequestRows, workshopRows] = await Promise.all([
       window.AdminData.listRows("reservations", { orders: [{ column: "created_at", ascending: false }] }).catch(() => []),
       window.AdminData.listRows("reservation_slots", { filters: [{ operator: "in", column: "status", value: ["open", "recommended", "closed"] }] }).catch(() => []),
       window.AdminData.listRows("scoring_configs", { filters: [{ operator: "eq", column: "is_active", value: true }], limit: 1 }).catch(() => []),
@@ -806,6 +873,14 @@
         ],
         orders: [{ column: "created_at", ascending: false }],
         limit: 30
+      }).catch(() => []),
+      window.AdminData.listRows("notification_events", {
+        filters: [
+          { operator: "eq", column: "event_type", value: "reservation_created" },
+          { operator: "eq", column: "status", value: "open" }
+        ],
+        orders: [{ column: "created_at", ascending: false }],
+        limit: 100
       }).catch(() => []),
       window.AdminData.listRows("email_events", {
         filters: [
@@ -827,10 +902,11 @@
     const shiftOverrides = getShiftOverrides(settingsRows);
     const todayKey = formatDateKey(new Date());
     const slotMap = new Map(slots.map((row) => [row.id, row]));
-    const todayReservations = reservations.filter((row) => slotMap.get(row.slot_id)?.slot_date === todayKey);
+    const activeReservations = reservations.filter((row) => String(row.status || "").toLowerCase() !== "canceled");
+    const todayReservations = activeReservations.filter((row) => slotMap.get(row.slot_id)?.slot_date === todayKey);
     kpiReservationsEl.textContent = String(todayReservations.length);
     if (kpiUnconfirmedReservationsEl) {
-      kpiUnconfirmedReservationsEl.textContent = String(reservations.filter(isUnconfirmedReservation).length);
+      kpiUnconfirmedReservationsEl.textContent = String(activeReservations.filter(isUnconfirmedReservation).length);
     }
     if (kpiQrRequestsEl) {
       kpiQrRequestsEl.textContent = String(qrRequestRows.filter(isOpenQrRequest).length);
@@ -844,7 +920,7 @@
     if (kpiReservationsWeekEl) {
       const today = todayKey;
       const weekLimit = formatDateKey(addDays(createLocalDate(new Date()), 6));
-      const weeklyReservations = reservations.filter((row) => {
+      const weeklyReservations = activeReservations.filter((row) => {
         const dateKey = slotMap.get(row.slot_id)?.slot_date || "";
         return dateKey >= today && dateKey <= weekLimit;
       });
@@ -855,9 +931,10 @@
     if (kpiScoringEl) kpiScoringEl.textContent = scoringRows[0]?.version ?? "-";
     if (kpiMaterialsEl) kpiMaterialsEl.textContent = String(materials.length);
 
-    renderTodayShifts(slots, reservations, staffRows, shiftOverrides);
-    renderSlotSummary(slots, reservations);
-    renderPrevisitProposalChecks(slots, reservations, workshopRows);
+    renderTodayShifts(slots, activeReservations, staffRows, shiftOverrides);
+    renderStaffOpsSummary(slots, activeReservations, staffRows, workshopRows, reservationNotificationRows);
+    renderSlotSummary(slots, activeReservations);
+    renderPrevisitProposalChecks(slots, activeReservations, workshopRows);
     renderScoringSummary(scoringRows[0] || null);
     renderMaterialLinks(materials);
     renderQrNotifications(qrNotificationRows, emailEventRows, qrRequestRows);

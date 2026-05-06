@@ -1371,13 +1371,7 @@
     const draft = readJson(DRAFT_KEY, {});
     const axes = { ...DEFAULT_AXES, ...(draft.axes || state.adjustedAxes || state.finalAxes || {}) };
     const linkCustomer = isMemberReservationIntent();
-    const slots = (await window.FragrancePublicData?.fetchPublicReservationSlots?.() || [])
-      .filter((slot) => slot?.slot_date)
-      .sort((left, right) => {
-        const leftKey = `${left.slot_date || ""} ${left.slot_time || ""} ${left.sort_order || 0}`;
-        const rightKey = `${right.slot_date || ""} ${right.slot_time || ""} ${right.sort_order || 0}`;
-        return leftKey.localeCompare(rightKey);
-      });
+    let slots = await loadReservationSlots();
     const slotList = $("slot-list");
     const calendarDays = $("calendar-days");
     const calendarMonthLabel = $("calendar-month-label");
@@ -1396,6 +1390,16 @@
     let selectedSlot = slots[0] || null;
     let selectedDateKey = selectedSlot?.slot_date || formatDateKey(today);
     let currentMonthDate = parseDateKey(selectedDateKey) || new Date(today);
+
+    async function loadReservationSlots() {
+      return (await window.FragrancePublicData?.fetchPublicReservationSlots?.() || [])
+        .filter((slot) => slot?.slot_date)
+        .sort((left, right) => {
+          const leftKey = `${left.slot_date || ""} ${left.slot_time || ""} ${left.sort_order || 0}`;
+          const rightKey = `${right.slot_date || ""} ${right.slot_time || ""} ${right.sort_order || 0}`;
+          return leftKey.localeCompare(rightKey);
+        });
+    }
 
     if (nameInput && contactDraft.customer_name) nameInput.value = contactDraft.customer_name;
     if (emailInput && contactDraft.customer_email) emailInput.value = contactDraft.customer_email;
@@ -1516,6 +1520,41 @@
       renderSelection();
     }
 
+    function getReservationFailureCode(error) {
+      const text = [
+        error?.reservationErrorCode,
+        error?.message,
+        error?.code,
+        error?.details,
+        error?.hint
+      ].filter(Boolean).join(" ").toLowerCase();
+      return ["slot_not_found", "slot_closed", "slot_past", "slot_full"].find((code) => text.includes(code)) || "";
+    }
+
+    function getReservationFailureMessage(error) {
+      const code = getReservationFailureCode(error);
+      if (code === "slot_full") return "選択した日時は満席になりました。別の日時を選択してください。";
+      if (code === "slot_closed") return "選択した日時は受付を終了しました。別の日時を選択してください。";
+      if (code === "slot_past") return "選択した日時は受付できません。別の日時を選択してください。";
+      return "予約を保存できませんでした。時間をおいて再度お試しください。";
+    }
+
+    async function refreshSlotsAfterReservationFailure(error) {
+      const failedSlotId = selectedSlot?.id || "";
+      const code = getReservationFailureCode(error);
+      slots = await loadReservationSlots();
+      if (failedSlotId && ["slot_not_found", "slot_closed", "slot_past", "slot_full"].includes(code)) {
+        slots = slots.filter((slot) => slot.id !== failedSlotId);
+      }
+      const dateSlot = getSlotsByDate(selectedDateKey)[0] || null;
+      selectedSlot = dateSlot || slots[0] || null;
+      selectedDateKey = selectedSlot?.slot_date || selectedDateKey || formatDateKey(today);
+      currentMonthDate = parseDateKey(selectedDateKey) || new Date(today);
+      renderCalendar();
+      renderSlots();
+      setFormStatus(getReservationFailureMessage(error));
+    }
+
     function updateContactDraft() {
       writeJson(contactDraftKey, {
         customer_name: nameInput?.value?.trim() || "",
@@ -1584,16 +1623,16 @@
           status: "confirmed"
         };
         const reservation = await window.FragrancePublicData?.createReservation?.(payload, customerLinkOptions);
-        if (reservation) {
+        if (reservation?.id && reservation?.reservation_code) {
           writeJson(CONFIRMATION_KEY, { ...payload, ...reservation });
           if (reservation.id) writeJson(`fragranceCustomerDraft:${reservation.id}`, { name: customerName, email: customerEmail });
           window.location.href = `reservation-complete.html?code=${encodeURIComponent(reservation.reservation_code || "")}`;
           return;
         }
-        setFormStatus("予約を保存できませんでした。時間をおいて再度お試しください。");
+        await refreshSlotsAfterReservationFailure(new Error("reservation_create_failed"));
       } catch (error) {
         console.error("Failed to confirm reservation.", error);
-        setFormStatus("予約を保存できませんでした。時間をおいて再度お試しください。");
+        await refreshSlotsAfterReservationFailure(error);
       } finally {
         confirmButton.disabled = false;
       }

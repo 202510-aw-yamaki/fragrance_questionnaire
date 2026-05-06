@@ -206,3 +206,14 @@ QR発行条件、QR依頼対応、発送先入力、発送完了、通知対応�
 2026-05-05追記:
 - スタッフ系スタイルも `css/staff-ui.css` に単独集約し、staff 配下のページは `css/rebuild-ui.css` を参照しない運用に変更した。
 - スタッフページで使う `admin-header` / `admin-panel` / `admin-btn` などの共通クラスは `css/staff-ui.css` 側で保持する。
+
+## 2026-05-06 予約通知・過予約防止実装後の現状
+
+- 公開予約の保存入口は `create_public_reservation()` RPC を正本とし、`slot_id` がある場合は対象予約枠をDB側でロックしてから保存する。
+- 予約可能条件は、有効枠、受付中ステータス、過去日時ではないこと、`canceled` 以外の予約数が `reservation_slots.capacity` 未満であること。
+- 条件違反時は `slot_not_found` / `slot_closed` / `slot_past` / `slot_full` をRPCエラーとして返し、顧客予約画面では完了画面へ進めず枠再選択を促す。
+- 予約作成時は `notification_events.event_type = 'reservation_created'` を作成し、担当スタッフ付き枠では `target_staff_id` に `reservation_slots.staff_profile_id` を入れる。
+- スタッフダッシュボードはQR通知に加えて予約通知を表示し、表示中は60秒間隔で通知と予約一覧を再取得する。
+- スタッフ詳細画面を開いた予約については、該当する未確認予約通知を `seen` に更新する。
+- 管理者ダッシュボードにはスタッフ別運用サマリーを追加し、本日枠数、本日予約数、今週予約数、接客完了数、来店前提案未完了数、未確認予約通知数を確認できる。
+- QR商品設定ページは今回変更していない。既存QR依頼通知は維持し、予約通知だけを追加した。

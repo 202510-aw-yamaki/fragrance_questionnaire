@@ -275,13 +275,27 @@
     return message.includes("pgrst204") || message.includes("could not find") || message.includes("column");
   }
 
-  function omitQuestionnaireOptionalColumns(payload) {
-    const { edit_token_hash, customer_id, ...basePayload } = payload;
-    return basePayload;
+  function getReservationErrorCode(error) {
+    const text = [
+      error?.reservationErrorCode,
+      error?.code,
+      error?.message,
+      error?.details,
+      error?.hint
+    ].filter(Boolean).join(" ").toLowerCase();
+    return ["slot_not_found", "slot_closed", "slot_past", "slot_full"].find((code) => text.includes(code)) || "";
   }
 
-  function omitReservationOptionalColumns(payload) {
-    const { questionnaire_flow_status, questionnaire_sync_error, customer_id, duration_minutes, ...basePayload } = payload;
+  function createReservationError(error) {
+    const code = getReservationErrorCode(error);
+    const wrapped = new Error(code || error?.message || "reservation_create_failed");
+    wrapped.reservationErrorCode = code || "reservation_create_failed";
+    wrapped.originalError = error;
+    return wrapped;
+  }
+
+  function omitQuestionnaireOptionalColumns(payload) {
+    const { edit_token_hash, customer_id, ...basePayload } = payload;
     return basePayload;
   }
 
@@ -309,34 +323,8 @@
       if (error) throw error;
       return mergeReservationContactResult(normalizeSingleRow(data), reservationPayload);
     } catch (error) {
-      if (!isMissingFunctionError(error)) {
-        console.error("Failed to create reservation via RPC.", error);
-        return null;
-      }
-    }
-    const insertReservation = async (reservationPayload) => {
-      const { data, error } = await client
-        .from("reservations")
-        .insert([{ ...reservationPayload, reservation_code: reservationCode }])
-        .select("id, reservation_code")
-        .single();
-      if (error) throw error;
-      return data;
-    };
-    try {
-      return mergeReservationContactResult(await insertReservation(reservationPayload), reservationPayload);
-    } catch (error) {
-      if (isMissingColumnError(error)) {
-        try {
-          const fallbackPayload = omitReservationOptionalColumns(reservationPayload);
-          return mergeReservationContactResult(await insertReservation(fallbackPayload), fallbackPayload);
-        } catch (retryError) {
-          console.error("Failed to create reservation.", retryError);
-          return null;
-        }
-      }
-      console.error("Failed to create reservation.", error);
-      return null;
+      console.error("Failed to create reservation via RPC.", error);
+      throw createReservationError(error);
     }
   }
 

@@ -210,3 +210,15 @@ QR商品ページのアクセス記録は `record_qr_product_access()` を入口
 - タグは原料検索、JSON保存、JSON読込、DB保存の対象に含める。
 - 既存RLS方針は変更せず、公開側の原料参照に必要な anon select grant に `tags` を追加する。
 - 原料ポイントの正本は引き続き `material_points` であり、DBが空または取得できない場合だけフロント側テンプレートを表示する。
+
+## 2026-05-06 reservation capacity and notification note
+
+公開予約保存は `create_public_reservation(p_payload jsonb)` を正本とし、フロントからの直接insert fallbackでは扱わない。
+
+- `slot_id` がある予約では、`reservation_slots` の対象行を `FOR UPDATE` でロックしてから保存する。
+- 予約可能な枠は `is_active = true` かつ `status in ('open', 'recommended')` で、枠日時が過去ではないものに限定する。
+- 枠使用数は `reservations.status <> 'canceled'` を有効予約として数え、`reservation_slots.capacity` 以上の場合は `slot_full` を返す。
+- 条件違反時のRPCエラーは `slot_not_found`、`slot_closed`、`slot_past`、`slot_full` の判別可能な文字列にする。
+- `reservations` insert後、`notification_events.event_type = 'reservation_created'` を作成する。
+- `target_staff_id` は `reservation_slots.staff_profile_id` を優先し、未設定枠では `null` のスタッフ全体通知として扱う。
+- 予約通知payloadには `reservation_id`、`reservation_code`、`slot_id`、`slot_date`、`slot_time`、`slot_label`、`customer_name`、`summary_headline`、`profile_key` を保存する。
