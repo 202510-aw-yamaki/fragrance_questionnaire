@@ -311,6 +311,7 @@ body[data-page="home"] .hero-copy {
 
 .home-hero-actions .btn {
   width: 100%;
+  white-space: nowrap;
 }
 
 .home-hero-actions .btn:first-child {
@@ -348,8 +349,8 @@ body[data-page="home"] .hero-copy {
 
 .home-support-card .section-title {
   margin-bottom: 0;
-  font-size: 38px;
-  line-height: 1.45;
+  font-size: clamp(30px, 2.7vw, 38px);
+  line-height: 1.28;
 }
 
 .home-support-image {
@@ -362,6 +363,19 @@ body[data-page="home"] .hero-copy {
 .home-flow-card {
   display: grid;
   gap: 4px;
+}
+
+.home-flow-card .section-title {
+  font-size: clamp(30px, 2.7vw, 38px);
+  line-height: 1.28;
+}
+
+.home-flow-card .section-title::before,
+.home-flow-card .section-title::after,
+.home-support-card .section-title::before,
+.home-support-card .section-title::after {
+  width: 52px;
+  margin-inline: 14px;
 }
 
 .home-flow-image {
