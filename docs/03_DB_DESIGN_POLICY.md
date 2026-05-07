@@ -203,6 +203,11 @@ QR商品ページのアクセス記録は `record_qr_product_access()` を入口
 - `product_qr_codes` のスタッフ所有判定は `can_current_staff_access_fragrance_product(product_id)` で行う。
 - どちらも `security definer` 関数で判定し、ポリシー本文で相互にbase tableを直接参照しない。
 
+## 2026-05-07 QR request public insert RLS note
+
+`qr_product_requests` の公開 insert 判定は `can_create_public_qr_product_request(product_qr_code_id, fragrance_product_id)` を入口にする。
+anon が `product_qr_codes` / `fragrance_products` を直接読める前提にせず、Security Definer 関数側で QR 公開状態・有効期限・完成品公開状態を確認する。
+
 ## 2026-05-06 material points tags note
 
 管理者の原料ポイント編集ページで任意タグを扱うため、`material_points` に `tags jsonb not null default '[]'::jsonb` を追加する。
