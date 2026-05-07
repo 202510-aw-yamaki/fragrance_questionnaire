@@ -19,7 +19,7 @@
 
 - 管理者向けの原料ポイント編集画面は `admin/admin-materials.html`
 - 管理者ダッシュボードからの導線元は `admin/admin-dashboard.html`
-- 管理導線の入口は `admin-login.html` であり、現状は `index.html` から直接リンクしない
+- 管理導線の入口は `admin/login.html` であり、現状は `index.html` から直接リンクしない
 - スタイル管理は各HTML内のインラインスタイルを正とし、共通CSS整理は将来対応とする
 
 ## 管理対象項目

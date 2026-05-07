@@ -50,7 +50,7 @@ body[data-page="reservation-complete"] .complete-brand img {
   padding: 38px 0 46px;
   background:
     linear-gradient(90deg, rgba(255, 250, 244, 0.28) 0%, rgba(255, 250, 244, 0.82) 28%, rgba(255, 250, 244, 0.82) 72%, rgba(255, 250, 244, 0.24) 100%),
-    url("../../img/costomer/初回アンケート共通背景.png") center top / cover no-repeat;
+    url("../../img/customer/初回アンケート共通背景.png") center top / cover no-repeat;
 }
 
 .reservation-complete-main::before,
@@ -96,7 +96,7 @@ body[data-page="reservation-complete"] .complete-brand img {
   background:
     linear-gradient(#d9b778, #d9b778) left 50% / calc(50% - 20px) 1px no-repeat,
     linear-gradient(#d9b778, #d9b778) right 50% / calc(50% - 20px) 1px no-repeat,
-    url("../../img/costomer/会員ページの記号.png") center / 18px 18px no-repeat;
+    url("../../img/customer/会員ページの記号.png") center / 18px 18px no-repeat;
 }
 
 .complete-ornament-top {

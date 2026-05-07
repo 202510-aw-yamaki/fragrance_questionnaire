@@ -1,18 +1,18 @@
 body[data-page="questionnaire-step2"] {
-  --step2-background-image: url("../../img/costomer/Q6-back-floral.png");
+  --step2-background-image: url("../../img/customer/Q6-back-floral.png");
   background: #fff8f0;
 }
 
 body[data-page="questionnaire-step2"][data-step2-branch="floral"] {
-  --step2-background-image: url("../../img/costomer/Q6-back-floral.png");
+  --step2-background-image: url("../../img/customer/Q6-back-floral.png");
 }
 
 body[data-page="questionnaire-step2"][data-step2-branch="fresh"] {
-  --step2-background-image: url("../../img/costomer/Q6-back-fresh.png");
+  --step2-background-image: url("../../img/customer/Q6-back-fresh.png");
 }
 
 body[data-page="questionnaire-step2"][data-step2-branch="woody"] {
-  --step2-background-image: url("../../img/costomer/Q6-back-woody.png");
+  --step2-background-image: url("../../img/customer/Q6-back-woody.png");
 }
 
 body[data-page="questionnaire-step2"] .site-header {
@@ -106,7 +106,7 @@ body[data-page="questionnaire-step2"] .questionnaire-step2-progress-mark {
   grid-area: mark;
   width: 24px;
   height: 24px;
-  background: url("../../img/costomer/会員ページの記号.png") center / contain no-repeat;
+  background: url("../../img/customer/会員ページの記号.png") center / contain no-repeat;
 }
 
 body[data-page="questionnaire-step2"] .questionnaire-step2-progress-card strong {
@@ -185,7 +185,7 @@ body[data-page="questionnaire-step2"] .question-card-divider {
   background:
     linear-gradient(#d9b778, #d9b778) left 50% / 70px 1px no-repeat,
     linear-gradient(#d9b778, #d9b778) right 50% / 70px 1px no-repeat,
-    url("../../img/costomer/会員ページの記号.png") center / 20px 20px no-repeat;
+    url("../../img/customer/会員ページの記号.png") center / 20px 20px no-repeat;
   opacity: 0.9;
 }
 

@@ -45,7 +45,7 @@ body[data-page="questionnaire"] .questionnaire-main {
   padding: clamp(34px, 4vw, 52px) 0 58px;
   background:
     linear-gradient(90deg, rgba(255, 250, 244, 0.88) 0%, rgba(255, 250, 244, 0.7) 48%, rgba(255, 250, 244, 0.18) 100%),
-    url("../../img/costomer/初回アンケート共通背景.png") center / cover no-repeat;
+    url("../../img/customer/初回アンケート共通背景.png") center / cover no-repeat;
 }
 
 body[data-page="questionnaire"] .questionnaire-shell {
@@ -92,7 +92,7 @@ body[data-page="questionnaire"] .questionnaire-progress-mark {
   grid-area: mark;
   width: 24px;
   height: 24px;
-  background: url("../../img/costomer/会員ページの記号.png") center / contain no-repeat;
+  background: url("../../img/customer/会員ページの記号.png") center / contain no-repeat;
 }
 
 body[data-page="questionnaire"] .questionnaire-progress-card strong {
@@ -170,7 +170,7 @@ body[data-page="questionnaire"] .question-card-divider {
   background:
     linear-gradient(#d9b778, #d9b778) left 50% / 70px 1px no-repeat,
     linear-gradient(#d9b778, #d9b778) right 50% / 70px 1px no-repeat,
-    url("../../img/costomer/会員ページの記号.png") center / 20px 20px no-repeat;
+    url("../../img/customer/会員ページの記号.png") center / 20px 20px no-repeat;
   opacity: 0.9;
 }
 

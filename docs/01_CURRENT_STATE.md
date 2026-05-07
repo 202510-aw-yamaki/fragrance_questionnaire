@@ -20,7 +20,7 @@ UI再構築済みページは、現在のHTML/CSS/JSを正本として扱う。
 この節は 2026-05-04 時点のスタッフ系ページの最新状態です。下部に古い課題として `staff-customer-detail.html` に商品名入力欄がない等の記述が残っている場合でも、現在は本節を優先してください。
 
 - `staff/staff-slots.html`
-  - スタッフ専用CSSは `css/staff-ui.css` に集約済み。
+  - スタッフ専用CSSは `assets/css/staff-ui.css` に集約済み。
   - ヘッダーはスタッフダッシュボード基準。通知リンクは除去済み。
   - PC は週カレンダー、予約枠作成フォーム、作成済予約枠一覧の3カラム。
   - タブレットでは週カレンダーとフォームを `1:2` 目安で横並びにし、フォーム高は週カレンダーへ近づけた。
@@ -90,7 +90,7 @@ Codex は実装前にこのファイルを読み、既存機能を壊さず、�
 `customer/product-reservation.html` は、`product_qr_codes` と `fragrance_products` に紐づくQR商品作成依頼ページとしてリニューアル済み。
 ただし、作成可能/不可判断、発送先入力、発送完了、通知対応済み操作は後続フェーズとして扱う。
 
-- `admin-login.html`
+- `admin/login.html`
   - 管理者ログインページ
 
 - `staff/staff-customer-detail.html`
@@ -173,11 +173,11 @@ QR発行条件、QR依頼対応、発送先入力、発送完了、通知対応�
 ## 2026-05-01 UI再構築後の現状
 
 - 旧HTMLページと旧レイアウトCSSは公開用整理で削除済み。
-- 現行HTMLは現在の実装を正本とし、共通CSSは `css/rebuild-ui.css` に統合した。
-- `supabase/`、`js/supabase-config.js`、`js/supabase-client.js`、`js/public-data.js`、`js/admin-data.js`、`js/admin-auth.js`、`js/fragrance-master-data.js` は接続・保存・認証の維持対象として残した。
-- 顧客アンケート、結果、予約完了の軽量な画面制御は `js/rebuild-customer-flow.js` に整理した。
-- 会員ログイン/会員トップの画面制御は `js/customer-auth-page.js` に整理した。
-- 共通ログイン画面のタブ切替と送信制御は `js/admin-login-page.js` に整理した。
+- 現行HTMLは現在の実装を正本とし、共通CSSは `assets/css/rebuild-ui.css` に統合した。
+- `supabase/`、`assets/js/supabase-config.js`、`assets/js/supabase-client.js`、`assets/js/public-data.js`、`assets/js/admin-data.js`、`assets/js/admin-auth.js`、`assets/js/fragrance-master-data.js` は接続・保存・認証の維持対象として残した。
+- 顧客アンケート、結果、予約完了の軽量な画面制御は `assets/js/rebuild-customer-flow.js` に整理した。
+- 会員ログイン/会員トップの画面制御は `assets/js/customer-auth-page.js` に整理した。
+- 共通ログイン画面のタブ切替と送信制御は `assets/js/admin-login-page.js` に整理した。
 - Edge/Playwrightで20ページをデスクトップ幅・スマホ幅の計40表示確認し、ローカルJSエラーなしを確認済み。
 
 残作業:
@@ -199,22 +199,22 @@ QR発行条件、QR依頼対応、発送先入力、発送完了、通知対応�
 
 ## 2026-05-05 管理者ダッシュボード注釈反映
 
-- `admin/admin-dashboard.html` は admin 専用 CSS 入口 `admin/admin-ui.css` を参照する。
-- admin 配下の管理者ページと `admin-login.html` は、admin 系の見た目調整を `admin/admin-ui.css` に集約する運用に変更した。
+- `admin/admin-dashboard.html` は admin 専用 CSS 入口 `assets/css/admin/admin-ui.css` を参照する。
+- admin 配下の管理者ページと `admin/login.html` は、admin 系の見た目調整を `assets/css/admin/admin-ui.css` に集約する運用に変更した。
 - 管理者ダッシュボードの KPI / 操作カード / 状況ブロックは、円形アイコン内に用途別アイコンを表示する。
-- ヘッダーのブランド表示はテキストではなく `img/TOP/吟ロゴ.png` を表示する。
+- ヘッダーのブランド表示はテキストではなく `assets/img/top/吟ロゴ.png` を表示する。
 - 管理者ヘッダーでは現在表示中のページリンクをメニューに出さない。
 - `本日のスタッフ` は「出勤 N名」を同じ行に出し、その下にスタッフ名カードを配置する。
 - `予約枠状況` は「全体N枠中N枠予約済み（N%）」を先に表示し、その下に時間帯別の予約状況カードを配置する。
 
 2026-05-05追記:
-- admin 系スタイルは `admin/admin-ui.css` に単独集約し、`css/rebuild-ui.css` から admin 系セレクタを除去した。
-- 管理者ダッシュボード背景は `img/admin/admin-dashboard-bg.png` を全面背景として使用する。
+- admin 系スタイルは `assets/css/admin/admin-ui.css` に単独集約し、`assets/css/rebuild-ui.css` から admin 系セレクタを除去した。
+- 管理者ダッシュボード背景は `assets/img/admin/admin-dashboard-bg.png` を全面背景として使用する。
 - QR関連通知モーダルは「QR依頼一覧へ」「通知設定へ」「閉じる」の明確な遷移・終了操作に整理した。
 
 2026-05-05追記:
-- スタッフ系スタイルも `css/staff-ui.css` に単独集約し、staff 配下のページは `css/rebuild-ui.css` を参照しない運用に変更した。
-- スタッフページで使う `admin-header` / `admin-panel` / `admin-btn` などの共通クラスは `css/staff-ui.css` 側で保持する。
+- スタッフ系スタイルも `assets/css/staff-ui.css` に単独集約し、staff 配下のページは `assets/css/rebuild-ui.css` を参照しない運用に変更した。
+- スタッフページで使う `admin-header` / `admin-panel` / `admin-btn` などの共通クラスは `assets/css/staff-ui.css` 側で保持する。
 
 ## 2026-05-06 予約通知・過予約防止実装後の現状
 

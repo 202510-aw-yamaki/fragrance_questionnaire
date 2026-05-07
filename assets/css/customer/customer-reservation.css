@@ -48,7 +48,7 @@ body[data-page="reservation"] .reservation-brand img {
   padding: 34px 0 28px;
   background:
     linear-gradient(90deg, rgba(255, 250, 244, 0.96) 0%, rgba(255, 250, 244, 0.88) 47%, rgba(255, 250, 244, 0.18) 100%),
-    url("../../img/costomer/初回アンケート共通背景.png") center top / cover no-repeat;
+    url("../../img/customer/初回アンケート共通背景.png") center top / cover no-repeat;
 }
 
 .reservation-main::before {
@@ -82,7 +82,7 @@ body[data-page="reservation"] .reservation-brand img {
   background:
     linear-gradient(#d9b778, #d9b778) left 50% / 50px 1px no-repeat,
     linear-gradient(#d9b778, #d9b778) right 50% / 50px 1px no-repeat,
-    url("../../img/costomer/会員ページの記号.png") center / 17px 17px no-repeat;
+    url("../../img/customer/会員ページの記号.png") center / 17px 17px no-repeat;
 }
 
 .reservation-hero h1 {
@@ -266,7 +266,7 @@ body[data-page="reservation"] .reservation-brand img {
   background:
     linear-gradient(#d9b778, #d9b778) left 50% / calc(50% - 16px) 1px no-repeat,
     linear-gradient(#d9b778, #d9b778) right 50% / calc(50% - 16px) 1px no-repeat,
-    url("../../img/costomer/会員ページの記号.png") center / 14px 14px no-repeat;
+    url("../../img/customer/会員ページの記号.png") center / 14px 14px no-repeat;
 }
 
 .reservation-time-card p {

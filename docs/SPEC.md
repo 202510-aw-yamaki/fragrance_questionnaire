@@ -6,7 +6,7 @@
 
 ### staff/staff-slots.html
 
-- スタッフ系ページは `css/staff-ui.css` に集約する。`css/rebuild-ui.css` 依存へ戻さない。
+- スタッフ系ページは `assets/css/staff-ui.css` に集約する。`assets/css/rebuild-ui.css` 依存へ戻さない。
 - ヘッダーはスタッフダッシュボードと揃える。通知リンクは表示しない。`SLOTS` の右にスタッフ名を置き、ページ導線は `ダッシュボード` を含める。
 - 画面は PC で左から `週カレンダー`、`予約枠作成フォーム`、`作成済予約枠一覧` の3カラム。
 - タブレット幅では週カレンダーとフォームを横並びにし、おおむね `1:2` の比率にする。
@@ -120,7 +120,7 @@
   - `customer/reservation.html`
   - `customer/reservation-complete.html`
   - `customer/product-reservation.html`
-- スタッフ / 管理者の共通ログインは `admin-login.html`
+- スタッフ / 管理者の共通ログインは `admin/login.html`
 - スタッフ向けページは `staff/` 配下に置く
   - `staff/staff-dashboard.html`
   - `staff/staff-customer-detail.html`
@@ -131,7 +131,7 @@
   - `admin/admin-settings.html`
   - `admin/admin-scoring.html`
   - `admin/admin-materials.html`
-- `admin-login.html` はスタッフ / 管理者専用のため、フッターに小さく導線を置く方針へ変更する
+- `admin/login.html` はスタッフ / 管理者専用のため、フッターに小さく導線を置く方針へ変更する
 - スタイル管理は現段階では各HTML内のインラインスタイルを正とし、共通CSS整理は将来対応とする
 
 ### 追加予定:
@@ -164,7 +164,7 @@
 
 ### B. 店舗スタッフ側
 
-- 共通ログインページ `admin-login.html` から入る
+- 共通ログインページ `admin/login.html` から入る
 - 現行の対象ページ
   - `staff/staff-dashboard.html`
   - `staff/staff-reservations.html`
@@ -186,7 +186,7 @@
 
 ### C. 店舗管理者側
 
-- 共通ログインページ `admin-login.html` から入る
+- 共通ログインページ `admin/login.html` から入る
 - 現行の対象ページ
   - `admin/admin-dashboard.html`
   - `admin/admin-settings.html`
@@ -202,7 +202,7 @@
 
 - UI 上は「店舗スタッフ向け機能」と「店舗管理者向け機能」を分ける
 - ただしログイン導線は共通管理ログインでよい
-- ファイル配置は `staff/` と `admin/` を分け、共通ログインのみルートの `admin-login.html` に置く
+- ファイル配置は `staff/` と `admin/` を分け、共通ログインのみルートの `admin/login.html` に置く
 - 権限はロールで分ける
   - `staff`
   - `admin`

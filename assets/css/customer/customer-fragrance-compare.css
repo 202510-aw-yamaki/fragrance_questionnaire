@@ -56,7 +56,7 @@ body[data-page="fragrance-compare"] .compare-main {
   padding: 34px 0 72px;
   background:
     linear-gradient(90deg, rgba(255, 250, 244, 0.84) 0%, rgba(255, 250, 244, 0.56) 50%, rgba(255, 250, 244, 0.04) 100%),
-    url("../../img/costomer/customer_back.png") center top / cover no-repeat;
+    url("../../img/customer/customer_back.png") center top / cover no-repeat;
 }
 
 body[data-page="fragrance-compare"] .compare-main::before {
@@ -68,7 +68,7 @@ body[data-page="fragrance-compare"] .compare-main::before {
   width: min(30vw, 440px);
   height: min(60vw, 610px);
   pointer-events: none;
-  background: url("../../img/costomer/台の上の瓶.png") center top / 390px auto no-repeat;
+  background: url("../../img/customer/台の上の瓶.png") center top / 390px auto no-repeat;
   opacity: 0.7;
   -webkit-mask-image: radial-gradient(ellipse at 62% 34%, #000 0 58%, rgba(0, 0, 0, 0.64) 70%, transparent 86%);
   mask-image: radial-gradient(ellipse at 62% 34%, #000 0 58%, rgba(0, 0, 0, 0.64) 70%, transparent 86%);
@@ -106,7 +106,7 @@ body[data-page="fragrance-compare"] .compare-divider {
   background:
     linear-gradient(#d9b778, #d9b778) left 50% / 50px 1px no-repeat,
     linear-gradient(#d9b778, #d9b778) right 50% / 50px 1px no-repeat,
-    url("../../img/costomer/会員ページの記号.png") center / 17px 17px no-repeat;
+    url("../../img/customer/会員ページの記号.png") center / 17px 17px no-repeat;
 }
 
 body[data-page="fragrance-compare"] .compare-title p {

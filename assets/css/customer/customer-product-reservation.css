@@ -76,7 +76,7 @@ body[data-page="product-reservation"] .qr-product-page {
   border-bottom: 0;
   background:
     linear-gradient(180deg, rgba(255, 250, 244, 0.72), rgba(255, 250, 244, 0.64)),
-    url("../../img/costomer/会員ページの背景.png") top center / cover no-repeat,
+    url("../../img/customer/会員ページの背景.png") top center / cover no-repeat,
     #fff9f2;
 }
 

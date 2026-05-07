@@ -19,19 +19,19 @@
 - 5軸の可視化と微調整は `customer/fragrance-graph.html`
 - 予約文言への反映は `customer/reservation.html`
 - 管理者向けの配点編集画面は `admin/admin-scoring.html`
-- `admin-login.html` はスタッフ / 管理者共通ログインであり、顧客トップ `index.html` からは直接紐づけない
+- `admin/login.html` はスタッフ / 管理者共通ログインであり、顧客トップ `index.html` からは直接紐づけない
 
 ## 追記: 2026-04-28 Phase 2 共通配点参照
 
 ユーザー要望により、Markdown / PPTX 資料の実装順序に戻して Phase 2 の安定化を進める。
 
-今回の実装では、`customer/questionnaire.html`、`customer/questionnaire_step2.html`、`customer/reservation.html` が `js/fragrance-master-data.js` を読み込むようにした。
+今回の実装では、`customer/questionnaire.html`、`customer/questionnaire_step2.html`、`customer/reservation.html` が `assets/js/fragrance-master-data.js` を読み込むようにした。
 
 - 通常の配点編集は `admin/admin-scoring.html` から `scoring_configs` に保存する
 - 公開アンケートは active な `scoring_configs` を優先する
 - active な `scoring_configs` は保存処理と DB 制約で 1 件に限定する
-- `sessionStorage` や DB 読込が使えない場合は、`js/fragrance-master-data.js` の共通初期値を fallback とする
-- `fragrance-graph.html` は既に `material_points` を読み込み、未登録時は `js/fragrance-master-data.js` の原料テンプレートを使う
+- `sessionStorage` や DB 読込が使えない場合は、`assets/js/fragrance-master-data.js` の共通初期値を fallback とする
+- `fragrance-graph.html` は既に `material_points` を読み込み、未登録時は `assets/js/fragrance-master-data.js` の原料テンプレートを使う
 - 旧来の `customer/questionnaire.html` 内 fallback 定義は、互換用として残す
 
 ## ロジックの前提
@@ -77,7 +77,7 @@
 - `ALL`: A-D の平均を丸めた明示 delta
 - `NONE`: 0 ベクトル
 
-実装初期値は `js/fragrance-master-data.js` の `SCORING_LOGIC_SOURCE = deep-research-report-ver.1.1.md`、`SCORING_LOGIC_VERSION = 2026-04-29` を正とする。この識別子は実装互換のため変更しない。
+実装初期値は `assets/js/fragrance-master-data.js` の `SCORING_LOGIC_SOURCE = deep-research-report-ver.1.1.md`、`SCORING_LOGIC_VERSION = 2026-04-29` を正とする。この識別子は実装互換のため変更しない。
 公開ページは Supabase の active `scoring_configs` を優先するため、DB側に古い active config が残っている場合は、この初期値を管理画面から保存し直す必要がある。
 
 ### 2026-05-02 追記: Question_template.md の表示文言

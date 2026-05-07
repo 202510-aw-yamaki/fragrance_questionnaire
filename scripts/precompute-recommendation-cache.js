@@ -53,7 +53,7 @@ function readJsonFile(filePath) {
 }
 
 function loadMasterData() {
-  const filePath = path.resolve(__dirname, "../js/fragrance-master-data.js");
+  const filePath = path.resolve(__dirname, "../assets/js/fragrance-master-data.js");
   const code = fs.readFileSync(filePath, "utf8");
   const sandbox = { window: {}, console };
   vm.runInNewContext(code, sandbox, { filename: filePath });

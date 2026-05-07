@@ -157,8 +157,7 @@ Planモードでも、以下は止まって確認する。
 - `customer/`
 - `staff/`
 - `admin/`
-- `css/`
-- `js/`
+- `assets/`
 - `supabase/`
 - `scripts/`
 - `tests/`
@@ -347,11 +346,11 @@ QR商品導線では、以下を守る。
 
 ## 14. CSS・画面構成ルール
 
-- 顧客系の共通UIは `css/rebuild-ui.css` を中心に扱う。
-- 管理者系の見た目調整は `css/admin/admin-ui.css` に集約する。
-- スタッフ系の見た目調整は `css/staff-ui.css` に集約する。
-- staff 配下のページは原則として `css/rebuild-ui.css` を参照しない。
-- admin 配下の管理者ページと `admin-login.html` は、admin 系スタイルを `css/admin/admin-ui.css` に寄せる。
+- 顧客系の共通UIは `assets/css/rebuild-ui.css` を中心に扱う。
+- 管理者系の見た目調整は `assets/css/admin/admin-ui.css` に集約する。
+- スタッフ系の見た目調整は `assets/css/staff-ui.css` に集約する。
+- staff 配下のページは原則として `assets/css/rebuild-ui.css` を参照しない。
+- admin 配下の管理者ページと `admin/login.html` は、admin 系スタイルを `assets/css/admin/admin-ui.css` に寄せる。
 - ページ個別の巨大な inline CSS / inline JS を増やさない。
 
 ---

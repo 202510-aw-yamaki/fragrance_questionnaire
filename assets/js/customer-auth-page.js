@@ -353,7 +353,7 @@
         return `
           <article class="customer-history-item">
             <div class="customer-history-thumb">
-              <img src="../img/costomer/瓶単体.png" alt="">
+              <img src="../assets/img/customer/瓶単体.png" alt="">
               <button class="customer-history-detail-button" type="button" data-product-detail-index="${index}">詳細</button>
             </div>
             <div>
@@ -393,7 +393,7 @@
       : [];
     body.innerHTML = `
       <article class="customer-product-history-card customer-product-detail-card">
-        <img class="customer-product-history-image" src="../img/costomer/瓶単体.png" alt="">
+        <img class="customer-product-history-image" src="../assets/img/customer/瓶単体.png" alt="">
         <div class="customer-product-history-detail">
           <p class="eyebrow">制作履歴</p>
           <h2 id="product-detail-title">${escapeHtml(name)}</h2>
@@ -498,7 +498,7 @@
         : [];
       return `
         <article class="customer-product-history-card">
-          <img class="customer-product-history-image" src="../img/costomer/瓶単体.png" alt="">
+          <img class="customer-product-history-image" src="../assets/img/customer/瓶単体.png" alt="">
           <div class="customer-product-history-detail">
             <h2>${escapeHtml(name)}</h2>
             <dl class="customer-last-meta">

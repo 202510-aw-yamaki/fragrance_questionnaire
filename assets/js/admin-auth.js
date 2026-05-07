@@ -5,7 +5,7 @@
   }
 
   const ROOT_PREFIX = getPortalRootPrefix();
-  const LOGIN_PAGE = `${ROOT_PREFIX}admin-login.html`;
+  const LOGIN_PAGE = `${ROOT_PREFIX}admin/login.html`;
   const ROLE_STORAGE_KEY = "fragrancePortalRole";
   const AUTH_DOMAIN_BY_ROLE = {
     staff: "staff.portal.fragrance.local",
@@ -245,7 +245,7 @@
     mount.innerHTML = `
       <div class="admin-header-inner site-container ${role === "staff" ? "admin-header-inner--staff" : "admin-header-inner--manager"}">
         <a class="admin-brand" href="${brandHref}">
-          <span class="admin-brand-logo" aria-hidden="true"><img src="${ROOT_PREFIX}img/TOP/吟ロゴ.png" alt=""></span>
+          <span class="admin-brand-logo" aria-hidden="true"><img src="${ROOT_PREFIX}assets/img/top/吟ロゴ.png" alt=""></span>
           <span>${brandName}</span>
           ${roleLabel ? `<small class="admin-brand-meta">${roleLabel}</small>` : ""}
         </a>

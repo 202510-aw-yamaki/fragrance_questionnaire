@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>会員トップ | Fragrance Workshop</title>
-  <link rel="stylesheet" href="../css/rebuild-ui.css">
-  <link rel="stylesheet" href="../css/customer/customer-index.css">
+  <link rel="stylesheet" href="../assets/css/rebuild-ui.css">
+  <link rel="stylesheet" href="../assets/css/customer/customer-index.css">
 </head>
 <body data-page="customer-portal">
   <header class="site-header">
     <div class="site-header-inner site-container">
-      <a class="brand" href="../index.html"><span class="brand-logo-mark"><img src="../img/costomer/吟ロゴ.png" alt=""></span><span>Fragrance Workshop</span></a>
+      <a class="brand" href="../index.html"><span class="brand-logo-mark"><img src="../assets/img/customer/吟ロゴ.png" alt=""></span><span>Fragrance Workshop</span></a>
       <button class="customer-portal-menu-toggle" id="customer-portal-menu-toggle" type="button" aria-controls="customer-portal-menu" aria-expanded="false" aria-label="メニュー">
         <span></span>
         <span></span>
@@ -29,7 +29,7 @@
   <main class="customer-portal-main">
     <section class="customer-portal-hero site-container">
       <div class="customer-portal-heading">
-        <span class="customer-portal-heading-mark" aria-hidden="true"><img src="../img/costomer/会員ページの記号.png" alt=""></span>
+        <span class="customer-portal-heading-mark" aria-hidden="true"><img src="../assets/img/customer/会員ページの記号.png" alt=""></span>
         <h1>マイページ</h1>
         <div class="customer-portal-heading-copy">
           <p class="customer-portal-greeting"><span id="member-name-inline">会員</span>さん、こんにちは</p>
@@ -42,11 +42,11 @@
     <section class="customer-portal-dashboard site-container" aria-label="会員ページメニュー">
       <article class="customer-portal-card customer-portal-card--last" id="predecessor-card">
         <div class="customer-portal-card-title">
-          <span class="customer-portal-card-mark" aria-hidden="true"><img src="../img/costomer/会員ページの記号.png" alt=""></span>
+          <span class="customer-portal-card-mark" aria-hidden="true"><img src="../assets/img/customer/会員ページの記号.png" alt=""></span>
           <h2>前回作成した香水</h2>
         </div>
         <div class="customer-last-fragrance">
-          <img class="customer-last-fragrance-image" src="../img/costomer/台の上の瓶.png" alt="">
+          <img class="customer-last-fragrance-image" src="../assets/img/customer/台の上の瓶.png" alt="">
           <div class="customer-last-fragrance-detail">
             <h3 id="latest-product-name">未作成</h3>
             <dl class="customer-last-meta">
@@ -89,17 +89,17 @@
 
       <article class="customer-portal-card customer-portal-card--new" id="new-work-card">
         <div class="customer-portal-card-title">
-          <span class="customer-portal-card-mark" aria-hidden="true"><img src="../img/costomer/会員ページの記号.png" alt=""></span>
+          <span class="customer-portal-card-mark" aria-hidden="true"><img src="../assets/img/customer/会員ページの記号.png" alt=""></span>
           <h2>新しく香りを作る</h2>
         </div>
         <p>今の気分に合わせて、もう一度アンケートから予約できます。</p>
-        <img class="customer-new-fragrance-image" src="../img/costomer/アンケートと小瓶.png" alt="">
+        <img class="customer-new-fragrance-image" src="../assets/img/customer/アンケートと小瓶.png" alt="">
         <a class="customer-portal-secondary-action" href="questionnaire.html?member=1">アンケートへ<span aria-hidden="true">›</span></a>
       </article>
 
       <article class="customer-portal-card customer-portal-card--history" id="history-card">
         <div class="customer-portal-card-title">
-          <span class="customer-portal-card-mark" aria-hidden="true"><img src="../img/costomer/会員ページの記号.png" alt=""></span>
+          <span class="customer-portal-card-mark" aria-hidden="true"><img src="../assets/img/customer/会員ページの記号.png" alt=""></span>
           <h2>制作履歴</h2>
         </div>
         <div class="customer-history-list record-list" id="product-list"></div>
@@ -118,9 +118,9 @@
     </section>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../js/supabase-config.js"></script>
-  <script src="../js/supabase-client.js"></script>
-  <script src="../js/public-data.js"></script>
-  <script src="../js/customer-auth-page.js"></script>
+  <script src="../assets/js/supabase-config.js"></script>
+  <script src="../assets/js/supabase-client.js"></script>
+  <script src="../assets/js/public-data.js"></script>
+  <script src="../assets/js/customer-auth-page.js"></script>
 </body>
 </html>

@@ -769,7 +769,7 @@ body[data-page="staff-customer-detail"] .staff-main::before {
   right: max(-120px, calc((100vw - 1400px) / 2));
   width: min(35vw, 420px);
   height: 330px;
-  background: url("../img/TOP/Final_Call_hope.png") center / cover no-repeat;
+  background: url("../img/top/Final_Call_hope.png") center / cover no-repeat;
   opacity: 0.18;
   pointer-events: none;
 }
@@ -2132,7 +2132,7 @@ body[data-page="staff-dashboard"] .staff-main::before {
   right: max(-80px, calc((100vw - 1180px) / 2));
   width: min(48vw, 640px);
   height: 320px;
-  background: url("../img/TOP/Final_Call_hope.png") center / cover no-repeat;
+  background: url("../img/top/Final_Call_hope.png") center / cover no-repeat;
   opacity: 0.24;
   pointer-events: none;
 }
@@ -2543,7 +2543,7 @@ body[data-page="staff-dashboard"] #staff-missing-secondary.staff-missing-chip-li
   padding: 22px 28px;
   background:
     linear-gradient(90deg, rgba(255, 253, 249, 0.98), rgba(255, 253, 249, 0.86)),
-    url("../img/TOP/Final_Call_hope.png") right center / 360px auto no-repeat;
+    url("../img/top/Final_Call_hope.png") right center / 360px auto no-repeat;
 }
 
 .staff-next-action[hidden] {
@@ -2621,7 +2621,7 @@ body[data-page="staff-reservations"] .staff-main::before {
   right: max(-80px, calc((100vw - 1180px) / 2));
   width: min(44vw, 560px);
   height: 245px;
-  background: url("../img/TOP/Final_Call_hope.png") center / cover no-repeat;
+  background: url("../img/top/Final_Call_hope.png") center / cover no-repeat;
   opacity: 0.18;
   pointer-events: none;
 }
@@ -2820,7 +2820,7 @@ body[data-page="staff-slots"] .staff-main::before {
   right: max(-110px, calc((100vw - 1320px) / 2));
   width: min(44vw, 600px);
   height: 300px;
-  background: url("../img/TOP/Final_Call_hope.png") center / cover no-repeat;
+  background: url("../img/top/Final_Call_hope.png") center / cover no-repeat;
   opacity: 0.16;
   pointer-events: none;
 }

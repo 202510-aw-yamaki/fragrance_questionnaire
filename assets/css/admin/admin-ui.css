@@ -392,7 +392,7 @@ h3,
   inset: 0;
   background:
     linear-gradient(90deg, rgba(255, 251, 245, 0.95) 0%, rgba(255, 249, 240, 0.86) 43%, rgba(255, 246, 235, 0.72) 100%),
-    url("../../img/TOP/hero-visual.png") center / cover no-repeat;
+    url("../../img/top/hero-visual.png") center / cover no-repeat;
 }
 
 .admin-login-shell {
@@ -1245,8 +1245,8 @@ body.portal-modal-open {
 body.admin-page {
   background:
     linear-gradient(90deg, rgba(255, 250, 243, 0.9), rgba(255, 250, 243, 0.96) 18%, rgba(255, 250, 243, 0.96) 82%, rgba(255, 250, 243, 0.9)),
-    url("../../img/TOP/hero-visual.png") left top / 360px auto no-repeat,
-    url("../../img/TOP/Final_Call_hope.png") right bottom / 420px auto no-repeat,
+    url("../../img/top/hero-visual.png") left top / 360px auto no-repeat,
+    url("../../img/top/Final_Call_hope.png") right bottom / 420px auto no-repeat,
     #fffaf3;
 }
 
@@ -1611,7 +1611,7 @@ body.admin-page .admin-logout {
   .qr-product-page {
     background:
       linear-gradient(rgba(255, 248, 239, 0.86), rgba(255, 248, 239, 0.92)),
-      url("../../img/costomer/customer_back.png") center / cover no-repeat,
+      url("../../img/customer/customer_back.png") center / cover no-repeat,
       #fff8ef;
   }
 
@@ -2093,14 +2093,14 @@ body.admin-reference-page::before {
   left: 0;
   background:
     linear-gradient(90deg, rgba(255, 250, 244, 0), rgba(255, 250, 244, 0.86) 92%),
-    url("../../img/TOP/hero-visual.png") 70% 6% / 980px auto no-repeat;
+    url("../../img/top/hero-visual.png") 70% 6% / 980px auto no-repeat;
 }
 
 body.admin-reference-page::after {
   right: 0;
   background:
     linear-gradient(270deg, rgba(255, 250, 244, 0), rgba(255, 250, 244, 0.84) 92%),
-    url("../../img/TOP/hero-visual.png") 93% 5% / 1020px auto no-repeat;
+    url("../../img/top/hero-visual.png") 93% 5% / 1020px auto no-repeat;
 }
 
 body.admin-reference-page .admin-header,
@@ -3477,7 +3477,7 @@ body.admin-dashboard-page::after {
   opacity: 0.54;
   background:
     linear-gradient(90deg, rgba(255, 250, 244, 0) 0%, rgba(255, 250, 244, 0.92) 92%),
-    url("../../img/TOP/hero-visual.png") 58% 12% / 940px auto no-repeat;
+    url("../../img/top/hero-visual.png") 58% 12% / 940px auto no-repeat;
   filter: saturate(0.68) brightness(1.12);
 }
 
@@ -3487,7 +3487,7 @@ body.admin-dashboard-page::after {
   opacity: 0.58;
   background:
     linear-gradient(270deg, rgba(255, 250, 244, 0) 0%, rgba(255, 250, 244, 0.92) 88%),
-    url("../../img/TOP/hero-visual.png") 96% 8% / 980px auto no-repeat;
+    url("../../img/top/hero-visual.png") 96% 8% / 980px auto no-repeat;
   filter: saturate(0.7) brightness(1.1);
 }
 

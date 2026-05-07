@@ -63,7 +63,7 @@ body[data-page="customer-portal"] .brand-logo-mark img {
   padding: 0 0 26px;
   background:
     linear-gradient(180deg, rgba(255, 252, 247, 0.22), rgba(255, 250, 243, 0.92) 46%, rgba(255, 250, 243, 0.98)),
-    url("../../img/costomer/会員ページの背景.png") top center / cover no-repeat;
+    url("../../img/customer/会員ページの背景.png") top center / cover no-repeat;
 }
 
 .customer-portal-main > .status-note,
@@ -724,7 +724,7 @@ body[data-page="customer-portal"] .brand-logo-mark img {
   gap: 22px;
   color: var(--ink);
   background:
-    url("../../img/costomer/会員ページのbottom背景.png") center / cover no-repeat;
+    url("../../img/customer/会員ページのbottom背景.png") center / cover no-repeat;
 }
 
 .customer-compare-icon {

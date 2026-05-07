@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>スタッフ・管理者ログイン | Fragrance Workshop</title>
-  <link rel="stylesheet" href="css/admin/admin-ui.css">
+  <link rel="stylesheet" href="../assets/css/admin/admin-ui.css">
 </head>
 <body class="admin-login-page" data-page="admin-login">
   <main class="admin-login-stage">
     <div class="admin-login-bg" aria-hidden="true"></div>
     <div class="admin-login-shell">
       <header class="admin-login-topbar">
-        <a class="admin-login-brand" href="index.html">
-          <span class="admin-login-brand-logo"><img src="img/TOP/吟ロゴ.png" alt=""></span>
+        <a class="admin-login-brand" href="../index.html">
+          <span class="admin-login-brand-logo"><img src="../assets/img/top/吟ロゴ.png" alt=""></span>
           <span class="admin-login-brand-copy">
             <strong>Fragrance Atelier</strong>
             <small>WORKSHOP ADMIN SYSTEM</small>
@@ -28,7 +28,7 @@
             <button class="portal-login-tab" id="manager-login-tab" type="button" role="tab" aria-selected="false" aria-controls="manager-login-panel" data-login-tab="manager">管理者ログイン</button>
           </div>
 
-          <p class="admin-error" id="config-error" hidden>Supabase 設定が未完了です。js/supabase-config.js を設定してください。</p>
+          <p class="admin-error" id="config-error" hidden>Supabase 設定が未完了です。assets/js/supabase-config.js を設定してください。</p>
           <p class="admin-error" id="login-error" hidden></p>
 
           <section class="admin-login-panel" id="staff-login-panel" role="tabpanel" aria-labelledby="staff-login-tab">
@@ -160,9 +160,9 @@
     </div>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-config.js"></script>
-  <script src="js/supabase-client.js"></script>
-  <script src="js/admin-auth.js"></script>
-  <script src="js/admin-login-page.js"></script>
+  <script src="../assets/js/supabase-config.js"></script>
+  <script src="../assets/js/supabase-client.js"></script>
+  <script src="../assets/js/admin-auth.js"></script>
+  <script src="../assets/js/admin-login-page.js"></script>
 </body>
 </html>

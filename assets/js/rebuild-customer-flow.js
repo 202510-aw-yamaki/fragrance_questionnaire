@@ -449,12 +449,12 @@
   }
 
   function imagePath(name) {
-    if (/^Q\d+-[A-D]\.png$/.test(name)) return `../img/costomer/${name}`;
-    return `../img/questionnaire-v11/${name}`;
+    if (/^Q\d+-[A-D]\.png$/.test(name)) return `../assets/img/customer/${name}`;
+    return `../assets/img/customer/${name}`;
   }
 
   function customerImagePath(name) {
-    return `../img/costomer/${name}`;
+    return `../assets/img/customer/${name}`;
   }
 
   async function initQuestionnaireStep1() {
@@ -507,7 +507,7 @@
       const triviaImage = STEP1_TRIVIA_IMAGES[question.id];
       if (triviaImage) {
         aside.classList.add("is-trivia");
-        aside.innerHTML = `<img class="questionnaire-trivia-image" src="../img/costomer/${triviaImage}" alt="">`;
+        aside.innerHTML = `<img class="questionnaire-trivia-image" src="../assets/img/customer/${triviaImage}" alt="">`;
         return;
       }
       aside.classList.remove("is-trivia");
@@ -748,7 +748,7 @@
       document.body.dataset.step2Branch = branch;
       const backgroundImage = getStep2BackgroundImage(question.id, branch);
       if (backgroundImage) {
-        document.body.style.setProperty("--step2-background-image", `url("../../img/costomer/${backgroundImage}")`);
+        document.body.style.setProperty("--step2-background-image", `url("../assets/img/customer/${backgroundImage}")`);
       } else {
         document.body.style.removeProperty("--step2-background-image");
       }

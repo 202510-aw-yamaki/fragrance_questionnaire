@@ -566,7 +566,7 @@ body[data-page="home"] .hero-copy {
   padding: 64px 0 42px;
   background:
     linear-gradient(90deg, rgba(255, 250, 243, 0.96), rgba(255, 250, 243, 0.74)),
-    url("../img/TOP/hero-visual.png") center right / cover no-repeat;
+    url("../img/top/hero-visual.png") center right / cover no-repeat;
 }
 
 .page-hero-inner {
@@ -975,7 +975,7 @@ details.card[open] summary::after {
   border-radius: var(--radius);
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.84), rgba(244, 224, 196, 0.78)),
-    url("../img/TOP/グーグルマップ地図上野教室.png") center / cover no-repeat;
+    url("../img/top/グーグルマップ地図上野教室.png") center / cover no-repeat;
 }
 
 .map-embed {
@@ -1003,7 +1003,7 @@ details.card[open] summary::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: url("../img/TOP/top-bottom-image.png") center / cover no-repeat;
+  background: url("../img/top/top-bottom-image.png") center / cover no-repeat;
 }
 
 .final-cta-image {
@@ -1228,7 +1228,7 @@ details.card[open] summary::after {
   padding: 8px 0 24px;
   background:
     linear-gradient(90deg, rgba(255, 248, 239, 0.72), rgba(255, 248, 239, 0.9) 32%, rgba(255, 248, 239, 0.9) 68%, rgba(255, 248, 239, 0.72)),
-    url("../img/costomer/customer_back.png") center / cover no-repeat,
+    url("../img/customer/customer_back.png") center / cover no-repeat,
     #fff8ef;
 }
 
