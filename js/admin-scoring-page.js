@@ -1227,7 +1227,7 @@
   }
 
   document.getElementById("scoring-load-template").addEventListener("click", () => {
-    applyWorkingConfig(window.FragranceMasterData.createDefaultScoringConfig(), "deep-research-report 基準の初期テンプレートを読み込みました。", { markDirty: true });
+    applyWorkingConfig(window.FragranceMasterData.createDefaultScoringConfig(), "標準配点テンプレートを読み込みました。", { markDirty: true });
   });
 
   document.getElementById("scoring-load-active").addEventListener("click", () => {

@@ -85,7 +85,7 @@ qr_product_requests.handled_by_staff_id
 ユーザー要望の「スタッフ/管理者アカウントを Supabase Auth で正式作成する運用」に合わせ、管理者設定画面のスタッフ登録データはログイン補助・勤務表示用に限定する。
 
 - `admin_settings.staff_directory` にはスタッフ/管理者パスワードを保存しない
-- 既存データに `staffPassword` / `managerPassword` が残っている場合は、`docs/archive/user-settings/Supabase設定項目.txt` のSQLで削除する
+- 既存データに `staffPassword` / `managerPassword` が残っている場合は、運用時に限定SQLで削除する
 - 管理者設定画面からのスタッフ保存は、Auth user 作成や `staff_profiles.auth_user_id` 紐づけを自動実行しない
 - 正式ログイン・権限判定は Supabase Auth metadata と `staff_profiles` を正本とする
 - `fragrancePortalLoginIndex` のようなlocalStorage上のログインID一覧は、ログイン可否判定に使わない

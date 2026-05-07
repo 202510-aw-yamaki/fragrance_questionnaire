@@ -5,13 +5,8 @@
 通常作業では、QR導線以外の現状実装を現在の正本として扱います。QR導線は削除・過去資料化せず、現行資料内の後続課題として扱います。
 
 - 現在の正本: `AGENTS.md`, `docs/00_PROJECT_CORE.md`〜`docs/06_OPEN_ISSUES.md`, `docs/SPEC.md`, `docs/SURVEY_SCORING_LOGIC.md`, `docs/MATERIAL_POINTS.md`
-- 実装本体: `index.html`, `customer/`, `staff/`, `admin/`, `css/`, `js/`, `supabase/`, `scripts/`, `tests/`
-- 現行説明資料: `docs/presentation/current_source_map_20260506.pptx`
-- レイアウト参照画像: `docs/assets/layout-reference/`
-- 過去資料: `docs/archive/`
-- 旧画面・旧コード実体: `archived/`
+- 実装本体: `index.html`, `customer/`, `staff/`, `admin/`, `css/`, `js/`, `supabase/`, `scripts/`
 
-旧パスの `レイアウトimg/`, `ユーザー設定フォルダ/`, root直下の `deep-research*.md`, 旧PPTXは整理済みです。過去ログ内の旧パスは、当時の参照として残っている場合があります。
 
 香りワークショップ向けの、アンケート・予約・スタッフ管理・管理者設定・QR商品導線を扱う静的HTMLベースの試作リポジトリです。
 
@@ -66,15 +61,6 @@
 
 - `docs/06_OPEN_ISSUES.md`
   - 未確定事項・将来検討事項
-
-- `docs/archive/presentation/fragrance_questionnaire_architecture_v5.pptx`
-  - 全体構想をまとめたPPTX資料
-
-- `docs/assets/layout-reference/`フォルダ
-  - サイトマップ及びＤＢ関係図、ホームページレイアウトのイメージ画像
-
-- `docs/archive/presentation/fragrance_image_explanations_v1.pptx`
-  - 上記イメージ画像の説明PPTX資料
 
 ---
 

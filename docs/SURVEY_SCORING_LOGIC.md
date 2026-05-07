@@ -9,7 +9,7 @@
 - `reservation.html` では、予約作成直前に未保存のアンケート結果を再作成し、成功した場合は `reservations.questionnaire_result_id` に紐づける
 - 再同期できない場合も予約自体は継続し、`questionnaire_flow_status` / `questionnaire_sync_error` でスタッフ側が判別できるようにする
 
-本書は `docs/archive/research/deep-research-report.md` を基準にした、目標スコアリング仕様書です。
+本書は、現行の目標スコアリング仕様書です。
 現行コードの数値と差がある場合は、本書側を正とします。
 
 ## 現行画面との対応
@@ -67,7 +67,7 @@
 
 ### 2026-04-29 追記: STEP1 初期設定を ver.1.1 へ更新
 
-ユーザー要望により、STEP1 は `docs/archive/research/deep-research-report-ver.1.1.md` を基準にする。
+ユーザー要望により、STEP1 はこの節の初期設定を基準にする。
 既存の A/B/C + `ALL` / `NONE` ではなく、A/B/C/D + `ALL` / `NONE` の6択とする。
 
 - A: 清潔・軽やか / fresh 中心
@@ -77,7 +77,7 @@
 - `ALL`: A-D の平均を丸めた明示 delta
 - `NONE`: 0 ベクトル
 
-実装初期値は `js/fragrance-master-data.js` の `SCORING_LOGIC_SOURCE = deep-research-report-ver.1.1.md`、`SCORING_LOGIC_VERSION = 2026-04-29` を正とする。ファイル本体は `docs/archive/research/deep-research-report-ver.1.1.md` に退避済みだが、この識別子は実装互換のため変更しない。
+実装初期値は `js/fragrance-master-data.js` の `SCORING_LOGIC_SOURCE = deep-research-report-ver.1.1.md`、`SCORING_LOGIC_VERSION = 2026-04-29` を正とする。この識別子は実装互換のため変更しない。
 公開ページは Supabase の active `scoring_configs` を優先するため、DB側に古い active config が残っている場合は、この初期値を管理画面から保存し直す必要がある。
 
 ### 2026-05-02 追記: Question_template.md の表示文言
@@ -119,7 +119,7 @@
 |  | ALL | +1 | +1 | +1 | +1 | +1 |
 |  | NONE | 0 | 0 | 0 | 0 | 0 |
 
-以下の既存表は、`docs/archive/research/deep-research-report.md` 基準の旧STEP1初期値として残す。
+以下の既存表は、旧STEP1初期値として残す。
 
 | 設問 | 回答キー | floral | fresh | woody | spicy | sweet |
 |---|---|---:|---:|---:|---:|---:|
@@ -225,7 +225,7 @@ axis = round(base * 0.75 + template * 0.25)
 
 ## STEP2 route 判定の補完仕様
 
-`docs/archive/research/deep-research-report.md` では STEP2 の route ごとの質問内容は定義されているが、route 判定用テンプレート値までは固定されていない。
+STEP2 の route ごとの質問内容は定義されているが、route 判定用テンプレート値までは固定されていない。
 実装可能にするため、route 判定は次の補完仕様を採用する。
 
 ```json
@@ -264,7 +264,7 @@ tie-break は `floral -> fresh -> woody` とする。
 
 ## 追記: 2026-04-19 配点ロジック管理画面の運用要件
 
-この追記は `docs/assets/layout-reference/` 配下の配点ロジック管理者導線画像の確認を受けて、配点ロジックの編集運用要件を固定するために追加する。
+この追記は、配点ロジックの編集運用要件を固定するために追加する。
 
 - `branchTemplates` と `branchDistanceWeights` は STEP1 / STEP2 / Q8 の配点テーブルと同一画面で確認 / 編集できること
 - 配点数値の入力 UI はスピンボタンなどで上下調整できる数値入力を基本とする

@@ -90,17 +90,15 @@
 - `fragrance_products` と `product_qr_codes` のRLSで相互参照を直接書くと `infinite recursion detected in policy for relation "fragrance_products"` が出るため、Security Definer 関数経由にする。
 
 本書は、今後このリポジトリで目標とする仕様の固定書です。  
-配点設計と原料プロファイル設計の基準資料は `docs/archive/research/deep-research-report.md` とし、実装の進捗管理は現行の `docs/` 配下資料で行います。
+配点設計と原料プロファイル設計の基準資料は `docs/SURVEY_SCORING_LOGIC.md` とし、実装の進捗管理は現行の `docs/` 配下資料で行います。
 
 ## 正本の考え方
 
-- 配点ロジックと原料プロファイルの基準資料は `docs/archive/research/deep-research-report.md`
-→最新基準資料は `docs/archive/research/deep-research-report-ver.1.1.md`
+- 配点ロジックと原料プロファイルの基準資料は `docs/SURVEY_SCORING_LOGIC.md`
 - 目標仕様の整理先は `docs/SPEC.md`、`docs/IMPLEMENTATION_RULES.md`、`docs/SURVEY_SCORING_LOGIC.md`、`docs/MATERIAL_POINTS.md`
 - 実装済み / 未達の状態管理は `docs/COMPLETED_REQUIREMENTS.md`、`docs/UNMET_REQUIREMENTS.md`
-- `docs/assets/layout-reference/` 配下の画像は、主にスタッフ / 管理者画面の導線、画面構成、ラベル、モーダル構成を補う参考資料として扱う
-- `docs/assets/layout-reference/` 配下の画像内にある数値はモック値を含み得るため、配点値、5軸値、テンプレート値、原料ポイント値の正本としては扱わない
-- 数値仕様が必要な場合は、必ず `docs/archive/research/deep-research-report-ver.1.1.md`、`docs/archive/research/deep-research-report.md`、`docs/SURVEY_SCORING_LOGIC.md`、`docs/MATERIAL_POINTS.md` を参照する
+- 画面構成は現行HTML/CSS/JSを正本として扱う
+- 数値仕様が必要な場合は、必ず `docs/SURVEY_SCORING_LOGIC.md`、`docs/MATERIAL_POINTS.md` を参照する
 - 現行コードが仕様書と異なる場合は、原則としてコード側が未追従とみなす
 
 ## システムの到達目標
@@ -279,8 +277,8 @@
   - `sessionStorage` の契約
   - 既存DOM IDのうちDB連携JSが参照するもの
 - 補足:
-  - `docs/assets/layout-reference/` を完成イメージの正として、ページ単位で新しい薄いHTML/CSSへ置き換える。
-  - 新ページでDB連携が維持できることを確認した後、旧HTML/CSS/表示都合JSを `archived/legacy/` へ退避する。
+  - 現行HTML/CSS/JSを正として、ページ単位の差分を確認する。
+  - 新ページでDB連携が維持できることを確認した後、不要な旧HTML/CSS/表示都合JSは公開用リポジトリへ含めない。
 
 ## 2026-05-03 会員比較モードのページ分離方針
 

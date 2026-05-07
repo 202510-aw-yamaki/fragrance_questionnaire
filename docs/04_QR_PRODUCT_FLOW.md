@@ -10,12 +10,12 @@
 - 旧 `customer/product-reservation.html` へのQR表示はまだ互換表示であり、正規QR導線は後続フェーズで `product_qr_codes` と接続する
 
 2026-04-29追記:
-上記の旧 `customer/product-reservation.html` 互換表示は、現在は `archived/legacy/customer-product-reservation.legacy.html` に隔離済み。
+上記の旧 `customer/product-reservation.html` 互換表示は廃止済み。
 現行の `customer/product-reservation.html` は `product_qr_codes` と `fragrance_products` に紐づく正規QR商品作成依頼ページとして扱う。
 
 ## 2026-04-28 QR request page implementation note
 
-ユーザー要望により、旧 `customer/product-reservation.html` は `archived/legacy/customer-product-reservation.legacy.html` に隔離し、同じ公開URLを `product_qr_codes` と `fragrance_products` に紐づくQR商品作成依頼ページへリニューアルした。
+ユーザー要望により、同じ公開URLを `product_qr_codes` と `fragrance_products` に紐づくQR商品作成依頼ページへリニューアルした。
 
 - QR商品ページは `token` / `public_token` / `qr` / `qr_code` で `product_qr_codes` を参照する
 - 表示する商品情報は `fragrance_products.product_name` のみとする
@@ -852,16 +852,7 @@ anon に `product_qr_codes` / `fragrance_products` の追加select権限は広�
 
 ## Reference Image
 
-QR 商品ページの参考イメージ画像は以下です。
-
-```text
-docs/assets/layout-reference/QRpage-reference.png
-```
-
-2026-04-28 追記:
-上記の `docs/assets/layout-reference/QRpage-reference.png` は旧参照名で、実在する目標参照画像は `docs/assets/layout-reference/11. customer product-reservation.html QR商品作成依頼ページ.png` です。
-
-この画像は UI の方向性を示す参考です。
+QR商品ページのUIは、現行の `customer/product-reservation.html` と関連CSSを正とする。
 
 実装時は、DB・状態管理・バリデーション・メール・通知仕様を優先してください。
 
