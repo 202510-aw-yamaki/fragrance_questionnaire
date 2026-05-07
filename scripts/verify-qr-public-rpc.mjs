@@ -197,20 +197,13 @@ async function createPublicQrFixture(runId, staff, staffProfile) {
 
 async function createPublicRequest(fixture, suffix, quantities = { quantity_10ml: 1, quantity_30ml: 0 }) {
   const email = `codx_qr_test_${Date.now()}_${suffix}@example.invalid`;
-  await request("/rest/v1/qr_product_requests", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Prefer: "return=minimal"
-    },
-    body: JSON.stringify({
-      product_qr_code_id: fixture.qr.id,
-      fragrance_product_id: fixture.product.id,
+  await rpc("create_public_qr_product_request", {
+    p_payload: {
+      token: fixture.token,
       requester_email: email,
       quantity_10ml: quantities.quantity_10ml,
-      quantity_30ml: quantities.quantity_30ml,
-      status: "requested"
-    })
+      quantity_30ml: quantities.quantity_30ml
+    }
   });
   return email;
 }
@@ -256,14 +249,35 @@ async function assertAnonPublicRpc(fixture, staffToken) {
   }
 }
 
-async function assertNoWideAnonTableAccess() {
+async function assertNoWideAnonTableAccess(fixture) {
+  const deniedStatuses = new Set([401, 403]);
   for (const table of ["product_qr_codes", "fragrance_products"]) {
     const response = await fetch(`${ROOT_URL}/rest/v1/${table}?select=*&limit=1`, {
       headers: { apikey: PUBLIC_ANON_KEY, Authorization: `Bearer ${PUBLIC_ANON_KEY}` }
     });
-    if (response.status !== 401) {
+    if (!deniedStatuses.has(response.status)) {
       throw new Error(`Expected anon select=* on ${table} to be denied, got ${response.status}.`);
     }
+  }
+  const insertResponse = await fetch(`${ROOT_URL}/rest/v1/qr_product_requests`, {
+    method: "POST",
+    headers: {
+      apikey: PUBLIC_ANON_KEY,
+      Authorization: `Bearer ${PUBLIC_ANON_KEY}`,
+      "Content-Type": "application/json",
+      Prefer: "return=minimal"
+    },
+    body: JSON.stringify({
+      product_qr_code_id: fixture.qr.id,
+      fragrance_product_id: fixture.product.id,
+      requester_email: "codx_qr_test_direct_insert@example.invalid",
+      quantity_10ml: 1,
+      quantity_30ml: 0,
+      status: "requested"
+    })
+  });
+  if (!deniedStatuses.has(insertResponse.status)) {
+    throw new Error(`Expected anon direct insert on qr_product_requests to be denied, got ${insertResponse.status}.`);
   }
 }
 
@@ -331,7 +345,7 @@ async function main() {
   const report = { runId, productId: fixture.product.id, qrId: fixture.qr.id, deadline: null, cleanup: null };
 
   try {
-    await assertNoWideAnonTableAccess();
+    await assertNoWideAnonTableAccess(fixture);
     await assertAnonPublicRpc(fixture, staff.token);
 
     const availableEmail = await createPublicRequest(fixture, "available");

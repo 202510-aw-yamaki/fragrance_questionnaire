@@ -284,14 +284,24 @@
     return row?.status || "完成";
   }
 
+  function buildQrProductReservationHref(row) {
+    const token = String(row?.qr_public_token || "").trim();
+    if (!token) return "";
+    const target = new URL("../customer/product-reservation.html", window.location.href);
+    target.searchParams.set("token", token);
+    return target.pathname + target.search + target.hash;
+  }
+
   function renderLatestProduct(row) {
     if (!$("latest-product-name")) return;
+    const primaryAction = document.querySelector(".customer-portal-primary-action");
     if (!row) {
       $("latest-product-name").textContent = "未作成";
       $("latest-product-date").textContent = "-";
       $("latest-product-staff").textContent = "-";
       $("latest-product-summary").textContent = "制作履歴が入ると、香りの傾向が表示されます。";
       renderPortalAxisPreview(null);
+      if (primaryAction) primaryAction.href = "reservation.html?member=1";
       return;
     }
     $("latest-product-name").textContent = getPortalProductName(row, "未作成");
@@ -299,6 +309,7 @@
     $("latest-product-staff").textContent = getPortalStaffName(row);
     $("latest-product-summary").textContent = getPortalAxisSummary(row);
     renderPortalAxisPreview(getPortalAxes(row));
+    if (primaryAction) primaryAction.href = buildQrProductReservationHref(row) || "reservation.html?member=1";
   }
 
   function renderRecordList(mount, rows, emptyText, type) {
@@ -309,6 +320,8 @@
     }
     if (type === "product") {
       mount.innerHTML = rows.slice(0, 3).map((row) => {
+        const qrHref = buildQrProductReservationHref(row);
+        const actionHref = qrHref || "../customer/reservation.html?member=1";
         const name = getPortalProductName(row, "香り");
         return `
           <article class="customer-history-item">
@@ -319,7 +332,7 @@
               <p>スタッフ　${escapeHtml(getPortalStaffName(row))}</p>
             </div>
             <span>${escapeHtml(getPortalStatusLabel(row))}</span>
-            <a href="../customer/reservation.html?member=1" aria-label="${escapeHtml(name)}を予約する">›</a>
+            <a href="${escapeHtml(actionHref)}" aria-label="${escapeHtml(name)}を予約する">›</a>
           </article>
         `;
       }).join("");

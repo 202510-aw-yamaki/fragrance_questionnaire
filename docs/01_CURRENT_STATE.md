@@ -235,3 +235,11 @@ QR発行条件、QR依頼対応、発送先入力、発送完了、通知対応�
 - 作成可能メール後の期限切れは `expired` にし、`qr_request_expired_v1` のメールイベントを作成する。
 - 管理者ダッシュボードのQR通知モーダルでは、依頼者メール・送信先メールをマスク表示する。
 - 発送先入力ページ、発送先個人情報の保持・削除方針、外部決済、送料自動計算は未確定事項として引き続き実装対象外。
+
+## 2026-05-07 QR公開依頼保存RPC化後の現状
+
+- QR商品ページの公開表示取得は `fetch_qr_product_public_page(p_token text)`、公開依頼保存は `create_public_qr_product_request(p_payload jsonb)` を正規入口とする。
+- 公開依頼保存RPCは `token`、`requester_email`、`quantity_10ml`、`quantity_30ml` だけを受け取り、QRと商品IDはDB側で解決する。
+- anon には `fragrance_products` / `product_qr_codes` の公開select直権限、`qr_product_requests` のinsert直権限を追加で広げない。公開QR導線はRPC経由で扱う。
+- 会員マイページの制作履歴は、有効公開QRがある完成品だけ `customer/product-reservation.html?token=...` への導線を出す。
+- QR依頼一覧の状態操作はスタッフ画面だけに表示し、管理者画面は監視・集計用として扱う。

@@ -841,6 +841,7 @@ begin
         'staff_name', coalesce(sp.display_name, sp.staff_name, rs.instructor_name),
         'summary_headline', r.summary_headline,
         'profile_key', r.profile_key,
+        'qr_public_token', active_qr.public_token,
         'created_at', fp.created_at,
         'updated_at', fp.updated_at
       )
@@ -853,6 +854,16 @@ begin
   left join public.reservations r on r.id = fp.reservation_id
   left join public.reservation_slots rs on rs.id = r.slot_id
   left join public.staff_profiles sp on sp.id = fp.created_by_staff_id
+  left join lateral (
+    select pq.public_token
+    from public.product_qr_codes pq
+    where pq.fragrance_product_id = fp.id
+      and pq.status = 'active'
+      and pq.is_public = true
+      and (pq.expires_at is null or pq.expires_at > now())
+    order by coalesce(pq.issued_at, pq.created_at) desc
+    limit 1
+  ) active_qr on true
   where fp.customer_id = v_customer_id;
 
   return jsonb_build_object(
@@ -1129,6 +1140,89 @@ as $$
       and (pq.expires_at is null or pq.expires_at > now())
       and fp.status = 'published'
   );
+$$;
+
+create or replace function public.create_public_qr_product_request(p_payload jsonb)
+returns public.qr_product_requests
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_token text := btrim(coalesce(p_payload ->> 'token', p_payload ->> 'public_token', p_payload ->> 'qr_code', ''));
+  v_requester_email text := lower(btrim(coalesce(p_payload ->> 'requester_email', '')));
+  v_quantity_10ml integer := coalesce(nullif(p_payload ->> 'quantity_10ml', '')::integer, 0);
+  v_quantity_30ml integer := coalesce(nullif(p_payload ->> 'quantity_30ml', '')::integer, 0);
+  v_total_volume_ml integer := 0;
+  v_max_volume_ml integer := public.qr_product_public_max_volume_ml();
+  v_qr public.product_qr_codes;
+  v_product public.fragrance_products;
+  v_request public.qr_product_requests;
+begin
+  if v_token = '' then
+    raise exception 'QR token is required.' using errcode = '22023';
+  end if;
+
+  if v_requester_email !~* '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$' then
+    raise exception 'A valid requester email is required.' using errcode = '22023';
+  end if;
+
+  if v_quantity_10ml < 0 or v_quantity_30ml < 0 then
+    raise exception 'QR request quantities must be zero or greater.' using errcode = '22023';
+  end if;
+
+  v_total_volume_ml := (v_quantity_10ml * 10) + (v_quantity_30ml * 30);
+  if v_total_volume_ml <= 0 then
+    raise exception 'QR request quantity is required.' using errcode = '22023';
+  end if;
+
+  if v_total_volume_ml > v_max_volume_ml then
+    raise exception 'QR request quantity exceeds the maximum volume.' using errcode = '22023';
+  end if;
+
+  select pq.*
+  into v_qr
+  from public.product_qr_codes pq
+  where pq.public_token = v_token
+     or pq.qr_code = v_token
+  limit 1;
+
+  if v_qr.id is null
+    or not public.can_create_public_qr_product_request(v_qr.id, v_qr.fragrance_product_id) then
+    raise exception 'QR product page is not available.' using errcode = 'P0002';
+  end if;
+
+  select fp.*
+  into v_product
+  from public.fragrance_products fp
+  where fp.id = v_qr.fragrance_product_id
+  limit 1;
+
+  if v_product.id is null or v_product.status <> 'published' then
+    raise exception 'QR product is not available.' using errcode = 'P0002';
+  end if;
+
+  insert into public.qr_product_requests (
+    product_qr_code_id,
+    fragrance_product_id,
+    requester_email,
+    quantity_10ml,
+    quantity_30ml,
+    status
+  )
+  values (
+    v_qr.id,
+    v_product.id,
+    v_requester_email,
+    v_quantity_10ml,
+    v_quantity_30ml,
+    'requested'
+  )
+  returning *
+  into v_request;
+
+  return v_request;
+end;
 $$;
 
 create or replace function public.set_qr_product_request_defaults()
@@ -2209,6 +2303,8 @@ revoke all on function public.fetch_qr_product_public_page(text) from public;
 grant execute on function public.fetch_qr_product_public_page(text) to anon, authenticated;
 revoke all on function public.can_create_public_qr_product_request(uuid, uuid) from public;
 grant execute on function public.can_create_public_qr_product_request(uuid, uuid) to anon, authenticated;
+revoke all on function public.create_public_qr_product_request(jsonb) from public;
+grant execute on function public.create_public_qr_product_request(jsonb) to anon, authenticated;
 grant execute on function public.has_active_public_product_qr(uuid) to anon, authenticated;
 grant execute on function public.can_current_staff_access_fragrance_product(uuid) to authenticated;
 grant execute on function public.mark_qr_request_available(uuid) to authenticated;
@@ -2259,10 +2355,6 @@ grant select (config_json, version, updated_at, is_active) on public.scoring_con
 grant select (id, material_code, material_name, category, point_axes, tags, note, is_active, sort_order, updated_at) on public.material_points to anon;
 grant select (id, slot_code, slot_date, slot_time, slot_label, instructor_name, status, sort_order, is_active) on public.reservation_slots to anon;
 grant select (setting_key, setting_value, updated_at, is_public) on public.admin_settings to anon;
-grant select (id, product_name, product_tags) on public.fragrance_products to anon;
-grant select (id, fragrance_product_id, qr_code, public_token, status, expires_at, inactive_reason) on public.product_qr_codes to anon;
-grant insert (product_qr_code_id, fragrance_product_id, requester_email, quantity_10ml, quantity_30ml, status) on public.qr_product_requests to anon;
-
 grant select, insert, update, delete on public.questionnaire_results to authenticated;
 grant select, insert, update, delete on public.reservation_slots to authenticated;
 grant select, insert, update, delete on public.reservations to authenticated;

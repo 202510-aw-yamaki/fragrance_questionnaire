@@ -929,3 +929,10 @@ QR依頼一覧は読み取り専用から、スタッフ運用の最小操作入
 - 期限切れ時は `qr_request_expired_v1` の `email_events` を `queued` で作成する
 - メール実送信、発送先入力、発送先個人情報保持・削除方針、外部決済、送料自動計算は引き続き未確定事項として扱う
 
+## 2026-05-07 QR公開依頼保存RPC化
+
+- QR商品ページの表示取得は `fetch_qr_product_public_page(p_token text)`、依頼保存は `create_public_qr_product_request(p_payload jsonb)` を正本とする。
+- 公開依頼保存RPCの入力は `token`、`requester_email`、`quantity_10ml`、`quantity_30ml` に限定し、`product_qr_code_id` と `fragrance_product_id` はDB側で解決する。
+- 受付通知と受付メールイベントは、`qr_product_requests` insert 後の既存triggerで作成する。
+- 会員マイページからは、有効公開QRがある制作済み商品のみQR商品予約ページへ遷移できる。
+- スタッフはQR依頼一覧から作成可能、作成不可、発送完了を操作する。管理者のQR依頼一覧は監視・集計用で、同じ操作ボタンは出さない。

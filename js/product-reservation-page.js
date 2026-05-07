@@ -219,12 +219,10 @@
     setStatus("送信しています。");
     try {
       const saved = await window.FragrancePublicData?.createQrProductRequest?.({
-        product_qr_code_id: state.qrCode.id,
-        fragrance_product_id: state.product.id,
+        token: getQrToken(),
         requester_email: emailEl.value.trim(),
         quantity_10ml: totals.quantity10ml,
-        quantity_30ml: totals.quantity30ml,
-        status: "requested"
+        quantity_30ml: totals.quantity30ml
       });
       if (!saved) throw new Error("依頼を保存できませんでした。");
       setStatus("作成依頼を受け付けました。原材料在庫の確認後、メールでご連絡します。", "success");

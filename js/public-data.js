@@ -552,38 +552,6 @@
     }
   }
 
-  async function fetchProductQrCodeByToken(token) {
-    const client = window.getSupabaseClient?.();
-    const qrToken = String(token || "").trim();
-    if (!client || !qrToken) return null;
-    try {
-      const { data, error } = await client.rpc("record_qr_product_access", { p_token: qrToken });
-      if (error) throw error;
-      return normalizeSingleRow(data);
-    } catch (error) {
-      if (!isMissingFunctionError(error)) {
-        console.error("Failed to record QR product access.", error);
-        return null;
-      }
-    }
-    const selectColumns = "id, fragrance_product_id, qr_code, public_token, status, expires_at, inactive_reason";
-    const findByColumn = async (column) => {
-      const { data, error } = await client
-        .from("product_qr_codes")
-        .select(selectColumns)
-        .eq(column, qrToken)
-        .maybeSingle();
-      if (error) throw error;
-      return data || null;
-    };
-    try {
-      return await findByColumn("public_token") || await findByColumn("qr_code");
-    } catch (error) {
-      console.error("Failed to fetch QR product code.", error);
-      return null;
-    }
-  }
-
   function normalizeQrProductPageData(data) {
     let row = normalizeSingleRow(data);
     if (typeof row === "string") {
@@ -600,47 +568,17 @@
     };
   }
 
-  async function fetchQrProductPageDataByRpc(token) {
+  async function fetchQrProductPageData(token) {
     const client = window.getSupabaseClient?.();
     const qrToken = String(token || "").trim();
     if (!client || !qrToken) return null;
-    const { data, error } = await client.rpc("fetch_qr_product_public_page", { p_token: qrToken });
-    if (error) throw error;
-    return normalizeQrProductPageData(data);
-  }
-
-  async function fetchQrProductPageData(token) {
-    const client = window.getSupabaseClient?.();
-    if (!client) return null;
-    try {
-      return await fetchQrProductPageDataByRpc(token);
-    } catch (error) {
-      if (!isMissingFunctionError(error)) {
-        console.error("Failed to fetch QR product public page.", error);
-        return null;
-      }
-    }
-    const qrCode = await fetchProductQrCodeByToken(token);
-    if (!qrCode?.fragrance_product_id) return null;
-    if (qrCode.is_available === false) {
-      return {
-        qrCode,
-        product: null
-      };
-    }
     try {
       const { data, error } = await client
-        .from("fragrance_products")
-        .select("id, product_name, product_tags")
-        .eq("id", qrCode.fragrance_product_id)
-        .maybeSingle();
+        .rpc("fetch_qr_product_public_page", { p_token: qrToken });
       if (error) throw error;
-      return {
-        qrCode,
-        product: data || null
-      };
+      return normalizeQrProductPageData(data);
     } catch (error) {
-      console.error("Failed to fetch QR fragrance product.", error);
+      console.error("Failed to fetch QR product public page.", error);
       return null;
     }
   }
@@ -649,16 +587,14 @@
     const client = window.getSupabaseClient?.();
     if (!client) return false;
     try {
-      const { error } = await client
-        .from("qr_product_requests")
-        .insert([{
-          product_qr_code_id: payload.product_qr_code_id,
-          fragrance_product_id: payload.fragrance_product_id,
+      const { error } = await client.rpc("create_public_qr_product_request", {
+        p_payload: {
+          token: payload.token,
           requester_email: payload.requester_email,
           quantity_10ml: payload.quantity_10ml,
-          quantity_30ml: payload.quantity_30ml,
-          status: "requested"
-        }]);
+          quantity_30ml: payload.quantity_30ml
+        }
+      });
       if (error) throw error;
       return true;
     } catch (error) {
