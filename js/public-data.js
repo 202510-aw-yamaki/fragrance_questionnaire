@@ -467,19 +467,88 @@
     };
   }
 
+  const PREVIEW_QR_TOKEN = "preview-fragrance-product";
+
+  function isLocalPreviewHost() {
+    return ["localhost", "127.0.0.1", ""].includes(window.location.hostname);
+  }
+
+  function createPreviewProduct(overrides = {}) {
+    return {
+      id: "preview-product-001",
+      product_name: "月夜の余韻",
+      product_tags: ["やわらかい", "シトラス", "ウッディ"],
+      status: "completed",
+      visit_date: "2025-03-12",
+      staff_name: "佐藤",
+      product_note: "シトラスの明るさに、白檀の落ち着きが重なる香りです。",
+      final_axes: {
+        floral: 58,
+        citrus: 74,
+        woody: 66,
+        spicy: 38,
+        musk: 52
+      },
+      qr_public_token: PREVIEW_QR_TOKEN,
+      created_at: "2025-03-12T10:00:00+09:00",
+      updated_at: "2025-03-12T10:00:00+09:00",
+      ...overrides
+    };
+  }
+
+  function createPreviewProducts() {
+    return [
+      createPreviewProduct(),
+      createPreviewProduct({
+        id: "preview-product-002",
+        product_name: "白花の庭",
+        visit_date: "2024-11-08",
+        staff_name: "中村",
+        qr_public_token: ""
+      }),
+      createPreviewProduct({
+        id: "preview-product-003",
+        product_name: "陽だまりの雫",
+        visit_date: "2024-06-21",
+        staff_name: "高橋",
+        qr_public_token: ""
+      })
+    ];
+  }
+
+  function createPreviewCustomer(customerFallback) {
+    return customerFallback || {
+      id: "preview-customer-001",
+      customer_code: "PREVIEW001",
+      email: "preview@example.invalid",
+      display_name: "hiitan1029",
+      status: "active"
+    };
+  }
+
+  function withPreviewPortalProducts(payload) {
+    if (!isLocalPreviewHost() || payload.products.length) return payload;
+    return {
+      ...payload,
+      customer: createPreviewCustomer(payload.customer),
+      products: createPreviewProducts()
+    };
+  }
+
   async function loadCustomerPortalData() {
     const client = window.getSupabaseClient?.();
-    if (!client) return normalizeCustomerPortalPayload(null, null);
+    if (!client) return withPreviewPortalProducts(normalizeCustomerPortalPayload(null, null));
     const customer = await getCurrentCustomerProfile();
+    if (!customer?.id && isLocalPreviewHost()) return withPreviewPortalProducts(normalizeCustomerPortalPayload(null, null));
     if (!customer?.id) return normalizeCustomerPortalPayload(null, null);
     try {
       const { data, error } = await client.rpc("fetch_customer_portal_summary");
       if (error) throw error;
-      return normalizeCustomerPortalPayload(data, customer);
+      return withPreviewPortalProducts(normalizeCustomerPortalPayload(data, customer));
     } catch (error) {
       if (!isMissingFunctionError(error)) {
         console.error("Failed to load customer portal summary.", error);
-        return normalizeCustomerPortalPayload(null, customer);
+        return withPreviewPortalProducts(normalizeCustomerPortalPayload(null, customer));
       }
     }
     try {
@@ -497,13 +566,13 @@
       ]);
       if (reservationResult.error) throw reservationResult.error;
       if (productResult.error) throw productResult.error;
-      return normalizeCustomerPortalPayload({
+      return withPreviewPortalProducts(normalizeCustomerPortalPayload({
         reservations: reservationResult.data || [],
         products: productResult.data || []
-      }, customer);
+      }, customer));
     } catch (error) {
       console.error("Failed to load customer reservation fallback.", error);
-      return normalizeCustomerPortalPayload(null, customer);
+      return withPreviewPortalProducts(normalizeCustomerPortalPayload(null, customer));
     }
   }
 
@@ -571,6 +640,18 @@
   async function fetchQrProductPageData(token) {
     const client = window.getSupabaseClient?.();
     const qrToken = String(token || "").trim();
+    if (isLocalPreviewHost() && qrToken === PREVIEW_QR_TOKEN) {
+      return {
+        qrCode: {
+          id: "preview-qr-001",
+          public_token: PREVIEW_QR_TOKEN,
+          status: "active",
+          is_public: true,
+          expires_at: null
+        },
+        product: createPreviewProduct()
+      };
+    }
     if (!client || !qrToken) return null;
     try {
       const { data, error } = await client
@@ -585,6 +666,7 @@
 
   async function createQrProductRequest(payload) {
     const client = window.getSupabaseClient?.();
+    if (isLocalPreviewHost() && payload?.token === PREVIEW_QR_TOKEN) return true;
     if (!client) return false;
     try {
       const { error } = await client.rpc("create_public_qr_product_request", {

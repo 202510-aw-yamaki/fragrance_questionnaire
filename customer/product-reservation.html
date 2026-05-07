@@ -9,7 +9,12 @@
 </head>
 <body data-page="product-reservation">
   <header class="site-header">
-    <div class="site-header-inner site-container"><a class="brand" href="../index.html"><span class="brand-mark">✦</span><span>Fragrance Workshop</span></a></div>
+    <div class="site-header-inner site-container">
+      <a class="brand" href="../index.html"><span class="brand-logo-mark"><img src="../img/costomer/吟ロゴ.png" alt=""></span><span>Fragrance Workshop</span></a>
+      <nav class="main-nav is-static product-reservation-member-nav" aria-label="会員導線" hidden>
+        <a class="product-reservation-back-link" id="member-return-link" href="product-history.html">制作履歴へ戻る<span aria-hidden="true">›</span></a>
+      </nav>
+    </div>
   </header>
   <main class="page-hero qr-product-page">
     <div class="page-shell page-hero-inner qr-product-layout">
@@ -30,7 +35,7 @@
             <span class="quantity-control"><button type="button" data-quantity-target="quantity-30ml" data-step="-1">-</button><input id="quantity-30ml" name="quantity_30ml" type="number" min="0" step="1" inputmode="numeric" value="0"><button type="button" data-quantity-target="quantity-30ml" data-step="1">+</button></span>
           </label>
           <div class="portal-card qr-request-summary-card"><h2>ご依頼内容</h2><p id="request-summary"></p><strong id="request-total">-</strong></div>
-          <label class="qr-field">メールアドレス<input id="requester-email" name="requester_email" type="email" autocomplete="email" required></label>
+          <label class="qr-field">メールアドレス<input id="requester-email" name="requester_email" type="email" autocomplete="email" placeholder="example@example.com" required></label>
           <p class="status-note" id="request-status" aria-live="polite"></p>
           <button class="main-button" id="submit-request" type="submit" disabled>この香水を作成依頼する</button>
           <p class="admin-note">このボタンを押すと、原材料在庫の確認後、メールをさせていただきます。</p>

@@ -30,6 +30,8 @@
   const statusEl = document.getElementById("request-status");
   const shopPhoneEl = document.getElementById("shop-phone");
   const businessHoursEl = document.getElementById("business-hours");
+  const memberReturnNavEl = document.querySelector(".product-reservation-member-nav");
+  const memberReturnLinkEl = document.getElementById("member-return-link");
 
   function formatYen(value) {
     return `${new Intl.NumberFormat("ja-JP").format(Number(value || 0))}円（税込）`;
@@ -56,6 +58,14 @@
 
   function getQrToken() {
     return params.get("token") || params.get("public_token") || params.get("qr") || params.get("qr_code") || "";
+  }
+
+  function initMemberContext() {
+    if (params.get("from") !== "member") return;
+    document.body.classList.add("is-member-context");
+    if (params.get("return_to") !== "product-history") return;
+    if (memberReturnLinkEl) memberReturnLinkEl.href = "product-history.html";
+    if (memberReturnNavEl) memberReturnNavEl.hidden = false;
   }
 
   function getQuantity(input) {
@@ -265,5 +275,6 @@
 
   renderSettings();
   renderSummary();
+  initMemberContext();
   loadPageData();
 })();

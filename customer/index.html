@@ -81,7 +81,10 @@
             <div class="customer-axis-preview" id="latest-axis-preview" aria-label="香り5軸" hidden></div>
           </div>
         </div>
-        <a class="customer-portal-primary-action" href="reservation.html?member=1"><span aria-hidden="true">▣</span>もう一度この香りを予約する</a>
+        <div class="customer-portal-product-actions">
+          <a class="customer-portal-compare-action" href="questionnaire.html?member=1&compare=1">アンケート比較<span aria-hidden="true">›</span></a>
+          <a class="customer-portal-primary-action" href="reservation.html?member=1">作成依頼<span aria-hidden="true">›</span></a>
+        </div>
       </article>
 
       <article class="customer-portal-card customer-portal-card--new" id="new-work-card">
@@ -100,20 +103,20 @@
           <h2>制作履歴</h2>
         </div>
         <div class="customer-history-list record-list" id="product-list"></div>
-        <a class="customer-history-more" href="#product-list">すべて見る<span aria-hidden="true">›</span></a>
+        <a class="customer-history-more" href="product-history.html">すべて見る<span aria-hidden="true">›</span></a>
       </article>
-    </section>
-    <section class="customer-portal-compare site-container">
-      <a class="customer-compare-card" href="fragrance-compare.html">
-        <span class="customer-compare-icon" aria-hidden="true"><img src="../img/costomer/会員ページbottomの記号.png" alt=""></span>
-        <strong>前回と今回のアンケート結果を比較できます</strong>
-        <span>比較ページを開く　›</span>
-      </a>
     </section>
     <section class="customer-portal-hidden-records" hidden>
       <div class="record-list" id="reservation-list"></div>
     </section>
   </main>
+  <div class="portal-modal customer-product-detail-modal" id="product-detail-modal" hidden>
+    <div class="portal-modal-backdrop" data-product-detail-close></div>
+    <section class="portal-modal-dialog customer-product-detail-dialog" aria-labelledby="product-detail-title">
+      <button class="compare-modal-close" type="button" aria-label="閉じる" data-product-detail-close>×</button>
+      <div id="product-detail-body"></div>
+    </section>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabase-config.js"></script>
   <script src="../js/supabase-client.js"></script>

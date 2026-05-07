@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>制作履歴 | Fragrance Workshop</title>
+  <link rel="stylesheet" href="../css/rebuild-ui.css">
+  <link rel="stylesheet" href="../css/customer/customer-index.css">
+</head>
+<body data-page="customer-product-history">
+  <header class="site-header">
+    <div class="site-header-inner site-container">
+      <a class="brand" href="../index.html"><span class="brand-logo-mark"><img src="../img/costomer/吟ロゴ.png" alt=""></span><span>Fragrance Workshop</span></a>
+      <nav class="main-nav is-static customer-portal-nav">
+        <a class="customer-portal-menu-link customer-history-back-link" href="index.html">マイページへ戻る</a>
+        <button class="customer-portal-logout customer-portal-logout--desktop" id="logout-button" type="button" aria-label="ログアウト" data-customer-logout><span aria-hidden="true">↪</span>ログアウト</button>
+      </nav>
+    </div>
+  </header>
+  <main class="customer-portal-main customer-product-history-main">
+    <section class="customer-portal-hero customer-history-hero site-container">
+      <div class="customer-portal-heading">
+        <span class="customer-portal-heading-mark" aria-hidden="true"><img src="../img/costomer/会員ページの記号.png" alt=""></span>
+        <h1>マイページ</h1>
+        <div class="customer-portal-heading-copy">
+          <p class="customer-portal-greeting"><span id="member-name-inline">会員</span>さんの制作履歴</p>
+          <p class="customer-portal-copy">マイページで見ていた香りを、一覧で確認できます。</p>
+        </div>
+      </div>
+    </section>
+    <p class="status-note" id="portal-status" hidden></p>
+    <section class="customer-product-history-section site-container" aria-labelledby="product-history-title">
+      <div class="customer-portal-card-title customer-product-history-title">
+        <span class="customer-portal-card-mark" aria-hidden="true"><img src="../img/costomer/会員ページの記号.png" alt=""></span>
+        <h2 id="product-history-title">制作履歴</h2>
+        <a class="customer-history-return" href="index.html">マイページへ戻る<span aria-hidden="true">›</span></a>
+      </div>
+      <div class="customer-history-toolbar" aria-label="制作履歴の検索と並び替え">
+        <label class="customer-history-search">検索
+          <input id="product-history-search" type="search" placeholder="商品名・スタッフ・タグで検索">
+        </label>
+        <label class="customer-history-sort">並び替え
+          <select id="product-history-sort">
+            <option value="newest">新しい順</option>
+            <option value="oldest">古い順</option>
+            <option value="name">名前順</option>
+          </select>
+        </label>
+      </div>
+      <div class="customer-product-history-grid" id="product-history-list"></div>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/public-data.js"></script>
+  <script src="../js/customer-auth-page.js"></script>
+</body>
+</html>

@@ -21,6 +21,10 @@
     })[char]);
   }
 
+  function isLocalPreviewHost() {
+    return ["localhost", "127.0.0.1", ""].includes(window.location.hostname);
+  }
+
   async function initLogin() {
     const form = $("customer-login-form");
     const setupButton = $("setup-button");
@@ -289,19 +293,34 @@
     if (!token) return "";
     const target = new URL("../customer/product-reservation.html", window.location.href);
     target.searchParams.set("token", token);
+    target.searchParams.set("from", "member");
+    target.searchParams.set("return_to", "product-history");
+    return target.pathname + target.search + target.hash;
+  }
+
+  function buildWorkshopReservationHref(row) {
+    const target = new URL("../customer/reservation.html", window.location.href);
+    target.searchParams.set("member", "1");
+    if (row?.id) target.searchParams.set("source_product_id", row.id);
     return target.pathname + target.search + target.hash;
   }
 
   function renderLatestProduct(row) {
     if (!$("latest-product-name")) return;
-    const primaryAction = document.querySelector(".customer-portal-primary-action");
+    const requestAction = document.querySelector(".customer-portal-primary-action");
+    const compareAction = document.querySelector(".customer-portal-compare-action");
     if (!row) {
       $("latest-product-name").textContent = "未作成";
       $("latest-product-date").textContent = "-";
       $("latest-product-staff").textContent = "-";
       $("latest-product-summary").textContent = "制作履歴が入ると、香りの傾向が表示されます。";
       renderPortalAxisPreview(null);
-      if (primaryAction) primaryAction.href = "reservation.html?member=1";
+      if (requestAction) {
+        requestAction.href = "reservation.html?member=1";
+        requestAction.textContent = "作成依頼は準備中";
+        requestAction.classList.add("is-disabled");
+      }
+      if (compareAction) compareAction.href = "questionnaire.html?member=1&compare=1";
       return;
     }
     $("latest-product-name").textContent = getPortalProductName(row, "未作成");
@@ -309,7 +328,14 @@
     $("latest-product-staff").textContent = getPortalStaffName(row);
     $("latest-product-summary").textContent = getPortalAxisSummary(row);
     renderPortalAxisPreview(getPortalAxes(row));
-    if (primaryAction) primaryAction.href = buildQrProductReservationHref(row) || "reservation.html?member=1";
+    if (requestAction) {
+      const qrHref = buildQrProductReservationHref(row);
+      requestAction.href = qrHref || "product-history.html";
+      requestAction.innerHTML = `${qrHref ? "作成依頼" : "作成依頼は準備中"}<span aria-hidden="true">›</span>`;
+      requestAction.classList.toggle("is-disabled", !qrHref);
+      requestAction.setAttribute("aria-disabled", qrHref ? "false" : "true");
+    }
+    if (compareAction) compareAction.href = "questionnaire.html?member=1&compare=1";
   }
 
   function renderRecordList(mount, rows, emptyText, type) {
@@ -319,23 +345,32 @@
       return;
     }
     if (type === "product") {
-      mount.innerHTML = rows.slice(0, 3).map((row) => {
+      mount.dataset.products = JSON.stringify(rows.slice(0, 3));
+      mount.innerHTML = rows.slice(0, 3).map((row, index) => {
         const qrHref = buildQrProductReservationHref(row);
         const actionHref = qrHref || "../customer/reservation.html?member=1";
         const name = getPortalProductName(row, "香り");
         return `
           <article class="customer-history-item">
-            <img src="../img/costomer/瓶単体.png" alt="">
+            <div class="customer-history-thumb">
+              <img src="../img/costomer/瓶単体.png" alt="">
+              <button class="customer-history-detail-button" type="button" data-product-detail-index="${index}">詳細</button>
+            </div>
             <div>
               <h3>${escapeHtml(name)}</h3>
               <p>来店日　${escapeHtml(getPortalProductDate(row))}</p>
               <p>スタッフ　${escapeHtml(getPortalStaffName(row))}</p>
             </div>
-            <span>${escapeHtml(getPortalStatusLabel(row))}</span>
             <a href="${escapeHtml(actionHref)}" aria-label="${escapeHtml(name)}を予約する">›</a>
           </article>
         `;
       }).join("");
+      mount.querySelectorAll("[data-product-detail-index]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const products = JSON.parse(mount.dataset.products || "[]");
+          openProductDetailModal(products[Number(button.dataset.productDetailIndex)] || null);
+        });
+      });
       return;
     }
     mount.innerHTML = rows.map((row) => `
@@ -345,6 +380,197 @@
         ${type === "product" ? `<a class="btn secondary" href="../customer/reservation.html?member=1">再予約へ</a>` : ""}
       </article>
     `).join("");
+  }
+
+  function openProductDetailModal(row) {
+    const modal = $("product-detail-modal");
+    const body = $("product-detail-body");
+    if (!modal || !body || !row) return;
+    const name = getPortalProductName(row, "香り");
+    const qrHref = buildQrProductReservationHref(row);
+    const tags = Array.isArray(row?.product_tags)
+      ? row.product_tags.map((tag) => String(tag || "").trim()).filter(Boolean).slice(0, 4)
+      : [];
+    body.innerHTML = `
+      <article class="customer-product-history-card customer-product-detail-card">
+        <img class="customer-product-history-image" src="../img/costomer/瓶単体.png" alt="">
+        <div class="customer-product-history-detail">
+          <p class="eyebrow">制作履歴</p>
+          <h2 id="product-detail-title">${escapeHtml(name)}</h2>
+          <dl class="customer-last-meta">
+            <div class="customer-last-meta-row">
+              <dt>来店日</dt>
+              <dd>${escapeHtml(getPortalProductDate(row))}</dd>
+            </div>
+            <div class="customer-last-meta-row">
+              <dt>スタッフ</dt>
+              <dd>${escapeHtml(getPortalStaffName(row))}</dd>
+            </div>
+            <div class="customer-last-meta-row">
+              <dt>説明</dt>
+              <dd>${escapeHtml(getPortalAxisSummary(row))}</dd>
+            </div>
+          </dl>
+          <div class="customer-product-history-tags">${tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div>
+        </div>
+        <div class="customer-product-history-axis customer-axis-preview">${renderHistoryAxisPreview(row)}</div>
+        <div class="customer-product-history-actions">
+          <a class="customer-history-workshop-action" href="questionnaire.html?member=1&compare=1">アンケート比較</a>
+          ${qrHref
+            ? `<a class="customer-history-request-action" href="${escapeHtml(qrHref)}">この香りを作成依頼</a>`
+            : `<span class="customer-history-request-action is-disabled" aria-disabled="true">作成依頼は準備中</span>`}
+        </div>
+      </article>
+    `;
+    modal.hidden = false;
+    document.body.classList.add("portal-modal-open");
+  }
+
+  function closeProductDetailModal() {
+    const modal = $("product-detail-modal");
+    if (!modal) return;
+    modal.hidden = true;
+    document.body.classList.remove("portal-modal-open");
+  }
+
+  function getProductSearchText(row) {
+    return [
+      getPortalProductName(row, ""),
+      getPortalProductDate(row),
+      getPortalStaffName(row),
+      getPortalProductNote(row),
+      ...(Array.isArray(row?.product_tags) ? row.product_tags : [])
+    ].join(" ").toLowerCase();
+  }
+
+  function getProductSortDate(row) {
+    const value = row?.visit_date || row?.slot_date || row?.completed_at || row?.created_at || row?.updated_at;
+    const timestamp = new Date(value || 0).getTime();
+    return Number.isFinite(timestamp) ? timestamp : 0;
+  }
+
+  function sortProducts(rows, sortKey) {
+    const sorted = [...(rows || [])];
+    if (sortKey === "oldest") {
+      sorted.sort((a, b) => getProductSortDate(a) - getProductSortDate(b));
+    } else if (sortKey === "name") {
+      sorted.sort((a, b) => getPortalProductName(a, "").localeCompare(getPortalProductName(b, ""), "ja"));
+    } else {
+      sorted.sort((a, b) => getProductSortDate(b) - getProductSortDate(a));
+    }
+    return sorted;
+  }
+
+  function renderHistoryAxisPreview(row) {
+    const axes = getPortalAxes(row) || PORTAL_SAMPLE_AXES;
+    const points = PORTAL_AXIS_KEYS.map((key) => getPortalAxisPoint(key, axes[key]));
+    const circles = PORTAL_AXIS_KEYS.map((key) => {
+      const [x, y] = getPortalAxisPoint(key, axes[key]);
+      return `<circle cx="${x}" cy="${y}" r="3"></circle>`;
+    }).join("");
+    return `
+      <svg viewBox="0 0 220 190" role="img" aria-label="香り5軸">
+        <polygon class="axis-grid" points="110,30 178,80 150,160 70,160 42,80"></polygon>
+        <polygon class="axis-grid axis-grid--inner" points="110,60 145,86 130,127 90,127 75,86"></polygon>
+        <polygon class="axis-shape" points="${points.map(([x, y]) => `${x},${y}`).join(" ")}"></polygon>
+        ${circles}
+        <text class="axis-label" x="110" y="18" text-anchor="middle">フローラル</text>
+        <text class="axis-label" x="198" y="80" text-anchor="middle">シトラス</text>
+        <text class="axis-label" x="154" y="184" text-anchor="middle">ウッディ</text>
+        <text class="axis-label" x="66" y="184" text-anchor="middle">スパイシー</text>
+        <text class="axis-label" x="22" y="80" text-anchor="middle">スウィート</text>
+      </svg>
+    `;
+  }
+
+  function renderProductHistoryCards(rows) {
+    const mount = $("product-history-list");
+    if (!mount) return;
+    if (!rows.length) {
+      mount.innerHTML = `<p class="admin-empty customer-product-history-empty">制作履歴はまだありません。</p>`;
+      return;
+    }
+    mount.innerHTML = rows.map((row) => {
+      const name = getPortalProductName(row, "香り");
+      const qrHref = buildQrProductReservationHref(row);
+      const tags = Array.isArray(row?.product_tags)
+        ? row.product_tags.map((tag) => String(tag || "").trim()).filter(Boolean).slice(0, 4)
+        : [];
+      return `
+        <article class="customer-product-history-card">
+          <img class="customer-product-history-image" src="../img/costomer/瓶単体.png" alt="">
+          <div class="customer-product-history-detail">
+            <h2>${escapeHtml(name)}</h2>
+            <dl class="customer-last-meta">
+              <div class="customer-last-meta-row">
+                <dt>来店日</dt>
+                <dd>${escapeHtml(getPortalProductDate(row))}</dd>
+              </div>
+              <div class="customer-last-meta-row">
+                <dt>スタッフ</dt>
+                <dd>${escapeHtml(getPortalStaffName(row))}</dd>
+              </div>
+              <div class="customer-last-meta-row">
+                <dt>説明</dt>
+                <dd>${escapeHtml(getPortalAxisSummary(row))}</dd>
+              </div>
+            </dl>
+            <div class="customer-product-history-tags">${tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div>
+          </div>
+          <div class="customer-product-history-axis customer-axis-preview">${renderHistoryAxisPreview(row)}</div>
+          <div class="customer-product-history-actions">
+            <a class="customer-history-workshop-action" href="${escapeHtml(buildWorkshopReservationHref(row))}">この香りでワークショップ</a>
+            ${qrHref
+              ? `<a class="customer-history-request-action" href="${escapeHtml(qrHref)}">この香りを作成依頼</a>`
+              : `<span class="customer-history-request-action is-disabled" aria-disabled="true">作成依頼は準備中</span>`}
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+
+  function applyProductHistoryFilters(rows) {
+    const search = String($("product-history-search")?.value || "").trim().toLowerCase();
+    const sortKey = $("product-history-sort")?.value || "newest";
+    const filtered = search
+      ? rows.filter((row) => getProductSearchText(row).includes(search))
+      : rows;
+    renderProductHistoryCards(sortProducts(filtered, sortKey));
+  }
+
+  async function initProductHistory() {
+    const status = $("portal-status");
+    if (!window.isSupabaseConfigured?.() && !isLocalPreviewHost()) {
+      if (status) {
+        status.hidden = false;
+        status.textContent = "会員機能の設定が未完了です。";
+        status.dataset.tone = "error";
+      }
+      return;
+    }
+    try {
+      const data = await window.FragrancePublicData?.loadCustomerPortalData?.();
+      const customer = data?.customer;
+      if (!customer) {
+        if (status) {
+          status.hidden = false;
+          status.textContent = "会員ログインが必要です。";
+        }
+        return;
+      }
+      if ($("member-name-inline")) $("member-name-inline").textContent = customer.display_name || "会員";
+      const products = data.products || [];
+      applyProductHistoryFilters(products);
+      $("product-history-search")?.addEventListener("input", () => applyProductHistoryFilters(products));
+      $("product-history-sort")?.addEventListener("change", () => applyProductHistoryFilters(products));
+      if (status) status.hidden = true;
+    } catch (error) {
+      if (status) {
+        status.hidden = false;
+        status.textContent = error?.message || "制作履歴を取得できませんでした。";
+        status.dataset.tone = "error";
+      }
+    }
   }
 
   function closePortalMenu() {
@@ -378,11 +604,14 @@
     document.querySelectorAll("[data-customer-logout]").forEach((button) => {
       button.addEventListener("click", () => window.FragrancePublicData?.signOutCustomer?.());
     });
+    document.querySelectorAll("[data-product-detail-close]").forEach((button) => {
+      button.addEventListener("click", closeProductDetailModal);
+    });
   }
 
   async function initPortal() {
     const status = $("portal-status");
-    if (!window.isSupabaseConfigured?.()) {
+    if (!window.isSupabaseConfigured?.() && !isLocalPreviewHost()) {
       if (status) {
         status.hidden = false;
         status.textContent = "会員機能の設定が未完了です。";
@@ -422,6 +651,10 @@
     if (page === "customer-portal") {
       initPortalMenu();
       initPortal();
+    }
+    if (page === "customer-product-history") {
+      initPortalMenu();
+      initProductHistory();
     }
   }
 
