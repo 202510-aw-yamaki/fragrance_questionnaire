@@ -274,6 +274,18 @@ body[data-page="product-reservation"] .quantity-control input {
   font-weight: 700;
 }
 
+body[data-page="product-reservation"] .quantity-control input::-webkit-outer-spin-button,
+body[data-page="product-reservation"] .quantity-control input::-webkit-inner-spin-button {
+  display: none;
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+body[data-page="product-reservation"] .quantity-control input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
 body[data-page="product-reservation"] #requester-email {
   min-height: 48px;
 }
