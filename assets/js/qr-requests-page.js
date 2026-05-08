@@ -61,6 +61,28 @@
     return labels[value] || value || "-";
   }
 
+  function formatEmailStatus(value) {
+    const labels = {
+      queued: "送信待ち",
+      sent: "送信済み",
+      failed: "送信失敗",
+      canceled: "送信取消"
+    };
+    return labels[value] || value || "-";
+  }
+
+  function formatTemplateKey(value) {
+    const labels = {
+      qr_request_received_v1: "受付メール",
+      qr_request_available_v1: "作成可能メール",
+      qr_request_unavailable_v1: "作成不可メール",
+      qr_request_reminder_v1: "再案内メール",
+      qr_request_expired_v1: "期限切れメール",
+      qr_request_auto_unavailable_overdue_v1: "期限超過メール"
+    };
+    return labels[value] || value || "メール";
+  }
+
   function formatQuantity(row) {
     return [
       row.quantity_10ml ? `10ml x ${row.quantity_10ml}` : "",
@@ -83,6 +105,55 @@
 
   function getEmailEvents(row) {
     return emailEventMap.get(row.id) || [];
+  }
+
+  function getStatusTone(row) {
+    const status = String(row?.status || "");
+    if (["requested", "auto_unavailable_overdue"].includes(status)) return "is-danger";
+    if (["available_email_sent", "reminder_email_sent", "shipping_pending"].includes(status)) return "is-warning";
+    if (status === "shipped") return "is-success";
+    return "";
+  }
+
+  function formatDeadline(row) {
+    if (row.status === "requested" || row.status === "auto_unavailable_overdue") {
+      return `可否判断期限 ${formatDateTime(row.availability_due_at)}`;
+    }
+    if (row.status === "available_email_sent" || row.status === "reminder_email_sent" || row.status === "expired") {
+      return `依頼期限 ${formatDateTime(row.expires_at)}`;
+    }
+    if (row.status === "shipping_pending") {
+      return `発送先受付 ${formatDateTime(row.shipping_info_submitted_at)}`;
+    }
+    if (row.status === "shipped") {
+      return `発送完了 ${formatDateTime(row.shipped_at)}`;
+    }
+    return `更新 ${formatDateTime(row.updated_at)}`;
+  }
+
+  function formatNextStep(row) {
+    const role = getRole();
+    const status = String(row?.status || "");
+    if (status === "requested") {
+      return role === "staff" ? "作成可能 / 作成不可を判断してください。" : "担当スタッフの作成可否判断待ちです。";
+    }
+    if (status === "available_email_sent") return "作成可能メール送信済み。発送先入力待ちです。";
+    if (status === "reminder_email_sent") return "再案内済み。期限まで返信待ちです。";
+    if (status === "expired") return "期限切れです。再依頼や無効化の要否を確認してください。";
+    if (status === "unavailable") return "作成不可として案内済みです。";
+    if (status === "shipping_pending") {
+      return role === "staff" ? "発送完了後に発送完了を登録してください。" : "発送完了登録待ちです。";
+    }
+    if (status === "shipped") return "発送完了済みです。";
+    if (status === "auto_unavailable_overdue") return "3営業日超過で不可扱いです。管理者記録対象です。";
+    return "状態を確認してください。";
+  }
+
+  function formatEmailSummary(events) {
+    if (!events.length) return "-";
+    return events.slice(0, 2).map((event) => (
+      `${formatTemplateKey(event.template_key)}:${formatEmailStatus(event.status)}`
+    )).join(" / ");
   }
 
   function getActionButtons(row) {
@@ -137,23 +208,31 @@
       const staff = getStaff(row);
       const qrCode = getQrCode(row);
       const emailEvents = getEmailEvents(row);
-      const emailStatus = emailEvents.length
-        ? emailEvents.map((event) => `${event.template_key || "email"}:${event.status || "-"}`).join(" / ")
-        : "-";
+      const emailStatus = formatEmailSummary(emailEvents);
+      const actions = getActionButtons(row);
       const article = document.createElement("article");
-      article.className = "portal-list-row qr-request-row";
+      article.className = `portal-list-row qr-request-row qr-request-card ${getStatusTone(row)}`;
       article.innerHTML = `
-        <span class="qr-request-cell" data-label="受付">${escapeHtml(formatDateTime(row.created_at))}</span>
-        <span class="qr-request-cell" data-label="依頼番号">${escapeHtml(row.request_code || "-")}</span>
-        <span class="qr-request-cell" data-label="商品">${escapeHtml(product.product_name || "-")}</span>
-        <span class="qr-request-cell" data-label="数量">${escapeHtml(formatQuantity(row))}</span>
-        <span class="qr-request-cell" data-label="依頼者">${escapeHtml(maskEmail(row.requester_email))}</span>
-        <span class="qr-request-cell" data-label="担当">${escapeHtml(staff.display_name || staff.staff_name || "-")}</span>
-        <span class="qr-request-cell" data-label="状態"><strong>${escapeHtml(formatStatus(row.status))}</strong></span>
-        <span class="qr-request-cell" data-label="期限">${escapeHtml(formatDateTime(row.availability_due_at))}</span>
-        <span class="qr-request-cell" data-label="メール">${escapeHtml(emailStatus)}</span>
-        <span class="qr-request-cell" data-label="QRアクセス">${escapeHtml(String(qrCode.access_count ?? "-"))}</span>
-        <span class="qr-request-cell qr-request-actions" data-label="操作">${getActionButtons(row) || "-"}</span>
+        <div class="qr-request-summary">
+          <span>依頼概要</span>
+          <strong>${escapeHtml(row.request_code || "-")}</strong>
+          <small>${escapeHtml(product.product_name || "-")}</small>
+        </div>
+        <dl class="qr-request-meta">
+          <div><dt>受付</dt><dd>${escapeHtml(formatDateTime(row.created_at))}</dd></div>
+          <div><dt>数量</dt><dd>${escapeHtml(formatQuantity(row))}</dd></div>
+          <div><dt>依頼者</dt><dd>${escapeHtml(maskEmail(row.requester_email))}</dd></div>
+          <div><dt>担当</dt><dd>${escapeHtml(staff.display_name || staff.staff_name || "-")}</dd></div>
+          <div><dt>状態</dt><dd><strong>${escapeHtml(formatStatus(row.status))}</strong></dd></div>
+          <div><dt>期限</dt><dd>${escapeHtml(formatDeadline(row))}</dd></div>
+          <div><dt>メール</dt><dd>${escapeHtml(emailStatus)}</dd></div>
+          <div><dt>QRアクセス</dt><dd>${escapeHtml(String(qrCode.access_count ?? "-"))}</dd></div>
+        </dl>
+        <div class="qr-request-next">
+          <span>次の対応</span>
+          <strong>${escapeHtml(formatNextStep(row))}</strong>
+        </div>
+        <div class="qr-request-actions" data-label="操作">${actions || "<span>操作なし</span>"}</div>
       `;
       rowsEl.appendChild(article);
     });
@@ -239,7 +318,7 @@
   async function loadRequests() {
     requests = await window.AdminData.listRows("qr_product_requests", {
       orders: [{ column: "created_at", ascending: false }],
-      select: "id, request_code, product_qr_code_id, fragrance_product_id, requester_email, quantity_10ml, quantity_30ml, total_volume_ml, status, availability_due_at, created_at, updated_at"
+      select: "id, request_code, product_qr_code_id, fragrance_product_id, requester_email, quantity_10ml, quantity_30ml, total_volume_ml, status, availability_due_at, available_email_sent_at, reminder_email_sent_at, expires_at, shipping_info_submitted_at, shipped_at, created_at, updated_at"
     }).catch(() => []);
     await loadRelatedRows();
   }

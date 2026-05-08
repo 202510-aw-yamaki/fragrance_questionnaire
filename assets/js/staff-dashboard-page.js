@@ -16,7 +16,7 @@
   const missingSecondaryEl = document.getElementById("staff-missing-secondary");
   const missingNoteEl = document.getElementById("staff-missing-note");
   const qrRequestCountEl = document.getElementById("staff-qr-request-count");
-  const qrRequestListEl = document.getElementById("staff-qr-request-list");
+  const notificationListEl = document.getElementById("staff-notification-list") || document.getElementById("staff-qr-request-list");
   const notificationCountEl = document.getElementById("staff-notification-count");
   const slotAlertEl = document.getElementById("staff-slot-alert");
   const nextActionEl = document.getElementById("staff-next-action");
@@ -32,7 +32,7 @@
   let selectedDate = new Date();
   let reservations = [];
   let slots = [];
-  let qrNotifications = [];
+  let notifications = [];
   let qrRequests = [];
   let openNotificationCount = 0;
 
@@ -120,17 +120,16 @@
     }
   }
 
-  function formatDueDate(value) {
-    if (!value) return "期限未設定";
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return "期限未設定";
-    return `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
-  }
-
   function formatTimeOnly(value) {
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return "--:--";
     return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+  }
+
+  function formatNotificationDateTime(value) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "日時未設定";
+    return `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
   }
 
   function updateNotificationCount() {
@@ -359,27 +358,24 @@
     if (shippingPendingCountEl) shippingPendingCountEl.textContent = String(shippingPendingRows.length);
   }
 
-  function renderQrNotifications() {
-    if (!qrRequestCountEl || !qrRequestListEl) return;
-    const openRows = qrNotifications.filter((row) => row.status === "open");
+  function renderNotifications() {
+    if (!qrRequestCountEl || !notificationListEl) return;
+    const openRows = notifications.filter((row) => row.status === "open");
     const qrRows = openRows.filter((row) => row.event_type === "qr_product_requested");
     openNotificationCount = openRows.length;
     updateNotificationCount();
     qrRequestCountEl.textContent = String(qrRows.length);
     if (!openRows.length) {
-      qrRequestListEl.innerHTML = `<p class="admin-empty">未対応の通知はありません。</p>`;
+      notificationListEl.innerHTML = `<p class="admin-empty">未対応の通知はありません。</p>`;
       return;
     }
     const moreHref = openRows.some((row) => row.event_type === "reservation_created")
       ? window.AdminAuth.appendRoleToHref("staff-reservations.html", "staff")
       : window.AdminAuth.appendRoleToHref("staff-qr-requests.html", "staff");
     const moreLabel = openRows.some((row) => row.event_type === "reservation_created") ? "予約一覧を見る" : "QR依頼一覧を見る";
-    qrRequestListEl.innerHTML = openRows.slice(0, 5).map((row) => {
+    notificationListEl.innerHTML = openRows.slice(0, 5).map((row) => {
       const payload = parsePayload(row);
       if (row.event_type === "reservation_created") {
-        const dateTime = [payload.slot_date, String(payload.slot_time || "").slice(0, 5)].filter(Boolean).join(" ");
-        const customerName = payload.customer_name || "お客様";
-        const fragranceLabel = payload.summary_headline || payload.profile_key || "香り傾向未設定";
         const detailHref = payload.reservation_id
           ? window.AdminAuth.appendRoleToHref(`staff-customer-detail.html?reservation=${encodeURIComponent(payload.reservation_id)}`, "staff")
           : window.AdminAuth.appendRoleToHref("staff-reservations.html", "staff");
@@ -387,22 +383,20 @@
           <article class="staff-notification-row">
             <span class="staff-notification-dot" aria-hidden="true"></span>
             <div>
-              <strong>新しい予約が入りました</strong>
-              <small>${escapeHtml(dateTime || payload.slot_label || "日時未設定")} / ${escapeHtml(customerName)} / ${escapeHtml(fragranceLabel)}</small>
+              <strong>ワークショップ予約が入りました</strong>
+              <small>${escapeHtml(formatNotificationDateTime(row.created_at))}</small>
             </div>
             <time>${escapeHtml(formatTimeOnly(row.created_at))}</time>
             <a href="${detailHref}" aria-label="予約詳細へ">›</a>
           </article>
         `;
       }
-      const productName = payload.product_name || "QR商品";
-      const totalVolume = payload.total_volume_ml ? `${payload.total_volume_ml}ml` : "容量未設定";
       return `
         <article class="staff-notification-row">
           <span class="staff-notification-dot" aria-hidden="true"></span>
           <div>
             <strong>QR作成依頼が入りました</strong>
-            <small>${escapeHtml(productName)} / ${escapeHtml(totalVolume)} / ${escapeHtml(formatDueDate(payload.availability_due_at))}</small>
+            <small>${escapeHtml(formatNotificationDateTime(row.created_at))}</small>
           </div>
           <time>${escapeHtml(formatTimeOnly(row.created_at))}</time>
           <a href="${window.AdminAuth.appendRoleToHref("staff-qr-requests.html", "staff")}" aria-label="QR依頼一覧へ">›</a>
@@ -433,13 +427,13 @@
     ]);
     reservations = reservationRows || [];
     slots = slotRows || [];
-    qrNotifications = notificationRows || [];
+    notifications = notificationRows || [];
     qrRequests = requestRows || [];
   }
 
   function renderDashboard() {
     renderKpis();
-    renderQrNotifications();
+    renderNotifications();
     renderTimeline();
     renderMissingDates();
   }

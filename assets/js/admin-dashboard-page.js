@@ -51,6 +51,18 @@
     shipped: "発送完了",
     auto_unavailable_overdue: "期限超過自動不可"
   };
+  const QR_REQUEST_ACTIONABLE_ADMIN_STATUSES = new Set([
+    "requested",
+    "available_email_sent",
+    "reminder_email_sent",
+    "shipping_pending",
+    "auto_unavailable_overdue"
+  ]);
+  const QR_REQUEST_TERMINAL_STATUSES = new Set([
+    "expired",
+    "unavailable",
+    "shipped"
+  ]);
 
   function createLocalDate(date) {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -619,6 +631,14 @@
     return Number.isFinite(dueAt.getTime()) && dueAt < now;
   }
 
+  function isTerminalQrRequest(row) {
+    return QR_REQUEST_TERMINAL_STATUSES.has(String(row?.status || ""));
+  }
+
+  function isActionableAdminQrRequest(row) {
+    return QR_REQUEST_ACTIONABLE_ADMIN_STATUSES.has(String(row?.status || ""));
+  }
+
   function formatQrRequestStatus(status) {
     return QR_REQUEST_STATUS_LABELS[status] || status || "未設定";
   }
@@ -717,6 +737,15 @@
     const categories = createEmptyQrModalCategories();
     const requestById = new Map((requestRows || []).filter((row) => row.id).map((row) => [row.id, row]));
     const openNotifications = (rows || []).filter((row) => row.status === "open");
+    const displayedRequestIds = new Set();
+
+    const addRequestItem = (categoryKey, request, item) => {
+      if (request?.id) {
+        if (displayedRequestIds.has(request.id)) return;
+        displayedRequestIds.add(request.id);
+      }
+      addQrModalItem(categories, categoryKey, item);
+    };
 
     openNotifications.forEach((row) => {
       const request = requestById.get(row.related_id);
@@ -728,31 +757,40 @@
         return;
       }
       if (row.event_type === "qr_request_overdue") {
-        addQrModalItem(categories, "overdue", request
-          ? createQrRequestModalItem(request, "overdue", { badge: "期限超過" })
-          : createQrNotificationModalItem(row, "overdue", { badge: "期限超過", status: "期限超過" }));
+        if (request && isTerminalQrRequest(request)) return;
+        if (request) {
+          addRequestItem("overdue", request, createQrRequestModalItem(request, "overdue", { badge: "期限超過" }));
+          return;
+        }
+        addQrModalItem(categories, "overdue", createQrNotificationModalItem(row, "overdue", { badge: "期限超過", status: "期限超過" }));
         return;
       }
       if (row.event_type === "qr_product_requested") {
-        addQrModalItem(categories, "overdue", request
-          ? createQrRequestModalItem(request, "overdue", { badge: isOverdueQrRequest(request) ? "期限超過" : "未対応" })
-          : createQrNotificationModalItem(row, "overdue", { badge: "未対応", status: "未対応QR依頼" }));
+        if (request && request.status !== "requested" && request.status !== "auto_unavailable_overdue") return;
+        if (request) {
+          addRequestItem("overdue", request, createQrRequestModalItem(request, "overdue", { badge: isOverdueQrRequest(request) ? "期限超過" : "未対応" }));
+          return;
+        }
+        addQrModalItem(categories, "overdue", createQrNotificationModalItem(row, "overdue", { badge: "未対応", status: "未対応QR依頼" }));
       }
     });
 
     (requestRows || []).forEach((row) => {
+      if (!isActionableAdminQrRequest(row)) return;
       if (isOverdueQrRequest(row)) {
-        addQrModalItem(categories, "overdue", createQrRequestModalItem(row, "overdue", { badge: "期限超過" }));
+        addRequestItem("overdue", row, createQrRequestModalItem(row, "overdue", { badge: "期限超過" }));
       }
       if (["available_email_sent", "reminder_email_sent"].includes(row.status)) {
-        addQrModalItem(categories, "reminder", createQrRequestModalItem(row, "reminder", { badge: "再案内候補" }));
+        addRequestItem("reminder", row, createQrRequestModalItem(row, "reminder", { badge: "再案内候補" }));
       }
       if (row.status === "shipping_pending") {
-        addQrModalItem(categories, "shipping", createQrRequestModalItem(row, "shipping", { badge: "発送準備中" }));
+        addRequestItem("shipping", row, createQrRequestModalItem(row, "shipping", { badge: "発送準備中" }));
       }
     });
 
     (emailRows || []).filter((row) => row.status === "queued").forEach((row) => {
+      const request = requestById.get(row.related_id);
+      if (request && (isTerminalQrRequest(request) || displayedRequestIds.has(request.id))) return;
       const eventKey = String(row.event_type || row.template_key || "");
       if (eventKey.includes("reminder")) {
         addQrModalItem(categories, "reminder", createQrEmailModalItem(row, "reminder"));
@@ -826,10 +864,10 @@
       return;
     }
     const visibleItems = panelItems.slice(0, 6).map((item) => `
-        <article class="portal-dashboard-row portal-dashboard-row--summary">
-          <span>${escapeHtml(item.title)}</span>
-          <span>${escapeHtml(item.categoryLabel)}</span>
-          <strong>${escapeHtml(item.badge || "要対応")}</strong>
+        <article class="portal-dashboard-row portal-dashboard-row--summary admin-dashboard-qr-row">
+          <span class="admin-dashboard-qr-row-title">${escapeHtml(item.title)}</span>
+          <small class="admin-dashboard-qr-row-category">${escapeHtml(item.categoryLabel)}</small>
+          <strong class="admin-dashboard-qr-row-badge">${escapeHtml(item.badge || "要対応")}</strong>
         </article>
       `);
     qrRequestListEl.innerHTML = visibleItems.join("")

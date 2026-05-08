@@ -223,7 +223,7 @@
       settings: "Admin Settings",
       scoring: "Scoring Logic",
       materials: "Material Points",
-      "qr-settings": "QR Product Settings",
+      "qr-settings": "QR商品設定",
       "qr-requests": "QR Requests"
     };
     const staffLinks = optionLinks || defaultLinks;

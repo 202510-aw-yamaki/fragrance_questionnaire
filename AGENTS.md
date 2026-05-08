@@ -388,6 +388,8 @@ DB変更だけ、または画面変更だけで終わらせない。
 - 改行コードの一括変更が混ざっていないこと
 - 関連ドキュメント更新漏れがないこと
 
+PowerShell の `git add` が `.git/index.lock` 周りで失敗する場合は、`.git/index.lock` を削除せず、Codex の Node REPL から `child_process.execFile("git", ["add", "--", ...対象ファイル])` で対象ファイルだけを stage する。
+
 ---
 
 ## 17. テスト・確認

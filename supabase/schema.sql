@@ -1588,6 +1588,12 @@ begin
     updated_at = now()
   where pq.id = v_request.product_qr_code_id;
 
+  update public.notification_events
+  set status = 'handled', handled_at = now(), updated_at = now()
+  where related_table = 'qr_product_requests'
+    and related_id = v_request.id
+    and status = 'open';
+
   return v_request;
 end;
 $$;
