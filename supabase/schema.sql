@@ -1812,7 +1812,7 @@ values (
     'close_time', '19:00',
     'business_hours', '10:00〜19:00',
     'closed_days', '毎週水曜日',
-    'lp_url', 'https://fragrance-atelier.jp'
+    'lp_url', ''
   ),
   true
 )

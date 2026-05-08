@@ -4,6 +4,7 @@
   const QR_PRODUCT_SETTING_KEY = "qr_product_public_settings";
   const STORE_PUBLIC_INFO_KEY = "store_public_info";
   const AUTH_USER_FUNCTION = "admin-upsert-portal-auth-user";
+  const LEGACY_STORE_LP_URL_SAMPLE = "https://fragrance-atelier.jp";
   const QR_DEFAULT_SETTINGS = {
     price_10ml: 1000,
     price_30ml: 2860,
@@ -31,7 +32,7 @@
     open_time: "10:00",
     close_time: "19:00",
     closed_days: "毎週水曜日",
-    lp_url: "https://fragrance-atelier.jp"
+    lp_url: ""
   };
   const WEEKDAY_LABELS = ["日", "月", "火", "水", "木", "金", "土"];
   const storeInfoFormEl = document.getElementById("store-public-info-form");
@@ -1185,13 +1186,14 @@
 
   function normalizeStoreInfo(value) {
     const source = value && typeof value === "object" ? value : {};
+    const lpUrl = String(source.lp_url ?? source.lpUrl ?? STORE_DEFAULT_INFO.lp_url);
     return {
       store_name: String(source.store_name ?? source.storeName ?? STORE_DEFAULT_INFO.store_name),
       store_phone: String(source.store_phone ?? source.storePhone ?? STORE_DEFAULT_INFO.store_phone),
       open_time: String(source.open_time ?? source.openTime ?? STORE_DEFAULT_INFO.open_time),
       close_time: String(source.close_time ?? source.closeTime ?? STORE_DEFAULT_INFO.close_time),
       closed_days: String(source.closed_days ?? source.closedDays ?? STORE_DEFAULT_INFO.closed_days),
-      lp_url: String(source.lp_url ?? source.lpUrl ?? STORE_DEFAULT_INFO.lp_url)
+      lp_url: lpUrl === LEGACY_STORE_LP_URL_SAMPLE ? "" : lpUrl
     };
   }
 
