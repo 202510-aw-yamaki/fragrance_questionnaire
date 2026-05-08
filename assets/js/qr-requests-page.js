@@ -5,6 +5,20 @@
   const statusFilterEl = document.getElementById("qr-request-status-filter");
   const keywordFilterEl = document.getElementById("qr-request-keyword-filter");
   const countEl = document.getElementById("qr-request-count");
+  const TEXT = {
+    productName: "\u5546\u54c1\u540d",
+    requestCode: "\u4f9d\u983c\u756a\u53f7",
+    recipeOpen: "\u914d\u5408\u3092\u898b\u308b",
+    recipeTitle: "\u914d\u5408\u3068\u5fc5\u8981\u539f\u6599\u6570",
+    recipeSingle: "\u5358\u54c1\u914d\u5408",
+    recipeTotal: "\u7dcf\u6ce8\u6587\u6570\u306e\u5fc5\u8981\u539f\u6599\u6570",
+    recipeEmpty: "\u914d\u5408\u672a\u767b\u9332",
+    totalVolume: "\u6ce8\u6587\u7dcf\u91cf",
+    material: "\u539f\u6599",
+    ratio: "\u914d\u5408\u5272\u5408",
+    requiredAmount: "\u5fc5\u8981\u91cf",
+    close: "\u9589\u3058\u308b"
+  };
 
   if (!rowsEl || !filterForm) return;
 
@@ -13,6 +27,7 @@
   let qrCodeMap = new Map();
   let staffMap = new Map();
   let emailEventMap = new Map();
+  let materialMap = new Map();
   let canOperateRequests = false;
 
   function getRole() {
@@ -88,6 +103,60 @@
       row.quantity_10ml ? `10ml x ${row.quantity_10ml}` : "",
       row.quantity_30ml ? `30ml x ${row.quantity_30ml}` : ""
     ].filter(Boolean).join(" / ") || "-";
+  }
+
+  function formatAmount(value, suffix = "") {
+    const amount = Number(value || 0);
+    if (!Number.isFinite(amount)) return `0${suffix}`;
+    const rounded = Math.round(amount * 100) / 100;
+    return `${String(rounded).replace(/\.0+$/, "").replace(/(\.\d)0$/, "$1")}${suffix}`;
+  }
+
+  function getTotalVolume(row) {
+    return Number(row.total_volume_ml ?? ((Number(row.quantity_10ml || 0) * 10) + (Number(row.quantity_30ml || 0) * 30))) || 0;
+  }
+
+  function normalizeRecipeItems(value) {
+    let items = value;
+    if (typeof value === "string") {
+      try {
+        items = JSON.parse(value);
+      } catch (error) {
+        items = [];
+      }
+    }
+    return (Array.isArray(items) ? items : [])
+      .map((item) => ({
+        ...item,
+        material_code: item?.material_code || "",
+        amount: Number(item?.amount || item?.ratio || item?.percentage || 0),
+        drops: Number(item?.drops || 0)
+      }))
+      .filter((item) => item.material_code && (item.amount > 0 || item.drops > 0));
+  }
+
+  function getMaterialLabel(item) {
+    const material = materialMap.get(item.material_code);
+    return material?.material_name || item.material_name || item.material_code || "-";
+  }
+
+  function getRecipeRows(row) {
+    const product = getProduct(row);
+    const totalVolume = getTotalVolume(row);
+    const recipeItems = normalizeRecipeItems(product.recipe_items);
+    const hasAmountRatio = recipeItems.some((item) => item.amount > 0);
+    const totalDrops = recipeItems.reduce((sum, item) => sum + Number(item.drops || 0), 0);
+    return recipeItems.map((item) => {
+      const ratio = hasAmountRatio
+        ? item.amount
+        : (totalDrops > 0 ? (Number(item.drops || 0) / totalDrops * 100) : 0);
+      return {
+        material: getMaterialLabel(item),
+        materialCode: item.material_code,
+        ratio,
+        requiredMl: totalVolume * ratio / 100
+      };
+    }).filter((item) => item.ratio > 0);
   }
 
   function getProduct(row) {
@@ -171,6 +240,85 @@
     )).join("");
   }
 
+  function ensureRecipeModal() {
+    let modal = document.getElementById("qr-request-recipe-modal");
+    if (modal) return modal;
+    modal = document.createElement("div");
+    modal.className = "portal-modal qr-request-recipe-modal";
+    modal.id = "qr-request-recipe-modal";
+    modal.hidden = true;
+    modal.innerHTML = `
+      <div class="portal-modal-backdrop" data-qr-recipe-close></div>
+      <section class="portal-modal-dialog qr-request-recipe-dialog" role="dialog" aria-modal="true" aria-labelledby="qr-request-recipe-title">
+        <button class="qr-request-recipe-close" type="button" data-qr-recipe-close aria-label="${TEXT.close}">x</button>
+        <h2 id="qr-request-recipe-title">${TEXT.recipeTitle}</h2>
+        <p class="qr-request-recipe-product" id="qr-request-recipe-product"></p>
+        <div class="qr-request-recipe-summary" id="qr-request-recipe-summary"></div>
+        <div class="qr-request-recipe-grid">
+          <section>
+            <h3>${TEXT.recipeSingle}</h3>
+            <div id="qr-request-recipe-single"></div>
+          </section>
+          <section>
+            <h3>${TEXT.recipeTotal}</h3>
+            <div id="qr-request-recipe-total"></div>
+          </section>
+        </div>
+      </section>
+    `;
+    document.body.appendChild(modal);
+    modal.addEventListener("click", (event) => {
+      if (event.target.closest("[data-qr-recipe-close]")) {
+        closeRecipeModal();
+      }
+    });
+    return modal;
+  }
+
+  function renderRecipeTable(rows, mode) {
+    if (!rows.length) {
+      return `<p class="admin-empty">${TEXT.recipeEmpty}</p>`;
+    }
+    return `
+      <div class="qr-request-recipe-table">
+        ${rows.map((row) => `
+          <div class="qr-request-recipe-row">
+            <span>${escapeHtml(row.material)}</span>
+            <small>${escapeHtml(row.materialCode)}</small>
+            <strong>${mode === "total" ? escapeHtml(formatAmount(row.requiredMl, "ml")) : escapeHtml(formatAmount(row.ratio, "%"))}</strong>
+          </div>
+        `).join("")}
+      </div>
+    `;
+  }
+
+  function closeRecipeModal() {
+    const modal = document.getElementById("qr-request-recipe-modal");
+    if (!modal) return;
+    modal.hidden = true;
+    document.body.classList.remove("portal-modal-open");
+  }
+
+  function openRecipeModal(requestId) {
+    const row = requests.find((entry) => entry.id === requestId);
+    if (!row) return;
+    const product = getProduct(row);
+    const recipeRows = getRecipeRows(row);
+    const totalVolume = getTotalVolume(row);
+    const modal = ensureRecipeModal();
+    modal.querySelector("#qr-request-recipe-product").textContent = product.product_name || row.request_code || "-";
+    modal.querySelector("#qr-request-recipe-summary").innerHTML = `
+      <span><strong>${TEXT.requestCode}</strong>${escapeHtml(row.request_code || "-")}</span>
+      <span><strong>${TEXT.totalVolume}</strong>${escapeHtml(formatAmount(totalVolume, "ml"))}</span>
+      <span><strong>${TEXT.material}</strong>${escapeHtml(String(recipeRows.length))}</span>
+    `;
+    modal.querySelector("#qr-request-recipe-single").innerHTML = renderRecipeTable(recipeRows, "single");
+    modal.querySelector("#qr-request-recipe-total").innerHTML = renderRecipeTable(recipeRows, "total");
+    modal.hidden = false;
+    document.body.classList.add("portal-modal-open");
+    modal.querySelector(".qr-request-recipe-close")?.focus();
+  }
+
   function matchesKeyword(row, keyword) {
     if (!keyword) return true;
     const product = getProduct(row);
@@ -234,6 +382,26 @@
         </div>
         <div class="qr-request-actions" data-label="操作">${actions || "<span>操作なし</span>"}</div>
       `;
+      const summaryEl = article.querySelector(".qr-request-summary");
+      if (summaryEl) {
+        const productTitle = escapeHtml(product.product_name || "-");
+        const requestLabel = `${TEXT.requestCode}: ${escapeHtml(row.request_code || "-")}`;
+        summaryEl.innerHTML = getRole() === "staff"
+          ? `
+            <span>${TEXT.productName}</span>
+            <button class="qr-request-product-button" type="button" data-recipe-request-id="${escapeHtml(row.id)}">${productTitle}</button>
+            <small>${requestLabel}</small>
+            <button class="qr-request-recipe-link" type="button" data-recipe-request-id="${escapeHtml(row.id)}">${TEXT.recipeOpen}</button>
+          `
+          : `
+            <span>${TEXT.productName}</span>
+            <strong>${productTitle}</strong>
+            <small>${requestLabel}</small>
+          `;
+      }
+      const nextEl = article.querySelector(".qr-request-next");
+      const actionsEl = article.querySelector(".qr-request-actions");
+      if (nextEl && actionsEl) nextEl.appendChild(actionsEl);
       rowsEl.appendChild(article);
     });
   }
@@ -271,11 +439,11 @@
     const qrCodeIds = [...new Set(requests.map((row) => row.product_qr_code_id).filter(Boolean))];
     const requestIds = [...new Set(requests.map((row) => row.id).filter(Boolean))];
 
-    const [products, qrCodes, emailEvents] = await Promise.all([
+    const [products, qrCodes, emailEvents, materialRows] = await Promise.all([
       productIds.length
         ? window.AdminData.listRows("fragrance_products", {
             filters: [{ operator: "in", column: "id", value: productIds }],
-            select: "id, product_name, created_by_staff_id, status"
+            select: "id, product_name, recipe_items, created_by_staff_id, status"
           }).catch(() => [])
         : Promise.resolve([]),
       qrCodeIds.length
@@ -293,11 +461,16 @@
             orders: [{ column: "created_at", ascending: false }],
             select: "id, related_id, template_key, status, send_after, sent_at, failed_at"
           }).catch(() => [])
-        : Promise.resolve([])
+        : Promise.resolve([]),
+      window.AdminData.listRows("material_points", {
+        filters: [{ operator: "eq", column: "is_active", value: true }],
+        select: "material_code, material_name"
+      }).catch(() => [])
     ]);
 
     productMap = new Map((products || []).map((row) => [row.id, row]));
     qrCodeMap = new Map((qrCodes || []).map((row) => [row.id, row]));
+    materialMap = new Map((materialRows || []).map((row) => [row.material_code, row]));
     emailEventMap = (emailEvents || []).reduce((map, row) => {
       const list = map.get(row.related_id) || [];
       list.push(row);
@@ -334,6 +507,11 @@
   });
 
   rowsEl.addEventListener("click", async (event) => {
+    const recipeButton = event.target.closest("[data-recipe-request-id]");
+    if (recipeButton) {
+      openRecipeModal(recipeButton.dataset.recipeRequestId);
+      return;
+    }
     const button = event.target.closest("[data-request-action]");
     if (!button) return;
     button.disabled = true;
@@ -344,6 +522,10 @@
       console.error("Failed to update QR request status.", error);
       window.alert(error?.message || "QR依頼の状態更新に失敗しました。");
     }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeRecipeModal();
   });
 
   async function bootstrap() {

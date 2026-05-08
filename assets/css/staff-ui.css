@@ -576,6 +576,144 @@ input[type="range"]::-moz-range-thumb {
   color: var(--muted);
 }
 
+.qr-request-card .qr-request-summary {
+  gap: 8px;
+}
+
+.qr-request-card .qr-request-summary strong {
+  display: none;
+}
+
+.qr-request-product-button {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font: 700 20px/1.35 var(--serif);
+  overflow-wrap: anywhere;
+  padding: 0;
+  text-align: left;
+}
+
+.qr-request-product-button:hover,
+.qr-request-product-button:focus-visible {
+  color: var(--green);
+  outline: none;
+}
+
+.qr-request-recipe-link {
+  justify-self: start;
+  min-height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--green);
+  cursor: pointer;
+  font-weight: 700;
+  padding: 6px 12px;
+}
+
+.qr-request-next .qr-request-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-start;
+  margin-top: 8px;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.qr-request-next .qr-request-actions .admin-btn {
+  min-height: 38px;
+}
+
+.qr-request-recipe-dialog {
+  width: min(920px, calc(100% - 28px));
+}
+
+.qr-request-recipe-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  min-height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.qr-request-recipe-product {
+  margin: 4px 0 14px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.qr-request-recipe-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.qr-request-recipe-summary span,
+.qr-request-recipe-row {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(255, 253, 249, 0.92);
+  padding: 10px 12px;
+}
+
+.qr-request-recipe-summary strong {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.qr-request-recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.qr-request-recipe-grid h3 {
+  margin: 0 0 10px;
+  font-family: var(--serif);
+  font-size: 18px;
+}
+
+.qr-request-recipe-table {
+  display: grid;
+  gap: 8px;
+}
+
+.qr-request-recipe-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 12px;
+}
+
+.qr-request-recipe-row span,
+.qr-request-recipe-row small {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.qr-request-recipe-row small {
+  color: var(--muted);
+}
+
+.qr-request-recipe-row strong {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  color: var(--green);
+  font-size: 18px;
+}
+
 .portal-modal[hidden],
 [hidden] {
   display: none !important;
@@ -701,6 +839,11 @@ body.portal-modal-open {
   .qr-request-meta {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .qr-request-recipe-summary,
+  .qr-request-recipe-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 560px) {
@@ -725,6 +868,12 @@ body.portal-modal-open {
 
   .qr-request-meta {
     grid-template-columns: 1fr;
+  }
+
+  .qr-request-next .qr-request-actions .admin-btn,
+  .qr-request-recipe-link {
+    width: 100%;
+    justify-content: center;
   }
 
   .btn,

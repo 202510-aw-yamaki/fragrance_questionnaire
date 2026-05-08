@@ -654,6 +654,21 @@
     return totalVolume ? `${totalVolume}ml` : "容量未設定";
   }
 
+  function resolveQrPanelTitle(row, fallbackValue = "") {
+    const payload = parsePayload(row);
+    return row?.product_name
+      || payload.product_name
+      || fallbackValue
+      || row?.request_code
+      || payload.request_code
+      || payload.qr_code
+      || "-";
+  }
+
+  function formatQrPanelDate(value) {
+    return value ? formatDueDate(value) : "";
+  }
+
   function createEmptyQrModalCategories() {
     return QR_MODAL_CATEGORIES.reduce((acc, meta) => {
       acc[meta.key] = { ...meta, items: [], seenKeys: new Set() };
@@ -686,6 +701,9 @@
     return {
       key: `${categoryKey}:request:${row.id || title}`,
       title,
+      panelTitle: resolveQrPanelTitle(row, title),
+      panelDate: row.created_at || row.updated_at || row.availability_due_at || row.expires_at,
+      detailLabel: row.request_code || "",
       badge: options.badge,
       tone: options.tone,
       lines
@@ -707,6 +725,9 @@
     return {
       key: `${categoryKey}:notification:${row.id || title}`,
       title,
+      panelTitle: resolveQrPanelTitle(row, title),
+      panelDate: row.created_at,
+      detailLabel: payload.request_code || payload.qr_code || "",
       badge: options.badge,
       tone: options.tone,
       lines
@@ -727,6 +748,9 @@
     return {
       key: `${categoryKey}:email:${row.id || title}`,
       title,
+      panelTitle: resolveQrPanelTitle(row, title),
+      panelDate: row.created_at || row.send_after,
+      detailLabel: payload.request_code || "",
       badge: options.badge || "メール送信待ち",
       tone: options.tone,
       lines
@@ -851,6 +875,20 @@
     }
   }
 
+  async function attachQrRequestProducts(requestRows = []) {
+    const productIds = [...new Set((requestRows || []).map((row) => row.fragrance_product_id).filter(Boolean))];
+    if (!productIds.length) return requestRows || [];
+    const productRows = await window.AdminData.listRows("fragrance_products", {
+      filters: [{ operator: "in", column: "id", value: productIds }],
+      select: "id, product_name"
+    }).catch(() => []);
+    const productById = new Map((productRows || []).map((row) => [row.id, row]));
+    return (requestRows || []).map((row) => ({
+      ...row,
+      product_name: productById.get(row.fragrance_product_id)?.product_name || row.product_name || ""
+    }));
+  }
+
   function renderQrNotifications(rows, emailRows = [], requestRows = []) {
     if (!qrRequestCountEl || !qrRequestListEl) return;
     const modalCategories = buildQrModalCategories(rows, emailRows, requestRows);
@@ -863,10 +901,10 @@
       qrRequestListEl.innerHTML = `<p class="admin-empty">未対応のQR依頼はありません。</p>`;
       return;
     }
-    const visibleItems = panelItems.slice(0, 6).map((item) => `
+    const visibleItems = panelItems.slice(0, 4).map((item) => `
         <article class="portal-dashboard-row portal-dashboard-row--summary admin-dashboard-qr-row">
-          <span class="admin-dashboard-qr-row-title">${escapeHtml(item.title)}</span>
-          <small class="admin-dashboard-qr-row-category">${escapeHtml(item.categoryLabel)}</small>
+          <span class="admin-dashboard-qr-row-title">${escapeHtml(item.panelTitle || item.title)}</span>
+          <small class="admin-dashboard-qr-row-date">${escapeHtml(formatQrPanelDate(item.panelDate))}</small>
           <strong class="admin-dashboard-qr-row-badge">${escapeHtml(item.badge || "要対応")}</strong>
         </article>
       `);
@@ -948,13 +986,14 @@
       }).catch(() => []),
       window.AdminData.listRows("qr_product_requests", {
         orders: [{ column: "created_at", ascending: false }],
-        select: "id, request_code, status, requester_email, quantity_10ml, quantity_30ml, total_volume_ml, availability_due_at, available_email_sent_at, reminder_email_sent_at, expires_at, created_at, updated_at"
+        select: "id, request_code, fragrance_product_id, status, requester_email, quantity_10ml, quantity_30ml, total_volume_ml, availability_due_at, available_email_sent_at, reminder_email_sent_at, expires_at, created_at, updated_at"
       }).catch(() => []),
       window.AdminData.listRows("workshop_sessions", {
         select: "id, reservation_id, previsit_recipe_items, previsit_recipe_axes, status, updated_at"
       }).catch(() => [])
     ]);
 
+    const hydratedQrRequestRows = await attachQrRequestProducts(qrRequestRows);
     const staffRows = getDashboardStaffRows(staffProfileRows, slots, settingsRows);
     const shiftOverrides = getShiftOverrides(settingsRows);
     const todayKey = formatDateKey(new Date());
@@ -966,13 +1005,13 @@
       kpiUnconfirmedReservationsEl.textContent = String(activeReservations.filter(isUnconfirmedReservation).length);
     }
     if (kpiQrRequestsEl) {
-      kpiQrRequestsEl.textContent = String(qrRequestRows.filter(isOpenQrRequest).length);
+      kpiQrRequestsEl.textContent = String(hydratedQrRequestRows.filter(isOpenQrRequest).length);
     }
     if (kpiOverdueRequestsEl) {
-      kpiOverdueRequestsEl.textContent = String(qrRequestRows.filter((row) => isOverdueQrRequest(row)).length);
+      kpiOverdueRequestsEl.textContent = String(hydratedQrRequestRows.filter((row) => isOverdueQrRequest(row)).length);
     }
     if (kpiShippingPendingEl) {
-      kpiShippingPendingEl.textContent = String(qrRequestRows.filter((row) => row.status === "shipping_pending").length);
+      kpiShippingPendingEl.textContent = String(hydratedQrRequestRows.filter((row) => row.status === "shipping_pending").length);
     }
     if (kpiReservationsWeekEl) {
       const today = todayKey;
@@ -994,7 +1033,7 @@
     renderPrevisitProposalChecks(slots, activeReservations, workshopRows);
     renderScoringSummary(scoringRows[0] || null);
     renderMaterialLinks(materials);
-    renderQrNotifications(qrNotificationRows, emailEventRows, qrRequestRows);
+    renderQrNotifications(qrNotificationRows, emailEventRows, hydratedQrRequestRows);
     finishDashboardLoading();
   }
 

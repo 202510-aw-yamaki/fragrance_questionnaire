@@ -5037,6 +5037,64 @@ body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel .a
   font-size: 13px !important;
 }
 
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel .portal-list-body {
+  display: grid;
+  gap: 8px;
+  max-height: 344px;
+  overflow: hidden;
+  padding: 12px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel .portal-dashboard-row.admin-dashboard-qr-row {
+  min-height: 54px !important;
+  grid-template-columns: 34px minmax(0, 1fr) auto 12px !important;
+  grid-template-rows: auto auto !important;
+  gap: 4px 10px !important;
+  margin-bottom: 0 !important;
+  padding: 8px 10px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel .portal-dashboard-row.admin-dashboard-qr-row::before {
+  width: 32px !important;
+  height: 32px !important;
+  font-size: 16px !important;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel .portal-dashboard-row.admin-dashboard-qr-row .admin-dashboard-qr-row-title {
+  grid-column: 2 / span 2 !important;
+  grid-row: 1 !important;
+  display: block;
+  font-size: 13px !important;
+  line-height: 1.28;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel .portal-dashboard-row.admin-dashboard-qr-row .admin-dashboard-qr-row-date {
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+  color: #7a6659;
+  font-size: 11px !important;
+  line-height: 1.2;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel .portal-dashboard-row.admin-dashboard-qr-row .admin-dashboard-qr-row-badge {
+  grid-column: 3 !important;
+  grid-row: 2 !important;
+  align-self: center;
+  justify-self: end !important;
+  max-width: 118px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-qr-panel .portal-dashboard-row.admin-dashboard-qr-row::after {
+  grid-column: 4 !important;
+  grid-row: 1 / span 2 !important;
+}
+
 body.admin-dashboard-page .admin-dashboard-artboard .admin-dashboard-action-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
   gap: 16px !important;
