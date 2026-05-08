@@ -1302,6 +1302,51 @@ body.admin-page .admin-logout {
   color: #9b5f21;
 }
 
+body[data-page="admin-qr-requests"] .admin-header-inner {
+  min-height: 78px;
+}
+
+body[data-page="admin-qr-requests"] .admin-brand {
+  gap: 10px;
+  font-size: 28px;
+}
+
+body[data-page="admin-qr-requests"] .admin-brand-logo {
+  width: 58px;
+  height: 58px;
+  flex: 0 0 58px;
+}
+
+body[data-page="admin-qr-requests"] .admin-header-actions {
+  gap: 16px;
+}
+
+body[data-page="admin-qr-requests"] .admin-nav {
+  gap: 12px;
+}
+
+body[data-page="admin-qr-requests"] .admin-nav a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 253, 249, 0.86);
+  color: var(--gold-dark);
+  white-space: nowrap;
+}
+
+body[data-page="admin-qr-requests"] .admin-nav a.active::after {
+  content: none;
+}
+
+body[data-page="admin-qr-requests"] .admin-logout {
+  min-height: 44px;
+  border-color: transparent;
+  background: rgba(255, 253, 249, 0.86);
+}
+
 .admin-page-title--center {
   justify-content: center;
   align-items: center;

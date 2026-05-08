@@ -226,10 +226,12 @@
       "qr-settings": "QR商品設定",
       "qr-requests": "QR Requests"
     };
-    const staffLinks = optionLinks || defaultLinks;
-    const baseLinks = (role === "staff" ? staffLinks : defaultLinks)
+    const useOptionLinks = Boolean(optionLinks) && (role === "staff" || options.linkMode === "replace");
+    const baseLinks = (useOptionLinks ? optionLinks : defaultLinks)
       .filter(({ key }) => key !== activePage);
-    const portalSwitchLinks = sessionRole === "manager"
+    const portalSwitchLinks = options.includePortalSwitch === false
+      ? []
+      : sessionRole === "manager"
       ? (role === "staff"
         ? [{ href: HOME_BY_ROLE.manager, label: "\u7ba1\u7406\u8005\u753b\u9762\u3078", key: "portal-manager" }]
         : [{ href: HOME_BY_ROLE.staff, label: "\u30b9\u30bf\u30c3\u30d5\u753b\u9762\u3078", key: "portal-staff" }])

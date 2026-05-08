@@ -534,10 +534,18 @@
     if (!session) return;
     canOperateRequests = role === "staff" && window.AdminAuth.getSessionPortalRole?.(session) === "staff";
     window.AdminAuth.persistPortalRole(role);
-    window.AdminAuth.renderAdminHeader("qr-requests", {
+    const headerOptions = {
       role,
       session
-    });
+    };
+    if (role === "manager") {
+      headerOptions.linkMode = "replace";
+      headerOptions.includePortalSwitch = false;
+      headerOptions.links = [
+        { href: "admin-dashboard.html", label: "\u30c0\u30c3\u30b7\u30e5\u30dc\u30fc\u30c9\u306b\u623b\u308b", key: "dashboard" }
+      ];
+    }
+    window.AdminAuth.renderAdminHeader("qr-requests", headerOptions);
     await runDeadlineProcessing(role);
     await loadRequests();
     renderRows();
