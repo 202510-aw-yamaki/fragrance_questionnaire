@@ -841,7 +841,10 @@
       <article class="admin-qr-modal-item ${escapeHtml(item.tone || "")}">
         <span class="modal-icon" aria-hidden="true"></span>
         <div>
-          <h3>${escapeHtml(item.title)} <em>${escapeHtml(item.badge || "要対応")}</em></h3>
+          <h3>
+            <span class="admin-qr-modal-item-title">${escapeHtml(item.title)}</span>
+            <em>${escapeHtml(item.badge || "要対応")}</em>
+          </h3>
           ${item.lines.map((line) => `<p>${escapeHtml(line)}</p>`).join("")}
         </div>
         <a href="${window.AdminAuth.appendRoleToHref("admin-qr-requests.html", "manager")}" aria-label="詳細へ">›</a>
