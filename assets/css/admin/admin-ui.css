@@ -1302,30 +1302,34 @@ body.admin-page .admin-logout {
   color: #9b5f21;
 }
 
-body[data-page="admin-qr-requests"] .admin-header-inner {
-  min-height: 78px;
+body.admin-page[data-page="admin-qr-requests"] .admin-header-inner {
+  min-height: 64px;
 }
 
-body[data-page="admin-qr-requests"] .admin-brand {
-  gap: 10px;
-  font-size: 28px;
+body.admin-page[data-page="admin-qr-requests"] .admin-brand {
+  gap: 8px;
+  font-size: 24px;
 }
 
-body[data-page="admin-qr-requests"] .admin-brand-logo {
-  width: 58px;
-  height: 58px;
-  flex: 0 0 58px;
+body.admin-page[data-page="admin-qr-requests"] .admin-brand-logo {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
 }
 
-body[data-page="admin-qr-requests"] .admin-header-actions {
+body.admin-page[data-page="admin-qr-requests"] .admin-brand-meta {
+  display: none !important;
+}
+
+body.admin-page[data-page="admin-qr-requests"] .admin-header-actions {
   gap: 16px;
 }
 
-body[data-page="admin-qr-requests"] .admin-nav {
+body.admin-page[data-page="admin-qr-requests"] .admin-nav {
   gap: 12px;
 }
 
-body[data-page="admin-qr-requests"] .admin-nav a {
+body.admin-page[data-page="admin-qr-requests"] .admin-nav a {
   min-height: 44px;
   display: inline-flex;
   align-items: center;
@@ -1337,14 +1341,20 @@ body[data-page="admin-qr-requests"] .admin-nav a {
   white-space: nowrap;
 }
 
-body[data-page="admin-qr-requests"] .admin-nav a.active::after {
+body.admin-page[data-page="admin-qr-requests"] .admin-nav a.active::after {
   content: none;
 }
 
-body[data-page="admin-qr-requests"] .admin-logout {
+body.admin-page[data-page="admin-qr-requests"] .admin-logout {
   min-height: 44px;
   border-color: transparent;
   background: rgba(255, 253, 249, 0.86);
+}
+
+body.admin-page[data-page="admin-qr-requests"] #qr-request-filter-form {
+  grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+  align-items: end;
+  gap: 18px;
 }
 
 .admin-page-title--center {
@@ -1743,6 +1753,10 @@ body[data-page="admin-qr-requests"] .admin-logout {
     padding: 12px;
     color: var(--gold-dark);
     font-weight: 700;
+  }
+
+  body.admin-page[data-page="admin-qr-requests"] #qr-request-filter-form {
+    grid-template-columns: 1fr;
   }
 
   .admin-notification-pill {
